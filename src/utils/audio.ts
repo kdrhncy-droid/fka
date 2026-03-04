@@ -1,6 +1,12 @@
 import React from 'react';
 
+// BUG-2: Global SFX bayrak — SettingsPanel'den kontrol edilir
+let _sfxEnabled = true;
+export function setSfxEnabled(v: boolean) { _sfxEnabled = v; }
+export function isSfxEnabled() { return _sfxEnabled; }
+
 export function playSound(audioCtxRef: React.MutableRefObject<AudioContext | null>, type: string) {
+  if (!_sfxEnabled) return; // SFX kapalıysa hiç çalma
   if (!audioCtxRef.current) {
     const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
     if (!AudioContextClass) return;

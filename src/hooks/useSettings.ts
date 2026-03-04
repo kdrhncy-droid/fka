@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { setSfxEnabled } from '../utils/audio';
 
 export interface Settings {
     masterVolume: number;      // 0-1
@@ -32,6 +33,11 @@ function save(s: Settings) {
 /** Ayarları yönetir ve localStorage'a otomatik kaydeder */
 export function useSettings() {
     const [settings, setSettings] = useState<Settings>(load);
+
+    // BUG-2: sfxOn değişince global audio flag'ı güncelle
+    useEffect(() => {
+        setSfxEnabled(settings.sfxOn);
+    }, [settings.sfxOn]);
 
     const update = (patch: Partial<Settings>) =>
         setSettings(prev => {

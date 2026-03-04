@@ -126,7 +126,7 @@ export const GameScreen: React.FC<Props> = ({
                     ref={canvasRef}
                     width={GAME_WIDTH}
                     height={GAME_HEIGHT}
-                    className="w-full h-full block"
+                    className="w-full h-full object-contain block"
                 />
 
                 {/* Joystick */}

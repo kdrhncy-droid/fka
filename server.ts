@@ -37,6 +37,7 @@ import {
 const INTERACT_R = 90;
 const SERVE_R = 100;
 const EAT_TICKS = 90;
+const INTERACT_COOLDOWN = 200; // ms
 
 // ─── Room Yönetimi ───────────────────────────────────────────────────────────
 const rooms: Record<string, GameState> = {};
@@ -87,6 +88,7 @@ async function startServer() {
 
   io.on("connection", (socket) => {
     let roomId: string | null = null;
+    let lastInteract = 0; // BUG-1: cooldown tracking
 
     socket.on("join", (d: { name: string; color: string; hat: string; roomId: string; marketName: string }) => {
       roomId = d.roomId || "default";
@@ -121,6 +123,10 @@ async function startServer() {
 
     socket.on("interact", () => {
       if (!roomId || !rooms[roomId]) return;
+      // BUG-1: 200ms cooldown
+      const now = Date.now();
+      if (now - lastInteract < INTERACT_COOLDOWN) return;
+      lastInteract = now;
       const gs = rooms[roomId], p = gs.players[socket.id]; if (!p) return;
       const { x: px, y: py } = p;
 
@@ -272,12 +278,15 @@ async function startServer() {
           c.y = Math.max(c.targetY, c.y - 3);
           if (c.y <= c.targetY) c.isSeated = true;
         } else {
-          c.patience--;
-          if (c.patience <= 0) {
-            gs.score = Math.max(0, gs.score - 5);
-            gs.customers.splice(i, 1);
-            io.to(rid).emit("sound", "fail");
-            tryQueueSeat(gs, io, rid);
+          // BUG-6: sadece gündüz patience azalır (gece/prep'te dondur)
+          if (gs.dayPhase === 'day') {
+            c.patience--;
+            if (c.patience <= 0) {
+              gs.score = Math.max(0, gs.score - 5);
+              gs.customers.splice(i, 1);
+              io.to(rid).emit("sound", "fail");
+              tryQueueSeat(gs, io, rid);
+            }
           }
         }
       }
