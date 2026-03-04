@@ -25,8 +25,12 @@ export const Joystick: React.FC<JoystickProps> = ({ onMove }) => {
     const x = Math.cos(angle) * clampedDistance;
     const y = Math.sin(angle) * clampedDistance;
 
+    const normalizedX = x / maxDistance;
+    const normalizedY = y / maxDistance;
+
     setKnobPos({ x, y });
-    onMove(x / maxDistance, y / maxDistance);
+    console.log('Joystick:', normalizedX, normalizedY); // Debug
+    onMove(normalizedX, normalizedY);
   };
 
   const handleEnd = () => {
