@@ -195,23 +195,18 @@ export default function App() {
       // 1. Update Local Player Position
       let dx = 0;
       let dy = 0;
+      
+      // Keyboard movement
       if (keys.current.w) dy -= PLAYER_SPEED;
       if (keys.current.s) dy += PLAYER_SPEED;
       if (keys.current.a) dx -= PLAYER_SPEED;
       if (keys.current.d) dx += PLAYER_SPEED;
 
-      // Add Joystick movement
+      // Add Joystick movement (already normalized -1 to 1)
       dx += joystickVector.x * PLAYER_SPEED;
       dy += joystickVector.y * PLAYER_SPEED;
 
       if (dx !== 0 || dy !== 0) {
-        // Normalize diagonal movement
-        if (dx !== 0 && dy !== 0) {
-          const length = Math.sqrt(dx * dx + dy * dy);
-          dx = (dx / length) * PLAYER_SPEED;
-          dy = (dy / length) * PLAYER_SPEED;
-        }
-
         localPlayerRef.current.x = Math.max(20, Math.min(GAME_WIDTH - 20, localPlayerRef.current.x + dx));
         localPlayerRef.current.y = Math.max(20, Math.min(GAME_HEIGHT - 20, localPlayerRef.current.y + dy));
 
@@ -539,8 +534,8 @@ export default function App() {
         />
       </div>
 
-      {/* Mobile Controls (Hidden on larger screens) */}
-      <div className="absolute bottom-8 left-8 md:hidden">
+      {/* Mobile Controls */}
+      <div className="absolute bottom-8 left-8">
         <Joystick onMove={(x, y) => setJoystickVector({ x, y })} />
       </div>
 
