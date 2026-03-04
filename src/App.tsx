@@ -201,7 +201,6 @@ export default function App() {
       if (keys.current.d) dx += PLAYER_SPEED;
 
       // Add Joystick movement
-      console.log('JoystickVector:', joystickVector); // Debug
       dx += joystickVector.x * PLAYER_SPEED;
       dy += joystickVector.y * PLAYER_SPEED;
 
