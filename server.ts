@@ -283,9 +283,14 @@ async function startServer() {
 
       // Spawn — sadece gündüz + kapanışa yakın durur
       if (gs.dayPhase === 'day' && gs.dayTimer > CLOSING_THRESHOLD) {
+        // Günden güne artan zorluk (ilk günlerde az, ilerledikçe artan baz oran)
+        const baseRate = 0.001 + Math.min(gs.day * 0.0005, 0.005);
+
+        // Gün içindeki ilerlemeye göre hafif artış (öğle yoğunluğu)
         const dayProgress = 1 - gs.dayTimer / DAY_TICKS;
-        const spawnRate = 0.003 + dayProgress * 0.004;
-        if (Math.random() < spawnRate && gs.customers.length + gs.waitList.length < 10) {
+        const currentRate = baseRate + (dayProgress * 0.001);
+
+        if (Math.random() < currentRate && gs.customers.length + gs.waitList.length < 10) {
           gs.waitList.push({
             id: Math.random().toString(36).slice(2, 9),
             wants: DISH_ITEMS[Math.floor(Math.random() * DISH_ITEMS.length)],
