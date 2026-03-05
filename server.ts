@@ -57,7 +57,7 @@ function mkRoom(): GameState {
 }
 
 // ─── Yardımcı Fonksiyonlar ───────────────────────────────────────────────────
-function patLimit(lv: number) { return 1500 + 400 * lv; }
+function patLimit(lv: number) { return 1200 + 300 * lv; } // Biraz daha sabırsız oldular (eskiden 1500 + 400dü)
 function earn(lv: number) { return 10 + 5 * lv; }
 function cap(lv: number) { return 15 + 5 * lv; }
 

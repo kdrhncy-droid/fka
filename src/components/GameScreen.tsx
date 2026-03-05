@@ -135,11 +135,16 @@ export const GameScreen: React.FC<Props> = ({
                 </div>
 
                 {/* Kontrol butonları */}
-                <div className={`absolute bottom-4 z-10 flex flex-col gap-2 items-end ${settings.joystickSide === 'left' ? 'right-4' : 'left-4'
-                    }`}>
+                <div
+                    className={`absolute z-10 flex flex-col gap-2 items-end ${settings.joystickSide === 'left' ? 'right-4' : 'left-4'}`}
+                    style={{ bottom: `${settings.buttonOffset}px` }}
+                >
                     <button
-                        onClick={() => emit('interact')}
-                        style={{ width: bs, height: bs }}
+                        onPointerDown={(e) => {
+                            e.preventDefault(); // Varsayılan dokunmatik gecikmeyi (300ms) engelle
+                            emit('interact');
+                        }}
+                        style={{ width: bs, height: bs, touchAction: 'none' }}
                         className="bg-blue-500 active:bg-blue-700 text-white rounded-full shadow-xl font-black text-sm border-4 border-blue-300 flex items-center justify-center active:scale-95"
                     >
                         AL<br />VER

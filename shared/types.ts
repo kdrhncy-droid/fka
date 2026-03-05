@@ -55,7 +55,7 @@ export const GAME_WIDTH = 1280;
 export const GAME_HEIGHT = 720;
 
 // ─── Gün / Gece ──────────────────────────────────────────────────────────────
-export const DAY_TICKS = 1800;   // ~60 saniye (30fps)
+export const DAY_TICKS = 1500;   // ~50 saniye (30fps) - Biraz hızlandırıldı
 export const NIGHT_TICKS = 600;    // ~20 saniye
 export const CLOSING_THRESHOLD = 450; // son ~15sn müşteri gelmesin
 export const BURN_TICKS = 300;     // ~10 sn yemek yanma süresi

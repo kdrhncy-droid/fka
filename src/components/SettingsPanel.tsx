@@ -64,6 +64,21 @@ export const SettingsPanel: React.FC<Props> = ({ settings, onUpdate, onClose }) 
                 </div>
             </div>
 
+            {/* Buton Yüksekliği */}
+            <div className="mb-4">
+                <label className="block text-stone-300 text-sm font-bold mb-2">↕️ Buton Yüksekliği (Aşağıdan Mesafesi)</label>
+                <input
+                    type="range"
+                    min="10" max="150" step="10"
+                    value={settings.buttonOffset}
+                    onChange={(e) => onUpdate({ buttonOffset: Number(e.target.value) })}
+                    className="w-full accent-blue-500 cursor-pointer"
+                />
+                <div className="flex justify-between text-stone-500 text-xs mt-1">
+                    <span>Aşağıda</span><span>Yukarıda</span>
+                </div>
+            </div>
+
             {/* Joystick Tarafı */}
             <div className="flex items-center justify-between">
                 <span className="text-stone-300 text-sm font-bold">🕹️ Joystick Tarafı</span>
@@ -73,8 +88,8 @@ export const SettingsPanel: React.FC<Props> = ({ settings, onUpdate, onClose }) 
                             key={side}
                             onClick={() => onUpdate({ joystickSide: side })}
                             className={`px-3 py-1.5 rounded-lg text-sm font-bold transition-colors ${settings.joystickSide === side
-                                    ? 'bg-blue-500 text-white'
-                                    : 'bg-stone-700 text-stone-400'
+                                ? 'bg-blue-500 text-white'
+                                : 'bg-stone-700 text-stone-400'
                                 }`}
                         >
                             {side === 'left' ? '⬅️ Sol' : 'Sağ ➡️'}

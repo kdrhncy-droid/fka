@@ -5,6 +5,7 @@ export interface Settings {
     masterVolume: number;      // 0-1
     sfxOn: boolean;
     buttonSize: number;      // 60-120 px
+    buttonOffset: number;    // 0-200 px (bottom padding)
     joystickSide: 'left' | 'right';
 }
 
@@ -12,6 +13,7 @@ const DEFAULTS: Settings = {
     masterVolume: 0.5,
     sfxOn: true,
     buttonSize: 80,
+    buttonOffset: 20, // Default bottom gap
     joystickSide: 'left',
 };
 
