@@ -128,7 +128,8 @@ export const GameScreen: React.FC<Props> = ({
                     ref={canvasRef}
                     width={GAME_WIDTH}
                     height={GAME_HEIGHT}
-                    className="w-full h-full object-contain block"
+                    onContextMenu={(e) => e.preventDefault()}
+                    className="w-full h-full object-contain block touch-none select-none"
                 />
 
                 {/* Joystick */}
