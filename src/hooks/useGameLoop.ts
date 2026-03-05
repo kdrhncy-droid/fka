@@ -20,6 +20,7 @@ import {
   OUTSIDE_QUEUE_Y,
   INGREDIENTS,
   COOK_STATION_DEFS,
+  HOLDING_STATION_POSITIONS,
 } from "../types/game";
 
 import { drawFloor } from "../renderer/drawFloor";
@@ -28,6 +29,7 @@ import { drawTable } from "../renderer/drawTable";
 import { drawCustomer } from "../renderer/drawCustomer";
 import { drawPlayer } from "../renderer/drawPlayer";
 import { drawCookStation } from "../renderer/drawCookStation";
+import { drawHoldingStation } from "../renderer/drawHoldingStation";
 
 interface UseGameLoopProps {
   canvasRef: React.RefObject<HTMLCanvasElement>;
@@ -222,6 +224,15 @@ export function useGameLoop({
         "🗑️",
         "Çöp",
       );
+
+      // Bekletme İstasyonları (Prep Counters / Tabaklar)
+      const hs = state.holdingStations;
+      if (hs) {
+        for (const pos of HOLDING_STATION_POSITIONS) {
+          const item = hs.find((s) => s.id === pos.id);
+          drawHoldingStation(ctx, pos.x, pos.y, item);
+        }
+      }
 
       // Pişirme istasyonları
       const cookStations = state.cookStations;

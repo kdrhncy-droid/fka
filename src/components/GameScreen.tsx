@@ -38,6 +38,8 @@ export const GameScreen: React.FC<Props> = ({
     const [day, setDay] = useState(1);
     const [queueLen, setQueueLen] = useState(0);
 
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
     useGameLoop({ canvasRef, isJoined, myId, socket, gameStateRef, localPlayerRef, keysRef, joystickVectorRef });
 
     // State poll
@@ -130,8 +132,14 @@ export const GameScreen: React.FC<Props> = ({
                 />
 
                 {/* Joystick */}
-                <div className={`absolute bottom-4 z-10 ${settings.joystickSide === 'left' ? 'left-4' : 'right-4'}`}>
-                    <Joystick onMove={(x, y) => { joystickVectorRef.current = { x, y }; }} />
+                <div
+                    className={`absolute z-10 ${settings.joystickSide === 'left' ? 'left-4' : 'right-4'}`}
+                    style={{ bottom: `${settings.joystickOffset}px` }}
+                >
+                    <Joystick
+                        size={settings.joystickSize}
+                        onMove={(x, y) => { joystickVectorRef.current = { x, y }; }}
+                    />
                 </div>
 
                 {/* Kontrol butonları */}
@@ -185,16 +193,18 @@ export const GameScreen: React.FC<Props> = ({
                 )}
             </div>
 
-            {/* PC İpuçları */}
-            <div className="flex-none h-6 hidden md:flex items-center justify-center gap-4 text-stone-500 text-[11px] font-medium bg-stone-950">
-                <span>Hareket: <kbd className="bg-stone-800 text-stone-300 px-1 rounded">WASD</kbd></span>
-                <span>·</span>
-                <span>Etkileşim: <kbd className="bg-stone-800 text-stone-300 px-1 rounded">E</kbd> / <kbd className="bg-stone-800 text-stone-300 px-1 rounded">BOŞLUK</kbd></span>
-                <span>·</span>
-                <span className={dayPhase === 'night' ? 'text-indigo-400 font-bold' : dayPhase === 'prep' ? 'text-purple-400 font-bold' : ''}>
-                    {dayPhase === 'prep' ? '🔧 Hazırlık — Dükkanı aç!' : dayPhase === 'night' ? '🌙 Upgrade al!' : '☀️ Müşterilere servis yap'}
-                </span>
-            </div>
+            {/* PC İpuçları (Sadece Dokunmatik OLMAYAN cihazlarda) */}
+            {!isTouchDevice && (
+                <div className="flex-none h-6 hidden md:flex items-center justify-center gap-4 text-stone-500 text-[11px] font-medium bg-stone-950">
+                    <span>Hareket: <kbd className="bg-stone-800 text-stone-300 px-1 rounded">WASD</kbd></span>
+                    <span>·</span>
+                    <span>Etkileşim: <kbd className="bg-stone-800 text-stone-300 px-1 rounded">E</kbd> / <kbd className="bg-stone-800 text-stone-300 px-1 rounded">BOŞLUK</kbd></span>
+                    <span>·</span>
+                    <span className={dayPhase === 'night' ? 'text-indigo-400 font-bold' : dayPhase === 'prep' ? 'text-purple-400 font-bold' : ''}>
+                        {dayPhase === 'prep' ? '🔧 Hazırlık — Dükkanı aç!' : dayPhase === 'night' ? '🌙 Upgrade al!' : '☀️ Müşterilere servis yap'}
+                    </span>
+                </div>
+            )}
 
             {showSettings && (
                 <SettingsPanel settings={settings} onUpdate={updateSettings} onClose={() => setShowSettings(false)} />

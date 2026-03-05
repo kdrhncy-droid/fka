@@ -2,9 +2,10 @@ import React, { useRef, useState, useCallback } from 'react';
 
 interface JoystickProps {
   onMove: (x: number, y: number) => void;
+  size?: number; // Varsayılan 128px
 }
 
-export const Joystick: React.FC<JoystickProps> = ({ onMove }) => {
+export const Joystick: React.FC<JoystickProps> = ({ onMove, size = 128 }) => {
   const joystickRef = useRef<HTMLDivElement>(null);
   const [knobPos, setKnobPos] = useState({ x: 0, y: 0 });
   // isDragging'i ref olarak tutuyoruz — closure içinde güncel değeri okumak için
@@ -21,9 +22,10 @@ export const Joystick: React.FC<JoystickProps> = ({ onMove }) => {
     const dx = clientX - centerX;
     const dy = clientY - centerY;
     const distance = Math.sqrt(dx * dx + dy * dy);
-    const maxDistance = 50; // max knob travel distance
 
-    // Normalize final output so pushing edge of knob = full speed (1.0)
+    // Yarıçapın %40'ına ulaştığında %100 hıza ulaşsın (Mobil hassasiyeti için)
+    const maxDistance = size * 0.40;
+
     let finalX = dx;
     let finalY = dy;
 
@@ -34,9 +36,10 @@ export const Joystick: React.FC<JoystickProps> = ({ onMove }) => {
     }
 
     setKnobPos({ x: finalX, y: finalY });
-    // Normalize to -1.0 to 1.0 range based on maxDistance
+
+    // Normalize ratio (0.0 - 1.0)
     onMove(finalX / maxDistance, finalY / maxDistance);
-  }, [onMove]);
+  }, [onMove, size]);
 
   const handleEnd = useCallback(() => {
     isDraggingRef.current = false;
@@ -89,18 +92,23 @@ export const Joystick: React.FC<JoystickProps> = ({ onMove }) => {
     handleEnd();
   };
 
+  const knobSize = size / 2;
+
   return (
     <div
       ref={joystickRef}
-      className="w-32 h-32 rounded-full bg-stone-400/70 border-4 border-stone-600 flex items-center justify-center touch-none select-none cursor-pointer"
+      className="rounded-full bg-stone-400/70 border-4 border-stone-600 flex items-center justify-center touch-none select-none cursor-pointer"
+      style={{ width: size, height: size }}
       onMouseDown={handleMouseDown}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
       <div
-        className="w-16 h-16 rounded-full bg-stone-700 shadow-lg pointer-events-none"
+        className="rounded-full bg-stone-700 shadow-lg pointer-events-none"
         style={{
+          width: knobSize,
+          height: knobSize,
           transform: `translate(${knobPos.x}px, ${knobPos.y}px)`,
           transition: isDraggingState ? 'none' : 'transform 0.2s ease-out',
         }}

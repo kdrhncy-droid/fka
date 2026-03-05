@@ -7,6 +7,8 @@ export interface Settings {
     buttonSize: number;      // 60-120 px
     buttonOffset: number;    // 0-200 px (bottom padding)
     joystickSide: 'left' | 'right';
+    joystickSize: number;    // 80-200 px
+    joystickOffset: number;  // 10-150 px bottom padding
 }
 
 const DEFAULTS: Settings = {
@@ -15,6 +17,8 @@ const DEFAULTS: Settings = {
     buttonSize: 80,
     buttonOffset: 20, // Default bottom gap
     joystickSide: 'left',
+    joystickSize: 128,
+    joystickOffset: 20,
 };
 
 const LS_KEY = 'terracraft-settings';

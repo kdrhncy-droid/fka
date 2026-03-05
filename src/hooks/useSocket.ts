@@ -15,6 +15,7 @@ const DEFAULT_STATE: GameState = {
     players: {},
     customers: [],
     waitList: [],
+    holdingStations: [],
     score: 0,
     stock: { '🫓': 10, '🥩': 10, '🥬': 10 },
     marketName: '',

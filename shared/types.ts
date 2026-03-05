@@ -36,10 +36,16 @@ export interface CookStation {
     isBurned?: boolean;    // Yemek tamamen yandı mı?
 }
 
+export interface HoldingStation {
+    id: string; // 'plate0', 'plate1', vb.
+    item: string | null;
+}
+
 export interface GameState {
     players: Record<string, Player>;
     customers: Customer[];
     waitList: WaitingGuest[];
+    holdingStations: HoldingStation[];
     score: number;
     stock: Record<StockKey, number>;
     marketName: string;
@@ -60,6 +66,14 @@ export const NIGHT_TICKS = 600;    // ~20 saniye
 export const CLOSING_THRESHOLD = 450; // son ~15sn müşteri gelmesin
 export const BURN_TICKS = 300;     // ~10 sn yemek yanma süresi
 export const BURNED_FOOD = '⬛';   // Çöpe atılacak yanan yemek
+
+// ─── Bekletme İstasyonları (Prep Counters / Plates) ──────────────────────────
+export const HOLDING_STATION_POSITIONS = [
+    { id: 'plate0', x: 250, y: 170, radius: 45 },
+    { id: 'plate1', x: 340, y: 170, radius: 45 },
+    { id: 'plate2', x: 430, y: 170, radius: 45 },
+    { id: 'plate3', x: 520, y: 170, radius: 45 },
+];
 
 // ─── Yatay Duvar & Kapılar (mutfak↔salon) ────────────────────────────────────
 export const WALL_Y1 = 230;

@@ -37,7 +37,9 @@ export {
   UPGRADE_DEFS,
   CLOSING_THRESHOLD,
   BURN_TICKS,
-  BURNED_FOOD
+  BURNED_FOOD,
+  HOLDING_STATION_POSITIONS,
+  type HoldingStation
 } from '../../shared/types';
 
 // ─── Client-Only Sabitler ────────────────────────────────────────────────────

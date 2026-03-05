@@ -80,7 +80,7 @@ export const SettingsPanel: React.FC<Props> = ({ settings, onUpdate, onClose }) 
             </div>
 
             {/* Joystick Tarafı */}
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between mb-4">
                 <span className="text-stone-300 text-sm font-bold">🕹️ Joystick Tarafı</span>
                 <div className="flex gap-2">
                     {(['left', 'right'] as const).map(side => (
@@ -95,6 +95,36 @@ export const SettingsPanel: React.FC<Props> = ({ settings, onUpdate, onClose }) 
                             {side === 'left' ? '⬅️ Sol' : 'Sağ ➡️'}
                         </button>
                     ))}
+                </div>
+            </div>
+
+            {/* Joystick Boyutu */}
+            <div className="mb-4">
+                <label className="block text-stone-300 text-sm font-bold mb-2">🕹️ Joystick Boyutu</label>
+                <input
+                    type="range"
+                    min="80" max="200" step="10"
+                    value={settings.joystickSize}
+                    onChange={(e) => onUpdate({ joystickSize: Number(e.target.value) })}
+                    className="w-full accent-blue-500 cursor-pointer"
+                />
+                <div className="flex justify-between text-stone-500 text-xs mt-1">
+                    <span>Küçük</span><span>Normal</span><span>Büyük</span>
+                </div>
+            </div>
+
+            {/* Joystick Yüksekliği */}
+            <div className="mb-6">
+                <label className="block text-stone-300 text-sm font-bold mb-2">↕️ Joystick Yüksekliği (Aşağıdan Mesafesi)</label>
+                <input
+                    type="range"
+                    min="10" max="150" step="10"
+                    value={settings.joystickOffset}
+                    onChange={(e) => onUpdate({ joystickOffset: Number(e.target.value) })}
+                    className="w-full accent-blue-500 cursor-pointer"
+                />
+                <div className="flex justify-between text-stone-500 text-xs mt-1">
+                    <span>Aşağıda</span><span>Yukarıda</span>
                 </div>
             </div>
 

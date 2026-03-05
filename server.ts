@@ -33,6 +33,7 @@ import {
   UPGRADE_DEFS,
   BURN_TICKS,
   BURNED_FOOD,
+  HOLDING_STATION_POSITIONS,
 } from "./shared/types";
 
 // ─── Server-Only Sabitler ────────────────────────────────────────────────────
@@ -49,6 +50,7 @@ function mkCook(): CookStation { return { input: null, timer: 0, output: null };
 function mkRoom(): GameState {
   return {
     players: {}, customers: [], waitList: [],
+    holdingStations: HOLDING_STATION_POSITIONS.map(p => ({ id: p.id, item: null })),
     score: 0, stock: { '🫓': 10, '🥩': 10, '🥬': 10 },
     marketName: MARKET_NAME, dayPhase: 'prep', dayTimer: DAY_TICKS,
     upgrades: { patience: 0, earnings: 0, stockMax: 0 }, day: 1,
@@ -142,6 +144,27 @@ async function startServer() {
         }
         p.holding = null;
         return;
+      }
+
+      // Bekletme İstasyonları (Prep Counters / Plates)
+      for (const plate of gs.holdingStations) {
+        const def = HOLDING_STATION_POSITIONS.find(pos => pos.id === plate.id);
+        if (def && Math.hypot(px - def.x, py - def.y) < INTERACT_R) {
+          // Eli boş ve tabak doluysa -> Al
+          if (!p.holding && plate.item) {
+            p.holding = plate.item;
+            plate.item = null;
+            socket.emit("sound", "pickup");
+            return;
+          }
+          // Eli DOLU ve tabak BOŞSA -> SADECE BİTMİŞ YEMEKLERİ KOYABİLİR
+          if (p.holding && !plate.item && DISH_ITEMS.includes(p.holding as any)) {
+            plate.item = p.holding;
+            p.holding = null;
+            socket.emit("sound", "pickup"); // Tabak sesi (veya yeni ses)
+            return;
+          }
+        }
       }
 
       // Pişirme istasyonları
