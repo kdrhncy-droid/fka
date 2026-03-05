@@ -69,10 +69,10 @@ export const BURNED_FOOD = '⬛';   // Çöpe atılacak yanan yemek
 
 // ─── Bekletme İstasyonları (Prep Counters / Plates) ──────────────────────────
 export const HOLDING_STATION_POSITIONS = [
-    { id: 'plate0', x: 250, y: 170, radius: 45 },
-    { id: 'plate1', x: 340, y: 170, radius: 45 },
-    { id: 'plate2', x: 430, y: 170, radius: 45 },
-    { id: 'plate3', x: 520, y: 170, radius: 45 },
+    { id: 'plate0', x: 920, y: 200, radius: 35 },
+    { id: 'plate1', x: 980, y: 200, radius: 35 },
+    { id: 'plate2', x: 1040, y: 200, radius: 35 },
+    { id: 'plate3', x: 1100, y: 200, radius: 35 },
 ];
 
 // ─── Yatay Duvar & Kapılar (mutfak↔salon) ────────────────────────────────────
