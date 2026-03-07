@@ -216,16 +216,7 @@ export function useGameLoop({
           ny = wasAbove ? WALL_Y1 - 1 : WALL_Y2 + 1;
         }
 
-        // Client-side dikey duvar çarpışması (mutfak içi lavabo bölümü)
-        if (ny < WALL_Y1) {
-          const wasLeft = lp.x < UTIL_WALL_X1;
-          const wasRight = lp.x > UTIL_WALL_X2;
-          const crossingWall =
-            (wasLeft && nx >= UTIL_WALL_X1) || (wasRight && nx <= UTIL_WALL_X2);
-          if (crossingWall && !isInUtilDoor(ny)) {
-            nx = wasLeft ? UTIL_WALL_X1 - 1 : UTIL_WALL_X2 + 1;
-          }
-        }
+        // Dikey duvar kontrolü kaldırıldı - lavabo alanı artık açık
 
         lp.x = nx;
         lp.y = ny;

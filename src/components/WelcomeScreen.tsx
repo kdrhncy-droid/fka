@@ -3,6 +3,7 @@ import { MARKET_NAME } from '../constants';
 
 interface WelcomeScreenProps {
     onPlay: () => void;
+    onQuickStart: (playerName: string) => void; // Hızlı başlama
     onSettings: () => void;
 }
 
@@ -12,13 +13,18 @@ const serviceCards = [
     { title: 'Night', text: 'Upgrade al, yarina plan yap.' },
 ];
 
-export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onPlay, onSettings }) => (
-    <div className="relative min-h-dvh overflow-x-hidden overflow-y-auto bg-[radial-gradient(circle_at_top,#fef3c7_0%,#fed7aa_28%,#7c2d12_70%,#1c1917_100%)] safe-top safe-bottom">
+export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onPlay, onQuickStart, onSettings }) => {
+    const [quickName, setQuickName] = React.useState('');
+    const [showQuickStart, setShowQuickStart] = React.useState(false);
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
+    return (
+    <div className="relative min-h-dvh overflow-x-hidden overflow-y-auto bg-[radial-gradient(circle_at_top,#fef3c7_0%,#fed7aa_28%,#7c2d12_70%,#1c1917_100%)] safe-top safe-bottom touch-pan-y">
         <div className="absolute inset-0 opacity-20 [background-image:linear-gradient(to_right,transparent_0,transparent_47px,rgba(255,255,255,0.14)_48px),linear-gradient(to_bottom,transparent_0,transparent_47px,rgba(255,255,255,0.14)_48px)] [background-size:48px_48px]" />
         <div className="absolute inset-x-0 top-0 h-40 bg-[linear-gradient(180deg,rgba(255,251,235,0.85),rgba(255,251,235,0))]" />
 
-        <div className="relative mx-auto flex min-h-dvh w-full max-w-7xl flex-col justify-center gap-8 px-4 py-6 md:px-8 lg:flex-row lg:items-stretch lg:gap-10 lg:px-12">
-            <section className="flex w-full flex-col justify-between rounded-[32px] border border-white/30 bg-stone-950/72 p-6 text-stone-100 shadow-[0_24px_80px_rgba(0,0,0,0.35)] backdrop-blur md:p-8 lg:max-w-xl">
+        <div className="relative mx-auto flex min-h-dvh w-full max-w-7xl flex-col gap-6 px-4 py-6 md:px-8 lg:flex-row lg:items-stretch lg:gap-10 lg:px-12 lg:justify-center">
+            <section className="flex w-full flex-col justify-between rounded-[32px] border border-white/30 bg-stone-950/72 p-6 text-stone-100 shadow-[0_24px_80px_rgba(0,0,0,0.35)] backdrop-blur md:p-8 lg:max-w-xl lg:min-h-0">
                 <div className="space-y-5">
                     <div className="inline-flex w-fit items-center rounded-full border border-amber-300/40 bg-amber-200/12 px-3 py-1 text-[11px] font-black uppercase tracking-[0.24em] text-amber-100">
                         Yerel co-op mutfak
@@ -26,7 +32,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onPlay, onSettings
 
                     <div className="space-y-3">
                         <p className="text-sm font-semibold uppercase tracking-[0.28em] text-stone-300">Ana menü</p>
-                        <h1 className="max-w-md text-4xl font-black uppercase leading-none text-amber-50 md:text-6xl">
+                        <h1 className="max-w-md text-3xl font-black uppercase leading-none text-amber-50 sm:text-4xl md:text-6xl">
                             {MARKET_NAME}
                         </h1>
                         <p className="max-w-lg text-sm leading-6 text-stone-300 md:text-base">
@@ -45,19 +51,61 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onPlay, onSettings
                     </div>
                 </div>
 
-                <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                    <button
-                        onClick={onPlay}
-                        className="flex-1 rounded-2xl bg-[linear-gradient(135deg,#f59e0b,#ea580c)] px-6 py-4 text-base font-black uppercase tracking-[0.16em] text-stone-950 transition-transform hover:scale-[1.01] active:scale-[0.99]"
-                    >
-                        Oyuna gir
-                    </button>
-                    <button
-                        onClick={onSettings}
-                        className="rounded-2xl border border-white/18 bg-white/8 px-6 py-4 text-base font-black uppercase tracking-[0.16em] text-stone-100 transition-colors hover:bg-white/14"
-                    >
-                        Ayarlar
-                    </button>
+                <div className="mt-8 space-y-3">
+                    {/* Mobil için hızlı başlama */}
+                    {isMobile && !showQuickStart && (
+                        <button
+                            onClick={() => setShowQuickStart(true)}
+                            className="w-full rounded-2xl bg-[linear-gradient(135deg,#16a34a,#15803d)] px-6 py-4 text-base font-black uppercase tracking-[0.16em] text-white transition-transform hover:scale-[1.01] active:scale-[0.99]"
+                        >
+                            ⚡ Hızlı Başla
+                        </button>
+                    )}
+
+                    {/* Hızlı başlama formu */}
+                    {isMobile && showQuickStart && (
+                        <div className="space-y-3 rounded-2xl border border-green-500/30 bg-green-500/10 p-4">
+                            <input
+                                type="text"
+                                value={quickName}
+                                onChange={(e) => setQuickName(e.target.value)}
+                                placeholder="Oyuncu adın (ör: Chef1)"
+                                maxLength={12}
+                                className="w-full rounded-xl border border-green-500/30 bg-stone-900 px-4 py-3 text-base font-semibold text-stone-100 outline-none transition-colors placeholder:text-stone-500 focus:border-green-400"
+                            />
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => quickName.trim() && onQuickStart(quickName.trim())}
+                                    disabled={!quickName.trim()}
+                                    className="flex-1 rounded-xl bg-green-600 px-4 py-3 text-sm font-black uppercase tracking-[0.14em] text-white transition-colors hover:bg-green-500 disabled:bg-stone-700 disabled:text-stone-500"
+                                >
+                                    Başla
+                                </button>
+                                <button
+                                    onClick={() => setShowQuickStart(false)}
+                                    className="rounded-xl border border-stone-600 bg-stone-800 px-4 py-3 text-sm font-black uppercase tracking-[0.14em] text-stone-300 transition-colors hover:bg-stone-700"
+                                >
+                                    İptal
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Normal butonlar */}
+                    <div className="flex flex-col gap-3 sm:flex-row">
+                        <button
+                            onClick={onPlay}
+                            className="flex-1 rounded-2xl bg-[linear-gradient(135deg,#f59e0b,#ea580c)] px-6 py-4 text-base font-black uppercase tracking-[0.16em] text-stone-950 transition-transform hover:scale-[1.01] active:scale-[0.99]"
+                        >
+                            {isMobile ? 'Karakter Seç' : 'Oyuna gir'}
+                        </button>
+                        <button
+                            onClick={onSettings}
+                            className="rounded-2xl border border-white/18 bg-white/8 px-6 py-4 text-base font-black uppercase tracking-[0.16em] text-stone-100 transition-colors hover:bg-white/14"
+                        >
+                            Ayarlar
+                        </button>
+                    </div>
                 </div>
             </section>
 
@@ -142,4 +190,5 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onPlay, onSettings
             </section>
         </div>
     </div>
-);
+    );
+};

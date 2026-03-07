@@ -138,12 +138,7 @@ async function startServer() {
       const wasAbove = p.y < WALL_Y1, wasBelow = p.y > WALL_Y2;
       if (((wasAbove && ny >= WALL_Y1) || (wasBelow && ny <= WALL_Y2)) && !isInDoor(nx))
         ny = wasAbove ? WALL_Y1 - 1 : WALL_Y2 + 1;
-      // Dikey duvar (mutfak↔lavabo) — sadece mutfak alanında (y < WALL_Y1)
-      if (ny < WALL_Y1) {
-        const wasLeft = p.x < UTIL_WALL_X1, wasRight = p.x > UTIL_WALL_X2;
-        if (((wasLeft && nx >= UTIL_WALL_X1) || (wasRight && nx <= UTIL_WALL_X2)) && !isInUtilDoor(ny))
-          nx = wasLeft ? UTIL_WALL_X1 - 1 : UTIL_WALL_X2 + 1;
-      }
+      // Dikey duvar kontrolü kaldırıldı - lavabo alanı artık açık
       p.x = nx; p.y = ny;
     });
 

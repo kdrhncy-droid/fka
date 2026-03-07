@@ -94,10 +94,10 @@ export const BURNED_FOOD = '⬛';   // Çöpe atılacak yanan yemek
 
 // ─── Bekletme İstasyonları (Prep Counters / Plates) ──────────────────────────
 export const HOLDING_STATION_POSITIONS = [
-    { id: 'plate0', x: 800, y: 120, radius: 35 },
-    { id: 'plate1', x: 860, y: 120, radius: 35 },
-    { id: 'plate2', x: 920, y: 120, radius: 35 },
-    { id: 'plate3', x: 980, y: 120, radius: 35 },
+    { id: 'plate0', x: 600, y: 65, radius: 35 },
+    { id: 'plate1', x: 660, y: 65, radius: 35 },
+    { id: 'plate2', x: 720, y: 65, radius: 35 },
+    { id: 'plate3', x: 780, y: 65, radius: 35 },
 ];
 
 // ─── Yatay Duvar & Kapılar (mutfak↔salon) ────────────────────────────────────
@@ -111,11 +111,12 @@ export function isInDoor(x: number): boolean {
 }
 
 // ─── Dikey Duvar (mutfak↔lavabo/çöp alanı) ──────────────────────────────────
-export const UTIL_WALL_X1 = 830;
-export const UTIL_WALL_X2 = 842;
-export const UTIL_DOOR_RANGE: [number, number] = [80, 190]; // kapı açıklığı (y)
+// Lavabo alanı artık açık - duvar kaldırıldı
+export const UTIL_WALL_X1 = 0; // Devre dışı
+export const UTIL_WALL_X2 = 0; // Devre dışı
+export const UTIL_DOOR_RANGE: [number, number] = [0, 1000]; // Tamamen açık
 export function isInUtilDoor(y: number): boolean {
-    return y >= UTIL_DOOR_RANGE[0] && y <= UTIL_DOOR_RANGE[1];
+    return true; // Her zaman geçilebilir
 }
 
 // ─── Malzeme İstasyonları ────────────────────────────────────────────────────

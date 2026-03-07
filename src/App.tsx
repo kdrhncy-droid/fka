@@ -28,6 +28,25 @@ export default function App() {
   const [playerColor, setPlayerColor] = useState(CHARACTER_TYPES[0].bodyColor);
   const [playerHat, setPlayerHat] = useState('');
 
+  const handleQuickStart = (name: string) => {
+    if (!socket) return;
+    if (audioCtxRef.current?.state === 'suspended') audioCtxRef.current.resume();
+
+    // Varsayılan değerlerle hızlı başlama
+    const defaultChar = CHARACTER_TYPES[0];
+    socket.emit('join', {
+      name: name,
+      color: defaultChar.bodyColor,
+      hat: defaultChar.hat,
+      charType: 0,
+      roomId: 'terramarket',
+      marketName: MARKET_NAME,
+    });
+
+    isJoinedRef.current = true;
+    setIsJoined(true);
+  };
+
   const handleJoin = (e: React.FormEvent) => {
     e.preventDefault();
     if (!playerName.trim() || !socket) return;
@@ -52,6 +71,7 @@ export default function App() {
         {entryScreen === 'menu' ? (
           <WelcomeScreen
             onPlay={() => setEntryScreen('lobby')}
+            onQuickStart={handleQuickStart}
             onSettings={() => setShowSettings(true)}
           />
         ) : (

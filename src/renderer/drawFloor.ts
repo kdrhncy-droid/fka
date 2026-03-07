@@ -195,18 +195,8 @@ export function drawFloor(ctx: CanvasRenderingContext2D) {
     ctx.fillRect(x1, WALL_Y1, w, 3);
   });
 
-  // ── Dikey Duvar (mutfak ↔ lavabo bölümü) ────────────────────────────
-  const uwx = UTIL_WALL_X1;
-  const uww = UTIL_WALL_X2 - UTIL_WALL_X1;
-  const [doorTop, doorBot] = UTIL_DOOR_RANGE;
-  ctx.fillStyle = "#6b5240";
-  ctx.fillRect(uwx, 0, uww, doorTop);
-  ctx.fillRect(uwx, doorBot, uww, WALL_Y1 - doorBot);
-  ctx.fillStyle = "#fde68a";
-  ctx.fillRect(uwx, doorTop, uww, doorBot - doorTop);
-  ctx.fillStyle = "#d97706";
-  ctx.fillRect(uwx, doorTop, 3, doorBot - doorTop);
-  ctx.fillRect(uwx + uww - 3, doorTop, 3, doorBot - doorTop);
+  // ── Dikey Duvar Kaldırıldı (lavabo alanı artık açık) ────────────────────────
+  // Lavabo ve çöp alanına serbest erişim
 
   // ── Giriş kapısı (alt) ────────────────────────────────────────────────────
   ctx.fillStyle = "#78350f";
