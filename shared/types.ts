@@ -94,10 +94,10 @@ export const BURNED_FOOD = '⬛';   // Çöpe atılacak yanan yemek
 
 // ─── Bekletme İstasyonları (Prep Counters / Plates) ──────────────────────────
 export const HOLDING_STATION_POSITIONS = [
-    { id: 'plate0', x: 600, y: 120, radius: 35 },
-    { id: 'plate1', x: 660, y: 120, radius: 35 },
-    { id: 'plate2', x: 720, y: 120, radius: 35 },
-    { id: 'plate3', x: 780, y: 120, radius: 35 },
+    { id: 'plate0', x: 800, y: 120, radius: 35 },
+    { id: 'plate1', x: 860, y: 120, radius: 35 },
+    { id: 'plate2', x: 920, y: 120, radius: 35 },
+    { id: 'plate3', x: 980, y: 120, radius: 35 },
 ];
 
 // ─── Yatay Duvar & Kapılar (mutfak↔salon) ────────────────────────────────────
@@ -120,9 +120,9 @@ export function isInUtilDoor(y: number): boolean {
 
 // ─── Malzeme İstasyonları ────────────────────────────────────────────────────
 export const INGREDIENTS = [
-    { key: '🫓' as StockKey, pos: { x: 120, y: 65 }, label: 'Hamur', color: '#fde68a' },
-    { key: '🥩' as StockKey, pos: { x: 240, y: 65 }, label: 'Et', color: '#fca5a5' },
-    { key: '🥬' as StockKey, pos: { x: 360, y: 65 }, label: 'Sebze', color: '#bbf7d0' },
+    { key: '🫓' as StockKey, pos: { x: 150, y: 65 }, label: 'Hamur', color: '#fde68a' },
+    { key: '🥩' as StockKey, pos: { x: 300, y: 65 }, label: 'Et', color: '#fca5a5' },
+    { key: '🥬' as StockKey, pos: { x: 450, y: 65 }, label: 'Sebze', color: '#bbf7d0' },
 ];
 
 // ─── Universal Fırın Sistemi ─────────────────────────────────────────────────
@@ -133,21 +133,21 @@ export const RECIPE_DEFS = {
     '🥬': { output: '🥗', time: 30, label: '🥗 Salata' },
 } as const;
 
-// Başlangıç fırın pozisyonları (sadece 1 fırın)
+// Başlangıç fırın pozisyonları (sadece 1 fırın, malzemelerden farklı X)
 export const INITIAL_OVEN_POSITIONS = [
-    { x: 120, y: 170 },
+    { x: 200, y: 170 },
 ];
 
-// Upgrade ile satın alınabilir ek fırın pozisyonları (2., 3., 4. fırın)
+// Upgrade ile satın alınabilir ek fırın pozisyonları (malzemelerle çakışmayan X)
 export const ADDITIONAL_OVEN_POSITIONS = [
-    { x: 240, y: 170 },
-    { x: 360, y: 170 },
-    { x: 480, y: 170 },
+    { x: 350, y: 170 },
+    { x: 500, y: 170 },
+    { x: 650, y: 170 },
 ];
 
 // ─── Çöp Kutusu & Lavabo ───────────────────────────────────────────────────
-export const TRASH_STATION = { x: 900, y: 90 };  // Sağ taraf
-export const SINK_STATION = { x: 1000, y: 90 }; // Sağ köşe
+export const TRASH_STATION = { x: 1050, y: 90 };  // Sağ taraf
+export const SINK_STATION = { x: 1180, y: 90 }; // Sağ köşe (daha uzak)
 
 // ─── Koltuklar ───────────────────────────────────────────────────────────────
 export const SEAT_SLOTS: { x: number; y: number }[] = [

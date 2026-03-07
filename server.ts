@@ -301,15 +301,29 @@ async function startServer() {
       const currentOvenCount = gs.cookStations.length;
       const maxOvens = INITIAL_OVEN_POSITIONS.length + ADDITIONAL_OVEN_POSITIONS.length;
       
+      // Max fırın kontrolü
       if (currentOvenCount >= maxOvens) {
         socket.emit("sound", "fail");
         return;
       }
       
       const ovenIndex = currentOvenCount - INITIAL_OVEN_POSITIONS.length;
+      
+      // Array bounds kontrolü
+      if (ovenIndex < 0 || ovenIndex >= OVEN_UPGRADE_COSTS.length) {
+        socket.emit("sound", "fail");
+        return;
+      }
+      
       const cost = OVEN_UPGRADE_COSTS[ovenIndex];
       
       if (gs.score < cost) {
+        socket.emit("sound", "fail");
+        return;
+      }
+      
+      // Pozisyon kontrolü
+      if (ovenIndex >= ADDITIONAL_OVEN_POSITIONS.length) {
         socket.emit("sound", "fail");
         return;
       }
