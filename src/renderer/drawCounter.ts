@@ -19,38 +19,42 @@ export function drawCounters(
         ctx.translate(x, y);
 
         // ═══ BLOK GÖVDE (Plate Up tarzı kare blok) ═══
-        
-        // Blok gölgesi
-        ctx.fillStyle = 'rgba(0,0,0,0.3)';
-        ctx.fillRect(-width / 2 + 2, height / 2 + 2, width, 6);
 
-        // Blok ana gövde (koyu gri metal)
+        // Blok gölgesi (yumuşak)
+        ctx.fillStyle = 'rgba(0,0,0,0.15)';
+        ctx.fillRect(-width / 2 + 2, height / 2 + 2, width, 4);
+
+        // Blok ana gövde (sıcak ahşap — duvarla uyumlu)
         const blockGradient = ctx.createLinearGradient(0, -height / 2, 0, height / 2);
-        blockGradient.addColorStop(0, '#52525b');
-        blockGradient.addColorStop(0.5, '#3f3f46');
-        blockGradient.addColorStop(1, '#27272a');
+        blockGradient.addColorStop(0, '#c9a06c');
+        blockGradient.addColorStop(0.5, '#b8864e');
+        blockGradient.addColorStop(1, '#a07038');
         ctx.fillStyle = blockGradient;
-        ctx.fillRect(-width / 2, -height / 2, width, height);
+        ctx.beginPath();
+        ctx.roundRect(-width / 2, -height / 2, width, height, 4);
+        ctx.fill();
 
-        // Blok kenarı (metal çerçeve)
-        ctx.strokeStyle = '#71717a';
-        ctx.lineWidth = 3;
-        ctx.strokeRect(-width / 2, -height / 2, width, height);
+        // Blok kenarı (ahşap çerçeve)
+        ctx.strokeStyle = '#8b6914';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.roundRect(-width / 2, -height / 2, width, height, 4);
+        ctx.stroke();
 
-        // İç kenar (detay)
-        ctx.strokeStyle = '#52525b';
+        // İç kenar (detay — hafif çizgi)
+        ctx.strokeStyle = 'rgba(139,105,20,0.3)';
         ctx.lineWidth = 1;
-        ctx.strokeRect(-width / 2 + 2, -height / 2 + 2, width - 4, height - 4);
+        ctx.strokeRect(-width / 2 + 3, -height / 2 + 3, width - 6, height - 6);
 
-        // Üst yüzey parlama (metal parlaması)
-        const shineGradient = ctx.createLinearGradient(0, -height / 2, 0, -height / 2 + 8);
-        shineGradient.addColorStop(0, 'rgba(255,255,255,0.2)');
+        // Üst yüzey parlama (ahşap parlaması)
+        const shineGradient = ctx.createLinearGradient(0, -height / 2, 0, -height / 2 + 10);
+        shineGradient.addColorStop(0, 'rgba(255,255,255,0.25)');
         shineGradient.addColorStop(1, 'rgba(255,255,255,0)');
         ctx.fillStyle = shineGradient;
-        ctx.fillRect(-width / 2 + 3, -height / 2 + 3, width - 6, 8);
+        ctx.fillRect(-width / 2 + 3, -height / 2 + 3, width - 6, 10);
 
         // ═══ BLOK ÜZERİNDEKİ ITEM (Sadece 1 tane) ═══
-        
+
         if (item) {
             // Item gölgesi
             ctx.fillStyle = 'rgba(0,0,0,0.25)';
@@ -98,7 +102,7 @@ export function drawCounters(
                 }
             } else {
                 // ─── YEMEKLİ TABAK ÇİZİMİ ───
-                
+
                 // Önce tabak
                 const plateGradient = ctx.createRadialGradient(0, -2, 2, 0, 0, 14);
                 plateGradient.addColorStop(0, '#ffffff');
@@ -124,11 +128,11 @@ export function drawCounters(
                 ctx.font = '18px Arial';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                
+
                 // Emoji gölgesi
                 ctx.fillStyle = 'rgba(0,0,0,0.2)';
                 ctx.fillText(icon, 1, -7);
-                
+
                 // Emoji
                 ctx.fillText(icon, 0, -8);
             }
