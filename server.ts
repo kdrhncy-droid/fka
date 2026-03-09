@@ -166,6 +166,13 @@ async function startServer() {
       );
     });
 
+    // 👕 Kostüm Değiştir
+    socket.on("changeCosmetic", (charType: number) => {
+      if (!roomId || !rooms[roomId]?.players[socket.id]) return;
+      if (typeof charType !== 'number' || charType < 0 || charType > 7) return;
+      rooms[roomId].players[socket.id].charType = charType;
+    });
+
     socket.on("move", ({ x, y }: { x: number; y: number }) => {
       if (!roomId || !rooms[roomId]?.players[socket.id]) return;
       const p = rooms[roomId].players[socket.id];
@@ -774,13 +781,18 @@ async function startServer() {
         // Spawn — sadece gündüz + kapanışa yakın durur
         if (gs.dayPhase === 'day' && gs.dayTimer > CLOSING_THRESHOLD) {
           // Günden güne artan zorluk (ilk günlerde az, ilerledikçe artan baz oran)
+          // Günden güne artan zorluk (ilk günlerde az, ilerledikçe artan baz oran)
           const baseRate = 0.001 + Math.min(gs.day * 0.0005, 0.005);
-
-          // Gün içindeki ilerlemeye göre hafif artış (öğle yoğunluğu)
           const dayProgress = 1 - gs.dayTimer / DAY_TICKS;
-          const currentRate = baseRate + (dayProgress * 0.001);
 
-          if (Math.random() < currentRate && gs.customers.length + gs.waitList.length < 10) {
+          // 👥 OYUNCU SAYISINA GÖRE ZORLUK ÖLÇEKLENDİRME
+          const playerCount = Object.keys(gs.players).length || 1;
+          const spawnMultiplier = 1 + (playerCount - 1) * 0.6; // 1: 1.0, 2: 1.6, 3: 2.2, 4: 2.8
+          const queueLimit = 10 + (playerCount - 1) * 3;     // 1: 10, 2: 13, 3: 16, 4: 19
+
+          const currentRate = (baseRate + (dayProgress * 0.001)) * spawnMultiplier;
+
+          if (Math.random() < currentRate && gs.customers.length + gs.waitList.length < queueLimit) {
             const personalities: Personality[] = ['polite', 'rude', 'recep'];
             const pers = personalities[Math.floor(Math.random() * personalities.length)];
             let dialog: string | undefined;
@@ -921,7 +933,14 @@ async function startServer() {
 
             // BUG-6: sadece gündüz patience azalır (gece/prep'te dondur)
             if (gs.dayPhase === 'day') {
-              c.patience--;
+              const playerCount = Object.keys(gs.players).length || 1;
+              const patienceDrain = 1 + (playerCount - 1) * 0.25; // 1: 1.0, 2: 1.25, 3: 1.5, 4: 1.75
+
+              // Şanslı azaltma (tam sayı kalması için)
+              if (Math.random() < patienceDrain) {
+                c.patience--;
+              }
+
               if (c.patience <= 0) {
                 gs.score -= 10;
                 gs.lives -= 1;

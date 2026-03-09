@@ -6,6 +6,7 @@ import { UpgradeShop } from './UpgradeShop';
 import { SettingsPanel } from './SettingsPanel';
 import { SettingsModal } from './SettingsModal';
 import { PatchNotesModal } from './PatchNotesModal';
+import { CosmeticsModal } from './CosmeticsModal';
 import { MARKET_NAME } from '../constants';
 import { useGameLoop } from '../hooks/useGameLoop';
 import { Settings } from '../hooks/useSettings';
@@ -52,6 +53,7 @@ export const GameScreen: React.FC<Props> = ({
     const [showVoiceSettings, setShowVoiceSettings] = useState(false);
     const [globalVoiceVol, setGlobalVoiceVol] = useState(1.0);
     const [showPatchNotes, setShowPatchNotes] = useState(false);
+    const [showCosmetics, setShowCosmetics] = useState(false);
     const audioElementsRef = useRef<Record<string, HTMLAudioElement>>({});
 
     const { isMuted, toggleMute, audioStreams } = useVoiceChat({
@@ -175,8 +177,11 @@ export const GameScreen: React.FC<Props> = ({
                         <div className="text-base font-black leading-none">${score}</div>
                     </div>
                     <button onClick={() => setShowVoiceSettings(true)}
-                        className={`w - 8 h - 8 rounded - lg flex items - center justify - center text - sm transition - colors ${voiceActive && !isMuted ? 'bg-green-600 hover:bg-green-500' : 'bg-stone-700 hover:bg-stone-600 text-stone-300'} `}
+                        className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm transition-colors ${voiceActive && !isMuted ? 'bg-green-600 hover:bg-green-500' : 'bg-stone-700 hover:bg-stone-600 text-stone-300'}`}
                     >🎙️</button>
+                    <button onClick={() => setShowCosmetics(true)}
+                        className="w-8 h-8 bg-stone-700 hover:bg-sky-700 text-emerald-400 rounded-lg flex items-center justify-center text-sm shadow-[0_0_10px_rgba(52,211,153,0.2)] transition-colors"
+                    >👕</button>
                     <button onClick={() => setShowPatchNotes(true)}
                         className="w-8 h-8 bg-stone-700 hover:bg-sky-700 text-stone-300 rounded-lg flex items-center justify-center text-sm"
                     >ℹ️</button>
@@ -324,6 +329,14 @@ export const GameScreen: React.FC<Props> = ({
 
             {showPatchNotes && (
                 <PatchNotesModal onClose={() => setShowPatchNotes(false)} />
+            )}
+
+            {showCosmetics && (
+                <CosmeticsModal
+                    onClose={() => setShowCosmetics(false)}
+                    socket={socket}
+                    myCharType={gameStateRef.current?.players?.[myId]?.charType}
+                />
             )}
 
             {showVoiceSettings && (
