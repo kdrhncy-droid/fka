@@ -154,9 +154,11 @@ export const GameScreen: React.FC<Props> = ({
                     <span className="text-[10px] font-bold flex items-center gap-2" style={{ color: dayPhase === 'prep' ? '#a78bfa' : dayPhase === 'day' ? '#fbbf24' : '#818cf8' }}>
                         <span>{dayPhase === 'prep' ? `🔧 Hazırlık — Gün ${day}` : dayPhase === 'day' ? `☀️ Gün ${day}` : `🌙 Gece ${day}`}
                             {queueLen > 0 && dayPhase === 'day' ? ` · ⏳${queueLen}` : ''}</span>
-                        <span className="flex gap-0.5">
+                        <span className="flex gap-0.5 text-sm drop-shadow-md">
                             {Array.from({ length: 3 }).map((_, i) => (
-                                <span key={i} className={i < lives ? 'text-red-500' : 'text-stone-700'}>❤️</span>
+                                <span key={i} className="transition-transform duration-300">
+                                    {i < lives ? '❤️' : '🖤'}
+                                </span>
                             ))}
                         </span>
                     </span>
