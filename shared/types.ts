@@ -55,8 +55,28 @@ export interface CookStation {
 }
 
 export interface HoldingStation {
-    id: string; // 'plate0', 'plate1', vb.
-    item: string | null;
+    id: string; // 'plate0', 'plate1', 'counter0', vb.
+    items: string[]; // Sadece 1 item tutar (Plate Up tarzı)
+    type: 'plate' | 'counter'; // plate: tabak rafı, counter: servis bloğu
+    maxItems: number; // Maksimum item sayısı (counter için 1, plate için 1)
+}
+
+// ─── Tepsi Fonksiyonları ───────────────────────────────────────────────────
+export const TRAY_PREFIX = 'TRAY:';
+export const MAX_TRAY_CAPACITY = 4;
+
+export function isTray(item: Item): boolean {
+    return typeof item === 'string' && item.startsWith(TRAY_PREFIX);
+}
+
+export function getTrayItems(item: Item): string[] {
+    if (!item || !item.startsWith(TRAY_PREFIX)) return [];
+    const content = item.substring(TRAY_PREFIX.length);
+    return content ? content.split(',') : [];
+}
+
+export function createTray(items: string[]): string {
+    return TRAY_PREFIX + items.join(',');
 }
 
 export interface DirtyTable {
@@ -96,32 +116,48 @@ export const BURNED_FOOD = '⬛';   // Çöpe atılacak yanan yemek
 
 // ─── Bekletme İstasyonları (Prep Counters / Plates) ──────────────────────────
 export const HOLDING_STATION_POSITIONS = [
-    { id: 'plate0', x: 600, y: 65, radius: 35 },
-    { id: 'plate1', x: 660, y: 65, radius: 35 },
-    { id: 'plate2', x: 720, y: 65, radius: 35 },
-    { id: 'plate3', x: 780, y: 65, radius: 35 },
+    { id: 'plate0', x: 600, y: 65, radius: 35, type: 'plate' as const },
+    { id: 'plate1', x: 660, y: 65, radius: 35, type: 'plate' as const },
+    { id: 'plate2', x: 720, y: 65, radius: 35, type: 'plate' as const },
+    { id: 'plate3', x: 780, y: 65, radius: 35, type: 'plate' as const },
+];
+
+// ─── Servis Masaları (Pass/Counter - Duvar üzerinde) ─────────────────────────
+// Plate Up tarzı - Her blok 1 item tutar
+export const COUNTER_POSITIONS = [
+    // Sol kapı yanları
+    { id: 'counter0', x: 180, y: 245, width: 40, height: 40, type: 'counter' as const },
+    { id: 'counter1', x: 220, y: 245, width: 40, height: 40, type: 'counter' as const },
+    { id: 'counter2', x: 440, y: 245, width: 40, height: 40, type: 'counter' as const },
+    { id: 'counter3', x: 480, y: 245, width: 40, height: 40, type: 'counter' as const },
+    
+    // Ortada (2 kapı arası)
+    { id: 'counter4', x: 580, y: 245, width: 40, height: 40, type: 'counter' as const },
+    { id: 'counter5', x: 620, y: 245, width: 40, height: 40, type: 'counter' as const },
+    { id: 'counter6', x: 660, y: 245, width: 40, height: 40, type: 'counter' as const },
+    { id: 'counter7', x: 700, y: 245, width: 40, height: 40, type: 'counter' as const },
+    
+    // Sağ kapı yanları
+    { id: 'counter8', x: 800, y: 245, width: 40, height: 40, type: 'counter' as const },
+    { id: 'counter9', x: 840, y: 245, width: 40, height: 40, type: 'counter' as const },
+    { id: 'counter10', x: 1020, y: 245, width: 40, height: 40, type: 'counter' as const },
+    { id: 'counter11', x: 1060, y: 245, width: 40, height: 40, type: 'counter' as const },
 ];
 
 // ─── Yatay Duvar & Kapılar (mutfak↔salon) ────────────────────────────────────
-export const WALL_Y1 = 230;
-export const WALL_Y2 = 248;
+export const WALL_Y1 = 225;
+export const WALL_Y2 = 265; // 40 piksel kalınlık (daha belirgin)
 export const DOOR_RANGES: [number, number][] = [
-    [170, 290], [430, 550], [730, 850], [990, 1110],
+    [280, 420],  // Sol kapı
+    [860, 1000], // Sağ kapı
 ];
 export function isInDoor(x: number): boolean {
     return DOOR_RANGES.some(([a, b]) => x >= a && x <= b);
 }
 
-// ─── Dikey Duvar (mutfak↔lavabo/çöp alanı) ──────────────────────────────────
-// Lavabo alanı artık açık - duvar kaldırıldı
-export const UTIL_WALL_X1 = 0; // Devre dışı
-export const UTIL_WALL_X2 = 0; // Devre dışı
-export const UTIL_DOOR_RANGE: [number, number] = [0, 1000]; // Tamamen açık
-export function isInUtilDoor(y: number): boolean {
-    return true; // Her zaman geçilebilir
-}
+// ─── Tepsi ve Malzeme İstasyonları ──────────────────────────────────────────
+export const TRAY_STATION = { x: 80, y: 170 };
 
-// ─── Malzeme İstasyonları ────────────────────────────────────────────────────
 export const INGREDIENTS = [
     { key: '🫓' as StockKey, pos: { x: 150, y: 65 }, label: 'Hamur', color: '#fde68a' },
     { key: '🥩' as StockKey, pos: { x: 300, y: 65 }, label: 'Et', color: '#fca5a5' },
@@ -149,7 +185,7 @@ export const ADDITIONAL_OVEN_POSITIONS = [
 ];
 
 // ─── Çöp Kutusu, Kirli Sepeti & Lavabo ──────────────────────────────────────
-export const TRASH_STATION = { x: 1050, y: 90 };
+export const TRASH_STATION = { x: 1200, y: 190 }; // Mutfağın sağ alt köşesine alındı
 export const DIRTY_TRAY_POS = { x: 1115, y: 90 }; // Lavabonun solunda kirli sepeti
 export const SINK_STATION = { x: 1180, y: 90 };
 

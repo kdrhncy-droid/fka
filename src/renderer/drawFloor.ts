@@ -10,6 +10,7 @@ import {
   UTIL_WALL_X2,
   UTIL_DOOR_RANGE,
   HOLDING_STATION_POSITIONS,
+  COUNTER_POSITIONS,
 } from "../types/game";
 
 /** Restoran zemini: mutfak tezgahlar + salon ahşap + duvar + kapılar */
@@ -58,25 +59,6 @@ export function drawFloor(ctx: CanvasRenderingContext2D) {
   // ── Arka duvar (mutfak üstü) ───────────────────────────────────────────────
   ctx.fillStyle = "#a8a29e";
   ctx.fillRect(0, 0, GAME_WIDTH, 8);
-
-  // ── Dekoratif arka duvar kaplamasi (sağ panel + sol panel) ────────────────
-  // Sol mutfak paneli: Malzeme + ocak tezgahları
-  ctx.fillStyle = "#e7e5e4";
-  ctx.beginPath();
-  ctx.roundRect(10, 10, 805, 215, 12);
-  ctx.fill();
-  ctx.strokeStyle = "#c4b5a4";
-  ctx.lineWidth = 2;
-  ctx.stroke();
-
-  // Sağ mutfak paneli: Çöp, Lavabo, Tabaklar
-  ctx.fillStyle = "#e7e5e4";
-  ctx.beginPath();
-  ctx.roundRect(840, 10, 430, 215, 12);
-  ctx.fill();
-  ctx.strokeStyle = "#c4b5a4";
-  ctx.lineWidth = 2;
-  ctx.stroke();
 
   // ── Tezgah — malzeme rafları (üst sıra) ────────────────────────────────────
   INGREDIENTS.forEach((ing) => {
@@ -183,16 +165,36 @@ export function drawFloor(ctx: CanvasRenderingContext2D) {
   ctx.setLineDash([]);
 
   // ── Duvar ─────────────────────────────────────────────────────────────────
+  // Önce tüm duvarı çiz
   ctx.fillStyle = "#6b5240";
-  ctx.fillRect(0, WALL_Y1, GAME_WIDTH, 18);
+  ctx.fillRect(0, WALL_Y1, GAME_WIDTH, 40);
 
   // Kapılar (servis pencereleri)
   DOOR_RANGES.forEach(([x1, x2]) => {
     const w = x2 - x1;
     ctx.fillStyle = "#fde68a";
-    ctx.fillRect(x1, WALL_Y1, w, 18);
+    ctx.fillRect(x1, WALL_Y1, w, 40);
     ctx.fillStyle = "#d97706";
-    ctx.fillRect(x1, WALL_Y1, w, 3);
+    ctx.fillRect(x1, WALL_Y1, w, 5);
+  });
+
+  // ── Servis Blokları (Ahşap masa renginde) ────────────────────────────────
+  COUNTER_POSITIONS.forEach(counter => {
+    const { x, y, width, height } = counter;
+    
+    // Ahşap servis bloğu (masa ile aynı renk)
+    const blockGrad = ctx.createLinearGradient(x - width / 2, y - height / 2, x + width / 2, y + height / 2);
+    blockGrad.addColorStop(0, '#b8864e');
+    blockGrad.addColorStop(1, '#8b6914');
+    ctx.fillStyle = blockGrad;
+    ctx.beginPath();
+    ctx.roundRect(x - width / 2, y - height / 2, width, height, 4);
+    ctx.fill();
+    
+    // Kenar çizgisi
+    ctx.strokeStyle = '#7a5c12';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
   });
 
   // ── Dikey Duvar Kaldırıldı (lavabo alanı artık açık) ────────────────────────

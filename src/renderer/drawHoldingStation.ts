@@ -9,8 +9,9 @@ export function drawHoldingStation(
     y: number,
     station: HoldingStation | undefined
 ) {
-    const hasFood = !!(station && station.item && station.item !== CLEAN_PLATE);
-    const hasCleanPlate = station?.item === CLEAN_PLATE;
+    const firstItem = station?.items?.[0];
+    const hasFood = !!(firstItem && firstItem !== CLEAN_PLATE);
+    const hasCleanPlate = firstItem === CLEAN_PLATE;
 
     // ── Tabak Gölgesi ─────────────────────────────────────────────────────────
     ctx.fillStyle = 'rgba(0,0,0,0.08)';
@@ -61,7 +62,7 @@ export function drawHoldingStation(
         ctx.font = '24px Arial';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(station!.item!, x, y - 4);
+        ctx.fillText(firstItem!, x, y - 4);
         ctx.shadowBlur = 0;
     } else if (hasCleanPlate) {
         ctx.fillStyle = '#cbd5e1';

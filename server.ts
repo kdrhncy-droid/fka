@@ -8,11 +8,7 @@ import { MARKET_NAME } from "./src/constants";
 import {
   type StockKey,
   type UpgradeKey,
-  type Player,
-  type Customer,
-  type WaitingGuest,
   type CookStation,
-  type Upgrades,
   type Item,
   type GameState,
   GAME_WIDTH,
@@ -23,9 +19,6 @@ import {
   WALL_Y1,
   WALL_Y2,
   isInDoor,
-  UTIL_WALL_X1,
-  UTIL_WALL_X2,
-  isInUtilDoor,
   INGREDIENTS,
   RECIPE_DEFS,
   INITIAL_OVEN_POSITIONS,
@@ -42,7 +35,13 @@ import {
   DIRTY_PLATE,
   EAT_TICKS,
   HOLDING_STATION_POSITIONS,
+  COUNTER_POSITIONS,
   DIRTY_TRAY_POS,
+  TRAY_STATION,
+  isTray,
+  getTrayItems,
+  createTray,
+  MAX_TRAY_CAPACITY,
 } from "./shared/types";
 
 // ─── Server-Only Sabitler ────────────────────────────────────────────────────
@@ -65,9 +64,15 @@ function mkRoom(): GameState {
     mkCook(`oven${i + 1}`, pos.x, pos.y)
   );
 
+  // Tabak rafları ve servis bloklarını birleştir
+  const allHoldingStations = [
+    ...HOLDING_STATION_POSITIONS.map(p => ({ id: p.id, items: [CLEAN_PLATE], type: p.type, maxItems: 1 })),
+    ...COUNTER_POSITIONS.map(p => ({ id: p.id, items: [], type: p.type, maxItems: 1 })),
+  ];
+
   return {
     players: {}, customers: [], waitList: [],
-    holdingStations: HOLDING_STATION_POSITIONS.map(p => ({ id: p.id, item: CLEAN_PLATE })),
+    holdingStations: allHoldingStations,
     dirtyTables: [],
     score: 0, stock: { '🫓': 10, '🥩': 10, '🥬': 10 },
     marketName: MARKET_NAME, dayPhase: 'prep', dayTimer: DAY_TICKS,
@@ -136,10 +141,21 @@ async function startServer() {
       const p = rooms[roomId].players[socket.id];
       let nx = Math.max(20, Math.min(GAME_WIDTH - 20, x));
       let ny = Math.max(20, Math.min(GAME_HEIGHT - 20, y));
+      
       // Yatay duvar (mutfak↔salon)
       const wasAbove = p.y < WALL_Y1, wasBelow = p.y > WALL_Y2;
-      if (((wasAbove && ny >= WALL_Y1) || (wasBelow && ny <= WALL_Y2)) && !isInDoor(nx))
-        ny = wasAbove ? WALL_Y1 - 1 : WALL_Y2 + 1;
+      
+      // Duvardan geçmeye çalışıyor mu?
+      if ((wasAbove && ny >= WALL_Y1) || (wasBelow && ny <= WALL_Y2)) {
+        // Kapıda mı yoksa duvarda mı?
+        if (isInDoor(nx)) {
+          // Kapıda - geçebilir
+        } else {
+          // Duvarda - engellensin
+          ny = wasAbove ? WALL_Y1 - 1 : WALL_Y2 + 1;
+        }
+      }
+      
       // Dikey duvar kontrolü kaldırıldı - lavabo alanı artık açık
       p.x = nx; p.y = ny;
     });
@@ -154,8 +170,38 @@ async function startServer() {
       if (gs.dayPhase === "night") return;
       const { x: px, y: py } = p;
 
+      // Tepsi İstasyonu
+      if (Math.hypot(px - TRAY_STATION.x, py - TRAY_STATION.y) < INTERACT_R) {
+        if (!p.holding) {
+          p.holding = createTray([]);
+          socket.emit("sound", "pickup");
+          return;
+        } else if (isTray(p.holding) && getTrayItems(p.holding).length === 0) {
+          p.holding = null;
+          socket.emit("sound", "pickup");
+          return;
+        }
+      }
+
       // Çöp (Yanmış yemek atılırsa ceza kestir, tabaklar yok edilmesin)
       if (Math.hypot(px - TRASH_STATION.x, py - TRASH_STATION.y) < TRASH_INTERACT_R) {
+        if (!p.holding) return;
+
+        if (isTray(p.holding)) {
+          const items = getTrayItems(p.holding);
+          if (items.length > 0) {
+            const top = items[items.length - 1];
+            if (top === CLEAN_PLATE || top === DIRTY_PLATE) socket.emit("sound", "fail");
+            else {
+              if (top === BURNED_FOOD) gs.score = Math.max(0, gs.score - 2);
+              items.pop();
+              p.holding = createTray(items);
+              socket.emit("sound", "trash");
+            }
+          }
+          return;
+        }
+
         if (p.holding === CLEAN_PLATE || p.holding === DIRTY_PLATE) {
           socket.emit("sound", "fail");
           return;
@@ -185,6 +231,17 @@ async function startServer() {
           socket.emit("sound", "pickup");
           return;
         }
+        else if (isTray(p.holding)) {
+          // Tepsideki tüm kirli tabakları sepete dök
+          const items = getTrayItems(p.holding);
+          const dirtyCount = items.filter(i => i === DIRTY_PLATE).length;
+          if (dirtyCount > 0) {
+            gs.dirtyTrayCount += dirtyCount;
+            p.holding = createTray(items.filter(i => i !== DIRTY_PLATE));
+            socket.emit("sound", "success");
+            return;
+          }
+        }
         // Kirli tabak alma
         else if (!p.holding && gs.dirtyTrayCount > 0) {
           gs.dirtyTrayCount--;
@@ -212,34 +269,84 @@ async function startServer() {
           p.holding = DIRTY_PLATE;
           gs.dirtyTables.splice(dirtyIdx, 1);
           socket.emit("sound", "pickup");
+        } else if (isTray(p.holding)) {
+          const items = getTrayItems(p.holding);
+          if (items.length < MAX_TRAY_CAPACITY) {
+            items.push(DIRTY_PLATE);
+            p.holding = createTray(items);
+            gs.dirtyTables.splice(dirtyIdx, 1);
+            socket.emit("sound", "pickup");
+          }
         }
         return;
       }
 
-      // Bekletme İstasyonları (tabak rafı / plating counter)
-      for (const plate of gs.holdingStations) {
-        const def = HOLDING_STATION_POSITIONS.find(pos => pos.id === plate.id);
-        if (!def || Math.hypot(px - def.x, py - def.y) >= INTERACT_R) continue;
+      // Bekletme İstasyonları (tabak rafı / plating counter) ve Servis Masaları
+      for (const station of gs.holdingStations) {
+        let stationDef: any;
+        let inRange = false;
+        
+        if (station.type === 'plate') {
+          stationDef = HOLDING_STATION_POSITIONS.find(pos => pos.id === station.id);
+          if (stationDef) {
+            const dist = Math.hypot(px - stationDef.x, py - stationDef.y);
+            inRange = dist < INTERACT_R;
+          }
+        } else {
+          stationDef = COUNTER_POSITIONS.find(pos => pos.id === station.id);
+          if (stationDef) {
+            // Blok etkileşimi - daha hassas
+            const xDist = Math.abs(px - stationDef.x);
+            const yDist = Math.abs(py - stationDef.y);
+            inRange = xDist < 50 && yDist < 70;
+          }
+        }
+        
+        if (!stationDef || !inRange) continue;
 
-        if (!p.holding && plate.item) {
-          p.holding = plate.item;
-          // Yemekli tabak alınırsa arkasında temiz tabak kalsın
-          plate.item = isDish(plate.item) ? CLEAN_PLATE : null;
+        // ═══ TEPSİ ETKİLEŞİMLERİ ═══
+        if (isTray(p.holding)) {
+          const items = getTrayItems(p.holding);
+          
+          // Tepsiden bloğa koyma (blok boşsa)
+          if (items.length > 0 && station.items.length === 0) {
+            const item = items.pop()!;
+            station.items.push(item);
+            p.holding = createTray(items);
+            socket.emit("sound", "pickup");
+            return;
+          }
+          
+          // Bloktan tepsiye alma (tepside yer varsa)
+          if (station.items.length > 0 && items.length < MAX_TRAY_CAPACITY) {
+            const item = station.items.pop()!;
+            items.push(item);
+            p.holding = createTray(items);
+            socket.emit("sound", "pickup");
+            return;
+          }
+        }
+
+        // ═══ TEK ITEM ETKİLEŞİMLERİ ═══
+        
+        // Boş elle bloktan alma
+        if (!p.holding && station.items.length > 0) {
+          p.holding = station.items.pop()!;
           socket.emit("sound", "pickup");
           return;
         }
 
-        if (p.holding === CLEAN_PLATE && !plate.item) {
-          plate.item = CLEAN_PLATE;
-          p.holding = null;
-          socket.emit("sound", "pickup");
-          return;
-        }
-
-        if (isDish(p.holding) && plate.item === CLEAN_PLATE) {
-          plate.item = p.holding;
+        // Bloğa koyma (blok boşsa)
+        if (p.holding && station.items.length === 0) {
+          station.items.push(p.holding);
           p.holding = null;
           socket.emit("sound", "success");
+          return;
+        }
+        
+        // Blok doluysa hata
+        if (p.holding && station.items.length > 0) {
+          socket.emit("sound", "fail");
           return;
         }
       }
@@ -266,6 +373,19 @@ async function startServer() {
             station.burnTimer = 0;
             socket.emit("sound", "success");
           }
+          // Tepside temiz tabak varsa yemek alma
+          else if (isTray(p.holding) && station.output && !station.isBurned) {
+            const items = getTrayItems(p.holding);
+            const cpIdx = items.indexOf(CLEAN_PLATE);
+            if (cpIdx !== -1) {
+              items[cpIdx] = station.output;
+              p.holding = createTray(items);
+              station.output = null; station.burnTimer = 0;
+              socket.emit("sound", "success");
+            } else {
+              socket.emit("sound", "fail"); // Tepside temiz tabak yok
+            }
+          }
           // Yanmış yemek alma
           else if (!p.holding && station.isBurned) {
             p.holding = BURNED_FOOD;
@@ -284,23 +404,48 @@ async function startServer() {
 
       // Müşteriye servis
       if (p.holding) {
-        const ci = gs.customers.findIndex(c =>
-          c.isSeated && !c.isEating && c.wants === p.holding &&
-          Math.hypot(px - c.seatX, py - c.seatY) < SERVE_R
-        );
-        if (ci !== -1) {
-          gs.score += earn(gs.upgrades.earnings);
-          gs.customers[ci].isEating = true; gs.customers[ci].eatTimer = EAT_TICKS;
-          gs.customers[ci].wants = null; p.holding = null;
-          io.to(roomId!).emit("sound", "success");
+        let served = false;
+        for (let ci = 0; ci < gs.customers.length; ci++) {
+          const c = gs.customers[ci];
+          if (c.isSeated && !c.isEating && Math.hypot(px - c.seatX, py - c.seatY) < SERVE_R) {
+            if (!isTray(p.holding) && c.wants === p.holding) {
+              gs.score += earn(gs.upgrades.earnings);
+              c.isEating = true; c.eatTimer = EAT_TICKS; c.wants = null; p.holding = null;
+              served = true; break;
+            } else if (isTray(p.holding)) {
+              const items = getTrayItems(p.holding);
+              const wIdx = items.indexOf(c.wants as string);
+              if (wIdx !== -1) {
+                items.splice(wIdx, 1);
+                p.holding = createTray(items);
+                gs.score += earn(gs.upgrades.earnings);
+                c.isEating = true; c.eatTimer = EAT_TICKS; c.wants = null;
+                served = true; break;
+              }
+            }
+          }
         }
-        return;
+        if (served) {
+          io.to(roomId!).emit("sound", "success");
+          return;
+        }
       }
 
       // Malzeme al
       for (const s of INGREDIENTS) {
         if (Math.hypot(px - s.pos.x, py - s.pos.y) < INTERACT_R && gs.stock[s.key] > 0) {
-          p.holding = s.key; gs.stock[s.key]--; socket.emit("sound", "pickup"); return;
+          // Eğer elde tabak varsa, malzeme alınmasın!
+          if (p.holding === CLEAN_PLATE || isDish(p.holding)) {
+            socket.emit("sound", "fail");
+            return;
+          }
+          // Boş elle veya başka bir şeyle malzeme alınabilir
+          if (!p.holding) {
+            p.holding = s.key;
+            gs.stock[s.key]--;
+            socket.emit("sound", "pickup");
+            return;
+          }
         }
       }
     });

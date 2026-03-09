@@ -1,5 +1,4 @@
-import { Player, CHARACTER_TYPES, CLEAN_PLATE, DIRTY_PLATE } from '../types/game';
-import { hexToRgb } from '../utils/color';
+import { Player, CHARACTER_TYPES, CLEAN_PLATE, DIRTY_PLATE, isTray, getTrayItems } from '../types/game';
 
 /**
  * Oyuncu çizer — karakter tipine göre farklı görünüm
@@ -143,20 +142,170 @@ export function drawPlayer(
         // objenin duracağı yer X olarak karakterin yüzüne göre önde (sağında)
         const holdX = directionMul > 0 ? 12 : -12;
 
-        ctx.fillStyle = 'rgba(0,0,0,0.1)';
-        ctx.beginPath(); ctx.ellipse(holdX, -6, 18, 5, 0, 0, Math.PI * 2); ctx.fill();
+        if (isTray(p.holding)) {
+            // -- TEPSİ VE ÜZERİNDEKİLER --
+            const items = getTrayItems(p.holding);
 
-        ctx.fillStyle = 'white';
-        ctx.beginPath(); ctx.ellipse(holdX, -8, 18, 8, 0, 0, Math.PI * 2); ctx.fill();
+            // Tepsi hafif sallanma efekti (yürürken)
+            const trayTilt = state.isMoving ? Math.sin(state.walkTimer * 1.5) * 0.08 : 0;
+            ctx.save();
+            ctx.translate(holdX, -8);
+            ctx.rotate(trayTilt);
 
-        ctx.strokeStyle = '#cbd5e1';
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
+            // Tepsi gölgesi (derinlik hissi)
+            ctx.fillStyle = 'rgba(0,0,0,0.15)';
+            ctx.beginPath();
+            ctx.ellipse(0, 4, 26, 8, 0, 0, Math.PI * 2);
+            ctx.fill();
 
-        ctx.font = '22px Arial';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(heldItem, holdX, -12);
+            // Tepsi ana gövde (metalik görünüm için gradient)
+            const trayGradient = ctx.createRadialGradient(0, -2, 5, 0, 0, 25);
+            trayGradient.addColorStop(0, '#e2e8f0');
+            trayGradient.addColorStop(0.5, '#cbd5e1');
+            trayGradient.addColorStop(1, '#94a3b8');
+            ctx.fillStyle = trayGradient;
+            ctx.beginPath();
+            ctx.ellipse(0, 0, 26, 8, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Tepsi kenar çizgisi (parlak metal efekti)
+            ctx.strokeStyle = '#64748b';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // İç kenar highlight (3D efekti)
+            ctx.strokeStyle = '#f1f5f9';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.ellipse(0, -1, 22, 6, 0, 0.2, Math.PI - 0.2);
+            ctx.stroke();
+
+            // Tepsi tutma yerleri (iki yanda)
+            [-24, 24].forEach(handleX => {
+                ctx.fillStyle = '#94a3b8';
+                ctx.beginPath();
+                ctx.ellipse(handleX, 0, 4, 6, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = '#64748b';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            });
+
+            // Tepsi içindeki objeleri yığarak çiz
+            if (items.length === 0) {
+                // Boş tepsi - hafif bir işaret göster
+                ctx.fillStyle = 'rgba(100, 116, 139, 0.3)';
+                ctx.font = 'italic 10px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('boş', 0, 0);
+            } else {
+                items.forEach((item, i) => {
+                    const stackOffset = items.length > 1 ? 8 : 6; // Çok item varsa daha sık yığ
+                    const drawY = -8 - (i * stackOffset);
+
+                    // Her item için hafif bir gölge
+                    ctx.fillStyle = 'rgba(0,0,0,0.1)';
+                    ctx.beginPath();
+                    ctx.ellipse(0, drawY + 2, 14, 4, 0, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    if (item === DIRTY_PLATE || item === CLEAN_PLATE) {
+                        // Tabak çizimi (3D görünüm)
+                        const plateGradient = ctx.createRadialGradient(0, drawY - 1, 2, 0, drawY, 16);
+                        if (item === DIRTY_PLATE) {
+                            plateGradient.addColorStop(0, '#f8fafc');
+                            plateGradient.addColorStop(1, '#e2e8f0');
+                        } else {
+                            plateGradient.addColorStop(0, '#ffffff');
+                            plateGradient.addColorStop(1, '#f8fafc');
+                        }
+                        ctx.fillStyle = plateGradient;
+                        ctx.beginPath();
+                        ctx.ellipse(0, drawY, 16, 5, 0, 0, Math.PI * 2);
+                        ctx.fill();
+
+                        // Tabak kenarı
+                        ctx.strokeStyle = item === DIRTY_PLATE ? '#94a3b8' : '#cbd5e1';
+                        ctx.lineWidth = 1.5;
+                        ctx.stroke();
+
+                        // Kirli tabakta leke efekti
+                        if (item === DIRTY_PLATE) {
+                            ctx.fillStyle = 'rgba(146, 64, 14, 0.4)';
+                            ctx.beginPath();
+                            ctx.arc(-5, drawY - 1, 2, 0, Math.PI * 2);
+                            ctx.fill();
+                            ctx.beginPath();
+                            ctx.arc(4, drawY + 1, 1.5, 0, Math.PI * 2);
+                            ctx.fill();
+                            ctx.beginPath();
+                            ctx.arc(0, drawY + 2, 1.2, 0, Math.PI * 2);
+                            ctx.fill();
+                        }
+                    } else {
+                        // Yemek veya diğer itemler - emoji olarak göster
+                        const icon = item === CLEAN_PLATE ? '🍽️' : item === DIRTY_PLATE ? '🧽' : item;
+                        
+                        // Yemek altına beyaz tabak çiz
+                        if (icon !== '🍽️' && icon !== '🧽' && icon !== '🫓' && icon !== '🥩' && icon !== '🥬') {
+                            const plateGradient = ctx.createRadialGradient(0, drawY + 2, 2, 0, drawY + 3, 16);
+                            plateGradient.addColorStop(0, '#ffffff');
+                            plateGradient.addColorStop(1, '#f8fafc');
+                            ctx.fillStyle = plateGradient;
+                            ctx.beginPath();
+                            ctx.ellipse(0, drawY + 3, 16, 5, 0, 0, Math.PI * 2);
+                            ctx.fill();
+                            ctx.strokeStyle = '#cbd5e1';
+                            ctx.lineWidth = 1.5;
+                            ctx.stroke();
+                        }
+
+                        // Emoji çiz
+                        ctx.font = '18px Arial';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillText(icon, 0, drawY - 4);
+                    }
+                });
+
+                // Item sayısı göstergesi (sağ üst köşede badge)
+                if (items.length > 1) {
+                    ctx.fillStyle = '#3b82f6';
+                    ctx.beginPath();
+                    ctx.arc(20, -12, 8, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = 'bold 10px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(items.length.toString(), 20, -12);
+                }
+            }
+
+            ctx.restore(); // Tepsi transform'unu sıfırla
+        } else {
+            // -- TEKLİ OBJE --
+            ctx.fillStyle = 'rgba(0,0,0,0.1)';
+            ctx.beginPath(); ctx.ellipse(holdX, -6, 18, 5, 0, 0, Math.PI * 2); ctx.fill();
+
+            ctx.fillStyle = 'white';
+            ctx.beginPath(); ctx.ellipse(holdX, -8, 18, 8, 0, 0, Math.PI * 2); ctx.fill();
+
+            ctx.strokeStyle = '#cbd5e1';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+
+            ctx.font = '22px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(heldItem, holdX, -12);
+        }
 
         ctx.restore();
     }
@@ -202,18 +351,45 @@ export function drawPlayer(
     ctx.restore(); // Tüm transformasyonları sıfırla (İsim etiketi düz kalsın diye)
 
     // ── 7. İsim Etiketi (Zıplamaz, Adamın altında sabit durur) ──────────────────────
-    const rgb = hexToRgb(bodyColor);
     const nameW = ctx.measureText(p.name).width + 16;
 
-    ctx.fillStyle = isMe ? `rgba(${rgb},0.9)` : 'rgba(15,23,42,0.85)';
+    // Arka plan - Kendi karakterin mavimsi, diğerleri koyu gri
+    if (isMe) {
+        // Kendi karakterin - Mavi gradient
+        const gradient = ctx.createLinearGradient(x - nameW / 2, y + 26, x + nameW / 2, y + 44);
+        gradient.addColorStop(0, 'rgba(59, 130, 246, 0.95)'); // blue-500
+        gradient.addColorStop(1, 'rgba(37, 99, 235, 0.95)');  // blue-600
+        ctx.fillStyle = gradient;
+    } else {
+        // Diğer oyuncular - Koyu gri
+        ctx.fillStyle = 'rgba(30, 41, 59, 0.95)'; // slate-800
+    }
+    
     ctx.beginPath();
     ctx.roundRect(x - nameW / 2, y + 26, nameW, 18, 6);
     ctx.fill();
 
-    ctx.fillStyle = 'white';
-    ctx.font = 'bold 11px Arial';
+    // Kenar çizgisi (daha belirgin)
+    ctx.strokeStyle = isMe ? 'rgba(255, 255, 255, 0.3)' : 'rgba(255, 255, 255, 0.15)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // İsim yazısı - Her zaman beyaz ve kalın
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 12px Arial';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
+    
+    // Yazı gölgesi (daha okunabilir)
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+    ctx.shadowBlur = 2;
+    ctx.shadowOffsetY = 1;
+    
     ctx.fillText(p.name, x, y + 36);
+    
+    // Gölgeyi sıfırla
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetY = 0;
 }
 

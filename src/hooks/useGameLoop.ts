@@ -9,18 +9,15 @@ import {
   PLAYER_SPEED,
   TRASH_STATION,
   DIRTY_TRAY_POS,
+  TRAY_STATION,
   TABLE_X_SLOTS,
   TABLE_Y,
   WALL_Y1,
   WALL_Y2,
   isInDoor,
-  UTIL_WALL_X1,
-  UTIL_WALL_X2,
-  isInUtilDoor,
   ENTRANCE,
   OUTSIDE_QUEUE_Y,
   INGREDIENTS,
-  RECIPE_DEFS,
   HOLDING_STATION_POSITIONS,
 } from "../types/game";
 
@@ -31,6 +28,7 @@ import { drawCustomer } from "../renderer/drawCustomer";
 import { drawPlayer } from "../renderer/drawPlayer";
 import { drawCookStation } from "../renderer/drawCookStation";
 import { drawHoldingStation } from "../renderer/drawHoldingStation";
+import { drawCounters } from "../renderer/drawCounter";
 
 interface UseGameLoopProps {
   canvasRef: React.RefObject<HTMLCanvasElement>;
@@ -125,9 +123,18 @@ function drawDirtyTable(ctx: CanvasRenderingContext2D, seatX: number, seatY: num
 }
 
 // ─── drawFloor cache — sadece 1 kez çiz, sonra bitmapten kopyala ────────────
+// Cache version - değiştirince cache yenilenir
+const FLOOR_CACHE_VERSION = 7; // Dekoratif paneller kaldırıldı!
 let floorCache: OffscreenCanvas | HTMLCanvasElement | null = null;
+let floorCacheVersion = 0;
 
 function drawFloorCached(ctx: CanvasRenderingContext2D) {
+  // Cache versiyonu değiştiyse yeniden oluştur
+  if (floorCacheVersion !== FLOOR_CACHE_VERSION) {
+    floorCache = null;
+    floorCacheVersion = FLOOR_CACHE_VERSION;
+  }
+  
   if (!floorCache) {
     if (typeof OffscreenCanvas !== "undefined") {
       floorCache = new OffscreenCanvas(GAME_WIDTH, GAME_HEIGHT);
@@ -250,15 +257,50 @@ export function useGameLoop({
         );
       });
 
-      // Çöp kutusu
-      drawStation(
-        ctx,
-        TRASH_STATION.x,
-        TRASH_STATION.y,
-        "#d1d5db",
-        "🗑️",
-        "Çöp",
-      );
+      // Tepsi İstasyonu
+      drawStation(ctx, TRAY_STATION.x, TRAY_STATION.y, "#8b5a2b", "🍽️", "Tepsi");
+
+      // Çöp kutusu (Sağ alt köşe, ufak boyutlu)
+      const trx = TRASH_STATION.x;
+      const try_ = TRASH_STATION.y;
+
+      // Küçük gri zemin
+      ctx.fillStyle = "rgba(0,0,0,0.1)";
+      ctx.beginPath();
+      ctx.ellipse(trx, try_ + 10, 18, 8, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Çöp kutusu gövde
+      ctx.fillStyle = "#94a3b8"; // slate-400
+      ctx.beginPath();
+      ctx.moveTo(trx - 12, try_ - 15);
+      ctx.lineTo(trx + 12, try_ - 15);
+      ctx.lineTo(trx + 10, try_ + 10);
+      ctx.lineTo(trx - 10, try_ + 10);
+      ctx.closePath();
+      ctx.fill();
+
+      // Çöp kutusu üst kapak
+      ctx.fillStyle = "#64748b"; // slate-500
+      ctx.beginPath();
+      ctx.ellipse(trx, try_ - 15, 12, 5, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Detay çizgiler
+      ctx.strokeStyle = "#475569"; // slate-600
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(trx - 6, try_ - 10); ctx.lineTo(trx - 5, try_ + 5);
+      ctx.moveTo(trx, try_ - 10); ctx.lineTo(trx, try_ + 5);
+      ctx.moveTo(trx + 6, try_ - 10); ctx.lineTo(trx + 5, try_ + 5);
+      ctx.stroke();
+
+      // Üstünde çöp yazısı kalsın ama küçük
+      ctx.fillStyle = "#fff";
+      ctx.font = "bold 9px Arial";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("ÇÖP", trx, try_ + 20);
 
       // Kirli Sepeti (Tabak yığını)
       const tcx = DIRTY_TRAY_POS.x;
@@ -315,10 +357,14 @@ export function useGameLoop({
       // Bekletme İstasyonları (Prep Counters / Tabaklar)
       const hs = state.holdingStations;
       if (hs) {
+        // Tabak rafları (üstte)
         for (const pos of HOLDING_STATION_POSITIONS) {
           const item = hs.find((s) => s.id === pos.id);
           drawHoldingStation(ctx, pos.x, pos.y, item);
         }
+        
+        // Servis masaları (duvarda)
+        drawCounters(ctx, hs);
       }
 
       // Pişirme istasyonları

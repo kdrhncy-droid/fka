@@ -15,6 +15,7 @@ export {
   type Upgrades,
   type CookStation,
   type GameState,
+  type HoldingStation,
   // Constants
   GAME_WIDTH,
   GAME_HEIGHT,
@@ -24,10 +25,6 @@ export {
   WALL_Y2,
   DOOR_RANGES,
   isInDoor,
-  UTIL_WALL_X1,
-  UTIL_WALL_X2,
-  UTIL_DOOR_RANGE,
-  isInUtilDoor,
   INGREDIENTS,
   RECIPE_DEFS,
   INITIAL_OVEN_POSITIONS,
@@ -35,6 +32,7 @@ export {
   OVEN_UPGRADE_COSTS,
   TRASH_STATION,
   DIRTY_TRAY_POS,
+  TRAY_STATION,
   SINK_STATION,
   SEAT_SLOTS,
   DISH_ITEMS,
@@ -46,8 +44,13 @@ export {
   CLEAN_PLATE,
   DIRTY_PLATE,
   HOLDING_STATION_POSITIONS,
+  COUNTER_POSITIONS,
   CHARACTER_TYPES,
-  type HoldingStation
+  TRAY_PREFIX,
+  MAX_TRAY_CAPACITY,
+  isTray,
+  getTrayItems,
+  createTray,
 } from '../../shared/types';
 
 // ─── Client-Only Sabitler ────────────────────────────────────────────────────
