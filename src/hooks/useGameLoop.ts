@@ -124,7 +124,7 @@ function drawDirtyTable(ctx: CanvasRenderingContext2D, seatX: number, seatY: num
 
 // ─── drawFloor cache — sadece 1 kez çiz, sonra bitmapten kopyala ────────────
 // Cache version - değiştirince cache yenilenir
-const FLOOR_CACHE_VERSION = 7; // Dekoratif paneller kaldırıldı!
+const FLOOR_CACHE_VERSION = 9; // Duvar tuğla doku + kapı çerçeve eklendi
 let floorCache: OffscreenCanvas | HTMLCanvasElement | null = null;
 let floorCacheVersion = 0;
 
@@ -134,7 +134,7 @@ function drawFloorCached(ctx: CanvasRenderingContext2D) {
     floorCache = null;
     floorCacheVersion = FLOOR_CACHE_VERSION;
   }
-  
+
   if (!floorCache) {
     if (typeof OffscreenCanvas !== "undefined") {
       floorCache = new OffscreenCanvas(GAME_WIDTH, GAME_HEIGHT);
@@ -362,7 +362,7 @@ export function useGameLoop({
           const item = hs.find((s) => s.id === pos.id);
           drawHoldingStation(ctx, pos.x, pos.y, item);
         }
-        
+
         // Servis masaları (duvarda)
         drawCounters(ctx, hs);
       }

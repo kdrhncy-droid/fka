@@ -6,9 +6,6 @@ import {
   INGREDIENTS,
   TRASH_STATION,
   SINK_STATION,
-  UTIL_WALL_X1,
-  UTIL_WALL_X2,
-  UTIL_DOOR_RANGE,
   HOLDING_STATION_POSITIONS,
   COUNTER_POSITIONS,
 } from "../types/game";
@@ -65,14 +62,14 @@ export function drawFloor(ctx: CanvasRenderingContext2D) {
     const { x, y } = ing.pos;
     ctx.fillStyle = "#d6cfc4";
     ctx.beginPath();
-    ctx.roundRect(x - 55, y - 33, 110, 66, 8);
+    ctx.roundRect(x - 38, y - 30, 76, 60, 8);
     ctx.fill();
     ctx.strokeStyle = "#a8a29e";
     ctx.lineWidth = 1.5;
     ctx.stroke();
     // Üst parlama
     ctx.fillStyle = "rgba(255,255,255,0.2)";
-    ctx.fillRect(x - 52, y - 30, 104, 10);
+    ctx.fillRect(x - 35, y - 27, 70, 8);
   });
 
   // ── Fırın tezgahları artık dinamik çiziliyor (drawCookStation.ts'te) ──────
@@ -164,35 +161,94 @@ export function drawFloor(ctx: CanvasRenderingContext2D) {
   });
   ctx.setLineDash([]);
 
-  // ── Duvar ─────────────────────────────────────────────────────────────────
-  // Önce tüm duvarı çiz
-  ctx.fillStyle = "#6b5240";
+  // ── Duvar (Tuğla Doku + Gradient) ──────────────────────────────────────────
+  // Ana duvar gradient'i (koyu kahverengi → açık kahverengi)
+  const wallGrad = ctx.createLinearGradient(0, WALL_Y1, 0, WALL_Y1 + 40);
+  wallGrad.addColorStop(0, '#5c3d2e');
+  wallGrad.addColorStop(0.3, '#6b5240');
+  wallGrad.addColorStop(0.7, '#6b5240');
+  wallGrad.addColorStop(1, '#4a3628');
+  ctx.fillStyle = wallGrad;
   ctx.fillRect(0, WALL_Y1, GAME_WIDTH, 40);
 
-  // Kapılar (servis pencereleri)
+  // Tuğla doku çizgileri (yatay harç)
+  ctx.strokeStyle = 'rgba(0,0,0,0.12)';
+  ctx.lineWidth = 1;
+  for (let wy = WALL_Y1 + 10; wy < WALL_Y1 + 40; wy += 10) {
+    ctx.beginPath();
+    ctx.moveTo(0, wy);
+    ctx.lineTo(GAME_WIDTH, wy);
+    ctx.stroke();
+  }
+  // Dikey harç çizgileri (tuğla efekti)
+  ctx.strokeStyle = 'rgba(0,0,0,0.08)';
+  for (let wx = 0; wx < GAME_WIDTH; wx += 40) {
+    const rowOffset = (Math.floor((wx / 40)) % 2 === 0) ? 0 : 20;
+    for (let wy = WALL_Y1; wy < WALL_Y1 + 40; wy += 10) {
+      ctx.beginPath();
+      ctx.moveTo(wx + rowOffset, wy);
+      ctx.lineTo(wx + rowOffset, wy + 10);
+      ctx.stroke();
+    }
+  }
+
+  // Üst süpürgelik (duvarın üstü — ince koyu çizgi)
+  ctx.fillStyle = '#4a3628';
+  ctx.fillRect(0, WALL_Y1, GAME_WIDTH, 4);
+
+  // Alt süpürgelik
+  ctx.fillStyle = '#4a3628';
+  ctx.fillRect(0, WALL_Y1 + 36, GAME_WIDTH, 4);
+
+  // Kapılar (Servis Pencereleri — ahşap çerçeveli)
   DOOR_RANGES.forEach(([x1, x2]) => {
     const w = x2 - x1;
-    ctx.fillStyle = "#fde68a";
+
+    // Kapı açıklığı (zemin rengi — geçit)
+    ctx.fillStyle = '#e8ddd0';
     ctx.fillRect(x1, WALL_Y1, w, 40);
-    ctx.fillStyle = "#d97706";
-    ctx.fillRect(x1, WALL_Y1, w, 5);
+
+    // Üst eşik (ahşap çerçeve)
+    const frameGrad = ctx.createLinearGradient(0, WALL_Y1, 0, WALL_Y1 + 6);
+    frameGrad.addColorStop(0, '#b8864e');
+    frameGrad.addColorStop(1, '#a07038');
+    ctx.fillStyle = frameGrad;
+    ctx.fillRect(x1 - 4, WALL_Y1, w + 8, 6);
+
+    // Alt eşik
+    ctx.fillStyle = '#a07038';
+    ctx.fillRect(x1 - 4, WALL_Y1 + 34, w + 8, 6);
+
+    // Sol dikey çerçeve
+    ctx.fillStyle = '#b8864e';
+    ctx.fillRect(x1 - 4, WALL_Y1, 6, 40);
+    // Sağ dikey çerçeve
+    ctx.fillRect(x2 - 2, WALL_Y1, 6, 40);
+
+    // Sarı ışık şeridi (hoş geldiniz hissi)
+    ctx.fillStyle = 'rgba(253,230,138,0.3)';
+    ctx.fillRect(x1 + 4, WALL_Y1 + 8, w - 8, 24);
+
+    // Kapı iç gölgesi (derinlik hissi)
+    ctx.fillStyle = 'rgba(0,0,0,0.06)';
+    ctx.fillRect(x1, WALL_Y1 + 6, w, 4);
   });
 
   // ── Servis Blokları (Ahşap masa renginde) ────────────────────────────────
   COUNTER_POSITIONS.forEach(counter => {
     const { x, y, width, height } = counter;
-    
-    // Ahşap servis bloğu (masa ile aynı renk)
+
+    // Ahşap servis bloğu
     const blockGrad = ctx.createLinearGradient(x - width / 2, y - height / 2, x + width / 2, y + height / 2);
-    blockGrad.addColorStop(0, '#b8864e');
-    blockGrad.addColorStop(1, '#8b6914');
+    blockGrad.addColorStop(0, '#c9a06c');
+    blockGrad.addColorStop(1, '#a07038');
     ctx.fillStyle = blockGrad;
     ctx.beginPath();
     ctx.roundRect(x - width / 2, y - height / 2, width, height, 4);
     ctx.fill();
-    
+
     // Kenar çizgisi
-    ctx.strokeStyle = '#7a5c12';
+    ctx.strokeStyle = '#8b6914';
     ctx.lineWidth = 1.5;
     ctx.stroke();
   });
@@ -200,14 +256,34 @@ export function drawFloor(ctx: CanvasRenderingContext2D) {
   // ── Dikey Duvar Kaldırıldı (lavabo alanı artık açık) ────────────────────────
   // Lavabo ve çöp alanına serbest erişim
 
-  // ── Giriş kapısı (alt) ────────────────────────────────────────────────────
-  ctx.fillStyle = "#78350f";
+  // ── Giriş kapısı (alt — ahşap çerçeveli) ────────────────────────────────────
+  // Alt duvar
+  const entranceGrad = ctx.createLinearGradient(0, GAME_HEIGHT - 30, 0, GAME_HEIGHT);
+  entranceGrad.addColorStop(0, '#5c3d2e');
+  entranceGrad.addColorStop(1, '#4a3628');
+  ctx.fillStyle = entranceGrad;
   ctx.fillRect(0, GAME_HEIGHT - 30, GAME_WIDTH, 30);
+
+  // Giriş açıklığı
+  const entranceX = 570, entranceW = 140;
+  ctx.fillStyle = '#d4c4b0';
+  ctx.fillRect(entranceX, GAME_HEIGHT - 30, entranceW, 30);
+
+  // Giriş çerçevesi
+  ctx.fillStyle = '#b8864e';
+  ctx.fillRect(entranceX - 4, GAME_HEIGHT - 30, 6, 30);
+  ctx.fillRect(entranceX + entranceW - 2, GAME_HEIGHT - 30, 6, 30);
+  ctx.fillStyle = '#a07038';
+  ctx.fillRect(entranceX - 4, GAME_HEIGHT - 30, entranceW + 8, 5);
+
+  // Sıcak ışık efekti
+  ctx.fillStyle = 'rgba(253,230,138,0.2)';
+  ctx.fillRect(entranceX + 6, GAME_HEIGHT - 24, entranceW - 12, 18);
+
+  // GİRİŞ etiketi
   ctx.fillStyle = "#fde68a";
-  ctx.fillRect(570, GAME_HEIGHT - 30, 140, 30);
-  ctx.fillStyle = "#92400e";
-  ctx.font = "bold 13px Arial";
+  ctx.font = "bold 12px Arial";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillText("GİRİŞ", 640, GAME_HEIGHT - 15);
+  ctx.fillText("GİRİŞ", 640, GAME_HEIGHT - 13);
 }
