@@ -79,6 +79,7 @@ export interface GameState {
     day: number;
     hasOrderedTonight: boolean;
     cookStations: CookStation[]; // Array olarak değiştirdik
+    dirtyTrayCount: number;      // Kirli tabak biriktirme sepeti
 }
 
 // ─── Boyut ───────────────────────────────────────────────────────────────────
@@ -147,9 +148,10 @@ export const ADDITIONAL_OVEN_POSITIONS = [
     { x: 650, y: 170 },
 ];
 
-// ─── Çöp Kutusu & Lavabo ───────────────────────────────────────────────────
-export const TRASH_STATION = { x: 1050, y: 90 };  // Sağ taraf
-export const SINK_STATION = { x: 1180, y: 90 }; // Sağ köşe (daha uzak)
+// ─── Çöp Kutusu, Kirli Sepeti & Lavabo ──────────────────────────────────────
+export const TRASH_STATION = { x: 1050, y: 90 };
+export const DIRTY_TRAY_POS = { x: 1115, y: 90 }; // Lavabonun solunda kirli sepeti
+export const SINK_STATION = { x: 1180, y: 90 };
 
 // ─── Koltuklar ───────────────────────────────────────────────────────────────
 export const SEAT_SLOTS: { x: number; y: number }[] = [

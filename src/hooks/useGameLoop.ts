@@ -8,6 +8,7 @@ import {
   GAME_HEIGHT,
   PLAYER_SPEED,
   TRASH_STATION,
+  DIRTY_TRAY_POS,
   TABLE_X_SLOTS,
   TABLE_Y,
   WALL_Y1,
@@ -258,6 +259,58 @@ export function useGameLoop({
         "🗑️",
         "Çöp",
       );
+
+      // Kirli Sepeti (Tabak yığını)
+      const tcx = DIRTY_TRAY_POS.x;
+      const tcy = DIRTY_TRAY_POS.y;
+
+      // Tepsi arka planı
+      ctx.fillStyle = "#475569";
+      ctx.beginPath();
+      ctx.roundRect(tcx - 22, tcy - 16, 44, 32, 4);
+      ctx.fill();
+      ctx.strokeStyle = "#334155";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // İçindeki tabaklar (max 5-6 tane üst üste görünsün ki çok taşıp çirkin durmasın)
+      const displayCount = Math.min(6, state.dirtyTrayCount || 0);
+      for (let i = 0; i < displayCount; i++) {
+        const py = tcy + 4 - i * 4;
+        ctx.fillStyle = "rgba(0,0,0,0.12)";
+        ctx.beginPath();
+        ctx.ellipse(tcx + 1, py + 3, 18, 7, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = "#f8fafc";
+        ctx.beginPath();
+        ctx.ellipse(tcx, py, 18, 8, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = "#94a3b8";
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+
+        ctx.fillStyle = "#92400e";
+        ctx.beginPath();
+        ctx.arc(tcx - 4, py - 1, 2.5, 0, Math.PI * 2);
+        ctx.arc(tcx + 3, py + 1, 2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Üstünde kaç tane olduğunu yazan sayı
+      if ((state.dirtyTrayCount || 0) > 0) {
+        ctx.fillStyle = "white";
+        ctx.font = "bold 14px Arial";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(String(state.dirtyTrayCount), tcx, tcy + 22);
+      } else {
+        ctx.fillStyle = "#94a3b8";
+        ctx.font = "10px Arial";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("SEPET", tcx, tcy);
+      }
 
       // Bekletme İstasyonları (Prep Counters / Tabaklar)
       const hs = state.holdingStations;

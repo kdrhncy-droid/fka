@@ -42,6 +42,7 @@ import {
   DIRTY_PLATE,
   EAT_TICKS,
   HOLDING_STATION_POSITIONS,
+  DIRTY_TRAY_POS,
 } from "./shared/types";
 
 // ─── Server-Only Sabitler ────────────────────────────────────────────────────
@@ -72,6 +73,7 @@ function mkRoom(): GameState {
     marketName: MARKET_NAME, dayPhase: 'prep', dayTimer: DAY_TICKS,
     upgrades: { patience: 0, earnings: 0, stockMax: 0 }, day: 1, hasOrderedTonight: false,
     cookStations: initialOvens,
+    dirtyTrayCount: 0,
   };
 }
 
@@ -172,6 +174,24 @@ async function startServer() {
           socket.emit("sound", "trash");
         }
         return;
+      }
+
+      // Kirli Sepeti (Lavabonun yanındaki yığın alanı)
+      if (Math.hypot(px - DIRTY_TRAY_POS.x, py - DIRTY_TRAY_POS.y) < INTERACT_R) {
+        // Kirli tabak bırakma
+        if (p.holding === DIRTY_PLATE) {
+          gs.dirtyTrayCount++;
+          p.holding = null;
+          socket.emit("sound", "pickup");
+          return;
+        }
+        // Kirli tabak alma
+        else if (!p.holding && gs.dirtyTrayCount > 0) {
+          gs.dirtyTrayCount--;
+          p.holding = DIRTY_PLATE;
+          socket.emit("sound", "pickup");
+          return;
+        }
       }
 
       // Lavabo: kirli tabak temizlenir
