@@ -160,11 +160,17 @@ async function startServer() {
         }
         if (p.holding === BURNED_FOOD) {
           gs.score = Math.max(0, gs.score - 2);
+          p.holding = null;
           io.to(roomId!).emit("sound", "fail");
+        } else if (isDish(p.holding)) {
+          // Yemekli tabak çöpe → yemek gider, tabak elde kalır
+          p.holding = CLEAN_PLATE;
+          socket.emit("sound", "trash");
         } else {
+          // Ham malzeme vs.
+          p.holding = null;
           socket.emit("sound", "trash");
         }
-        p.holding = null;
         return;
       }
 
