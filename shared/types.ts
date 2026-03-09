@@ -14,6 +14,7 @@ export interface Player {
     id: string; x: number; y: number;
     holding: Item; color: string; name: string; hat: string;
     charType?: number; // 0-5: hangi karakter tipi
+    peerId?: string; // Voice chat için PeerJS IDsi
 }
 
 // 8 Karakter Tipi — CharacterSelect + drawPlayer kullanır

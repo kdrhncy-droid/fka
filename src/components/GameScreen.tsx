@@ -7,6 +7,8 @@ import { SettingsPanel } from './SettingsPanel';
 import { MARKET_NAME } from '../constants';
 import { useGameLoop } from '../hooks/useGameLoop';
 import { Settings } from '../hooks/useSettings';
+import { useVoiceChat } from '../hooks/useVoiceChat';
+import { SettingsModal } from './SettingsModal';
 
 const MUSIC_URL = 'https://cdn.jsdelivr.net/gh/effacestudios/Royalty-Free-Music-Pack@main/Light%20Hearted%20-%20Jeremy%20Blake.mp3';
 
@@ -42,7 +44,47 @@ export const GameScreen: React.FC<Props> = ({
 
     const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
-    useGameLoop({ canvasRef, isJoined, myId, socket, gameStateRef, localPlayerRef, keysRef, joystickVectorRef });
+    // --- Voice Chat ---
+    const [voiceActive, setVoiceActive] = useState(false);
+    const [showVoiceSettings, setShowVoiceSettings] = useState(false);
+    const [globalVoiceVol, setGlobalVoiceVol] = useState(1.0);
+    const audioElementsRef = useRef<Record<string, HTMLAudioElement>>({});
+
+    const { isMuted, toggleMute, audioStreams } = useVoiceChat({
+        isJoined: voiceActive && isJoined,
+        myId,
+        socket
+    });
+
+    useEffect(() => {
+        Object.entries(audioStreams).forEach(([id, s]) => {
+            const stream = s as MediaStream;
+            if (!audioElementsRef.current[id]) {
+                const audio = new Audio();
+                audio.srcObject = stream;
+                audio.autoplay = true;
+                audio.volume = 0; // ilk aşamada 0 verilir, game loop'ta mesafe bazlı hesaplanır
+                audioElementsRef.current[id] = audio;
+            } else if (audioElementsRef.current[id].srcObject !== stream) {
+                audioElementsRef.current[id].srcObject = stream;
+            }
+        });
+
+        // Kopan / silinen streamleri temizle
+        Object.keys(audioElementsRef.current).forEach(id => {
+            if (!audioStreams[id]) {
+                audioElementsRef.current[id].pause();
+                audioElementsRef.current[id].srcObject = null;
+                delete audioElementsRef.current[id];
+            }
+        });
+    }, [audioStreams]);
+
+    // Oyun döngüsü
+    useGameLoop({
+        canvasRef, isJoined, myId, socket, gameStateRef, localPlayerRef, keysRef, joystickVectorRef,
+        audioElementsRef, globalVolume: globalVoiceVol
+    });
 
     // State poll
     useEffect(() => {
@@ -119,6 +161,9 @@ export const GameScreen: React.FC<Props> = ({
                         <div className="text-[8px] font-bold opacity-70 uppercase tracking-widest">Ciro</div>
                         <div className="text-base font-black leading-none">${score}</div>
                     </div>
+                    <button onClick={() => setShowVoiceSettings(true)}
+                        className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm transition-colors ${voiceActive && !isMuted ? 'bg-green-600 hover:bg-green-500' : 'bg-stone-700 hover:bg-stone-600 text-stone-300'}`}
+                    >🎙️</button>
                     <button onClick={() => setShowSettings(true)}
                         className="w-8 h-8 bg-stone-700 hover:bg-stone-600 text-stone-300 rounded-lg flex items-center justify-center text-sm"
                     >⚙️</button>
@@ -214,6 +259,20 @@ export const GameScreen: React.FC<Props> = ({
 
             {showSettings && (
                 <SettingsPanel settings={settings} onUpdate={updateSettings} onClose={() => setShowSettings(false)} />
+            )}
+
+            {showVoiceSettings && (
+                <SettingsModal
+                    onClose={() => setShowVoiceSettings(false)}
+                    globalVolume={globalVoiceVol}
+                    setGlobalVolume={setGlobalVoiceVol}
+                    isMuted={isMuted}
+                    toggleMute={toggleMute}
+                    startVoiceChat={() => {
+                        setVoiceActive(true);
+                    }}
+                    isVoiceActive={voiceActive}
+                />
             )}
         </div>
     );

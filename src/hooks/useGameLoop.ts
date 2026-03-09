@@ -46,6 +46,8 @@ interface UseGameLoopProps {
     d: boolean;
   }>;
   joystickVectorRef: React.MutableRefObject<{ x: number; y: number }>;
+  audioElementsRef?: React.MutableRefObject<Record<string, HTMLAudioElement>>;
+  globalVolume?: number;
 }
 
 // ─── Dışarıda bekleyenler (giriş kapısının önünde) ───────────────────────────
@@ -166,6 +168,8 @@ export function useGameLoop({
   localPlayerRef,
   keysRef,
   joystickVectorRef,
+  audioElementsRef,
+  globalVolume = 1.0,
 }: UseGameLoopProps) {
   useEffect(() => {
     if (!isJoined) return;
@@ -416,7 +420,6 @@ export function useGameLoop({
       // Kapıda bekleyenler
       drawWaitList(ctx, state.waitList ?? []);
 
-      // Oyuncular
       const sp = state.players;
       if (myId && sp[myId]) {
         Object.values(sp).forEach((p: Player) => {
@@ -428,6 +431,26 @@ export function useGameLoop({
             p,
             isMe,
           );
+        });
+      }
+
+      // Proximity Audio (Mesafe bazlı ses)
+      if (audioElementsRef && audioElementsRef.current && myId && sp[myId]) {
+        const lp = localPlayerRef.current;
+        Object.entries(audioElementsRef.current).forEach(([socketId, el]) => {
+          const audioEl = el as HTMLAudioElement;
+          const otherPlayer = sp[socketId];
+          if (!otherPlayer) {
+            audioEl.volume = 0;
+            return;
+          }
+          const dist = Math.hypot(lp.x - otherPlayer.x, lp.y - otherPlayer.y);
+          const MAX_HEAR_DIST = 350; // 350 piksel öteyi duyamazsın
+          let vol = 1 - (dist / MAX_HEAR_DIST);
+          if (vol < 0) vol = 0;
+          if (vol > 1) vol = 1;
+
+          audioEl.volume = vol * globalVolume;
         });
       }
 

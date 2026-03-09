@@ -142,6 +142,17 @@ async function startServer() {
       socket.emit("init", { id: socket.id, state: gs });
     });
 
+    // Voice Chat - PeerJS ID'lerini dağıt
+    socket.on("updatePeerId", (peerId: string) => {
+      if (!roomId || !rooms[roomId]?.players[socket.id]) return;
+      const gs = rooms[roomId];
+      gs.players[socket.id].peerId = peerId;
+      // Odadakilere yeni kullanıcının peer idsini haber ver
+      io.to(roomId).emit("peerMap",
+        Object.fromEntries(Object.values(gs.players).filter(p => p.peerId).map(p => [p.id, p.peerId]))
+      );
+    });
+
     socket.on("move", ({ x, y }: { x: number; y: number }) => {
       if (!roomId || !rooms[roomId]?.players[socket.id]) return;
       const p = rooms[roomId].players[socket.id];
