@@ -192,7 +192,7 @@ export const ADDITIONAL_OVEN_POSITIONS = [
 
 // ─── Çöp Kutusu, Kirli Sepeti & Lavabo ──────────────────────────────────────
 export const TRASH_STATION = { x: 1200, y: 190 }; // Mutfağın sağ alt köşesine alındı
-export const DIRTY_TRAY_POS = { x: 1115, y: 90 }; // Lavabonun solunda kirli sepeti
+export const DIRTY_TRAY_POS = { x: 1050, y: 90 }; // Lavabonun solunda kirli sepeti (Eskiden 1115 idi, çakışmasın diye sola alındı)
 export const SINK_STATION = { x: 1180, y: 90 };
 
 // ─── Koltuklar ───────────────────────────────────────────────────────────────

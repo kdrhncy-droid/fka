@@ -211,7 +211,7 @@ async function startServer() {
       }
 
       // Çöp (Yanmış yemek atılırsa ceza kestir, tabaklar yok edilmesin)
-      if (Math.hypot(px - TRASH_STATION.x, py - TRASH_STATION.y) < 130) {
+      if (Math.hypot(px - TRASH_STATION.x, py - TRASH_STATION.y) < 90) {
         if (!p.holding) return;
 
         if (isTray(p.holding)) {
@@ -250,7 +250,7 @@ async function startServer() {
       }
 
       // Kirli Sepeti (Lavabonun yanındaki yığın alanı)
-      if (Math.hypot(px - DIRTY_TRAY_POS.x, py - DIRTY_TRAY_POS.y) < 130) {
+      if (Math.hypot(px - DIRTY_TRAY_POS.x, py - DIRTY_TRAY_POS.y) < 90) {
         // Kirli tabak bırakma
         if (p.holding === DIRTY_PLATE) {
           gs.dirtyTrayCount++;
@@ -279,7 +279,7 @@ async function startServer() {
       }
 
       // Lavabo: kirli tabak temizlenir
-      if (Math.hypot(px - SINK_STATION.x, py - SINK_STATION.y) < 130) {
+      if (Math.hypot(px - SINK_STATION.x, py - SINK_STATION.y) < 90) {
         if (p.holding === DIRTY_PLATE) {
           p.holding = CLEAN_PLATE;
           socket.emit("sound", "success");
