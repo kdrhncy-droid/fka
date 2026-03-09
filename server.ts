@@ -42,6 +42,8 @@ import {
   getTrayItems,
   createTray,
   MAX_TRAY_CAPACITY,
+  TABLE_HALF_W,
+  TABLE_HALF_H,
 } from "./shared/types";
 
 // ─── Server-Only Sabitler ────────────────────────────────────────────────────
@@ -50,6 +52,10 @@ const TRASH_INTERACT_R = 56;
 const SERVE_R = 100;
 const INTERACT_COOLDOWN = 200; // ms
 const LOGIC_STEP_MS = 1000 / 30;
+
+// Masa pozisyonları (çarpışma için — client ile aynı)
+const TABLE_X_SLOTS = [190, 390, 640, 890, 1090];
+const TABLE_Y = 500;
 
 // ─── Room Yönetimi ───────────────────────────────────────────────────────────
 const rooms: Record<string, GameState> = {};
@@ -74,7 +80,7 @@ function mkRoom(): GameState {
     players: {}, customers: [], waitList: [],
     holdingStations: allHoldingStations,
     dirtyTables: [],
-    score: 0, stock: { '🫓': 10, '🥩': 10, '🥬': 10 },
+    score: 0, stock: { '🍞': 10, '🥩': 10, '🥬': 10 },
     marketName: MARKET_NAME, dayPhase: 'prep', dayTimer: DAY_TICKS,
     upgrades: { patience: 0, earnings: 0, stockMax: 0 }, day: 1, hasOrderedTonight: false,
     cookStations: initialOvens,
@@ -141,22 +147,39 @@ async function startServer() {
       const p = rooms[roomId].players[socket.id];
       let nx = Math.max(20, Math.min(GAME_WIDTH - 20, x));
       let ny = Math.max(20, Math.min(GAME_HEIGHT - 20, y));
-      
+
       // Yatay duvar (mutfak↔salon)
       const wasAbove = p.y < WALL_Y1, wasBelow = p.y > WALL_Y2;
-      
+
       // Duvardan geçmeye çalışıyor mu?
       if ((wasAbove && ny >= WALL_Y1) || (wasBelow && ny <= WALL_Y2)) {
-        // Kapıda mı yoksa duvarda mı?
         if (isInDoor(nx)) {
           // Kapıda - geçebilir
         } else {
-          // Duvarda - engellensin
           ny = wasAbove ? WALL_Y1 - 1 : WALL_Y2 + 1;
         }
       }
-      
-      // Dikey duvar kontrolü kaldırıldı - lavabo alanı artık açık
+
+      // Masa çarpışması (AABB)
+      const PR = 16; // Oyuncu çarpışma yarıçapı
+      for (const tx of TABLE_X_SLOTS) {
+        const left = tx - TABLE_HALF_W, right = tx + TABLE_HALF_W;
+        const top = TABLE_Y - TABLE_HALF_H, bottom = TABLE_Y + TABLE_HALF_H;
+        // Oyuncu masayla kesişiyor mu?
+        if (nx + PR > left && nx - PR < right && ny + PR > top && ny - PR < bottom) {
+          // Hangi yönden itileceğini bul (en az penetrasyon yönü)
+          const overlapL = (nx + PR) - left;
+          const overlapR = right - (nx - PR);
+          const overlapT = (ny + PR) - top;
+          const overlapB = bottom - (ny - PR);
+          const minOverlap = Math.min(overlapL, overlapR, overlapT, overlapB);
+          if (minOverlap === overlapL) nx = left - PR;
+          else if (minOverlap === overlapR) nx = right + PR;
+          else if (minOverlap === overlapT) ny = top - PR;
+          else ny = bottom + PR;
+        }
+      }
+
       p.x = nx; p.y = ny;
     });
 
@@ -179,6 +202,10 @@ async function startServer() {
         } else if (isTray(p.holding) && getTrayItems(p.holding).length === 0) {
           p.holding = null;
           socket.emit("sound", "pickup");
+          return;
+        } else {
+          // Elde başka item varsa tepsi alınamaz
+          socket.emit("sound", "fail");
           return;
         }
       }
@@ -265,8 +292,14 @@ async function startServer() {
         Math.hypot(px - t.seatX, py - t.seatY) < SERVE_R
       );
       if (dirtyIdx !== -1) {
+        const dt = gs.dirtyTables[dirtyIdx];
         if (!p.holding) {
           p.holding = DIRTY_PLATE;
+          // Bahşiş topla
+          if (dt.tip > 0) {
+            gs.score += dt.tip;
+            io.to(roomId!).emit("tipCollected", { x: dt.seatX, y: dt.seatY, amount: dt.tip });
+          }
           gs.dirtyTables.splice(dirtyIdx, 1);
           socket.emit("sound", "pickup");
         } else if (isTray(p.holding)) {
@@ -274,6 +307,10 @@ async function startServer() {
           if (items.length < MAX_TRAY_CAPACITY) {
             items.push(DIRTY_PLATE);
             p.holding = createTray(items);
+            if (dt.tip > 0) {
+              gs.score += dt.tip;
+              io.to(roomId!).emit("tipCollected", { x: dt.seatX, y: dt.seatY, amount: dt.tip });
+            }
             gs.dirtyTables.splice(dirtyIdx, 1);
             socket.emit("sound", "pickup");
           }
@@ -285,7 +322,7 @@ async function startServer() {
       for (const station of gs.holdingStations) {
         let stationDef: any;
         let inRange = false;
-        
+
         if (station.type === 'plate') {
           stationDef = HOLDING_STATION_POSITIONS.find(pos => pos.id === station.id);
           if (stationDef) {
@@ -301,13 +338,13 @@ async function startServer() {
             inRange = xDist < 50 && yDist < 70;
           }
         }
-        
+
         if (!stationDef || !inRange) continue;
 
         // ═══ TEPSİ ETKİLEŞİMLERİ ═══
         if (isTray(p.holding)) {
           const items = getTrayItems(p.holding);
-          
+
           // Tepsiden bloğa koyma (blok boşsa)
           if (items.length > 0 && station.items.length === 0) {
             const item = items.pop()!;
@@ -316,7 +353,7 @@ async function startServer() {
             socket.emit("sound", "pickup");
             return;
           }
-          
+
           // Bloktan tepsiye alma (tepside yer varsa)
           if (station.items.length > 0 && items.length < MAX_TRAY_CAPACITY) {
             const item = station.items.pop()!;
@@ -328,7 +365,7 @@ async function startServer() {
         }
 
         // ═══ TEK ITEM ETKİLEŞİMLERİ ═══
-        
+
         // Boş elle bloktan alma
         if (!p.holding && station.items.length > 0) {
           p.holding = station.items.pop()!;
@@ -343,7 +380,7 @@ async function startServer() {
           socket.emit("sound", "success");
           return;
         }
-        
+
         // Blok doluysa hata
         if (p.holding && station.items.length > 0) {
           socket.emit("sound", "fail");
@@ -409,7 +446,8 @@ async function startServer() {
           const c = gs.customers[ci];
           if (c.isSeated && !c.isEating && Math.hypot(px - c.seatX, py - c.seatY) < SERVE_R) {
             if (!isTray(p.holding) && c.wants === p.holding) {
-              gs.score += earn(gs.upgrades.earnings);
+              // Score artık serve'de değil, bahşiş toplama'da eklenir
+              c.tipAmount = earn(gs.upgrades.earnings);
               c.isEating = true; c.eatTimer = EAT_TICKS; c.wants = null; p.holding = null;
               served = true; break;
             } else if (isTray(p.holding)) {
@@ -418,7 +456,7 @@ async function startServer() {
               if (wIdx !== -1) {
                 items.splice(wIdx, 1);
                 p.holding = createTray(items);
-                gs.score += earn(gs.upgrades.earnings);
+                c.tipAmount = earn(gs.upgrades.earnings);
                 c.isEating = true; c.eatTimer = EAT_TICKS; c.wants = null;
                 served = true; break;
               }
@@ -557,7 +595,7 @@ async function startServer() {
       steps++;
       for (const rid of Object.keys(rooms)) {
         const gs = rooms[rid];
-        if (!gs.stock) gs.stock = { '🫓': 10, '🥩': 10, '🥬': 10 };
+        if (!gs.stock) gs.stock = { '🍞': 10, '🥩': 10, '🥬': 10 };
 
         // Universal fırın sistemi - pişirme & yanma timer
         for (const station of gs.cookStations) {
@@ -630,7 +668,7 @@ async function startServer() {
           if (c.isEating) {
             c.eatTimer--;
             if (c.eatTimer <= 0) {
-              gs.dirtyTables.push({ seatX: c.seatX, seatY: c.seatY });
+              gs.dirtyTables.push({ seatX: c.seatX, seatY: c.seatY, tip: c.tipAmount || 0 });
               gs.customers.splice(i, 1);
               tryQueueSeat(gs, io, rid);
             }

@@ -18,7 +18,7 @@ const DEFAULT_STATE: GameState = {
     holdingStations: [],
     dirtyTables: [],
     score: 0,
-    stock: { '🫓': 10, '🥩': 10, '🥬': 10 },
+    stock: { '🍞': 10, '🥩': 10, '🥬': 10 },
     marketName: '',
     dayPhase: 'prep',
     dayTimer: 1800,
@@ -26,7 +26,7 @@ const DEFAULT_STATE: GameState = {
     day: 1,
     hasOrderedTonight: false,
     cookStations: [],
-
+    dirtyTrayCount: 0,
 };
 
 /**

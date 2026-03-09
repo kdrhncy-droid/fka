@@ -5,7 +5,7 @@
 
 // ─── Temel Tipler ────────────────────────────────────────────────────────────
 export type Item = string | null;
-export type StockKey = '🫓' | '🥩' | '🥬';
+export type StockKey = '🍞' | '🥩' | '🥬';
 export type UpgradeKey = 'patience' | 'earnings' | 'stockMax';
 export const CLEAN_PLATE = '__clean_plate__';
 export const DIRTY_PLATE = '__dirty_plate__';
@@ -35,6 +35,7 @@ export interface Customer {
     wants: Item;
     patience: number; maxPatience: number;
     isSeated: boolean; isEating: boolean; eatTimer: number;
+    tipAmount?: number;
 }
 
 export interface WaitingGuest { id: string; wants: Item; }
@@ -82,7 +83,12 @@ export function createTray(items: string[]): string {
 export interface DirtyTable {
     seatX: number;
     seatY: number;
+    tip: number; // Bahşiş miktarı — oyuncu toplarken score'a eklenir
 }
+
+// ─── Masa Çarpışma Boyutları ───────────────────────────────────────────────
+export const TABLE_HALF_W = 45; // Masa yarı genişlik
+export const TABLE_HALF_H = 35; // Masa yarı yükseklik
 
 export interface GameState {
     players: Record<string, Player>;
@@ -130,13 +136,13 @@ export const COUNTER_POSITIONS = [
     { id: 'counter1', x: 220, y: 245, width: 40, height: 40, type: 'counter' as const },
     { id: 'counter2', x: 440, y: 245, width: 40, height: 40, type: 'counter' as const },
     { id: 'counter3', x: 480, y: 245, width: 40, height: 40, type: 'counter' as const },
-    
+
     // Ortada (2 kapı arası)
     { id: 'counter4', x: 580, y: 245, width: 40, height: 40, type: 'counter' as const },
     { id: 'counter5', x: 620, y: 245, width: 40, height: 40, type: 'counter' as const },
     { id: 'counter6', x: 660, y: 245, width: 40, height: 40, type: 'counter' as const },
     { id: 'counter7', x: 700, y: 245, width: 40, height: 40, type: 'counter' as const },
-    
+
     // Sağ kapı yanları
     { id: 'counter8', x: 800, y: 245, width: 40, height: 40, type: 'counter' as const },
     { id: 'counter9', x: 840, y: 245, width: 40, height: 40, type: 'counter' as const },
@@ -159,7 +165,7 @@ export function isInDoor(x: number): boolean {
 export const TRAY_STATION = { x: 80, y: 170 };
 
 export const INGREDIENTS = [
-    { key: '🫓' as StockKey, pos: { x: 150, y: 65 }, label: 'Hamur', color: '#fde68a' },
+    { key: '🍞' as StockKey, pos: { x: 150, y: 65 }, label: 'Hamur', color: '#fde68a' },
     { key: '🥩' as StockKey, pos: { x: 300, y: 65 }, label: 'Et', color: '#fca5a5' },
     { key: '🥬' as StockKey, pos: { x: 450, y: 65 }, label: 'Sebze', color: '#bbf7d0' },
 ];
@@ -167,7 +173,7 @@ export const INGREDIENTS = [
 // ─── Universal Fırın Sistemi ─────────────────────────────────────────────────
 // Her fırında her yemek yapılabilir
 export const RECIPE_DEFS = {
-    '🫓': { output: '🍕', time: 90, label: '🍕 Pizza' },
+    '🍞': { output: '🍕', time: 90, label: '🍕 Pizza' },
     '🥩': { output: '🍔', time: 60, label: '🍔 Burger' },
     '🥬': { output: '🥗', time: 30, label: '🥗 Salata' },
 } as const;

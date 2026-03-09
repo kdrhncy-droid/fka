@@ -19,6 +19,8 @@ import {
   OUTSIDE_QUEUE_Y,
   INGREDIENTS,
   HOLDING_STATION_POSITIONS,
+  TABLE_HALF_W,
+  TABLE_HALF_H,
 } from "../types/game";
 
 import { drawFloor } from "../renderer/drawFloor";
@@ -179,6 +181,21 @@ export function useGameLoop({
     let lastEmit = 0;
     let lastFrameTime = 0;
 
+    // Yüzen yazılar (bahşiş toplama efektleri vb.)
+    const floatingTexts: { x: number; y: number; text: string; life: number; startY: number }[] = [];
+
+    // Socket tipCollector event dinleyicisi
+    const handleTipCollected = (data: { x: number; y: number; amount: number }) => {
+      floatingTexts.push({
+        x: data.x,
+        y: data.y - 20,
+        text: `+$${data.amount}`,
+        life: 60, // 60 frame boyunca yaşasın (yaklaşık 1 sn)
+        startY: data.y - 20
+      });
+    };
+    if (socket) socket.on("tipCollected", handleTipCollected);
+
     const render = (time: number) => {
       const state = gameStateRef.current;
       const deltaMs = lastFrameTime === 0 ? 1000 / 60 : Math.min(50, time - lastFrameTime);
@@ -225,7 +242,23 @@ export function useGameLoop({
           ny = wasAbove ? WALL_Y1 - 1 : WALL_Y2 + 1;
         }
 
-        // Dikey duvar kontrolü kaldırıldı - lavabo alanı artık açık
+        // Masa çarpışması (Server ile aynı mantık - AABB)
+        const PR = 16;
+        for (const tx of TABLE_X_SLOTS) {
+          const left = tx - TABLE_HALF_W, right = tx + TABLE_HALF_W;
+          const top = TABLE_Y - TABLE_HALF_H, bottom = TABLE_Y + TABLE_HALF_H;
+          if (nx + PR > left && nx - PR < right && ny + PR > top && ny - PR < bottom) {
+            const overlapL = (nx + PR) - left;
+            const overlapR = right - (nx - PR);
+            const overlapT = (ny + PR) - top;
+            const overlapB = bottom - (ny - PR);
+            const minOverlap = Math.min(overlapL, overlapR, overlapT, overlapB);
+            if (minOverlap === overlapL) nx = left - PR;
+            else if (minOverlap === overlapR) nx = right + PR;
+            else if (minOverlap === overlapT) ny = top - PR;
+            else ny = bottom + PR;
+          }
+        }
 
         lp.x = nx;
         lp.y = ny;
@@ -243,7 +276,7 @@ export function useGameLoop({
       // Masalar
 
       // Malzeme istasyonları (server ile uyumlu: hamur / et / sebze)
-      const stock = state.stock ?? { "🫓": 0, "🥩": 0, "🥬": 0 };
+      const stock = state.stock ?? { "🍞": 0, "🥩": 0, "🥬": 0 };
 
       INGREDIENTS.forEach((ing) => {
         drawStation(
@@ -398,6 +431,35 @@ export function useGameLoop({
         });
       }
 
+      // Yüzen yazılar (floating texts) render
+      for (let i = floatingTexts.length - 1; i >= 0; i--) {
+        const ft = floatingTexts[i];
+
+        ctx.save();
+        ctx.globalAlpha = ft.life / 60; // Giderek soluklaş
+        ctx.translate(ft.x, ft.y);
+
+        // Zıplama/Yukarı kayma animasyonu
+        const progress = 1 - (ft.life / 60);
+        ctx.translate(0, -progress * 30);
+
+        // Yazı stili
+        ctx.fillStyle = "#22c55e"; // emerald-500
+        ctx.font = "bold 20px Arial";
+        ctx.textAlign = "center";
+
+        // Gölge (outline)
+        ctx.strokeStyle = "white";
+        ctx.lineWidth = 3;
+        ctx.strokeText(ft.text, 0, 0);
+        ctx.fillText(ft.text, 0, 0);
+
+        ctx.restore();
+
+        ft.life--;
+        if (ft.life <= 0) floatingTexts.splice(i, 1);
+      }
+
       // Gece overlay
       if (state.dayPhase === "night") {
         ctx.fillStyle = "rgba(5,10,60,0.45)";
@@ -429,6 +491,9 @@ export function useGameLoop({
     };
 
     frameId = requestAnimationFrame(render);
-    return () => cancelAnimationFrame(frameId);
+    return () => {
+      cancelAnimationFrame(frameId);
+      if (socket) socket.off("tipCollected", handleTipCollected);
+    };
   }, [isJoined, myId, socket]);
 }

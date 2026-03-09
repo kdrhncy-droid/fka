@@ -246,9 +246,9 @@ export function drawPlayer(
                     } else {
                         // Yemek veya diğer itemler - emoji olarak göster
                         const icon = item === CLEAN_PLATE ? '🍽️' : item === DIRTY_PLATE ? '🧽' : item;
-                        
-                        // Yemek altına beyaz tabak çiz
-                        if (icon !== '🍽️' && icon !== '🧽' && icon !== '🫓' && icon !== '🥩' && icon !== '🥬') {
+
+                        // Dish_items (hazır yemek) ise beyaz tabak çiz
+                        if (['�', '🍔', '�'].includes(icon)) {
                             const plateGradient = ctx.createRadialGradient(0, drawY + 2, 2, 0, drawY + 3, 16);
                             plateGradient.addColorStop(0, '#ffffff');
                             plateGradient.addColorStop(1, '#f8fafc');
@@ -275,7 +275,7 @@ export function drawPlayer(
                     ctx.beginPath();
                     ctx.arc(20, -12, 8, 0, Math.PI * 2);
                     ctx.fill();
-                    
+
                     ctx.strokeStyle = '#ffffff';
                     ctx.lineWidth = 2;
                     ctx.stroke();
@@ -291,20 +291,39 @@ export function drawPlayer(
             ctx.restore(); // Tepsi transform'unu sıfırla
         } else {
             // -- TEKLİ OBJE --
-            ctx.fillStyle = 'rgba(0,0,0,0.1)';
-            ctx.beginPath(); ctx.ellipse(holdX, -6, 18, 5, 0, 0, Math.PI * 2); ctx.fill();
+            // Tekli obje çiğ malzeme mi, yoksa pişmiş/tabak mı?
+            if (['🍕', '🍔', '🥗', CLEAN_PLATE, DIRTY_PLATE].includes(heldItem as string)) {
+                ctx.fillStyle = 'rgba(0,0,0,0.1)';
+                ctx.beginPath(); ctx.ellipse(holdX, -6, 18, 5, 0, 0, Math.PI * 2); ctx.fill();
 
-            ctx.fillStyle = 'white';
-            ctx.beginPath(); ctx.ellipse(holdX, -8, 18, 8, 0, 0, Math.PI * 2); ctx.fill();
+                if (heldItem === DIRTY_PLATE) {
+                    ctx.fillStyle = '#e2e8f0';
+                } else {
+                    ctx.fillStyle = 'white';
+                }
 
-            ctx.strokeStyle = '#cbd5e1';
-            ctx.lineWidth = 1.5;
-            ctx.stroke();
+                ctx.beginPath(); ctx.ellipse(holdX, -8, 18, 8, 0, 0, Math.PI * 2); ctx.fill();
 
+                ctx.strokeStyle = heldItem === DIRTY_PLATE ? '#94a3b8' : '#cbd5e1';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+
+                if (heldItem === DIRTY_PLATE) {
+                    ctx.fillStyle = 'rgba(146, 64, 14, 0.4)';
+                    ctx.beginPath(); ctx.arc(holdX - 5, -9, 2, 0, Math.PI * 2); ctx.fill();
+                    ctx.beginPath(); ctx.arc(holdX + 4, -7, 1.5, 0, Math.PI * 2); ctx.fill();
+                }
+            } else {
+                // Çiğ malzeme - sadece zemine gölge çiz
+                ctx.fillStyle = 'rgba(0,0,0,0.2)';
+                ctx.beginPath(); ctx.ellipse(holdX, -6, 12, 4, 0, 0, Math.PI * 2); ctx.fill();
+            }
+
+            const icon = heldItem === CLEAN_PLATE ? '🍽️' : heldItem === DIRTY_PLATE ? '🧽' : heldItem;
             ctx.font = '22px Arial';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText(heldItem, holdX, -12);
+            ctx.fillText(icon as string, holdX, -12);
         }
 
         ctx.restore();
@@ -364,7 +383,7 @@ export function drawPlayer(
         // Diğer oyuncular - Koyu gri
         ctx.fillStyle = 'rgba(30, 41, 59, 0.95)'; // slate-800
     }
-    
+
     ctx.beginPath();
     ctx.roundRect(x - nameW / 2, y + 26, nameW, 18, 6);
     ctx.fill();
@@ -379,14 +398,14 @@ export function drawPlayer(
     ctx.font = 'bold 12px Arial';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    
+
     // Yazı gölgesi (daha okunabilir)
     ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
     ctx.shadowBlur = 2;
     ctx.shadowOffsetY = 1;
-    
+
     ctx.fillText(p.name, x, y + 36);
-    
+
     // Gölgeyi sıfırla
     ctx.shadowColor = 'transparent';
     ctx.shadowBlur = 0;

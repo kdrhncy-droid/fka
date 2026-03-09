@@ -51,6 +51,8 @@ export {
   isTray,
   getTrayItems,
   createTray,
+  TABLE_HALF_W,
+  TABLE_HALF_H,
 } from '../../shared/types';
 
 // ─── Client-Only Sabitler ────────────────────────────────────────────────────

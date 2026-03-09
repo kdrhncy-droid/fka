@@ -100,7 +100,7 @@ export function drawCounters(
                     ctx.arc(3, -4, 1.2, 0, Math.PI * 2);
                     ctx.fill();
                 }
-            } else {
+            } else if (['🍕', '🍔', '🥗'].includes(item as string)) {
                 // ─── YEMEKLİ TABAK ÇİZİMİ ───
 
                 // Önce tabak
@@ -135,6 +135,17 @@ export function drawCounters(
 
                 // Emoji
                 ctx.fillText(icon, 0, -8);
+            } else {
+                // ─── SADECE ÇİĞ MALZEME ───
+                const icon = item;
+                ctx.font = '18px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+
+                // Sadece gölge + kendi
+                ctx.fillStyle = 'rgba(0,0,0,0.2)';
+                ctx.fillText(icon, 1, 1);
+                ctx.fillText(icon, 0, 0);
             }
         }
 
