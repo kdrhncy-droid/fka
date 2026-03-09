@@ -96,8 +96,9 @@ function drawWaitList(ctx: CanvasRenderingContext2D, list: WaitingGuest[]) {
 }
 
 function drawDirtyTable(ctx: CanvasRenderingContext2D, seatX: number, seatY: number) {
-  const dir = seatY > TABLE_Y ? -1 : 1;
-  const plateY = seatY - dir * 18;
+  // Masanın merkezi TABLE_Y = 500. Tabak masanın kenarında dursun.
+  const isTopSeat = seatY < TABLE_Y;
+  const plateY = isTopSeat ? TABLE_Y - 20 : TABLE_Y + 20;
 
   ctx.fillStyle = "rgba(0,0,0,0.12)";
   ctx.beginPath();

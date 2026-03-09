@@ -40,6 +40,7 @@ import {
   BURNED_FOOD,
   CLEAN_PLATE,
   DIRTY_PLATE,
+  EAT_TICKS,
   HOLDING_STATION_POSITIONS,
 } from "./shared/types";
 
@@ -47,7 +48,6 @@ import {
 const INTERACT_R = 90;
 const TRASH_INTERACT_R = 56;
 const SERVE_R = 100;
-const EAT_TICKS = 90;
 const INTERACT_COOLDOWN = 200; // ms
 const LOGIC_STEP_MS = 1000 / 30;
 

@@ -1,4 +1,4 @@
-import { Customer, TABLE_Y } from '../types/game';
+import { Customer, TABLE_Y, EAT_TICKS } from '../types/game';
 
 type CustomerRenderState = {
     lastX: number;
@@ -49,7 +49,7 @@ export function drawCustomer(ctx: CanvasRenderingContext2D, customer: Customer) 
 
     const bobbingY = Math.abs(Math.sin(state.bobPhase)) * 3.5 * state.bobAmount;
     const tilt = Math.sin(state.bobPhase) * 0.05 * state.bobAmount;
-    const eatProgress = isEating ? eatTimer / 90 : 0;
+    const eatProgress = isEating ? eatTimer / EAT_TICKS : 0;
 
     ctx.save();
     ctx.translate(x, y);

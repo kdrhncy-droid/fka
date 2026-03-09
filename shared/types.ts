@@ -90,6 +90,7 @@ export const DAY_TICKS = 3000;   // 100 saniye (30fps) - Günler daha uzun
 export const NIGHT_TICKS = 600;    // ~20 saniye
 export const CLOSING_THRESHOLD = 450; // son ~15sn müşteri gelmesin
 export const BURN_TICKS = 300;     // ~10 sn yemek yanma süresi
+export const EAT_TICKS = 240;      // Müşteri yeme hızı (8 saniye)
 export const BURNED_FOOD = '⬛';   // Çöpe atılacak yanan yemek
 
 // ─── Bekletme İstasyonları (Prep Counters / Plates) ──────────────────────────
