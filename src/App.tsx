@@ -27,8 +27,9 @@ export default function App() {
   const [charType, setCharType] = useState(0);
   const [playerColor, setPlayerColor] = useState(CHARACTER_TYPES[0].bodyColor);
   const [playerHat, setPlayerHat] = useState('');
+  const [roomId, setRoomId] = useState(() => Math.random().toString(36).substring(2, 6).toUpperCase());
 
-  const handleQuickStart = (name: string) => {
+  const handleQuickStart = (name: string, quickRoomId: string) => {
     if (!socket) return;
     if (audioCtxRef.current?.state === 'suspended') audioCtxRef.current.resume();
 
@@ -39,7 +40,7 @@ export default function App() {
       color: defaultChar.bodyColor,
       hat: defaultChar.hat,
       charType: 0,
-      roomId: 'terramarket',
+      roomId: quickRoomId || roomId,
       marketName: MARKET_NAME,
     });
 
@@ -57,7 +58,7 @@ export default function App() {
       color: playerColor,
       hat: playerHat,
       charType,
-      roomId: 'terramarket',
+      roomId: roomId.trim().toUpperCase() || 'TERRAMARKET',
       marketName: marketName.trim() || MARKET_NAME,
     });
 
@@ -82,6 +83,7 @@ export default function App() {
             playerHat={playerHat} setPlayerHat={setPlayerHat}
             charType={charType} setCharType={setCharType}
             marketName={marketName} setMarketName={setMarketName}
+            roomId={roomId} setRoomId={setRoomId}
             onJoin={handleJoin}
             onBack={() => setEntryScreen('menu')}
             onOpenSettings={() => setShowSettings(true)}
@@ -93,6 +95,7 @@ export default function App() {
             settings={settings}
             onUpdate={updateSettings}
             onClose={() => setShowSettings(false)}
+            isJoined={isJoined}
           />
         )}
       </>
@@ -112,6 +115,7 @@ export default function App() {
       audioCtxRef={audioCtxRef}
       settings={settings}
       updateSettings={updateSettings}
+      roomId={roomId}
     />
   );
 }

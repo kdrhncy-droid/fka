@@ -14,6 +14,8 @@ interface CharacterSelectProps {
     setCharType: (v: number) => void;
     marketName: string;
     setMarketName: (v: string) => void;
+    roomId: string;
+    setRoomId: (v: string) => void;
     onJoin: (e: React.FormEvent) => void;
     onBack: () => void;
     onOpenSettings: () => void;
@@ -43,6 +45,7 @@ export const CharacterSelect: React.FC<CharacterSelectProps> = ({
     setPlayerHat,
     charType, setCharType,
     marketName, setMarketName,
+    roomId, setRoomId,
     onJoin,
     onBack,
     onOpenSettings,
@@ -153,7 +156,30 @@ export const CharacterSelect: React.FC<CharacterSelectProps> = ({
                                 </label>
 
                                 <label className="block">
-                                    <span className="mb-2 block text-xs font-black uppercase tracking-[0.22em] text-stone-400">Market adi</span>
+                                    <span className="mb-2 block text-xs font-black uppercase tracking-[0.22em] text-stone-400">Oda Kodu</span>
+                                    <div className="flex gap-2">
+                                        <input
+                                            type="text"
+                                            value={roomId}
+                                            onChange={(e) => setRoomId(e.target.value.toUpperCase())}
+                                            maxLength={8}
+                                            placeholder="Örn: AB12"
+                                            className="w-full rounded-2xl border border-white/10 bg-stone-900 px-4 py-3 text-base font-semibold uppercase text-stone-100 outline-none transition-colors placeholder:text-stone-500 focus:border-amber-300"
+                                            required
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setRoomId(Math.random().toString(36).substring(2, 6).toUpperCase())}
+                                            className="rounded-2xl border border-white/10 bg-stone-800 px-4 transition-colors hover:bg-stone-700"
+                                            title="Yeni Kod Üret"
+                                        >
+                                            🎲
+                                        </button>
+                                    </div>
+                                </label>
+
+                                <label className="block">
+                                    <span className="mb-2 block text-xs font-black uppercase tracking-[0.22em] text-stone-400">Market adi <span className="text-stone-600">(isteğe bağlı)</span></span>
                                     <input
                                         type="text"
                                         value={marketName}

@@ -25,11 +25,12 @@ interface Props {
     audioCtxRef: React.MutableRefObject<AudioContext | null>;
     settings: Settings;
     updateSettings: (patch: Partial<Settings>) => void;
+    roomId: string;
 }
 
 export const GameScreen: React.FC<Props> = ({
     canvasRef, isJoined, myId, socket,
-    gameStateRef, localPlayerRef, keysRef, audioCtxRef, settings, updateSettings,
+    gameStateRef, localPlayerRef, keysRef, audioCtxRef, settings, updateSettings, roomId
 }) => {
     const joystickVectorRef = useRef({ x: 0, y: 0 });
     const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -148,10 +149,22 @@ export const GameScreen: React.FC<Props> = ({
 
             {/* ── Üst Bar ──────────────────────────────────────────────────────── */}
             <div className="flex-none h-12 px-2 flex items-center justify-between gap-2 bg-stone-950/90 border-b border-stone-800">
-                <div className="bg-white/95 px-2 py-0.5 rounded-lg border border-white/40 flex-shrink-0">
-                    <h1 className="text-sm font-black text-stone-800 leading-none">
-                        {gameStateRef.current.marketName || MARKET_NAME} 🏪
-                    </h1>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                    <div className="bg-white/95 px-2 py-0.5 rounded-lg border border-white/40">
+                        <h1 className="text-sm font-black text-stone-800 leading-none">
+                            {gameStateRef.current.marketName || MARKET_NAME} 🏪
+                        </h1>
+                    </div>
+                    <button 
+                        onClick={() => {
+                            navigator.clipboard.writeText(roomId);
+                            // Optik feedback yapılabilir buraya, ama mobilde basit tutalım
+                        }}
+                        className="bg-stone-800 hover:bg-stone-700 active:bg-green-700 text-stone-300 font-mono text-[10px] font-bold px-2 py-1 rounded transition-colors"
+                        title="Oda kodunu kopyala"
+                    >
+                        Oda: <span className="text-white">{roomId}</span> 📋
+                    </button>
                 </div>
 
                 <div className="flex-1 max-w-xs flex flex-col items-center gap-0.5">

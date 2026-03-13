@@ -3,12 +3,13 @@ import { MARKET_NAME } from '../constants';
 
 interface WelcomeScreenProps {
     onPlay: () => void;
-    onQuickStart: (playerName: string) => void;
+    onQuickStart: (playerName: string, roomId: string) => void;
     onSettings: () => void;
 }
 
 export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onPlay, onQuickStart, onSettings }) => {
     const [quickName, setQuickName] = React.useState('');
+    const [quickRoom, setQuickRoom] = React.useState(() => Math.random().toString(36).substring(2, 6).toUpperCase());
     const [showQuickStart, setShowQuickStart] = React.useState(false);
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
@@ -62,18 +63,26 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onPlay, onQuickSta
                     {/* Hızlı başlama formu */}
                     {isMobile && showQuickStart && (
                         <div className="space-y-3 rounded-2xl border border-green-500/30 bg-green-500/10 p-4">
-                            <input
-                                type="text"
-                                value={quickName}
-                                onChange={(e) => setQuickName(e.target.value)}
-                                placeholder="Oyuncu adın (ör: Chef1)"
-                                maxLength={12}
-                                className="w-full rounded-xl border border-green-500/30 bg-stone-900 px-4 py-3 text-base font-semibold text-stone-100 outline-none placeholder:text-stone-500 focus:border-green-400"
-                            />
+                                <input
+                                    type="text"
+                                    value={quickName}
+                                    onChange={(e) => setQuickName(e.target.value)}
+                                    placeholder="Oyuncu adın"
+                                    maxLength={12}
+                                    className="w-full rounded-xl border border-green-500/30 bg-stone-900 px-4 py-3 text-base font-semibold text-stone-100 outline-none placeholder:text-stone-500 focus:border-green-400"
+                                />
+                                <input
+                                    type="text"
+                                    value={quickRoom}
+                                    onChange={(e) => setQuickRoom(e.target.value.toUpperCase())}
+                                    placeholder="Oda Kodu (örn: AB12)"
+                                    maxLength={8}
+                                    className="w-full rounded-xl border border-green-500/30 bg-stone-900 px-4 py-3 text-base font-semibold uppercase text-stone-100 outline-none placeholder:text-stone-500 focus:border-green-400"
+                                />
                             <div className="flex gap-2">
                                 <button
-                                    onClick={() => quickName.trim() && onQuickStart(quickName.trim())}
-                                    disabled={!quickName.trim()}
+                                    onClick={() => quickName.trim() && quickRoom.trim() && onQuickStart(quickName.trim(), quickRoom.trim())}
+                                    disabled={!quickName.trim() || !quickRoom.trim()}
                                     className="flex-1 rounded-xl bg-green-600 px-4 py-3 text-sm font-black uppercase tracking-[0.14em] text-white active:bg-green-500 disabled:bg-stone-700 disabled:text-stone-500"
                                 >
                                     Başla
