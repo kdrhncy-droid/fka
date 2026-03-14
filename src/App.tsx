@@ -30,6 +30,12 @@ export default function App() {
   const [roomId, setRoomId] = useState(() => Math.random().toString(36).substring(2, 6).toUpperCase());
   const [isJoiningExistingRoom, setIsJoiningExistingRoom] = useState(false);
 
+  const handleLeaveGame = () => {
+    setIsJoined(false);
+    setEntryScreen('menu');
+    socket?.disconnect();
+  };
+
   const handleQuickStart = (name: string, quickRoomId: string) => {
     if (!socket) return;
     if (audioCtxRef.current?.state === 'suspended') audioCtxRef.current.resume();
@@ -133,6 +139,7 @@ export default function App() {
       settings={settings}
       updateSettings={updateSettings}
       roomId={roomId}
+      onLeaveGame={handleLeaveGame}
     />
   );
 }

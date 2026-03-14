@@ -26,11 +26,12 @@ interface Props {
     settings: Settings;
     updateSettings: (patch: Partial<Settings>) => void;
     roomId: string;
+    onLeaveGame?: () => void;
 }
 
 export const GameScreen: React.FC<Props> = ({
     canvasRef, isJoined, myId, socket,
-    gameStateRef, localPlayerRef, keysRef, audioCtxRef, settings, updateSettings, roomId
+    gameStateRef, localPlayerRef, keysRef, audioCtxRef, settings, updateSettings, roomId, onLeaveGame
 }) => {
     const joystickVectorRef = useRef({ x: 0, y: 0 });
     const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -306,12 +307,20 @@ export const GameScreen: React.FC<Props> = ({
                             <h2 className="text-red-500 font-black text-5xl tracking-widest drop-shadow-[0_0_15px_rgba(239,68,68,0.8)]">GAME OVER</h2>
                             <p className="text-red-200 text-lg mt-2 font-bold">Müşterileri çıldırttın ve restoranı terk ettiler!</p>
                         </div>
-                        <button
-                            onClick={() => emit('resetDay')}
-                            className="px-10 py-5 bg-gradient-to-r from-stone-800 to-stone-900 hover:from-stone-700 hover:to-stone-800 text-red-500 rounded-2xl font-black text-2xl border-2 border-red-900 transition-all active:scale-95 shadow-[0_0_30px_rgba(239,68,68,0.4)]"
-                        >
-                            🔄 TEKRAR DENE
-                        </button>
+                        <div className="flex flex-col gap-3 w-full max-w-sm">
+                            <button
+                                onClick={() => emit('resetDay')}
+                                className="px-10 py-5 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white rounded-2xl font-black text-2xl border-2 border-amber-400 transition-all active:scale-95 shadow-[0_0_30px_rgba(217,119,6,0.4)]"
+                            >
+                                🔄 TEKRAR DENE
+                            </button>
+                            <button
+                                onClick={() => onLeaveGame?.()}
+                                className="px-10 py-5 bg-gradient-to-r from-stone-700 to-stone-800 hover:from-stone-600 hover:to-stone-700 text-stone-100 rounded-2xl font-black text-2xl border-2 border-stone-500 transition-all active:scale-95 shadow-[0_0_30px_rgba(0,0,0,0.4)]"
+                            >
+                                🏠 ANA MENÜ
+                            </button>
+                        </div>
                     </div>
                 )}
 
@@ -344,7 +353,7 @@ export const GameScreen: React.FC<Props> = ({
             )}
 
             {showSettings && (
-                <SettingsPanel settings={settings} onUpdate={updateSettings} onClose={() => setShowSettings(false)} />
+                <SettingsPanel settings={settings} onUpdate={updateSettings} onClose={() => setShowSettings(false)} onLeaveGame={onLeaveGame} isJoined={isJoined} />
             )}
 
             {showPatchNotes && (

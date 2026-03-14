@@ -6,6 +6,7 @@ interface Props {
     onUpdate: (patch: Partial<Settings>) => void;
     onClose: () => void;
     isJoined?: boolean;
+    onLeaveGame?: () => void;
 }
 
 function Toggle({ on, onClick }: { on: boolean; onClick: () => void }) {
@@ -56,7 +57,7 @@ function SliderRow({
     );
 }
 
-export const SettingsPanel: React.FC<Props> = ({ settings, onUpdate, onClose, isJoined }) => (
+export const SettingsPanel: React.FC<Props> = ({ settings, onUpdate, onClose, isJoined, onLeaveGame }) => (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm">
         <div className="max-h-[92dvh] w-full max-w-3xl overflow-y-auto rounded-[28px] border border-white/10 bg-[linear-gradient(180deg,#1c1917,#0c0a09)] p-4 text-stone-100 shadow-[0_30px_120px_rgba(0,0,0,0.45)] md:p-6">
             <div className="flex items-center justify-between gap-4 border-b border-white/8 pb-4">
@@ -168,18 +169,18 @@ export const SettingsPanel: React.FC<Props> = ({ settings, onUpdate, onClose, is
                 </div>
             </div>
 
-            <div className={`mt-5 flex items-center ${isJoined ? 'justify-between' : 'justify-end'}`}>
+            <div className={`mt-5 flex items-center ${isJoined ? 'justify-between' : 'justify-end'} gap-3`}>
                 {isJoined && (
                     <button
                         type="button"
                         onClick={() => {
-                            if(confirm("Oyundan çıkmak istediğine emin misin?")) {
-                                window.location.reload();
+                            if(confirm("Odadan ayrılmak istediğine emin misin?")) {
+                                onLeaveGame?.();
                             }
                         }}
                         className="rounded-2xl border border-red-500/30 bg-red-500/10 px-6 py-4 text-sm font-black uppercase tracking-[0.18em] text-red-500 transition-colors hover:bg-red-500/20 active:scale-[0.99]"
                     >
-                        Odadan Ayrıl
+                        🚪 Odadan Ayrıl
                     </button>
                 )}
                 <button
@@ -187,7 +188,7 @@ export const SettingsPanel: React.FC<Props> = ({ settings, onUpdate, onClose, is
                     onClick={onClose}
                     className="rounded-2xl bg-[linear-gradient(135deg,#f59e0b,#ea580c)] px-6 py-4 text-sm font-black uppercase tracking-[0.18em] text-stone-950 transition-transform hover:scale-[1.01] active:scale-[0.99]"
                 >
-                    Kaydet ve don
+                    Kaydet ve Kapat
                 </button>
             </div>
         </div>
