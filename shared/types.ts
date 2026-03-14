@@ -155,10 +155,10 @@ export const BURNED_FOOD = '⬛';   // Çöpe atılacak yanan yemek
 
 // ─── Bekletme İstasyonları (Prep Counters / Plates) ──────────────────────────
 export const HOLDING_STATION_POSITIONS = [
-    { id: 'plate0', x: 600, y: 65, radius: 35, type: 'plate' as const },
-    { id: 'plate1', x: 660, y: 65, radius: 35, type: 'plate' as const },
-    { id: 'plate2', x: 720, y: 65, radius: 35, type: 'plate' as const },
-    { id: 'plate3', x: 780, y: 65, radius: 35, type: 'plate' as const },
+    { id: 'plate0', x: 560, y: 65, radius: 35, type: 'plate' as const },
+    { id: 'plate1', x: 620, y: 65, radius: 35, type: 'plate' as const },
+    { id: 'plate2', x: 680, y: 65, radius: 35, type: 'plate' as const },
+    { id: 'plate3', x: 740, y: 65, radius: 35, type: 'plate' as const },
 ];
 
 // ─── Servis Masaları (Pass/Counter - Duvar üzerinde) ─────────────────────────
@@ -198,11 +198,11 @@ export function isInDoor(x: number): boolean {
 export const TRAY_STATION = { x: 80, y: 170 };
 
 export const INGREDIENTS = [
-    { key: '🍞' as StockKey, pos: { x: 150, y: 65 }, label: 'Hamur', color: '#fde68a' },
-    { key: '🥩' as StockKey, pos: { x: 300, y: 65 }, label: 'Et', color: '#fca5a5' },
-    { key: '🥬' as StockKey, pos: { x: 450, y: 65 }, label: 'Sebze', color: '#bbf7d0' },
-    { key: '🥘' as StockKey, pos: { x: 850, y: 65 }, label: 'Çorba', color: '#fbbf24' },
-    { key: '🍢' as StockKey, pos: { x: 950, y: 65 }, label: 'Kebap', color: '#92400e' },
+    { key: '🍞' as StockKey, pos: { x: 100, y: 65 }, label: 'Hamur', color: '#fde68a' },
+    { key: '🥩' as StockKey, pos: { x: 190, y: 65 }, label: 'Et', color: '#fca5a5' },
+    { key: '🥬' as StockKey, pos: { x: 280, y: 65 }, label: 'Sebze', color: '#bbf7d0' },
+    { key: '🥘' as StockKey, pos: { x: 370, y: 65 }, label: 'Çorba', color: '#fbbf24' },
+    { key: '🍢' as StockKey, pos: { x: 460, y: 65 }, label: 'Kebap', color: '#92400e' },
 ];
 
 // ─── Universal Fırın Sistemi ─────────────────────────────────────────────────
