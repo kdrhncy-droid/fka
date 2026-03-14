@@ -7,7 +7,6 @@ import {
   GAME_WIDTH,
   GAME_HEIGHT,
   PLAYER_SPEED,
-  TRASH_STATION,
   DIRTY_TRAY_POS,
   TRAY_STATION,
   TABLE_X_SLOTS,
@@ -324,48 +323,6 @@ export function useGameLoop({
 
       // Tepsi İstasyonu
       drawStation(ctx, TRAY_STATION.x, TRAY_STATION.y, "#8b5a2b", "🍽️", "Tepsi");
-
-      // Çöp kutusu (Sağ alt köşe, ufak boyutlu)
-      const trx = TRASH_STATION.x;
-      const try_ = TRASH_STATION.y;
-
-      // Küçük gri zemin
-      ctx.fillStyle = "rgba(0,0,0,0.1)";
-      ctx.beginPath();
-      ctx.ellipse(trx, try_ + 10, 18, 8, 0, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Çöp kutusu gövde
-      ctx.fillStyle = "#94a3b8"; // slate-400
-      ctx.beginPath();
-      ctx.moveTo(trx - 12, try_ - 15);
-      ctx.lineTo(trx + 12, try_ - 15);
-      ctx.lineTo(trx + 10, try_ + 10);
-      ctx.lineTo(trx - 10, try_ + 10);
-      ctx.closePath();
-      ctx.fill();
-
-      // Çöp kutusu üst kapak
-      ctx.fillStyle = "#64748b"; // slate-500
-      ctx.beginPath();
-      ctx.ellipse(trx, try_ - 15, 12, 5, 0, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Detay çizgiler
-      ctx.strokeStyle = "#475569"; // slate-600
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(trx - 6, try_ - 10); ctx.lineTo(trx - 5, try_ + 5);
-      ctx.moveTo(trx, try_ - 10); ctx.lineTo(trx, try_ + 5);
-      ctx.moveTo(trx + 6, try_ - 10); ctx.lineTo(trx + 5, try_ + 5);
-      ctx.stroke();
-
-      // Üstünde çöp yazısı kalsın ama küçük
-      ctx.fillStyle = "#fff";
-      ctx.font = "bold 9px Arial";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText("ÇÖP", trx, try_ + 20);
 
       // Kirli Sepeti (Tabak yığını)
       const tcx = DIRTY_TRAY_POS.x;
