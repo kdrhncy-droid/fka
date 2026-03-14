@@ -105,10 +105,10 @@ export function drawCustomer(ctx: CanvasRenderingContext2D, customer: Customer) 
     const { id, x, y, seatY, wants, patience, maxPatience, isSeated, isEating, eatTimer, beatUpTimer, currentDialog } = customer;
     const shape = customer.bodyShape ?? 1;
     const bodyColor = customer.bodyColor ?? '#475569';
-    // facingUp: seatY > TABLE_Y → müşteri masanın altındaki koltukta → bize (oyuncuya) bakıyor → ÖNDEN
-    // facingUp: seatY < TABLE_Y → masanın üstündeki koltukta → arkasını dönmüş → ARKADAN
-    const facingUp   = seatY !== undefined ? seatY > TABLE_Y : true;
-    const facingBack = isSeated && !facingUp; // Arkasını dönerek oturuyor
+    // facingUp: seatY < TABLE_Y → müşteri masanın üstündeki koltukta → aşağı (masaya/bize) bakıyor → ÖNDEN
+    // facingUp: seatY > TABLE_Y → masanın altındaki koltukta → yukarı (masaya) bakıyor → ARKADAN
+    const facingUp   = seatY !== undefined ? seatY < TABLE_Y : true;
+    const facingBack = isSeated && !facingUp; // Arkasını dönerek oturuyor (yukarı bakıyor)
     const st = getCRS(id, x, y);
 
     const dx = x - st.lastX, dy = y - st.lastY;
@@ -339,10 +339,10 @@ export function drawCustomer(ctx: CanvasRenderingContext2D, customer: Customer) 
     const bar    = Math.max(0, patience / maxPatience);
     const barClr = bar > 0.5 ? '#22c55e' : bar > 0.25 ? '#f59e0b' : '#ef4444';
 
-    // Balon pozisyonu: facingBack ise üstte, facingUp (önden) ise üstte
+    // Balon pozisyonu: Arkası dönükse (facingBack) masanın üstünde, önden bakıyorsa (facingUp) masanın altında
     const bx  = x + (isSeated ? 32 : 30);
-    const by  = y - 46;
-    const barY = y + (isSeated ? (facingBack ? -52 : 20) : 22);
+    const by  = y + (isSeated ? (facingBack ? -75 : 15) : -46);
+    const barY = y + (isSeated ? (facingBack ? -82 : 50) : 22);
 
     // Balon gölgesi
     ctx.fillStyle = 'rgba(0,0,0,0.12)';
@@ -356,9 +356,15 @@ export function drawCustomer(ctx: CanvasRenderingContext2D, customer: Customer) 
     // Ok ucu
     ctx.fillStyle = '#ffffff';
     ctx.beginPath();
-    ctx.moveTo(bx - 6, by + 13);
-    ctx.lineTo(x + 10, y - 2);
-    ctx.lineTo(bx + 4, by + 13);
+    if (isSeated && !facingBack) { // Önden bakıyorsa ok ucu yukarı
+        ctx.moveTo(bx - 6, by - 13);
+        ctx.lineTo(x + 10, y + 2);
+        ctx.lineTo(bx + 4, by - 13);
+    } else { // Ayaktaysa veya arkası dönükse ok ucu aşağı
+        ctx.moveTo(bx - 6, by + 13);
+        ctx.lineTo(x + 10, y - 2);
+        ctx.lineTo(bx + 4, by + 13);
+    }
     ctx.fill();
 
     // Sipariş emojisi

@@ -586,7 +586,11 @@ async function startServer() {
       if (c.personality === 'polite') {
         // Yanlış hedef — kibar müşteriye vurmak para cezası
         gs.score -= 20;
+        c.beatUpTimer = 20; // Kibar müşteri de sarsılsın ama daha kısa
+        c.currentDialog = ["AY!", "Ne yapıyorsunuz!", "İmdat!", "Polis!"][Math.floor(Math.random() * 4)];
+        c.dialogTimer = 30;
         socket.emit("sound", "fail");
+        io.to(roomId!).emit("punchEffect", { x: c.x, y: c.y, count: 1 });
         return;
       }
 
