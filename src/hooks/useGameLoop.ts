@@ -449,7 +449,7 @@ export function useGameLoop({
       drawWaitList(ctx, state.waitList ?? []);
 
       const sp = state.players;
-      if (myId && sp[myId]) {
+      if (sp) {
         Object.values(sp).forEach((p: Player) => {
           const isMe = p.id === myId;
           drawPlayer(

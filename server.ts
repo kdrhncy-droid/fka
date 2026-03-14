@@ -107,6 +107,9 @@ io.on("connection", (socket) => {
     playerId = socket.id;
     socket.join(roomId);
 
+    // İstemciye kendi ID'sini ve mevcut state'i gönder
+    socket.emit("init", { id: socket.id, state: RoomManager.getRoomState(roomId) || mkGameState() });
+
     if (!RoomManager.getRoomState(roomId)) {
       RoomManager.setRoomState(roomId, mkGameState());
       const gs = RoomManager.getRoomState(roomId)!;
@@ -514,7 +517,9 @@ io.on("connection", (socket) => {
     if (gs.hasOrderedTonight) { socket.emit("sound", "fail"); return; }
     const c = cap(gs.upgrades.stockMax);
     (['🍞', '🥩', '🥬', '🥘', '🍢'] as StockKey[]).forEach(k => { gs.stock[k] = c; });
-    gs.hasOrderedTonight = true; socket.emit("sound", "success");
+    gs.hasOrderedTonight = true; 
+    io.to(roomId).emit("state", gs);
+    socket.emit("sound", "success");
   });
 
   socket.on("buyOven", () => {
@@ -533,6 +538,7 @@ io.on("connection", (socket) => {
       gs.score -= cost;
       const pos = ADDITIONAL_OVEN_POSITIONS[ovenIdx];
       gs.cookStations.push(mkCook(`oven${currentOvens + 1}`, pos.x, pos.y));
+      io.to(roomId).emit("state", gs);
       socket.emit("sound", "success");
     } else {
       socket.emit("sound", "fail");
@@ -547,6 +553,7 @@ io.on("connection", (socket) => {
     if (gs.lives < 3 && gs.score >= 75) {
       gs.score -= 75;
       gs.lives++;
+      io.to(roomId).emit("state", gs);
       socket.emit("sound", "success");
     } else {
       socket.emit("sound", "fail");
@@ -558,6 +565,7 @@ io.on("connection", (socket) => {
     const gs = RoomManager.getRoomState(roomId)!;
     if (gs.dayPhase === 'night') {
       gs.day++; gs.dayPhase = 'prep'; gs.dayTimer = DAY_TICKS;
+      io.to(roomId).emit("state", gs);
       socket.emit("sound", "success");
     }
   });
@@ -567,6 +575,7 @@ io.on("connection", (socket) => {
     const gs = RoomManager.getRoomState(roomId)!;
     if (gs.dayPhase === 'prep') {
       gs.dayPhase = 'day'; gs.dayTimer = DAY_TICKS;
+      io.to(roomId).emit("state", gs);
       socket.emit("sound", "success");
     }
   });
@@ -584,6 +593,7 @@ io.on("connection", (socket) => {
     if (gs.score >= cost) {
       gs.score -= cost;
       gs.upgrades[key]++;
+      io.to(roomId).emit("state", gs);
       socket.emit("sound", "success");
     } else {
       socket.emit("sound", "fail");
@@ -605,6 +615,7 @@ io.on("connection", (socket) => {
     gs.dayTimer = DAY_TICKS;
     // Ceza: Skoru %20 düşür
     gs.score = Math.floor(gs.score * 0.8);
+    io.to(roomId).emit("state", gs);
     socket.emit("sound", "success");
   });
 
