@@ -494,6 +494,42 @@ export function setupHandlers(io: Server) {
       gs.hasOrderedTonight = true; socket.emit("sound", "success");
     });
 
+    socket.on("buyOven", () => {
+      if (!roomId || !RoomManager.getRoomState(roomId)) return;
+      const gs = RoomManager.getRoomState(roomId)!;
+      if (gs.dayPhase !== 'night') return;
+
+      const currentOvens = gs.cookStations.length;
+      const maxOvens = INITIAL_OVEN_POSITIONS.length + ADDITIONAL_OVEN_POSITIONS.length;
+      if (currentOvens >= maxOvens) { socket.emit("sound", "fail"); return; }
+
+      const ovenIdx = currentOvens - INITIAL_OVEN_POSITIONS.length;
+      const cost = OVEN_UPGRADE_COSTS[ovenIdx];
+
+      if (gs.score >= cost) {
+        gs.score -= cost;
+        const pos = ADDITIONAL_OVEN_POSITIONS[ovenIdx];
+        gs.cookStations.push(mkCook(`oven${currentOvens + 1}`, pos.x, pos.y));
+        socket.emit("sound", "success");
+      } else {
+        socket.emit("sound", "fail");
+      }
+    });
+
+    socket.on("buyLife", () => {
+      if (!roomId || !RoomManager.getRoomState(roomId)) return;
+      const gs = RoomManager.getRoomState(roomId)!;
+      if (gs.dayPhase !== 'night') return;
+
+      if (gs.lives < 3 && gs.score >= 75) {
+        gs.score -= 75;
+        gs.lives++;
+        socket.emit("sound", "success");
+      } else {
+        socket.emit("sound", "fail");
+      }
+    });
+
     socket.on("nextDay", () => {
       if (!roomId || !RoomManager.getRoomState(roomId)) return;
       const gs = RoomManager.getRoomState(roomId)!;
@@ -516,11 +552,37 @@ export function setupHandlers(io: Server) {
       if (!roomId || !RoomManager.getRoomState(roomId)) return;
       const gs = RoomManager.getRoomState(roomId)!;
       if (gs.dayPhase !== 'night') return;
-      const up = gs.upgrades;
-      if (key === 'patience' && up.patience < 3 && gs.score >= 50) { gs.score -= 50; up.patience++; socket.emit("sound", "success"); }
-      else if (key === 'earnings' && up.earnings < 3 && gs.score >= 50) { gs.score -= 50; up.earnings++; socket.emit("sound", "success"); }
-      else if (key === 'stockMax' && up.stockMax < 3 && gs.score >= 50) { gs.score -= 50; up.stockMax++; socket.emit("sound", "success"); }
-      else { socket.emit("sound", "fail"); }
+      
+      const upDef = UPGRADE_DEFS[key];
+      const currentLv = gs.upgrades[key];
+      if (currentLv >= upDef.max) { socket.emit("sound", "fail"); return; }
+      
+      const cost = upDef.costs[currentLv];
+      if (gs.score >= cost) {
+        gs.score -= cost;
+        gs.upgrades[key]++;
+        socket.emit("sound", "success");
+      } else {
+        socket.emit("sound", "fail");
+      }
+    });
+
+    socket.on("resetDay", () => {
+      if (!roomId || !RoomManager.getRoomState(roomId)) return;
+      const gs = RoomManager.getRoomState(roomId)!;
+      if (!gs.isGameOver) return;
+
+      // Oyunu sıfırla ama skoru ve upgradeleri koru (veya ceza kes)
+      gs.isGameOver = false;
+      gs.lives = 3;
+      gs.customers = [];
+      gs.waitList = [];
+      gs.dirtyTables = [];
+      gs.dayPhase = 'prep';
+      gs.dayTimer = DAY_TICKS;
+      // Ceza: Skoru %20 düşür
+      gs.score = Math.floor(gs.score * 0.8);
+      socket.emit("sound", "success");
     });
 
     socket.on("punchCustomer", (customerId) => {

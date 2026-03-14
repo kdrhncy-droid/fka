@@ -246,9 +246,9 @@ export const DISH_ITEMS = ['🍕', '🍔', '🥗', '🍜', '🌯'] as const;
 
 // ─── Upgrade Tanımları ───────────────────────────────────────────────────────
 export const UPGRADE_DEFS: Record<UpgradeKey, { costs: number[]; max: number }> = {
-    patience: { costs: [30, 50, 80], max: 3 },
-    earnings: { costs: [40, 70], max: 2 },
-    stockMax: { costs: [35, 55, 85], max: 3 },
+    patience: { costs: [50, 100, 200], max: 3 },
+    earnings: { costs: [100, 250], max: 2 },
+    stockMax: { costs: [75, 150, 300], max: 3 },
 };
 
 // Fırın upgrade sistemi (2., 3., 4. fırın maliyetleri)
