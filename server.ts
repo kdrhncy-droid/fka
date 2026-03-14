@@ -665,6 +665,9 @@ async function startServer() {
       }
 
       socket.emit("sound", "pickup"); // Vurma sesi
+      
+      // Vuruş efekti gönder (istemci tarafında yıldızlar çıkacak)
+      io.to(roomId!).emit("punchEffect", { x: c.x, y: c.y, count: c.punchCount });
     });
 
     // Dükkanı aç — prep → day geçişi

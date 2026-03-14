@@ -187,6 +187,17 @@ export function useGameLoop({
 
     // Yüzen yazılar (bahşiş toplama efektleri vb.)
     const floatingTexts: { x: number; y: number; text: string; life: number; startY: number }[] = [];
+    
+    // Vuruş efektleri (yıldızlar)
+    interface PunchParticle {
+      x: number;
+      y: number;
+      vx: number;
+      vy: number;
+      life: number;
+      maxLife: number;
+    }
+    const punchParticles: PunchParticle[] = [];
 
     // Socket tipCollector event dinleyicisi
     const handleTipCollected = (data: { x: number; y: number; amount: number }) => {
@@ -199,6 +210,23 @@ export function useGameLoop({
       });
     };
     if (socket) socket.on("tipCollected", handleTipCollected);
+    
+    // Vuruş efekti event dinleyicisi
+    const handlePunchEffect = (data: { x: number; y: number; count: number }) => {
+      for (let i = 0; i < 8; i++) {
+        const angle = (i / 8) * Math.PI * 2;
+        const speed = 3 + Math.random() * 2;
+        punchParticles.push({
+          x: data.x,
+          y: data.y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          life: 30,
+          maxLife: 30
+        });
+      }
+    };
+    if (socket) socket.on("punchEffect", handlePunchEffect);
 
     const render = (time: number) => {
       const state = gameStateRef.current;
@@ -480,6 +508,31 @@ export function useGameLoop({
         ctx.restore();
 
         ft.life--;
+      }
+
+      // Vuruş efektleri render
+      for (let i = punchParticles.length - 1; i >= 0; i--) {
+        const p = punchParticles[i];
+        
+        ctx.save();
+        ctx.globalAlpha = p.life / p.maxLife;
+        ctx.translate(p.x, p.y);
+        
+        // Yıldız çiz
+        ctx.fillStyle = "#fbbf24"; // amber-400
+        ctx.font = "bold 24px Arial";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("⭐", 0, 0);
+        
+        ctx.restore();
+        
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.2; // Yerçekimi
+        p.life--;
+        
+        if (p.life <= 0) punchParticles.splice(i, 1);
         if (ft.life <= 0) floatingTexts.splice(i, 1);
       }
 
