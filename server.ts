@@ -107,9 +107,6 @@ io.on("connection", (socket) => {
     playerId = socket.id;
     socket.join(roomId);
 
-    // İstemciye kendi ID'sini ve mevcut state'i gönder
-    socket.emit("init", { id: socket.id, state: RoomManager.getRoomState(roomId) || mkGameState() });
-
     if (!RoomManager.getRoomState(roomId)) {
       RoomManager.setRoomState(roomId, mkGameState());
       const gs = RoomManager.getRoomState(roomId)!;
@@ -336,6 +333,8 @@ io.on("connection", (socket) => {
       id: socket.id, name, color, hat, charType,
       x: 640, y: 350, holding: null, score: 0
     };
+    // İstemciye kendi ID'sini ve oyuncunun eklendiği güncel state'i gönder
+    socket.emit("init", { id: socket.id, state: gs });
     io.to(roomId).emit("state", gs);
   });
 
