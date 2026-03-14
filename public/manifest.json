@@ -1,20 +1,54 @@
 {
-  "name": "Market Oyunu",
+  "name": "Market Oyunu - Multiplayer Mutfak",
   "short_name": "Market",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#3b82f6",
-  "icons": [
+  "orientation": "portrait-primary",
+  "background_color": "#0c0a09",
+  "theme_color": "#0c0a09",
+  "scope": "/",
+  "description": "Arkadaşlarınızla birlikte oynayabileceğiniz co-op mutfak oyunu",
+  "screenshots": [
     {
       "src": "https://cdn-icons-png.flaticon.com/512/3081/3081986.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "form_factor": "narrow"
     },
     {
       "src": "https://cdn-icons-png.flaticon.com/512/3081/3081986.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "form_factor": "wide"
+    }
+  ],
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3081/3081986.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3081/3081986.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["games"],
+  "shortcuts": [
+    {
+      "name": "Oyuna Gir",
+      "short_name": "Oyun",
+      "description": "Market Oyununa hızlıca gir",
+      "url": "/?mode=play",
+      "icons": [
+        {
+          "src": "https://cdn-icons-png.flaticon.com/512/3081/3081986.png",
+          "sizes": "192x192"
+        }
+      ]
     }
   ]
 }

@@ -683,10 +683,27 @@ async function startServer() {
       io.to(roomId!).emit("sound", "arrive");
     });
 
+    // ─── Disconnect: Oyuncuyu odadan çıkar ────────────────────────────────────
     socket.on("disconnect", () => {
       if (!roomId || !rooms[roomId]) return;
+      console.log(`[Server] Player ${socket.id} disconnected from room ${roomId}`);
       delete rooms[roomId].players[socket.id];
-      if (!Object.keys(rooms[roomId].players).length) delete rooms[roomId];
+      // Oda boşsa sil
+      if (!Object.keys(rooms[roomId].players).length) {
+        console.log(`[Server] Room ${roomId} is now empty, deleting...`);
+        delete rooms[roomId];
+      } else {
+        // Kalan oyunculara state'i gönder
+        io.to(roomId).emit("state", rooms[roomId]);
+      }
+    });
+
+    // ─── State Re-sync: Ön plana gelen oyuncu state'i ister ──────────────────
+    socket.on("requestSync", () => {
+      if (!roomId || !rooms[roomId]) return;
+      console.log(`[Server] Player ${socket.id} requesting state sync`);
+      const gs = rooms[roomId];
+      socket.emit("state", gs);
     });
 
     socket.on("resetDay", () => {

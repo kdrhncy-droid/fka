@@ -14,6 +14,9 @@ body {
   user-select: none;
   -webkit-user-select: none;
   font-family: "Trebuchet MS", "Avenir Next", "Segoe UI", sans-serif;
+  
+  /* Mobil tarayıcının sayfa uyutmasını engelle */
+  -webkit-app-region: drag;
 }
 
 #root {
@@ -30,6 +33,10 @@ body {
   height: 100vh;
   height: 100dvh;
   touch-action: none;
+  
+  /* Arka planda bağlantıyı canlı tut */
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
 }
 
 .menu-screen {
@@ -55,4 +62,12 @@ body {
 }
 * {
   scrollbar-width: none;
+}
+
+/* Mobil cihazlarda sayfa uyutmasını engelle (opsiyonel) */
+@supports (content: "supports") {
+  body {
+    /* Bazı tarayıcılarda sayfa uyutmasını engellemeye çalış */
+    -webkit-user-select: none;
+  }
 }

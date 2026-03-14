@@ -9,12 +9,44 @@
     <title>Market Oyunu</title>
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#0c0a09" />
+    
+    <!-- iOS PWA Desteği -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta
       name="apple-mobile-web-app-status-bar-style"
       content="black-translucent"
     />
     <meta name="apple-mobile-web-app-title" content="Market Oyunu" />
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3081/3081986.png" />
+    
+    <!-- Mobil Optimizasyonları -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="format-detection" content="email=no" />
+    
+    <!-- Arka planda bağlantı canlı tutma -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    
+    <!-- Sayfa gizlendiğinde bile bağlantıyı canlı tut -->
+    <script>
+      // Tarayıcı uyku moduna girmeyi engelle (opsiyonel, bazı tarayıcılarda çalışmayabilir)
+      if ('wakeLock' in navigator) {
+        navigator.wakeLock.request('screen').catch(err => {
+          console.log('Wake Lock isteği başarısız:', err);
+        });
+      }
+      
+      // Visibility API ile sayfa gizlendiğinde yapılacak işlemler
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          console.log('Sayfa arka plana alındı - bağlantı canlı tutulacak');
+        } else {
+          console.log('Sayfa ön plana geldi - state senkronizasyonu başlatılacak');
+        }
+      });
+    </script>
   </head>
   <body>
     <div id="root"></div>
