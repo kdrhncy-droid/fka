@@ -52,8 +52,57 @@ function adj(hex: string, amt: number): string {
 const lighten = (h: string, a: number) => adj(h, a);
 const darken  = (h: string, a: number) => adj(h, -a);
 
+// Dialog balonu çizme yardımcı fonksiyonu
+function drawDialogBubble(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, bgColor: string, borderColor: string, textColor: string) {
+    const maxWidth = 180;
+    const padding = 10;
+    const lineHeight = 15;
+
+    ctx.font = 'bold 11px Arial';
+    const words = text.split(' ');
+    const lines: string[] = [];
+    let currentLine = '';
+    for (const word of words) {
+        const testLine = currentLine ? currentLine + ' ' + word : word;
+        if (ctx.measureText(testLine).width > maxWidth - padding * 2) {
+            if (currentLine) lines.push(currentLine);
+            currentLine = word;
+        } else { currentLine = testLine; }
+    }
+    if (currentLine) lines.push(currentLine);
+
+    const bubbleW = Math.min(maxWidth, Math.max(...lines.map(l => ctx.measureText(l).width)) + padding * 2);
+    const bubbleH = lines.length * lineHeight + padding * 2;
+    const dbx = x - bubbleW / 2;
+    const dby = y - 80 - bubbleH;
+
+    // Gölge
+    ctx.fillStyle = 'rgba(0,0,0,0.15)';
+    ctx.beginPath(); ctx.roundRect(dbx + 2, dby + 2, bubbleW, bubbleH, 8); ctx.fill();
+
+    // Arka plan
+    ctx.fillStyle = bgColor;
+    ctx.beginPath(); ctx.roundRect(dbx, dby, bubbleW, bubbleH, 8); ctx.fill();
+    ctx.strokeStyle = borderColor; ctx.lineWidth = 1.5; ctx.stroke();
+
+    // Ok ucu (aşağı bakan üçgen)
+    ctx.fillStyle = bgColor;
+    ctx.beginPath();
+    ctx.moveTo(x - 6, dby + bubbleH); ctx.lineTo(x + 6, dby + bubbleH); ctx.lineTo(x, dby + bubbleH + 8);
+    ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = borderColor; ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(x - 6, dby + bubbleH); ctx.lineTo(x, dby + bubbleH + 8); ctx.lineTo(x + 6, dby + bubbleH);
+    ctx.stroke();
+
+    // Metin
+    ctx.fillStyle = textColor;
+    ctx.font = 'bold 11px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+    lines.forEach((line, i) => { ctx.fillText(line, x, dby + padding + i * lineHeight); });
+}
+
 export function drawCustomer(ctx: CanvasRenderingContext2D, customer: Customer) {
-    const { id, x, y, seatY, wants, patience, maxPatience, isSeated, isEating, eatTimer, beatUpTimer } = customer;
+    const { id, x, y, seatY, wants, patience, maxPatience, isSeated, isEating, eatTimer, beatUpTimer, currentDialog } = customer;
     const shape = customer.bodyShape ?? 1;
     const bodyColor = customer.bodyColor ?? '#475569';
     // facingUp: seatY > TABLE_Y → müşteri masanın altındaki koltukta → bize (oyuncuya) bakıyor → ÖNDEN
@@ -250,7 +299,7 @@ export function drawCustomer(ctx: CanvasRenderingContext2D, customer: Customer) 
             ctx.fillStyle = '#8B0000';
             ctx.beginPath(); ctx.arc(0, headY + 7, 3.5, 0, Math.PI); ctx.fill();
             // Yemek balonu
-            ctx.globalAlpha = (1 - eatPct) * 0.85;
+            ctx.globalAlpha = 0.9;
             ctx.font = '14px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
             ctx.fillText('😋', hr + 8, headY - hr);
             ctx.globalAlpha = beatUp ? 0.88 : 1;
@@ -277,7 +326,15 @@ export function drawCustomer(ctx: CanvasRenderingContext2D, customer: Customer) 
     ctx.restore();
 
     // ── SİPARİŞ BALONU & SABIR ÇUBUĞU ──────────────────────────────────────
-    if (customer.isBeatUp || customer.isLeaving || !wants) return;
+    // isLeaving ise sadece dialog balonu göster, sipariş balonu ve sabrı gösterme
+    if (customer.isLeaving) {
+        if (currentDialog) {
+            drawDialogBubble(ctx, currentDialog, x, y, '#fef2f2', '#ef4444', '#7f1d1d');
+        }
+        return;
+    }
+
+    if (customer.isBeatUp || !wants) return;
 
     const bar    = Math.max(0, patience / maxPatience);
     const barClr = bar > 0.5 ? '#22c55e' : bar > 0.25 ? '#f59e0b' : '#ef4444';
@@ -314,4 +371,9 @@ export function drawCustomer(ctx: CanvasRenderingContext2D, customer: Customer) 
     ctx.beginPath(); ctx.roundRect(x - 22, barY, 44, 6, 3); ctx.fill();
     ctx.fillStyle = barClr;
     ctx.beginPath(); ctx.roundRect(x - 22, barY, 44 * bar, 6, 3); ctx.fill();
+
+    // ── DIALOG BALONU ──────────────────────────────────────────────────────────
+    if (currentDialog) {
+        drawDialogBubble(ctx, currentDialog, x, y, '#fffbeb', '#f59e0b', '#1c1917');
+    }
 }
