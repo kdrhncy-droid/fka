@@ -30,7 +30,10 @@ export function drawPlayer(
     p: Player,
     isMe: boolean,
 ) {
-    const heldItem = p.holding === CLEAN_PLATE ? '🍽️' : p.holding === DIRTY_PLATE ? '🧽' : p.holding;
+    const rawHolding = p.holding;
+    const isHolding = !!rawHolding;
+    const heldItem = rawHolding === CLEAN_PLATE ? '🍽️' : rawHolding === DIRTY_PLATE ? '🧽' : rawHolding;
+    
     const typeId   = Math.min(p.charType ?? 0, CHARACTER_TYPES.length - 1);
     const charDef  = CHARACTER_TYPES[typeId];
     const bodyColor   = p.color || charDef.bodyColor;
@@ -70,7 +73,6 @@ export function drawPlayer(
     }
 
     // ── Zemin gölgesi — ayakların tam altında, bobY'den bağımsız ─────────────
-    // Karakter zıplarken gölge yerde kalır ve küçülür (gerçekçi)
     const shSc = 1 - bobY / 30;
     ctx.fillStyle = 'rgba(0,0,0,0.22)';
     ctx.beginPath();
@@ -112,26 +114,44 @@ export function drawPlayer(
     ctx.fillStyle = 'rgba(255,255,255,0.18)';
     ctx.beginPath(); ctx.roundRect(-10, -2, 20, 7, 4); ctx.fill();
 
-    // ── KOLLAR + ELLER ────────────────────────────────────────────────────────
-    const armSwing = st.isMoving ? Math.sin(st.walkTimer + Math.PI) * 5 : 0;
+    // ── KOLLAR + ELLER (PlateUp Tarzı) ────────────────────────────────────────
     const skinTone = '#f5c090';
+    const armSwing = st.isMoving ? Math.sin(st.walkTimer + Math.PI) * 5 : 0;
 
-    // Arka kol (sol)
-    ctx.beginPath(); ctx.roundRect(-23, -1 - armSwing, 8, 14, 4);
-    ctx.fillStyle = adjustColor(bodyColor, -15); ctx.fill(); stk(ctx);
-    // Sol el (yuvarlak)
-    ctx.beginPath(); ctx.arc(-19, 14 - armSwing, 5, 0, Math.PI * 2);
-    ctx.fillStyle = skinTone; ctx.fill(); stk(ctx, '#c8845a', 2);
+    if (isHolding) {
+        // Eşya tutarken kollar öne doğru uzanır
+        // Arka kol (sol)
+        ctx.beginPath(); ctx.roundRect(-14, 2, 16, 8, 4);
+        ctx.fillStyle = adjustColor(bodyColor, -15); ctx.fill(); stk(ctx);
+        // Sol el
+        ctx.beginPath(); ctx.arc(2, 6, 5, 0, Math.PI * 2);
+        ctx.fillStyle = skinTone; ctx.fill(); stk(ctx, '#c8845a', 2);
 
-    // Ön kol (sağ)
-    ctx.beginPath(); ctx.roundRect(15, -1 + armSwing, 8, 14, 4);
-    ctx.fillStyle = bodyColor; ctx.fill(); stk(ctx);
-    // Sağ el (yuvarlak)
-    ctx.beginPath(); ctx.arc(19, 14 + armSwing, 5, 0, Math.PI * 2);
-    ctx.fillStyle = skinTone; ctx.fill(); stk(ctx, '#c8845a', 2);
+        // Ön kol (sağ)
+        ctx.beginPath(); ctx.roundRect(4, 2, 16, 8, 4);
+        ctx.fillStyle = bodyColor; ctx.fill(); stk(ctx);
+        // Sağ el
+        ctx.beginPath(); ctx.arc(20, 6, 5, 0, Math.PI * 2);
+        ctx.fillStyle = skinTone; ctx.fill(); stk(ctx, '#c8845a', 2);
+    } else {
+        // Boşta kollar yanlarda sallanır
+        // Arka kol (sol)
+        ctx.beginPath(); ctx.roundRect(-23, -1 - armSwing, 8, 14, 4);
+        ctx.fillStyle = adjustColor(bodyColor, -15); ctx.fill(); stk(ctx);
+        // Sol el
+        ctx.beginPath(); ctx.arc(-19, 14 - armSwing, 5, 0, Math.PI * 2);
+        ctx.fillStyle = skinTone; ctx.fill(); stk(ctx, '#c8845a', 2);
 
-    // ── BAŞ — daha küçük ──────────────────────────────────────────────────────
-    const HR = 13; // Kafa yarıçapı (eskiden 20, şimdi 13)
+        // Ön kol (sağ)
+        ctx.beginPath(); ctx.roundRect(15, -1 + armSwing, 8, 14, 4);
+        ctx.fillStyle = bodyColor; ctx.fill(); stk(ctx);
+        // Sağ el
+        ctx.beginPath(); ctx.arc(19, 14 + armSwing, 5, 0, Math.PI * 2);
+        ctx.fillStyle = skinTone; ctx.fill(); stk(ctx, '#c8845a', 2);
+    }
+
+    // ── BAŞ ──────────────────────────────────────────────────────────────────
+    const HR = 13;
     const headY = -4 - HR - 3;
 
     // Boyun
@@ -167,26 +187,55 @@ export function drawPlayer(
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.fillText(charDef.hat as string, 0, headY - HR - 8);
 
-    // ── TUTULAN EŞYA ─────────────────────────────────────────────────────────
-    if (heldItem) {
-        const ix = 24, iy = -4;
-        ctx.fillStyle = 'rgba(255,255,255,0.92)';
-        ctx.beginPath(); ctx.arc(ix, iy, 13, 0, Math.PI * 2); ctx.fill();
-        ctx.strokeStyle = accentColor; ctx.lineWidth = 2.5; ctx.stroke();
+    // ── TUTULAN EŞYA (PlateUp Tarzı - Önde) ───────────────────────────────────
+    if (isHolding) {
+        const itemX = 12;
+        const itemY = 6;
+        const itemBob = Math.sin(st.walkTimer) * 2; // Yürürken eşya da zıplasın
 
-        if (isTray(heldItem)) {
-            const items = getTrayItems(heldItem);
-            ctx.font = '9px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-            ctx.fillText(items.length === 0 ? '🪣' : items[0], ix, iy - 2);
-            if (items.length > 1) { ctx.font = '8px Arial'; ctx.fillStyle = '#555'; ctx.fillText(`+${items.length - 1}`, ix, iy + 6); }
-        } else {
+        ctx.save();
+        ctx.translate(itemX, itemY + itemBob);
+
+        if (isTray(rawHolding)) {
+            // Tepsi görseli
+            ctx.fillStyle = '#cbd5e1'; // Açık gri tepsi
+            ctx.beginPath(); ctx.roundRect(-18, -2, 36, 12, 4); ctx.fill();
+            ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1.5; ctx.stroke();
+
+            const items = getTrayItems(rawHolding);
+            if (items.length > 0) {
+                ctx.font = '14px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                // Eşyaları tepsi üzerinde yanyana diz
+                items.forEach((item, idx) => {
+                    const offset = (idx - (items.length - 1) / 2) * 12;
+                    ctx.fillText(item, offset, -4);
+                });
+            } else {
+                ctx.font = '12px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                ctx.fillText('🪣', 0, -4);
+            }
+        } else if (heldItem === '🍽️' || heldItem === '🧽') {
+            // Tabak görseli
+            ctx.fillStyle = '#f8fafc';
+            ctx.beginPath(); ctx.ellipse(0, 0, 15, 8, 0, 0, Math.PI * 2); ctx.fill();
+            ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1.5; ctx.stroke();
+            
             ctx.font = '14px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-            ctx.fillText(heldItem, ix, iy);
+            ctx.fillText(heldItem, 0, -2);
+        } else {
+            // Normal eşya balonu (biraz daha şık)
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath(); ctx.arc(0, 0, 14, 0, Math.PI * 2); ctx.fill();
+            ctx.strokeStyle = accentColor; ctx.lineWidth = 2; ctx.stroke();
+            
+            ctx.font = '16px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillText(heldItem as string, 0, 0);
         }
+        ctx.restore();
     }
 
     // ── İSİM ETİKETİ ─────────────────────────────────────────────────────────
-    ctx.scale(dirMul, 1); // Etiketi her zaman düz tut
+    ctx.scale(dirMul, 1);
     const label = isMe ? `★ ${p.name}` : p.name;
     ctx.font = 'bold 10px Arial';
     const lw = ctx.measureText(label).width + 14;
