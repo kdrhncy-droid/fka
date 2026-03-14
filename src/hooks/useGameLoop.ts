@@ -508,6 +508,7 @@ export function useGameLoop({
         ctx.restore();
 
         ft.life--;
+        if (ft.life <= 0) floatingTexts.splice(i, 1);
       }
 
       // Vuruş efektleri render
@@ -533,7 +534,6 @@ export function useGameLoop({
         p.life--;
         
         if (p.life <= 0) punchParticles.splice(i, 1);
-        if (ft.life <= 0) floatingTexts.splice(i, 1);
       }
 
       // Gece overlay
@@ -569,7 +569,10 @@ export function useGameLoop({
     frameId = requestAnimationFrame(render);
     return () => {
       cancelAnimationFrame(frameId);
-      if (socket) socket.off("tipCollected", handleTipCollected);
+      if (socket) {
+        socket.off("tipCollected", handleTipCollected);
+        socket.off("punchEffect", handlePunchEffect);
+      }
     };
   }, [isJoined, myId, socket]);
 }
