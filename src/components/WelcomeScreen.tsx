@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { MARKET_NAME } from '../constants';
+import { PatchNotesModal } from './PatchNotesModal';
 
 interface WelcomeScreenProps {
     onPlay: (roomId?: string) => void;
@@ -8,15 +9,27 @@ interface WelcomeScreenProps {
 }
 
 export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onPlay, onQuickStart, onSettings }) => {
-    const [quickName, setQuickName] = React.useState('');
-    const [quickRoom, setQuickRoom] = React.useState('');
-    const [showJoinForm, setShowJoinForm] = React.useState(false);
-    const [showQuickStart, setShowQuickStart] = React.useState(false);
+    const [quickName, setQuickName] = useState('');
+    const [quickRoom, setQuickRoom] = useState('');
+    const [showJoinForm, setShowJoinForm] = useState(false);
+    const [showQuickStart, setShowQuickStart] = useState(false);
+    const [showPatchNotes, setShowPatchNotes] = useState(false);
 
     return (
-        <div className="menu-screen bg-[radial-gradient(circle_at_top,#fef3c7_0%,#fed7aa_28%,#7c2d12_70%,#1c1917_100%)] safe-top safe-bottom overflow-y-auto">
+        <div className="menu-screen bg-[radial-gradient(circle_at_top,#fef3c7_0%,#fed7aa_28%,#7c2d12_70%,#1c1917_100%)] safe-top safe-bottom overflow-y-auto relative">
             {/* Grid arka plan */}
             <div className="fixed inset-0 opacity-20 pointer-events-none [background-image:linear-gradient(to_right,transparent_0,transparent_47px,rgba(255,255,255,0.14)_48px),linear-gradient(to_bottom,transparent_0,transparent_47px,rgba(255,255,255,0.14)_48px)] [background-size:48px_48px]" />
+
+            {/* Sağ Üst Bilgi Butonu */}
+            <div className="absolute top-4 right-4 z-20">
+                <button
+                    onClick={() => setShowPatchNotes(true)}
+                    className="w-12 h-12 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 rounded-2xl flex items-center justify-center text-2xl text-amber-200 shadow-xl transition-all active:scale-90"
+                    title="Yama Notları"
+                >
+                    ℹ️
+                </button>
+            </div>
 
             <div className="relative mx-auto flex w-full max-w-lg flex-col gap-5 px-5 py-8 md:py-12 md:max-w-2xl">
                 {/* ── Logo & Başlık ──────────────────────────────────────────────── */}
@@ -159,9 +172,12 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onPlay, onQuickSta
                             <div className="mt-1">Joystick + buton</div>
                         </div>
                     </div>
-                    <p className="text-xs text-stone-500">v1.1 · Terracraft Deluxe</p>
+                    <p className="text-xs text-stone-500">v1.1.0 · Terracraft Deluxe</p>
                 </div>
             </div>
+
+            {/* Yama Notları Modalı */}
+            {showPatchNotes && <PatchNotesModal onClose={() => setShowPatchNotes(false)} />}
         </div>
     );
 };

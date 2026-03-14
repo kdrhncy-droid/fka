@@ -55,7 +55,7 @@ export const GameScreen: React.FC<Props> = ({
     const [voiceActive, setVoiceActive] = useState(false);
     const [showVoiceSettings, setShowVoiceSettings] = useState(false);
     const [globalVoiceVol, setGlobalVoiceVol] = useState(1.0);
-    const [showPatchNotes, setShowPatchNotes] = useState(false);
+
     const [showCosmetics, setShowCosmetics] = useState(false);
     const audioElementsRef = useRef<Record<string, HTMLAudioElement>>({});
 
@@ -197,9 +197,7 @@ export const GameScreen: React.FC<Props> = ({
                     <button onClick={() => setShowCosmetics(true)}
                         className="w-8 h-8 bg-stone-700 hover:bg-sky-700 text-emerald-400 rounded-lg flex items-center justify-center text-sm shadow-[0_0_10px_rgba(52,211,153,0.2)] transition-colors"
                     >👕</button>
-                    <button onClick={() => setShowPatchNotes(true)}
-                        className="w-8 h-8 bg-stone-700 hover:bg-sky-700 text-stone-300 rounded-lg flex items-center justify-center text-sm"
-                    >ℹ️</button>
+
                     <button onClick={() => setShowSettings(true)}
                         className="w-8 h-8 bg-stone-700 hover:bg-stone-600 text-stone-300 rounded-lg flex items-center justify-center text-sm"
                     >⚙️</button>
@@ -354,10 +352,6 @@ export const GameScreen: React.FC<Props> = ({
 
             {showSettings && (
                 <SettingsPanel settings={settings} onUpdate={updateSettings} onClose={() => setShowSettings(false)} onLeaveGame={onLeaveGame} isJoined={isJoined} />
-            )}
-
-            {showPatchNotes && (
-                <PatchNotesModal onClose={() => setShowPatchNotes(false)} />
             )}
 
             {showCosmetics && (
