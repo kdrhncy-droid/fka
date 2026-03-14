@@ -102,17 +102,17 @@ io.on("connection", (socket) => {
   let roomId: string | null = null;
   let playerId: string | null = null;
 
-  socket.on("join", ({ room, name, color, hat, charType }) => {
-    roomId = room;
+  socket.on("join", ({ room, roomId: clientRoomId, name, color, hat, charType }) => {
+    roomId = room || clientRoomId;
     playerId = socket.id;
-    socket.join(room);
+    socket.join(roomId);
 
-    if (!RoomManager.getRoomState(room)) {
-      RoomManager.setRoomState(room, mkGameState());
-      const gs = RoomManager.getRoomState(room)!;
+    if (!RoomManager.getRoomState(roomId)) {
+      RoomManager.setRoomState(roomId, mkGameState());
+      const gs = RoomManager.getRoomState(roomId)!;
 
       const interval = setInterval(() => {
-        const rid = room;
+        const rid = roomId;
         const gs = RoomManager.getRoomState(rid);
         if (!gs || gs.isGameOver) return;
 
@@ -325,15 +325,15 @@ io.on("connection", (socket) => {
         }
         io.to(rid).emit("state", gs);
       }, LOGIC_STEP_MS);
-      RoomManager.setInterval(room, interval);
+      RoomManager.setInterval(roomId, interval);
     }
 
-    const gs = RoomManager.getRoomState(room)!;
+    const gs = RoomManager.getRoomState(roomId)!;
     gs.players[socket.id] = {
       id: socket.id, name, color, hat, charType,
       x: 640, y: 350, holding: null, score: 0
     };
-    io.to(room).emit("state", gs);
+    io.to(roomId).emit("state", gs);
   });
 
   socket.on("move", (pos) => {
