@@ -339,44 +339,65 @@ export function drawCustomer(ctx: CanvasRenderingContext2D, customer: Customer) 
     const bar    = Math.max(0, patience / maxPatience);
     const barClr = bar > 0.5 ? '#22c55e' : bar > 0.25 ? '#f59e0b' : '#ef4444';
 
-    // Balon pozisyonu: Arkası dönükse (facingBack) masanın üstünde, önden bakıyorsa (facingUp) masanın altında
-    const bx  = x + (isSeated ? 32 : 30);
-    const by  = y + (isSeated ? (facingBack ? -75 : 15) : -46);
-    const barY = y + (isSeated ? (facingBack ? -82 : 50) : 22);
+    // Balon pozisyonu
+    const bx   = x + (isSeated ? 38 : 36);
+    const by   = y + (isSeated ? (facingBack ? -70 : 18) : -52);
+    const barY = y + (isSeated ? (facingBack ? -78 : 52) : 20);
+
+    // Balon rengi — sabır azaldıkça kırmızıya kayar
+    const bubbleBg = bar > 0.5 ? '#ffffff'
+                   : bar > 0.25 ? '#fffbeb'
+                   : '#fff1f2';
+
+    const BW = 46, BH = 46, BR = 12;
 
     // Balon gölgesi
-    ctx.fillStyle = 'rgba(0,0,0,0.12)';
-    ctx.beginPath(); ctx.roundRect(bx - 14, by - 13, 36, 28, 8); ctx.fill();
+    ctx.fillStyle = 'rgba(0,0,0,0.14)';
+    ctx.beginPath(); ctx.roundRect(bx - BW / 2 + 3, by - BH / 2 + 3, BW, BH, BR); ctx.fill();
 
-    // Balon
-    ctx.fillStyle = '#ffffff';
-    ctx.beginPath(); ctx.roundRect(bx - 16, by - 15, 36, 28, 8); ctx.fill();
-    ctx.strokeStyle = barClr; ctx.lineWidth = 2; ctx.stroke();
+    // Balon arka plan
+    ctx.fillStyle = bubbleBg;
+    ctx.beginPath(); ctx.roundRect(bx - BW / 2, by - BH / 2, BW, BH, BR); ctx.fill();
+    ctx.strokeStyle = barClr; ctx.lineWidth = 2.5; ctx.stroke();
 
-    // Ok ucu
-    ctx.fillStyle = '#ffffff';
+    // İnce iç parlama
+    ctx.fillStyle = 'rgba(255,255,255,0.6)';
+    ctx.beginPath(); ctx.roundRect(bx - BW / 2 + 4, by - BH / 2 + 4, BW - 8, 10, [BR, BR, 0, 0]); ctx.fill();
+
+    // Ok ucu (balon → karakter)
+    const tailX = bx - BW / 2;
+    const tipX  = x + 14;
+    const tipY  = isSeated && !facingBack ? y + 6 : y - 6;
+    const tailTop = by + (isSeated && !facingBack ? -BH / 2 + 4 : BH / 2 - 4);
+
+    ctx.fillStyle = bubbleBg;
     ctx.beginPath();
-    if (isSeated && !facingBack) { // Önden bakıyorsa ok ucu yukarı
-        ctx.moveTo(bx - 6, by - 13);
-        ctx.lineTo(x + 10, y + 2);
-        ctx.lineTo(bx + 4, by - 13);
-    } else { // Ayaktaysa veya arkası dönükse ok ucu aşağı
-        ctx.moveTo(bx - 6, by + 13);
-        ctx.lineTo(x + 10, y - 2);
-        ctx.lineTo(bx + 4, by + 13);
-    }
+    ctx.moveTo(tailX, tailTop - 5);
+    ctx.quadraticCurveTo(tailX - 6, tailTop + 8, tipX, tipY);
+    ctx.quadraticCurveTo(tailX + 2, tailTop + 6, tailX + 10, tailTop + 2);
+    ctx.closePath();
     ctx.fill();
 
+    // Ok ucu kenar çizgisi
+    ctx.strokeStyle = barClr; ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(tailX, tailTop - 5);
+    ctx.quadraticCurveTo(tailX - 6, tailTop + 8, tipX, tipY);
+    ctx.quadraticCurveTo(tailX + 2, tailTop + 6, tailX + 10, tailTop + 2);
+    ctx.stroke();
+
     // Sipariş emojisi
-    ctx.font = '22px Arial';
+    ctx.font = '26px Arial';
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText(wants ?? '?', bx + 2, by - 1);
+    ctx.fillText(wants ?? '?', bx, by + 1);
 
     // Sabır çubuğu
+    ctx.fillStyle = 'rgba(0,0,0,0.1)';
+    ctx.beginPath(); ctx.roundRect(x - 24, barY, 48, 8, 4); ctx.fill();
     ctx.fillStyle = '#e2e8f0';
-    ctx.beginPath(); ctx.roundRect(x - 22, barY, 44, 6, 3); ctx.fill();
+    ctx.beginPath(); ctx.roundRect(x - 24, barY, 48, 7, 3); ctx.fill();
     ctx.fillStyle = barClr;
-    ctx.beginPath(); ctx.roundRect(x - 22, barY, 44 * bar, 6, 3); ctx.fill();
+    ctx.beginPath(); ctx.roundRect(x - 24, barY, 48 * bar, 7, 3); ctx.fill();
 
     // ── DIALOG BALONU ──────────────────────────────────────────────────────────
     if (currentDialog) {
