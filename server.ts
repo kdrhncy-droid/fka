@@ -603,12 +603,12 @@ async function startServer() {
       if (cIdx === -1) return;
       const c = gs.customers[cIdx];
 
-      // Adam zaten dükkanı terk ediyorsa vurulmaz
+      // Adam zaten dükkanı terk ediyorsa vurulmaz (ancak kaçarken de vurulabilir yapmak istersen bu satırı silebilirsin)
       if (c.isLeaving) return;
 
-      // Cooldown kontrolü — beatUpTimer>10 ise vuramazsın (art arda spam koruması)
+      // Cooldown kontrolü — beatUpTimer>5 ise vuramazsın (art arda spam koruması)
       // Daha kısa cooldown = daha hızlı vuruş imkanı
-      if (c.beatUpTimer && c.beatUpTimer > 10) return;
+      if (c.beatUpTimer && c.beatUpTimer > 5) return;
 
       if (c.personality === 'polite') {
         // Yanlış hedef — kibar müşteriye vurmak para cezası
@@ -644,7 +644,12 @@ async function startServer() {
         c.isLeaving = true;
         c.isSeated = false; // Ayağa kalk! Maskelenme bug'ını düzeltir.
         c.beatUpTimer = 0;  // Titremeyi kes!
-        c.targetY = 900;
+        c.targetY = GAME_HEIGHT + 100; // Ekranın dışına (aşağıya) gönder
+        
+        // Masayı hemen boşalt ki yeni müşteri gelebilsin
+        const tableIdx = gs.dirtyTables.findIndex(t => t.seatX === c.seatX && t.seatY === c.seatY);
+        if (tableIdx !== -1) gs.dirtyTables.splice(tableIdx, 1);
+        
         tryQueueSeat(gs, io, roomId!);
       } else {
         // 1-3 vuruş arası sadece complain bekle

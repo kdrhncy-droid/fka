@@ -235,8 +235,8 @@ export const GameScreen: React.FC<Props> = ({
                         onPointerDown={(e) => {
                             e.preventDefault();
                             const now = Date.now();
-                            const PUNCH_RADIUS = 80;
-                            const PUNCH_COOLDOWN_MS = 300; // Cooldown'u 300ms'ye indirdim (daha hızlı vuruş)
+                            const PUNCH_RADIUS = 120; // Vuruş mesafesini artırdım (80 -> 120)
+                            const PUNCH_COOLDOWN_MS = 250; // Cooldown'u daha da indirdim (300 -> 250)
                             
                             // Cooldown kontrolü — çok hızlı art arda vurmayı engelle
                             if (now - lastPunchTimeRef.current < PUNCH_COOLDOWN_MS) {
@@ -248,7 +248,8 @@ export const GameScreen: React.FC<Props> = ({
                             const lp = localPlayerRef.current;
 
                             const punchTarget = gs.customers.find(c => {
-                                if (c.isLeaving || c.isBeatUp) return false;
+                                // isBeatUp kontrolünü kaldırdım: sarsıntı halindeyken de vurulabilir
+                                if (c.isLeaving) return false;
                                 const visualY = c.isSeated ? c.seatY + 20 : c.y;
                                 const dist = Math.hypot(c.x - lp.x, visualY - lp.y);
                                 return dist <= PUNCH_RADIUS && (c.personality === 'rude' || c.personality === 'recep' || c.personality === 'thug');
