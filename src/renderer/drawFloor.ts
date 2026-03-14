@@ -194,28 +194,54 @@ export function drawFloor(ctx: CanvasRenderingContext2D) {
   ctx.fillText('🚿 Lavabo', sx, sy + 18);
 
   // ══════════════════════════════════════════════════════════════════
-  // ÇÖP KUTUSU — koyu metal
+  // ÇÖP KUTUSU — gerçek kova şekli
   // ══════════════════════════════════════════════════════════════════
   const tx = TRASH_STATION.x, ty2 = TRASH_STATION.y;
 
-  ctx.fillStyle = 'rgba(0,0,0,0.30)';
-  ctx.beginPath(); ctx.roundRect(tx - 41, ty2 - 33, 82, 66, 12); ctx.fill();
+  // Zemin gölgesi
+  ctx.fillStyle = 'rgba(0,0,0,0.22)';
+  ctx.beginPath(); ctx.ellipse(tx + 2, ty2 + 28, 22, 7, 0, 0, Math.PI * 2); ctx.fill();
 
-  const tg = ctx.createLinearGradient(tx - 40, ty2 - 32, tx + 40, ty2 + 32);
-  tg.addColorStop(0, '#5a5e50'); tg.addColorStop(1, '#404438');
-  ctx.fillStyle = tg;
-  ctx.beginPath(); ctx.roundRect(tx - 40, ty2 - 32, 80, 64, 12); ctx.fill();
-  ctx.strokeStyle = '#282c20'; ctx.lineWidth = 2; ctx.stroke();
+  // Kova gövdesi (hafif trapez — altta dar, üstte geniş)
+  ctx.beginPath();
+  ctx.moveTo(tx - 20, ty2 - 14);
+  ctx.lineTo(tx + 20, ty2 - 14);
+  ctx.lineTo(tx + 16, ty2 + 26);
+  ctx.lineTo(tx - 16, ty2 + 26);
+  ctx.closePath();
+  const kovGrad = ctx.createLinearGradient(tx - 20, ty2, tx + 20, ty2);
+  kovGrad.addColorStop(0, '#607a6e');
+  kovGrad.addColorStop(0.45, '#718f81');
+  kovGrad.addColorStop(1, '#4a6058');
+  ctx.fillStyle = kovGrad;
+  ctx.fill();
+  ctx.strokeStyle = '#2e4a3e'; ctx.lineWidth = 2; ctx.stroke();
 
-  ctx.strokeStyle = 'rgba(0,0,0,0.35)'; ctx.lineWidth = 2;
-  ctx.beginPath(); ctx.moveTo(tx - 36, ty2 - 12); ctx.lineTo(tx + 36, ty2 - 12); ctx.stroke();
+  // Dikey çizgi detaylar
+  ctx.strokeStyle = 'rgba(0,0,0,0.18)'; ctx.lineWidth = 1.5; ctx.lineCap = 'butt';
+  for (let i = -1; i <= 1; i++) {
+    ctx.beginPath();
+    ctx.moveTo(tx + i * 8, ty2 - 12);
+    ctx.lineTo(tx + i * 6, ty2 + 24);
+    ctx.stroke();
+  }
 
-  ctx.strokeStyle = '#888a78'; ctx.lineWidth = 3; ctx.lineCap = 'round';
-  ctx.beginPath(); ctx.moveTo(tx - 8, ty2 - 16); ctx.lineTo(tx + 8, ty2 - 16); ctx.stroke();
+  // Kapak (lid)
+  const lidGrad = ctx.createLinearGradient(tx - 23, ty2 - 27, tx + 23, ty2 - 15);
+  lidGrad.addColorStop(0, '#859e92'); lidGrad.addColorStop(1, '#506860');
+  ctx.fillStyle = lidGrad;
+  ctx.beginPath(); ctx.roundRect(tx - 22, ty2 - 27, 44, 14, [6, 6, 0, 0]); ctx.fill();
+  ctx.strokeStyle = '#2e4a3e'; ctx.lineWidth = 2; ctx.stroke();
 
-  ctx.fillStyle = '#90987c';
-  ctx.font = 'bold 11px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
-  ctx.fillText('🗑️ Çöp', tx, ty2 + 20);
+  // Kapak tutacağı
+  ctx.fillStyle = '#3a5248';
+  ctx.beginPath(); ctx.roundRect(tx - 7, ty2 - 35, 14, 10, 4); ctx.fill();
+  ctx.strokeStyle = '#223830'; ctx.lineWidth = 1.5; ctx.stroke();
+
+  // Etiket
+  ctx.fillStyle = '#d0e8e0';
+  ctx.font = 'bold 10px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+  ctx.fillText('🗑️ Çöp', tx, ty2 + 28);
 
   // ══════════════════════════════════════════════════════════════════
   // TABAK BEKLETME RAFLARI — metalik
