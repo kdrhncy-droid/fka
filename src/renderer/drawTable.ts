@@ -1,5 +1,5 @@
 /**
- * Masa + 4 sandalye takımı çizer — detaylı restoran görünümü
+ * Masa + 4 sandalye — PlateUp tarzı koyu estetik
  * Top-down (yukarıdan bakış) açısıyla
  */
 export function drawTable(ctx: CanvasRenderingContext2D, cx: number, cy: number) {
@@ -10,136 +10,74 @@ export function drawTable(ctx: CanvasRenderingContext2D, cx: number, cy: number)
     drawChair(ctx, cx - 28, cy + 40, 'down');
     drawChair(ctx, cx + 28, cy + 40, 'down');
 
-    // ── Masa Golvesi (masanın altında tüm yapının gölgesi) ────────────────────
-    ctx.fillStyle = 'rgba(0,0,0,0.13)';
+    // ── Masa Gölgesi ──────────────────────────────────────────────────────────
+    ctx.fillStyle = 'rgba(0,0,0,0.22)';
     ctx.beginPath();
-    ctx.roundRect(cx - 44, cy - 28, 88, 64, 12);
+    ctx.roundRect(cx - 44 + 3, cy - 28 + 5, 88, 64, 12);
     ctx.fill();
 
-    // ── Ahşap masa çerçevesi (örtünün altından sadece kenar görünür) ──────────
-    const frameGrad = ctx.createLinearGradient(cx - 42, cy - 30, cx + 42, cy + 30);
-    frameGrad.addColorStop(0, '#b8864e');
-    frameGrad.addColorStop(1, '#8b6914');
+    // ── Ahşap masa gövdesi — koyu meşe tonu ──────────────────────────────────
+    const frameGrad = ctx.createLinearGradient(cx - 42, cy - 32, cx + 42, cy + 30);
+    frameGrad.addColorStop(0, '#5c3d1e');
+    frameGrad.addColorStop(0.5, '#4a2e10');
+    frameGrad.addColorStop(1, '#3a2008');
     ctx.fillStyle = frameGrad;
     ctx.beginPath();
     ctx.roundRect(cx - 42, cy - 32, 84, 62, 10);
     ctx.fill();
-    ctx.strokeStyle = '#7a5c12';
-    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = '#2a1505';
+    ctx.lineWidth = 2;
     ctx.stroke();
 
-    // ── ÖRTÜ: Sarkan kenar gölgesi (örtünün masadan dışarı taşan kısmı) ──────
-    // Örtü masadan biraz taşıyor, taşan kısımlar hafif gölge bırakır
+    // ── Ahşap desen: yatay lifler ─────────────────────────────────────────────
     ctx.save();
-    ctx.fillStyle = 'rgba(0,0,0,0.06)';
-    // Üst sarkma gölgesi
-    ctx.beginPath();
-    ctx.moveTo(cx - 40, cy - 32);
-    ctx.quadraticCurveTo(cx, cy - 40, cx + 40, cy - 32);
-    ctx.lineTo(cx + 40, cy - 32);
-    ctx.closePath();
-    ctx.fill();
-    // Alt sarkma gölgesi
-    ctx.beginPath();
-    ctx.moveTo(cx - 40, cy + 30);
-    ctx.quadraticCurveTo(cx, cy + 40, cx + 40, cy + 30);
-    ctx.closePath();
-    ctx.fill();
-    ctx.restore();
-
-    // ── ÖRTÜ: Ana kumaş yüzeyi ───────────────────────────────────────────────
-    // Örtü masadan biraz büyük, kenarlar hafif dalgalı (organik form)
-    ctx.save();
-    ctx.beginPath();
-    // Üst kenar — hafif dalgalı, ortada aşağı sarkar
-    ctx.moveTo(cx - 46, cy - 30);
-    ctx.quadraticCurveTo(cx - 20, cy - 36, cx, cy - 35);
-    ctx.quadraticCurveTo(cx + 20, cy - 36, cx + 46, cy - 30);
-    // Sağ kenar — hafif dışa bombeli
-    ctx.quadraticCurveTo(cx + 49, cy, cx + 46, cy + 28);
-    // Alt kenar — hafif dalgalı
-    ctx.quadraticCurveTo(cx + 20, cy + 35, cx, cy + 33);
-    ctx.quadraticCurveTo(cx - 20, cy + 35, cx - 46, cy + 28);
-    // Sol kenar — hafif dışa bombeli
-    ctx.quadraticCurveTo(cx - 49, cy, cx - 46, cy - 30);
-    ctx.closePath();
-
-    // Kumaş gradient — çok hafif beyaz-krem tonları
-    const clothGrad = ctx.createRadialGradient(cx - 8, cy - 8, 5, cx, cy, 55);
-    clothGrad.addColorStop(0, '#ffffff');
-    clothGrad.addColorStop(0.5, '#fafaf8');
-    clothGrad.addColorStop(1, '#f0ede8');
-    ctx.fillStyle = clothGrad;
-    ctx.fill();
-
-    // Örtü kenar çizgisi — çok ince, doğal
-    ctx.strokeStyle = 'rgba(190,185,175,0.5)';
+    ctx.globalAlpha = 0.08;
+    ctx.strokeStyle = '#fff';
     ctx.lineWidth = 1;
-    ctx.stroke();
+    for (let i = 0; i < 4; i++) {
+        const ly = cy - 22 + i * 13;
+        ctx.beginPath();
+        ctx.moveTo(cx - 36, ly);
+        ctx.bezierCurveTo(cx - 15, ly + 2, cx + 15, ly - 2, cx + 36, ly);
+        ctx.stroke();
+    }
     ctx.restore();
 
-    // ── ÖRTÜ: Kumaş kıvrım/katlama gölgeleri (doğal görünüm) ─────────────────
+    // ── Masa üstü yüzey parlaması ─────────────────────────────────────────────
     ctx.save();
-    ctx.globalAlpha = 0.07;
-    ctx.strokeStyle = '#888';
-    ctx.lineWidth = 1.2;
-
-    // Yatay kıvrım 1
-    ctx.beginPath();
-    ctx.moveTo(cx - 38, cy - 12);
-    ctx.bezierCurveTo(cx - 15, cy - 14, cx + 15, cy - 10, cx + 38, cy - 12);
-    ctx.stroke();
-
-    // Yatay kıvrım 2
-    ctx.beginPath();
-    ctx.moveTo(cx - 36, cy + 8);
-    ctx.bezierCurveTo(cx - 10, cy + 6, cx + 10, cy + 10, cx + 36, cy + 8);
-    ctx.stroke();
-
-    // Dikey kıvrım (hafif)
-    ctx.globalAlpha = 0.04;
-    ctx.beginPath();
-    ctx.moveTo(cx - 8, cy - 30);
-    ctx.bezierCurveTo(cx - 10, cy - 10, cx - 6, cy + 10, cx - 8, cy + 28);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(cx + 10, cy - 30);
-    ctx.bezierCurveTo(cx + 8, cy - 10, cx + 12, cy + 10, cx + 10, cy + 28);
-    ctx.stroke();
-
-    ctx.restore();
-
-    // ── ÖRTÜ: Üst kısım hafif ışık yansıması ─────────────────────────────────
-    ctx.save();
-    ctx.globalAlpha = 0.12;
+    ctx.globalAlpha = 0.13;
     ctx.fillStyle = '#fff';
     ctx.beginPath();
-    ctx.ellipse(cx - 5, cy - 14, 28, 10, -0.1, 0, Math.PI * 2);
+    ctx.ellipse(cx - 5, cy - 12, 30, 11, -0.1, 0, Math.PI * 2);
     ctx.fill();
     ctx.restore();
 
-    // ── Ortadaki dekoratif peçete + çiçek ─────────────────────────────────────
-    // Küçük katlanmış peçete (kare, hafif dönük)
-    ctx.save();
-    ctx.translate(cx, cy - 1);
-    ctx.rotate(Math.PI / 4); // 45 derece döndür — elmas formu
-    ctx.fillStyle = '#fdfcfa';
-    ctx.fillRect(-6, -6, 12, 12);
-    ctx.strokeStyle = 'rgba(180,175,165,0.35)';
-    ctx.lineWidth = 0.8;
-    ctx.strokeRect(-6, -6, 12, 12);
-    ctx.restore();
-
+    // ── Masa üstü dekor: küçük çiçek vazosu ──────────────────────────────────
+    // Vazo
+    ctx.beginPath();
+    ctx.roundRect(cx - 4, cy - 14, 8, 10, [2, 2, 4, 4]);
+    const vazoGrad = ctx.createLinearGradient(cx - 4, cy - 14, cx + 4, cy - 4);
+    vazoGrad.addColorStop(0, '#6a9fc0');
+    vazoGrad.addColorStop(1, '#3d6e8a');
+    ctx.fillStyle = vazoGrad;
+    ctx.fill();
+    ctx.strokeStyle = '#2a4f68';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    // Vazo parlama
+    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+    ctx.beginPath();
+    ctx.roundRect(cx - 2, cy - 13, 3, 5, 2);
+    ctx.fill();
     // Çiçek
-    ctx.font = '9px Arial';
+    ctx.font = '11px Arial';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('🌸', cx, cy - 1);
+    ctx.fillText('🌿', cx, cy - 19);
 }
 
 /**
- * Tek bir sandalye çizer
- * dir: 'up' = masanın üstünde (aşağı bakıyor), 'down' = masanın altında (yukarı bakıyor)
+ * Tek bir sandalye — PlateUp tarzı koyu taupe/gri
  */
 function drawChair(
     ctx: CanvasRenderingContext2D,
@@ -150,46 +88,50 @@ function drawChair(
     const w = 24, h = 20;
 
     // ── Gölge ─────────────────────────────────────────────────────────────────
-    ctx.fillStyle = 'rgba(0,0,0,0.08)';
+    ctx.fillStyle = 'rgba(0,0,0,0.18)';
     ctx.beginPath();
-    ctx.roundRect(cx - w / 2 + 2, cy + 3, w, h, 5);
+    ctx.roundRect(cx - w / 2 + 3, cy + 4, w, h, 5);
     ctx.fill();
 
-    // ── Oturma yüzeyi (yastık) ────────────────────────────────────────────────
+    // ── Oturma yüzeyi ─────────────────────────────────────────────────────────
     const cushionGrad = ctx.createLinearGradient(cx, cy, cx, cy + h);
-    cushionGrad.addColorStop(0, '#dc8a6e');
-    cushionGrad.addColorStop(1, '#b5694d');
+    cushionGrad.addColorStop(0, '#7c6f8a');
+    cushionGrad.addColorStop(1, '#564b66');
     ctx.fillStyle = cushionGrad;
     ctx.beginPath();
     ctx.roundRect(cx - w / 2, cy, w, h, 6);
     ctx.fill();
 
     // ── Yastık parlama ────────────────────────────────────────────────────────
-    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    ctx.fillStyle = 'rgba(255,255,255,0.15)';
     ctx.beginPath();
     ctx.roundRect(cx - w / 2 + 3, cy + 2, w - 6, 6, 3);
     ctx.fill();
 
-    // ── Kenar ─────────────────────────────────────────────────────────────────
-    ctx.strokeStyle = '#8b5a3a';
+    // ── Kenar çizgisi ─────────────────────────────────────────────────────────
+    ctx.strokeStyle = '#3a3045';
     ctx.lineWidth = 1.5;
     ctx.beginPath();
     ctx.roundRect(cx - w / 2, cy, w, h, 6);
     ctx.stroke();
 
-    // ── Arkalık (yöne göre) ───────────────────────────────────────────────────
-    const backH = 8;
+    // ── Arkalık ───────────────────────────────────────────────────────────────
+    const backH = 9;
     if (dir === 'up') {
-        // Arkalık üstte (masanın üstündeki sandalye)
         const grad2 = ctx.createLinearGradient(cx, cy - backH - 4, cx, cy - 4);
-        grad2.addColorStop(0, '#6d3a1f');
-        grad2.addColorStop(1, '#8b5a3a');
+        grad2.addColorStop(0, '#3a2e4a');
+        grad2.addColorStop(1, '#564b66');
         ctx.fillStyle = grad2;
         ctx.beginPath();
-        ctx.roundRect(cx - w / 2 + 2, cy - backH - 4, w - 4, backH, [4, 4, 0, 0]);
+        ctx.roundRect(cx - w / 2 + 2, cy - backH - 4, w - 4, backH, [5, 5, 0, 0]);
         ctx.fill();
-        // Arkalık dekoratif çubuklar
-        ctx.strokeStyle = '#5a2d10';
+        ctx.strokeStyle = '#2a2035';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.roundRect(cx - w / 2 + 2, cy - backH - 4, w - 4, backH, [5, 5, 0, 0]);
+        ctx.stroke();
+        // Dekoratif çubuklar
+        ctx.strokeStyle = '#2a2035';
         ctx.lineWidth = 1;
         for (let i = 0; i < 2; i++) {
             const lx = cx - 4 + i * 8;
@@ -199,15 +141,19 @@ function drawChair(
             ctx.stroke();
         }
     } else {
-        // Arkalık altta (masanın altındaki sandalye)
         const grad2 = ctx.createLinearGradient(cx, cy + h + 4, cx, cy + h + backH + 4);
-        grad2.addColorStop(0, '#8b5a3a');
-        grad2.addColorStop(1, '#6d3a1f');
+        grad2.addColorStop(0, '#564b66');
+        grad2.addColorStop(1, '#3a2e4a');
         ctx.fillStyle = grad2;
         ctx.beginPath();
-        ctx.roundRect(cx - w / 2 + 2, cy + h + 4, w - 4, backH, [0, 0, 4, 4]);
+        ctx.roundRect(cx - w / 2 + 2, cy + h + 4, w - 4, backH, [0, 0, 5, 5]);
         ctx.fill();
-        ctx.strokeStyle = '#5a2d10';
+        ctx.strokeStyle = '#2a2035';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.roundRect(cx - w / 2 + 2, cy + h + 4, w - 4, backH, [0, 0, 5, 5]);
+        ctx.stroke();
+        ctx.strokeStyle = '#2a2035';
         ctx.lineWidth = 1;
         for (let i = 0; i < 2; i++) {
             const lx = cx - 4 + i * 8;
