@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { MARKET_NAME } from '../constants';
 import { PatchNotesModal } from './PatchNotesModal';
+import { loadSave } from '../hooks/useSaveGame';
 
 interface WelcomeScreenProps {
     onPlay: (roomId?: string) => void;
@@ -14,6 +15,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onPlay, onQuickSta
     const [showJoinForm, setShowJoinForm] = useState(false);
     const [showQuickStart, setShowQuickStart] = useState(false);
     const [showPatchNotes, setShowPatchNotes] = useState(false);
+    const save = loadSave();
 
     return (
         <div className="menu-screen bg-[radial-gradient(circle_at_top,#fef3c7_0%,#fed7aa_28%,#7c2d12_70%,#1c1917_100%)] safe-top safe-bottom overflow-y-auto relative">
@@ -59,6 +61,23 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onPlay, onQuickSta
                         </div>
                     ))}
                 </div>
+
+                {/* ── Yüksek Skor ───────────────────────────────────────────────── */}
+                {save.totalGamesPlayed > 0 && (
+                    <div className="rounded-2xl border border-yellow-500/30 bg-yellow-500/10 backdrop-blur-sm px-4 py-3 flex items-center justify-between">
+                        <div className="text-xs font-black uppercase tracking-[0.16em] text-yellow-300">🏆 Rekor</div>
+                        <div className="flex gap-4 text-right">
+                            <div>
+                                <div className="text-lg font-black text-amber-300">${save.highScore}</div>
+                                <div className="text-[10px] text-stone-400">En yüksek skor</div>
+                            </div>
+                            <div>
+                                <div className="text-lg font-black text-purple-300">{save.bestDay}. Gün</div>
+                                <div className="text-[10px] text-stone-400">En uzun oyun</div>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* ── Aksiyon Butonları ──────────────────────────────────────────── */}
                 <div className="space-y-3 mt-2">
