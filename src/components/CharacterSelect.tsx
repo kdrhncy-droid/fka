@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { CHARACTER_TYPES } from '../types/game';
 import { MARKET_NAME } from '../constants';
+import { loadSave, trySetPlayerName } from '../hooks/useSaveGame';
 
 interface CharacterSelectProps {
     isConnected: boolean;
@@ -54,6 +55,15 @@ export const CharacterSelect: React.FC<CharacterSelectProps> = ({
 }) => {
     const selectedChar = CHARACTER_TYPES[charType] ?? CHARACTER_TYPES[0];
     const [isFormValid, setIsFormValid] = useState(false);
+    const [nameError, setNameError] = useState('');
+    const [saveInfo, setSaveInfo] = useState(() => loadSave());
+
+    // Kayıtlı isim varsa ve alan boşsa ön doldur
+    useEffect(() => {
+        if (!playerName && saveInfo.playerName) {
+            setPlayerName(saveInfo.playerName);
+        }
+    }, []);
 
     // Form doğrulaması
     useEffect(() => {
@@ -63,9 +73,16 @@ export const CharacterSelect: React.FC<CharacterSelectProps> = ({
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (isFormValid) {
-            onJoin(e);
+        if (!isFormValid) return;
+        const result = trySetPlayerName(playerName.trim());
+        if (!result.allowed) {
+            setNameError('İsim değiştirme hakkın bitti! Sadece kayıtlı ismini kullanabilirsin.');
+            setPlayerName(saveInfo.playerName);
+            return;
         }
+        setSaveInfo(loadSave());
+        setNameError('');
+        onJoin(e);
     };
 
     return (
@@ -166,16 +183,37 @@ export const CharacterSelect: React.FC<CharacterSelectProps> = ({
 
                             <div className="space-y-4">
                                 <label className="block">
-                                    <span className="mb-2 block text-xs font-black uppercase tracking-[0.22em] text-stone-400">Oyuncu adi</span>
+                                    <div className="mb-2 flex items-center justify-between">
+                                        <span className="text-xs font-black uppercase tracking-[0.22em] text-stone-400">Oyuncu adı</span>
+                                        {saveInfo.playerName ? (
+                                            saveInfo.nameChangesLeft > 0 ? (
+                                                <span className="text-[10px] font-bold text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded-full border border-amber-400/20">
+                                                    ✏️ {saveInfo.nameChangesLeft} değişim hakkı
+                                                </span>
+                                            ) : (
+                                                <span className="text-[10px] font-bold text-red-400 bg-red-400/10 px-2 py-0.5 rounded-full border border-red-400/20">
+                                                    🔒 İsim kilitli
+                                                </span>
+                                            )
+                                        ) : null}
+                                    </div>
                                     <input
                                         type="text"
                                         value={playerName}
-                                        onChange={(e) => setPlayerName(e.target.value)}
+                                        onChange={(e) => { setNameError(''); setPlayerName(e.target.value); }}
                                         maxLength={12}
                                         placeholder="Orn: servis-1"
-                                        className="w-full rounded-2xl border border-white/10 bg-stone-900 px-4 py-3 text-base font-semibold text-stone-100 outline-none transition-colors placeholder:text-stone-500 focus:border-amber-300"
+                                        readOnly={saveInfo.nameChangesLeft === 0 && saveInfo.playerName !== ''}
+                                        className={`w-full rounded-2xl border px-4 py-3 text-base font-semibold text-stone-100 outline-none transition-colors placeholder:text-stone-500 focus:border-amber-300 ${
+                                            saveInfo.nameChangesLeft === 0 && saveInfo.playerName !== ''
+                                                ? 'bg-stone-800/60 border-stone-700 cursor-not-allowed opacity-70'
+                                                : 'bg-stone-900 border-white/10'
+                                        }`}
                                         required
                                     />
+                                    {nameError && (
+                                        <p className="mt-1.5 text-xs text-red-400 font-semibold">{nameError}</p>
+                                    )}
                                 </label>
 
                                 <label className="block">
