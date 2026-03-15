@@ -62,20 +62,42 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onPlay, onQuickSta
                     ))}
                 </div>
 
-                {/* ── Yüksek Skor ───────────────────────────────────────────────── */}
+                {/* ── Hall of Fame ──────────────────────────────────────────────── */}
                 {save.totalGamesPlayed > 0 && (
-                    <div className="rounded-2xl border border-yellow-500/30 bg-yellow-500/10 backdrop-blur-sm px-4 py-3 flex items-center justify-between">
-                        <div className="text-xs font-black uppercase tracking-[0.16em] text-yellow-300">🏆 Rekor</div>
-                        <div className="flex gap-4 text-right">
-                            <div>
-                                <div className="text-lg font-black text-amber-300">${save.highScore}</div>
-                                <div className="text-[10px] text-stone-400">En yüksek skor</div>
+                    <div className="rounded-2xl border border-yellow-500/30 bg-yellow-500/10 backdrop-blur-sm p-4 space-y-3">
+                        <div className="text-[10px] font-black uppercase tracking-[0.22em] text-yellow-300">🏆 Rekorlar</div>
+                        <div className="grid grid-cols-2 gap-2">
+                            <div className="bg-black/20 rounded-xl p-3 text-center">
+                                <div className="text-xl font-black text-amber-300">${save.highScore}</div>
+                                <div className="text-[10px] text-stone-400 mt-0.5">En yüksek skor</div>
                             </div>
-                            <div>
-                                <div className="text-lg font-black text-purple-300">{save.bestDay}. Gün</div>
-                                <div className="text-[10px] text-stone-400">En uzun oyun</div>
+                            <div className="bg-black/20 rounded-xl p-3 text-center">
+                                <div className="text-xl font-black text-purple-300">{save.bestDay}. Gün</div>
+                                <div className="text-[10px] text-stone-400 mt-0.5">En uzun oyun</div>
                             </div>
                         </div>
+                        {save.bestDay > 0 && save.bestDayHolders && save.bestDayHolders.length > 0 && (
+                            <div className="bg-black/20 rounded-xl px-3 py-2 flex items-center gap-2">
+                                <span className="text-yellow-400 text-sm">👑</span>
+                                <div>
+                                    <span className="text-[10px] text-stone-400">En iyi gün rekortmeni: </span>
+                                    <span className="text-xs font-black text-yellow-200">
+                                        {save.bestDayHolders.join(' · ')}
+                                    </span>
+                                </div>
+                            </div>
+                        )}
+                        {save.playerName && (
+                            <div className="flex items-center justify-between text-[10px] pt-1 border-t border-white/5">
+                                <span className="text-stone-500">Kayıtlı ismin:</span>
+                                <span className="font-black text-stone-300">{save.playerName}
+                                    {save.nameChangesLeft > 0
+                                        ? <span className="ml-1.5 text-amber-400/70">({save.nameChangesLeft} değişim hakkı)</span>
+                                        : <span className="ml-1.5 text-red-400/70">(kilitli)</span>
+                                    }
+                                </span>
+                            </div>
+                        )}
                     </div>
                 )}
 
