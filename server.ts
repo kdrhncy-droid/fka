@@ -27,7 +27,7 @@ const io = new Server(server, {
   cors: { origin: "*" }
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.SOCKET_PORT || process.env.PORT || 3001;
 
 // ─── Beklenmedik hatalarda sunucuyu koru ──────────────────────────────────────
 process.on('uncaughtException', (err) => {
@@ -137,7 +137,8 @@ io.on("connection", (socket) => {
           if (s.input && s.timer > 0) {
             s.timer--;
             if (s.timer <= 0) {
-              s.output = s.input;
+              const rec = RECIPE_DEFS[s.input as keyof typeof RECIPE_DEFS];
+              s.output = rec ? rec.output : s.input;
               s.input = null;
               s.burnTimer = BURN_TICKS;
             }
