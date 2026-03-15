@@ -43,7 +43,7 @@ export function writeSave(score: number, day: number, playerName?: string): Save
         if (day > prev.bestDay) {
             bestDayHolders = [playerName];
         } else if (day === prev.bestDay && prev.bestDay > 0 && !bestDayHolders.includes(playerName)) {
-            bestDayHolders = [...bestDayHolders, playerName];
+            bestDayHolders = [...bestDayHolders, playerName].slice(0, 10);
         }
     }
 
