@@ -13,7 +13,8 @@ import { Settings } from '../hooks/useSettings';
 import { useVoiceChat } from '../hooks/useVoiceChat';
 import { writeSave, loadSave, SaveData } from '../hooks/useSaveGame';
 
-const MUSIC_URL = 'https://cdn.jsdelivr.net/gh/effacestudios/Royalty-Free-Music-Pack@main/Light%20Hearted%20-%20Jeremy%20Blake.mp3';
+// "Fluffing a Duck" by Kevin MacLeod — CC BY (incompetech.com)
+const MUSIC_URL = '/music.mp3';
 
 interface Props {
     canvasRef: React.RefObject<HTMLCanvasElement>;
