@@ -306,9 +306,7 @@ export function useGameLoop({
 
       // Masalar
 
-      // Malzeme istasyonları (server ile uyumlu: hamur / et / sebze)
-      const stock = state.stock ?? { "🍞": 0, "🥩": 0, "🥬": 0 };
-
+      // Malzeme istasyonları (stok sınırsız)
       INGREDIENTS.forEach((ing) => {
         drawStation(
           ctx,
@@ -317,7 +315,6 @@ export function useGameLoop({
           ing.color,
           ing.key,
           ing.label,
-          stock[ing.key] ?? 0,
         );
       });
 

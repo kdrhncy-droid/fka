@@ -8,7 +8,7 @@ import { Personality } from './dialogues';
 
 export type Item = string | null;
 export type StockKey = '🍞' | '🥩' | '🥬' | '🥘' | '🍢';
-export type UpgradeKey = 'patience' | 'earnings' | 'stockMax';
+export type UpgradeKey = 'patience' | 'earnings';
 export const CLEAN_PLATE = '__clean_plate__';
 export const DIRTY_PLATE = '__dirty_plate__';
 
@@ -67,7 +67,7 @@ export interface WaitingGuest {
 }
 
 export interface Upgrades {
-    patience: number; earnings: number; stockMax: number;
+    patience: number; earnings: number;
 }
 
 export interface CookStation {
@@ -123,22 +123,20 @@ export interface GameState {
     holdingStations: HoldingStation[];
     dirtyTables: DirtyTable[];
     score: number;
-    stock: Record<StockKey, number>;
     marketName: string;
     dayPhase: 'prep' | 'day' | 'night';
     dayTimer: number;
     upgrades: Upgrades;
     day: number;
-    hasOrderedTonight: boolean;
-    cookStations: CookStation[]; // Array olarak değiştirdik
-    dirtyTrayCount: number;      // Kirli tabak biriktirme sepeti
+    cookStations: CookStation[];
+    dirtyTrayCount: number;
 
     // Game Over & Penalty
     lives: number;
     isGameOver: boolean;
 
     // Revenge System (Intikam Cetesi)
-    revengeQueue: number[]; // Her timer 0'a ulastiginda thuglar gelir
+    revengeQueue: number[];
 }
 
 // ─── Boyut ───────────────────────────────────────────────────────────────────
@@ -248,7 +246,6 @@ export const DISH_ITEMS = ['🍕', '🍔', '🥗', '🍜', '🌯'] as const;
 export const UPGRADE_DEFS: Record<UpgradeKey, { costs: number[]; max: number }> = {
     patience: { costs: [50, 100, 200], max: 3 },
     earnings: { costs: [100, 250], max: 2 },
-    stockMax: { costs: [75, 150, 300], max: 3 },
 };
 
 // Fırın upgrade sistemi (2., 3., 4. fırın maliyetleri)
@@ -260,24 +257,22 @@ export function mkCook(id: string, x: number, y: number): CookStation {
 }
 
 export function mkGameState(): GameState {
-  // Başlangıçta sadece 1 fırın
   const initialOvens = INITIAL_OVEN_POSITIONS.map((pos, i) =>
     mkCook(`oven${i + 1}`, pos.x, pos.y)
   );
 
-  // Tabak rafları ve servis bloklarını birleştir
   const allHoldingStations = [
     ...HOLDING_STATION_POSITIONS.map(p => ({ id: p.id, items: [CLEAN_PLATE], type: p.type, maxItems: 1 })),
     ...COUNTER_POSITIONS.map(p => ({ id: p.id, items: [], type: p.type, maxItems: 1 })),
   ];
 
-    return {
+  return {
     players: {}, customers: [], waitList: [],
     holdingStations: allHoldingStations,
     dirtyTables: [],
-    score: 0, stock: { '🍞': 10, '🥩': 10, '🥬': 10, '🥘': 5, '🍢': 5 },
+    score: 0,
     marketName: "TerraMarket", dayPhase: 'prep', dayTimer: DAY_TICKS,
-    upgrades: { patience: 0, earnings: 0, stockMax: 0 }, day: 1, hasOrderedTonight: false,
+    upgrades: { patience: 0, earnings: 0 }, day: 1,
     cookStations: initialOvens,
     dirtyTrayCount: 0,
     lives: 3,

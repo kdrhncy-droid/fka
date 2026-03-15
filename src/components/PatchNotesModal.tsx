@@ -13,8 +13,8 @@ export const PatchNotesModal: React.FC<Props> = ({ onClose }) => {
                     <div>
                         <h2 className="text-3xl font-black text-amber-400 tracking-tight">Yama Notları 📜</h2>
                         <div className="flex items-center gap-2 mt-1">
-                            <span className="bg-amber-400/10 text-amber-400 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest border border-amber-400/20">v1.1.0</span>
-                            <span className="text-stone-500 text-[10px] font-bold uppercase tracking-widest">Büyük Güncelleme</span>
+                            <span className="bg-amber-400/10 text-amber-400 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest border border-amber-400/20">v1.2.0</span>
+                            <span className="text-stone-500 text-[10px] font-bold uppercase tracking-widest">Son Güncelleme</span>
                         </div>
                     </div>
                     <button
@@ -27,6 +27,40 @@ export const PatchNotesModal: React.FC<Props> = ({ onClose }) => {
 
                 {/* İçerik Gövdesi */}
                 <div className="p-8 overflow-y-auto space-y-10 no-scrollbar pb-12">
+
+                    {/* v1.2.0 */}
+                    <section>
+                        <h3 className="text-xs font-black text-stone-500 mb-4 uppercase tracking-[0.3em] flex items-center gap-3">
+                            <span className="h-px flex-1 bg-stone-800"></span>
+                            🆕 v1.2.0 — Stok Sistemi Kaldırıldı
+                            <span className="h-px flex-1 bg-stone-800"></span>
+                        </h3>
+                        <div className="grid grid-cols-1 gap-4">
+                            <div className="bg-stone-800/40 border border-stone-700/50 p-5 rounded-3xl flex gap-5 items-start">
+                                <div className="text-4xl bg-stone-800 w-16 h-16 rounded-2xl flex items-center justify-center border border-stone-700 shadow-inner flex-shrink-0">♾️</div>
+                                <div>
+                                    <h4 className="text-lg font-black text-white mb-1">Sonsuz Malzeme</h4>
+                                    <p className="text-sm text-stone-400 leading-relaxed">Stok sistemi tamamen kaldırıldı. Artık malzemelerin bitmesi diye bir şey yok — istediğin kadar al, dilediğin kadar pişir!</p>
+                                </div>
+                            </div>
+                            <div className="bg-stone-800/40 border border-stone-700/50 p-5 rounded-3xl flex gap-5 items-start">
+                                <div className="text-4xl bg-stone-800 w-16 h-16 rounded-2xl flex items-center justify-center border border-stone-700 shadow-inner flex-shrink-0">🗑️</div>
+                                <div>
+                                    <h4 className="text-lg font-black text-white mb-1">Kaldırılanlar</h4>
+                                    <p className="text-sm text-stone-400 leading-relaxed">Gece sipariş verme butonu, "Depo Kapasitesi" upgrade'i ve stok sayacı göstergesi kaldırıldı. Gece ekranı sadeleşti.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* v1.1.0 */}
+                    <section>
+                        <h3 className="text-xs font-black text-stone-500 mb-4 uppercase tracking-[0.3em] flex items-center gap-3">
+                            <span className="h-px flex-1 bg-stone-800"></span>
+                            📦 v1.1.0 — Büyük Güncelleme
+                            <span className="h-px flex-1 bg-stone-800"></span>
+                        </h3>
+                    </section>
 
                     {/* Öne Çıkanlar */}
                     <section>

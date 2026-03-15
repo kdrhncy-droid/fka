@@ -4,7 +4,7 @@ import { createServer } from "http";
 import path from "path";
 import { fileURLToPath } from "url";
 import { 
-  GameState, Player, Customer, Item, StockKey, UpgradeKey, Personality,
+  GameState, Player, Customer, Item, UpgradeKey, Personality,
   GAME_WIDTH, GAME_HEIGHT, DAY_TICKS, NIGHT_TICKS, 
   DISH_ITEMS, SEAT_SLOTS, INGREDIENTS, RECIPE_DEFS,
   INITIAL_OVEN_POSITIONS, ADDITIONAL_OVEN_POSITIONS, OVEN_UPGRADE_COSTS,
@@ -58,7 +58,6 @@ const TABLE_Y = 500;
 function patLimit(lv: number) { return 1200 + 300 * lv; }
 function earn(lv: number) { return 10 + 5 * lv; }
 function isDish(item: Item): item is string { return !!item && DISH_ITEMS.includes(item as any); }
-function cap(lv: number) { return 15 + 5 * lv; }
 
 function tryQueueSeat(gs: GameState, io: Server, rid: string) {
   if (gs.dayPhase !== "day") return;
@@ -155,11 +154,7 @@ io.on("connection", (socket) => {
         if (gs.dayPhase === 'day') {
           if (gs.dayTimer > 0) gs.dayTimer--;
           if (gs.dayTimer <= 0 && gs.customers.length === 0 && gs.waitList.length === 0 && gs.dirtyTables.length === 0) {
-            gs.dayPhase = 'night'; gs.dayTimer = NIGHT_TICKS; gs.hasOrderedTonight = false;
-            const c = cap(gs.upgrades.stockMax);
-            (['🍞', '🥩', '🥬', '🥘', '🍢'] as StockKey[]).forEach(k => {
-              gs.stock[k] = Math.min(c, gs.stock[k] + 5);
-            });
+            gs.dayPhase = 'night'; gs.dayTimer = NIGHT_TICKS;
           }
         }
 
@@ -513,32 +508,20 @@ io.on("connection", (socket) => {
       }
     }
 
-    // Malzeme al
+    // Malzeme al (stok sınırı yok, sonsuz)
     for (const s of INGREDIENTS) {
-      if (Math.hypot(px - s.pos.x, py - s.pos.y) < INTERACT_R && gs.stock[s.key] > 0) {
+      if (Math.hypot(px - s.pos.x, py - s.pos.y) < INTERACT_R) {
         if (p.holding === CLEAN_PLATE || isDish(p.holding)) {
           socket.emit("sound", "fail");
           return;
         }
         if (!p.holding) {
           p.holding = s.key;
-          gs.stock[s.key]--;
           socket.emit("sound", "pickup");
           return;
         }
       }
     }
-  });
-
-  socket.on("order", () => {
-    if (!roomId || !RoomManager.getRoomState(roomId)) return;
-    const gs = RoomManager.getRoomState(roomId)!; if (gs.dayPhase !== 'night') return;
-    if (gs.hasOrderedTonight) { socket.emit("sound", "fail"); return; }
-    const c = cap(gs.upgrades.stockMax);
-    (['🍞', '🥩', '🥬', '🥘', '🍢'] as StockKey[]).forEach(k => { gs.stock[k] = c; });
-    gs.hasOrderedTonight = true; 
-    io.to(roomId).emit("state", gs);
-    socket.emit("sound", "success");
   });
 
   socket.on("buyOven", () => {
@@ -624,7 +607,6 @@ io.on("connection", (socket) => {
     const gs = RoomManager.getRoomState(roomId)!;
     if (!gs.isGameOver) return;
 
-    // Oyunu sıfırla ama skoru ve upgradeleri koru (veya ceza kes)
     gs.isGameOver = false;
     gs.lives = 3;
     gs.customers = [];
@@ -632,7 +614,6 @@ io.on("connection", (socket) => {
     gs.dirtyTables = [];
     gs.dayPhase = 'prep';
     gs.dayTimer = DAY_TICKS;
-    // Ceza: Skoru %20 düşür
     gs.score = Math.floor(gs.score * 0.8);
     io.to(roomId).emit("state", gs);
     socket.emit("sound", "success");

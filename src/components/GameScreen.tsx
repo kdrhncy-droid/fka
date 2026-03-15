@@ -42,7 +42,7 @@ export const GameScreen: React.FC<Props> = ({
     const [score, setScore] = useState(0);
     const [dayPhase, setDayPhase] = useState<'prep' | 'day' | 'night'>('prep');
     const [dayTimer, setDayTimer] = useState(DAY_TICKS);
-    const [upgrades, setUpgrades] = useState<Upgrades>({ patience: 0, earnings: 0, stockMax: 0 });
+    const [upgrades, setUpgrades] = useState<Upgrades>({ patience: 0, earnings: 0 });
     const [day, setDay] = useState(1);
     const [ovenCount, setOvenCount] = useState(1);
     const [queueLen, setQueueLen] = useState(0);
@@ -331,7 +331,6 @@ export const GameScreen: React.FC<Props> = ({
                         onUpgrade={id => emit('upgrade', id)}
                         onBuyOven={() => emit('buyOven')}
                         onBuyLife={() => emit('buyLife')}
-                        onOrder={() => emit('order')}
                         onNextDay={() => emit('nextDay')}
                     />
                 )}

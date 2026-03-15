@@ -1,11 +1,9 @@
 import React from 'react';
 import { Upgrades, UpgradeKey, UPGRADE_DEFS as SHARED_UPGRADES, OVEN_UPGRADE_COSTS, INITIAL_OVEN_POSITIONS, ADDITIONAL_OVEN_POSITIONS } from '../types/game';
 
-// UI bilgileri — costs/max değerleri shared'dan gelir (tek kaynak)
 const UPGRADE_UI: { id: UpgradeKey; icon: string; name: string; desc: string }[] = [
     { id: 'patience', icon: '⏳', name: 'Müşteri Sabrı', desc: 'Müşteriler daha uzun bekler' },
     { id: 'earnings', icon: '💰', name: 'Servis Kazancı', desc: 'Her servisten +5 ekstra puan' },
-    { id: 'stockMax', icon: '📦', name: 'Depo Kapasitesi', desc: 'Siparişte daha fazla stok gelir' },
 ];
 
 interface Props {
@@ -13,17 +11,16 @@ interface Props {
     upgrades: Upgrades;
     day: number;
     lives: number;
-    ovenCount: number; // Mevcut fırın sayısı
+    ovenCount: number;
     onUpgrade: (id: keyof Upgrades) => void;
-    onBuyOven: () => void; // Fırın satın alma
-    onBuyLife: () => void; // Can satın alma
-    onOrder: () => void;
+    onBuyOven: () => void;
+    onBuyLife: () => void;
     onNextDay: () => void;
 }
 
-/** Gece ekranı: upgrade shop + sipariş + yeni gün */
+/** Gece ekranı: upgrade shop + yeni gün */
 export const UpgradeShop: React.FC<Props> = ({
-    score, upgrades, day, lives, ovenCount, onUpgrade, onBuyOven, onBuyLife, onOrder, onNextDay,
+    score, upgrades, day, lives, ovenCount, onUpgrade, onBuyOven, onBuyLife, onNextDay,
 }) => {
     const maxOvens = INITIAL_OVEN_POSITIONS.length + ADDITIONAL_OVEN_POSITIONS.length;
     const canBuyOven = ovenCount < maxOvens;
@@ -142,14 +139,8 @@ export const UpgradeShop: React.FC<Props> = ({
                 })}
             </div>
 
-            {/* Alt butonlar */}
-            <div className="flex flex-col sm:flex-row gap-3 w-full max-w-lg">
-                <button
-                    onClick={onOrder}
-                    className="flex-1 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-black text-base border-2 border-indigo-400 transition-all active:scale-95"
-                >
-                    🛒 Stok Siparişi Ver
-                </button>
+            {/* Alt buton */}
+            <div className="flex w-full max-w-lg">
                 <button
                     onClick={onNextDay}
                     className="flex-1 py-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white rounded-xl font-black text-base border-2 border-amber-300 transition-all active:scale-95"
