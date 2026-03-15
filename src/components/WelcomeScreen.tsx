@@ -76,17 +76,22 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onPlay, onQuickSta
                                 <div className="text-[10px] text-stone-400 mt-0.5">En uzun oyun</div>
                             </div>
                         </div>
-                        {save.bestDay > 0 && save.bestDayHolders && save.bestDayHolders.length > 0 && (
-                            <div className="bg-black/20 rounded-xl px-3 py-2 flex items-center gap-2">
-                                <span className="text-yellow-400 text-sm">👑</span>
-                                <div>
-                                    <span className="text-[10px] text-stone-400">En iyi gün rekortmeni: </span>
-                                    <span className="text-xs font-black text-yellow-200">
-                                        {save.bestDayHolders.join(' · ')}
-                                    </span>
+                        {save.bestDay > 0 && save.bestDayHolders && save.bestDayHolders.length > 0 && (() => {
+                            const shown = save.bestDayHolders.slice(0, 3);
+                            const rest = save.bestDayHolders.length - shown.length;
+                            return (
+                                <div className="bg-black/20 rounded-xl px-3 py-2 flex items-center gap-2">
+                                    <span className="text-yellow-400 text-sm">👑</span>
+                                    <div>
+                                        <span className="text-[10px] text-stone-400">En iyi gün rekortmeni: </span>
+                                        <span className="text-xs font-black text-yellow-200">
+                                            {shown.join(' · ')}
+                                            {rest > 0 && <span className="text-stone-500 font-normal"> +{rest} kişi</span>}
+                                        </span>
+                                    </div>
                                 </div>
-                            </div>
-                        )}
+                            );
+                        })()}
                         {save.playerName && (
                             <div className="flex items-center justify-between text-[10px] pt-1 border-t border-white/5">
                                 <span className="text-stone-500">Kayıtlı ismin:</span>
