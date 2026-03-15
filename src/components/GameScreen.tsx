@@ -11,6 +11,7 @@ import { MARKET_NAME } from '../constants';
 import { useGameLoop } from '../hooks/useGameLoop';
 import { Settings } from '../hooks/useSettings';
 import { useVoiceChat } from '../hooks/useVoiceChat';
+import { writeSave, loadSave, SaveData } from '../hooks/useSaveGame';
 
 const MUSIC_URL = 'https://cdn.jsdelivr.net/gh/effacestudios/Royalty-Free-Music-Pack@main/Light%20Hearted%20-%20Jeremy%20Blake.mp3';
 
@@ -48,6 +49,8 @@ export const GameScreen: React.FC<Props> = ({
     const [queueLen, setQueueLen] = useState(0);
     const [lives, setLives] = useState(3);
     const [isGameOver, setIsGameOver] = useState(false);
+    const [saveData, setSaveData] = useState<SaveData>(() => loadSave());
+    const gameSavedRef = useRef(false);
 
     const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
@@ -123,6 +126,18 @@ export const GameScreen: React.FC<Props> = ({
     useEffect(() => {
         if (audioRef.current) audioRef.current.volume = settings.masterVolume;
     }, [settings.masterVolume]);
+
+    // Game over olunca skoru kaydet
+    useEffect(() => {
+        if (isGameOver && !gameSavedRef.current) {
+            gameSavedRef.current = true;
+            const saved = writeSave(score, day);
+            setSaveData(saved);
+        }
+        if (!isGameOver) {
+            gameSavedRef.current = false;
+        }
+    }, [isGameOver, score, day]);
 
     const toggleMusic = () => {
         const a = audioRef.current; if (!a) return;
@@ -305,6 +320,28 @@ export const GameScreen: React.FC<Props> = ({
                             <h2 className="text-red-500 font-black text-5xl tracking-widest drop-shadow-[0_0_15px_rgba(239,68,68,0.8)]">GAME OVER</h2>
                             <p className="text-red-200 text-lg mt-2 font-bold">Müşterileri çıldırttın ve restoranı terk ettiler!</p>
                         </div>
+                        {/* Skor Özeti */}
+                        <div className="grid grid-cols-2 gap-3 w-full max-w-sm px-4">
+                            <div className="bg-black/40 rounded-2xl p-3 text-center border border-white/10">
+                                <div className="text-2xl font-black text-amber-300">${score}</div>
+                                <div className="text-xs text-stone-400 mt-1">Bu oyun</div>
+                            </div>
+                            <div className="bg-black/40 rounded-2xl p-3 text-center border border-white/10">
+                                <div className="text-2xl font-black text-yellow-400">${saveData.highScore}</div>
+                                <div className="text-xs text-stone-400 mt-1">🏆 En yüksek</div>
+                            </div>
+                            <div className="bg-black/40 rounded-2xl p-3 text-center border border-white/10">
+                                <div className="text-2xl font-black text-blue-300">{day}. Gün</div>
+                                <div className="text-xs text-stone-400 mt-1">Bu oyun</div>
+                            </div>
+                            <div className="bg-black/40 rounded-2xl p-3 text-center border border-white/10">
+                                <div className="text-2xl font-black text-purple-400">{saveData.bestDay}. Gün</div>
+                                <div className="text-xs text-stone-400 mt-1">🏆 En iyi</div>
+                            </div>
+                        </div>
+                        {score >= saveData.highScore && saveData.totalGamesPlayed > 1 && (
+                            <div className="text-yellow-300 font-black text-lg animate-pulse">🎉 YENİ REKOR!</div>
+                        )}
                         <div className="flex flex-col gap-3 w-full max-w-sm">
                             <button
                                 onClick={() => emit('resetDay')}
