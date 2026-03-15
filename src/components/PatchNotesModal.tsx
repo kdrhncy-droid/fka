@@ -13,7 +13,7 @@ export const PatchNotesModal: React.FC<Props> = ({ onClose }) => {
                     <div>
                         <h2 className="text-3xl font-black text-amber-400 tracking-tight">Yama Notları 📜</h2>
                         <div className="flex items-center gap-2 mt-1">
-                            <span className="bg-amber-400/10 text-amber-400 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest border border-amber-400/20">v1.2.0</span>
+                            <span className="bg-amber-400/10 text-amber-400 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest border border-amber-400/20">v1.3.0</span>
                             <span className="text-stone-500 text-[10px] font-bold uppercase tracking-widest">Son Güncelleme</span>
                         </div>
                     </div>
@@ -27,6 +27,45 @@ export const PatchNotesModal: React.FC<Props> = ({ onClose }) => {
 
                 {/* İçerik Gövdesi */}
                 <div className="p-8 overflow-y-auto space-y-10 no-scrollbar pb-12">
+
+                    {/* v1.3.0 */}
+                    <section>
+                        <h3 className="text-xs font-black text-stone-500 mb-4 uppercase tracking-[0.3em] flex items-center gap-3">
+                            <span className="h-px flex-1 bg-stone-800"></span>
+                            ✨ v1.3.0 — Kayıt &amp; İsim Sistemi
+                            <span className="h-px flex-1 bg-stone-800"></span>
+                        </h3>
+                        <div className="grid grid-cols-1 gap-4">
+                            <div className="bg-stone-800/40 border border-stone-700/50 p-5 rounded-3xl flex gap-5 items-start">
+                                <div className="text-4xl bg-stone-800 w-16 h-16 rounded-2xl flex items-center justify-center border border-stone-700 shadow-inner flex-shrink-0">💾</div>
+                                <div>
+                                    <h4 className="text-lg font-black text-white mb-1">Kayıt Sistemi</h4>
+                                    <p className="text-sm text-stone-400 leading-relaxed">En yüksek skor ve en uzun oyun (en iyi gün) artık cihazında kaydediliyor. Oyun bittikten sonra "Yeni Rekor!" animasyonu görebilirsin.</p>
+                                </div>
+                            </div>
+                            <div className="bg-stone-800/40 border border-stone-700/50 p-5 rounded-3xl flex gap-5 items-start">
+                                <div className="text-4xl bg-stone-800 w-16 h-16 rounded-2xl flex items-center justify-center border border-stone-700 shadow-inner flex-shrink-0">👑</div>
+                                <div>
+                                    <h4 className="text-lg font-black text-white mb-1">En İyi Gün Rekortmenleri</h4>
+                                    <p className="text-sm text-stone-400 leading-relaxed">Ana menüde en uzun oynu kimin yaptığı görüntüleniyor. Aynı rekoru kıran birden fazla oyuncu olursa hepsi listede yer alır.</p>
+                                </div>
+                            </div>
+                            <div className="bg-stone-800/40 border border-stone-700/50 p-5 rounded-3xl flex gap-5 items-start">
+                                <div className="text-4xl bg-stone-800 w-16 h-16 rounded-2xl flex items-center justify-center border border-stone-700 shadow-inner flex-shrink-0">🔒</div>
+                                <div>
+                                    <h4 className="text-lg font-black text-white mb-1">İsim Değiştirme Limiti</h4>
+                                    <p className="text-sm text-stone-400 leading-relaxed">Oyuncu adın belirlendikten sonra yalnızca 2 kez değiştirilebilir. Hakkın bitince isim kilitlenir ve kayıtlı isminle oynamaya devam edersin.</p>
+                                </div>
+                            </div>
+                            <div className="bg-stone-800/40 border border-stone-700/50 p-5 rounded-3xl flex gap-5 items-start">
+                                <div className="text-4xl bg-stone-800 w-16 h-16 rounded-2xl flex items-center justify-center border border-stone-700 shadow-inner flex-shrink-0">🐛</div>
+                                <div>
+                                    <h4 className="text-lg font-black text-white mb-1">Pişirme Düzeltmesi</h4>
+                                    <p className="text-sm text-stone-400 leading-relaxed">Yemek pişirme sistemindeki bir hata düzeltildi. Artık ham malzeme yerine doğru pişmiş yemek çıkıyor.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
 
                     {/* v1.2.0 */}
                     <section>
