@@ -131,7 +131,8 @@ export const GameScreen: React.FC<Props> = ({
     useEffect(() => {
         if (isGameOver && !gameSavedRef.current) {
             gameSavedRef.current = true;
-            const saved = writeSave(score, day);
+            const playerName = gameStateRef.current?.players?.[myId]?.name ?? '';
+            const saved = writeSave(score, day, playerName);
             setSaveData(saved);
         }
         if (!isGameOver) {
