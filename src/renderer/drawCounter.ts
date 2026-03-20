@@ -22,35 +22,55 @@ export function drawCounters(
         ctx.save();
         ctx.translate(x, y);
 
-        // ═══ BLOK GÖVDE ═══
+        // ═══ 3D BLOK — PlateUp tarzı tezgah ═══
+        const frontH = 10; // ön yüz kalınlığı
 
-        ctx.fillStyle = 'rgba(0,0,0,0.15)';
-        ctx.fillRect(-width / 2 + 2, height / 2 + 2, width, 4);
+        // Zemin gölgesi
+        ctx.fillStyle = 'rgba(0,0,0,0.18)';
+        ctx.fillRect(-width / 2 + 3, height / 2 + frontH, width, 5);
 
-        const blockGradient = ctx.createLinearGradient(0, -height / 2, 0, height / 2);
-        blockGradient.addColorStop(0, '#c9a06c');
-        blockGradient.addColorStop(0.5, '#b8864e');
-        blockGradient.addColorStop(1, '#a07038');
-        ctx.fillStyle = blockGradient;
+        // ── Ön yüz (front face — daha koyu, derinlik verir) ───────────────────
+        const frontGrad = ctx.createLinearGradient(0, height / 2, 0, height / 2 + frontH);
+        frontGrad.addColorStop(0, '#7a5820');
+        frontGrad.addColorStop(1, '#4e3410');
+        ctx.fillStyle = frontGrad;
         ctx.beginPath();
-        ctx.roundRect(-width / 2, -height / 2, width, height, 4);
+        ctx.roundRect(-width / 2, height / 2, width, frontH, [0, 0, 4, 4]);
         ctx.fill();
-
-        ctx.strokeStyle = '#8b6914';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.roundRect(-width / 2, -height / 2, width, height, 4);
+        ctx.strokeStyle = '#3d2808';
+        ctx.lineWidth = 1;
         ctx.stroke();
 
-        ctx.strokeStyle = 'rgba(139,105,20,0.3)';
-        ctx.lineWidth = 1;
-        ctx.strokeRect(-width / 2 + 3, -height / 2 + 3, width - 6, height - 6);
+        // ── Üst yüzey (top surface — açık ahşap, item burada durur) ──────────
+        const topGrad = ctx.createLinearGradient(0, -height / 2, 0, height / 2);
+        topGrad.addColorStop(0, '#d4a96a');
+        topGrad.addColorStop(0.5, '#c08040');
+        topGrad.addColorStop(1, '#a86830');
+        ctx.fillStyle = topGrad;
+        ctx.beginPath();
+        ctx.roundRect(-width / 2, -height / 2, width, height, [4, 4, 0, 0]);
+        ctx.fill();
 
-        const shineGradient = ctx.createLinearGradient(0, -height / 2, 0, -height / 2 + 10);
-        shineGradient.addColorStop(0, 'rgba(255,255,255,0.25)');
+        ctx.strokeStyle = '#8b6014';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.roundRect(-width / 2, -height / 2, width, height, [4, 4, 0, 0]);
+        ctx.stroke();
+
+        // Üst yüzey parlaması
+        const shineGradient = ctx.createLinearGradient(0, -height / 2, 0, -height / 2 + 12);
+        shineGradient.addColorStop(0, 'rgba(255,255,255,0.30)');
         shineGradient.addColorStop(1, 'rgba(255,255,255,0)');
         ctx.fillStyle = shineGradient;
-        ctx.fillRect(-width / 2 + 3, -height / 2 + 3, width - 6, 10);
+        ctx.fillRect(-width / 2 + 3, -height / 2 + 2, width - 6, 12);
+
+        // Ön/üst kenar ayırıcı çizgi (kalın, 3D illüzyon güçlendirir)
+        ctx.strokeStyle = 'rgba(0,0,0,0.30)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(-width / 2, height / 2);
+        ctx.lineTo(width / 2, height / 2);
+        ctx.stroke();
 
         // ═══ BLOK ÜZERİNDEKİ ITEM ═══
 

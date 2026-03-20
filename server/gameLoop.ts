@@ -15,11 +15,11 @@ const DOOR_X = 640;
 const DOOR_ENTRY_Y = GAME_HEIGHT - 20;
 
 function patLimit(lv: number, day: number, playerCount: number) {
-  // Tek kişi: daha sabırlı müşteriler. Çok kişi: daha az sabır (daha fazla baskı)
-  const basePatience = playerCount === 1 ? 1500 : 1200;
-  const perLv = playerCount === 1 ? 350 : 300;
-  const perDay = playerCount === 1 ? 20 : 30;
-  return Math.max(300, basePatience + perLv * lv - perDay * day);
+  // Sabır limiti — günden güne biraz azalır ama çok düşmez
+  const basePatience = playerCount === 1 ? 2400 : 2000;
+  const perLv = playerCount === 1 ? 400 : 350;
+  const perDay = playerCount === 1 ? 25 : 35;
+  return Math.max(600, basePatience + perLv * lv - perDay * day);
 }
 
 export function generateMenuChoices(gs: GameState): void {
@@ -31,17 +31,35 @@ export function generateMenuChoices(gs: GameState): void {
 
 export function tryQueueSeat(gs: GameState, io: Server, rid: string) {
   if (gs.dayPhase !== "day") return;
-  while (gs.waitList.length > 0) {
-    const occupied = new Set([
-      ...gs.customers.map(c => `${c.seatX},${c.seatY}`),
-      ...gs.dirtyTables.map(t => `${t.seatX},${t.seatY}`),
-    ]);
-    const free = getSeatSlots(gs.tableLayout).filter(s => !occupied.has(`${s.x},${s.y}`));
-    if (!free.length) break;
-    const guest = gs.waitList.shift()!;
-    const seat = free[Math.floor(Math.random() * free.length)];
-    const maxP = patLimit(gs.upgrades.patience, gs.day, Object.keys(gs.players).length || 1);
+  if ((gs._seatCooldown ?? 0) > 0) return;
+  if (gs.waitList.length === 0) return;
 
+  const occupied = new Set([
+    ...gs.customers.map(c => `${c.seatX},${c.seatY}`),
+    ...gs.dirtyTables.map(t => `${t.seatX},${t.seatY}`),
+  ]);
+  const freeSeats = getSeatSlots(gs.tableLayout).filter(s => !occupied.has(`${s.x},${s.y}`));
+  if (!freeSeats.length) return;
+
+  // İlk misafirin grubunu belirle — tüm grup üyeleri aynı anda oturur
+  const firstGuest = gs.waitList[0];
+  const groupId = firstGuest.groupId;
+  const groupToSeat = groupId
+    ? gs.waitList.filter(g => g.groupId === groupId)
+    : [firstGuest];
+
+  const canSeat = Math.min(groupToSeat.length, freeSeats.length);
+  if (canSeat <= 0) return;
+
+  const playerCount = Object.keys(gs.players).length || 1;
+  const maxP = patLimit(gs.upgrades.patience, gs.day, playerCount);
+
+  for (let i = 0; i < canSeat; i++) {
+    const guest = groupToSeat[i];
+    const idx = gs.waitList.indexOf(guest);
+    if (idx !== -1) gs.waitList.splice(idx, 1);
+
+    const seat = freeSeats[i];
     gs.customers.push({
       id: guest.id, seatX: seat.x, seatY: seat.y,
       x: DOOR_X, y: DOOR_ENTRY_Y, targetY: EXTERIOR_Y - 10,
@@ -57,8 +75,10 @@ export function tryQueueSeat(gs: GameState, io: Server, rid: string) {
       phase: 'entering',
       doorX: DOOR_X,
     });
-    io.to(rid).emit("sound", "arrive");
   }
+  io.to(rid).emit("sound", "arrive");
+  // Grup büyüklüğüne göre cooldown: solo 85 tick, 2 kişi 100 tick, 3 kişi 115 tick
+  gs._seatCooldown = 70 + canSeat * 15;
 }
 
 export function gameTick(gs: GameState, io: Server, rid: string) {
@@ -143,6 +163,9 @@ export function gameTick(gs: GameState, io: Server, rid: string) {
     }
   }
 
+  // Oturma cooldown sayacını düşür
+  if ((gs._seatCooldown ?? 0) > 0) gs._seatCooldown!--;
+
   // Spawn
   if (gs.dayPhase === 'day' && gs.dayTimer > CLOSING_THRESHOLD && gs.dayTimer < (DAY_TICKS - SPAWN_GRACE_TICKS)) {
     spawnTick(gs, io, rid);
@@ -180,17 +203,18 @@ function spawnTick(gs: GameState, io: Server, rid: string) {
   const playerCount = Object.keys(gs.players).length || 1;
   const isSolo = playerCount === 1;
 
-  // Spawn hızı ve kuyruk limiti oyuncu sayısıyla doğrudan orantılı
-  const baseRate = 0.0007 + Math.min(gs.day * 0.0003, 0.005);
+  // Spawn hızı: günden güne artar ama imkansız olmaz
+  // Gün 1: ~12-15 müşteri/gün, Gün 10: ~22-28 müşteri/gün
+  const baseRate = 0.0013 + Math.min(gs.day * 0.00045, 0.006);
   const dayProgress = 1 - gs.dayTimer / DAY_TICKS;
-  // 1 oyuncu = 1x, 2 oyuncu = 2x, 3 oyuncu = 3x, 4 oyuncu = 4x
-  const spawnMultiplier = playerCount;
-  const queueLimit = (6 + gs.day) * playerCount;
+  // Oyuncu sayısına göre ölçekleme: 1p=1x, 2p=1.7x, 3p=2.4x, 4p=3.1x
+  const spawnMultiplier = 1 + (playerCount - 1) * 0.7;
+  const queueLimit = (6 + gs.day) * Math.ceil(spawnMultiplier);
   const currentRate = (baseRate + dayProgress * 0.001) * spawnMultiplier;
 
   if (Math.random() < currentRate && gs.customers.length + gs.waitList.length < queueLimit) {
     // Grup mu, tekil mi? Gün ilerledikçe grup şansı artar
-    const groupChance = Math.min(0.15 + gs.day * 0.04, 0.45); // gün 1: %19, gün 8+: %45
+    const groupChance = Math.min(0.20 + gs.day * 0.04, 0.50); // gün 1: %24, gün 8+: %52
     const isGroup = Math.random() < groupChance;
     const groupSize = isGroup ? 2 + Math.floor(Math.random() * (isSolo ? 2 : 3)) : 1; // solo: 2-3, multi: 2-4
 
@@ -199,15 +223,16 @@ function spawnTick(gs: GameState, io: Server, rid: string) {
     const actualSize = Math.min(groupSize, available);
     if (actualSize <= 0) return;
 
+    // Grup üyelerini tanımlamak için ortak groupId (solo: undefined)
+    const groupId = actualSize > 1 ? Math.random().toString(36).slice(2, 9) : undefined;
+
     for (let g = 0; g < actualSize; g++) {
-      // Tek kişide daha az rude/thug, çok kişide daha fazla
       const personalities: Personality[] = isSolo
-        ? ['polite', 'polite', 'rude']               // solo: 2/3 polite
-        : ['polite', 'rude', 'recep'];                // multi: eşit dağılım
+        ? ['polite', 'polite', 'rude']
+        : ['polite', 'rude', 'recep'];
       const pers = personalities[Math.floor(Math.random() * personalities.length)];
       let dialog: string | undefined;
       let timer: number | undefined;
-      // Grubun ilk üyesi konuşabilir
       if (g === 0 && Math.random() < 0.3) {
         const list = DIALOGUES[pers].entry;
         dialog = list[Math.floor(Math.random() * list.length)];
@@ -228,10 +253,9 @@ function spawnTick(gs: GameState, io: Server, rid: string) {
         personality: pers,
         currentDialog: dialog, dialogTimer: timer,
         bodyShape, bodyColor,
+        groupId, // Grup üyelerini birbirine bağlar
       });
     }
-
-    if (actualSize > 1) io.to(rid).emit("sound", "arrive"); // Grup geldi sesi
   }
 
   // Revenge Queue
@@ -240,8 +264,9 @@ function spawnTick(gs: GameState, io: Server, rid: string) {
     if (gs.revengeQueue[i] <= 0) {
       gs.revengeQueue.splice(i, 1);
       const thugCount = isSolo
-        ? 2 + Math.floor(Math.random() * 2)   // solo: 2-3 thug
-        : 3 + Math.floor(Math.random() * 2);  // multi: 3-4 thug
+        ? 2 + Math.floor(Math.random() * 2)
+        : 3 + Math.floor(Math.random() * 2);
+      const thugGroupId = Math.random().toString(36).slice(2, 9); // Tüm thug'lar aynı gruptan
       for (let j = 0; j < thugCount; j++) {
         const bodyShapes = [2, 4] as const;
         const bodyShape = bodyShapes[Math.floor(Math.random() * bodyShapes.length)];
@@ -255,6 +280,7 @@ function spawnTick(gs: GameState, io: Server, rid: string) {
           personality: 'thug',
           currentDialog: dialog, dialogTimer: 150,
           bodyShape, bodyColor,
+          groupId: thugGroupId,
         });
       }
       io.to(rid).emit("sound", "fail");
@@ -341,8 +367,8 @@ function customerTick(gs: GameState, io: Server, rid: string) {
       }
       if (gs.dayPhase === 'day') {
         const playerCount = Object.keys(gs.players).length || 1;
-        let patienceDrain = 1 + (playerCount - 1) * 0.25;
-        if (gs.dayTimer <= DAY_TICKS * 0.25) patienceDrain *= 1.5;
+        let patienceDrain = 1 + (playerCount - 1) * 0.1;
+        if (gs.dayTimer <= DAY_TICKS * 0.25) patienceDrain *= 1.2;
         const baseDrain = Math.floor(patienceDrain);
         const actualDrain = baseDrain + (Math.random() < (patienceDrain - baseDrain) ? 1 : 0);
 

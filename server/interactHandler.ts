@@ -5,7 +5,7 @@ import {
   COUNTER_POSITIONS, PLATE_STACK_POS,
   CLEAN_PLATE, DIRTY_PLATE, BURNED_FOOD, EAT_TICKS,
   MAX_TRAY_CAPACITY, isTray, getTrayItems, createTray,
-  SINK_STATION, TRASH_STATION,
+  SINK_STATION, TRASH_STATION, TRAY_STATION,
   CHOPPABLE, CHOP_PREFIX, isChopped,
 } from "../shared/types.js";
 
@@ -40,18 +40,41 @@ export function registerInteractHandler(
       return;
     }
 
-    // Çöp kovası — yanmış yemek, kirli tabak, kirli tepsi içindekiler atılabilir
+    // Çöp kovası — yanmış yemek atılabilir; temiz/kirli TABAK asla atılamaz
     const trashPos = gs.stationLayout['trash'] ?? TRASH_STATION;
     if (Math.hypot(px - trashPos.x, py - trashPos.y) < 90) {
       if (p.holding) {
+        // Temiz veya kirli tabak çöpe atılamaz
+        if (p.holding === CLEAN_PLATE || p.holding === DIRTY_PLATE) {
+          socket.emit("sound", "fail");
+          return;
+        }
         if (isTray(p.holding)) {
-          // Tepsi içindeki kirli tabakları say, dirtyTrayCount'u güncelle
           const items = getTrayItems(p.holding);
-          const dirtyCount = items.filter(i => i === DIRTY_PLATE).length;
-          gs.dirtyTrayCount = Math.max(0, (gs.dirtyTrayCount || 0) - dirtyCount);
+          // Tepside tabak varsa çöpe atılamaz
+          if (items.includes(CLEAN_PLATE) || items.includes(DIRTY_PLATE)) {
+            socket.emit("sound", "fail");
+            return;
+          }
+          // Tabak yoksa (sadece yanmış yemek vb.) atılabilir
         }
         p.holding = null;
         socket.emit("sound", "trash");
+      }
+      return;
+    }
+
+    // Tepsi istasyonu — boş tepsi al veya tepsini geri bırak
+    const trayPos = gs.stationLayout['tray'] ?? TRAY_STATION;
+    if (Math.hypot(px - trayPos.x, py - trayPos.y) < 90) {
+      if (!p.holding) {
+        // Boş tepsi al
+        p.holding = createTray([]);
+        socket.emit("sound", "pickup");
+      } else if (isTray(p.holding)) {
+        // Tepsini bırak (içindekiler kaybolmadan geri koy)
+        p.holding = null;
+        socket.emit("sound", "success");
       }
       return;
     }
@@ -110,8 +133,10 @@ export function registerInteractHandler(
           gs.dirtyTables.splice(dirtyIdx, 1);
           socket.emit("sound", "pickup");
         }
+        return;
+      } else {
+        // Oyuncu elinde yemek tutuyor — kirli masayı yoksay, servis kontrolüne geç
       }
-      return;
     }
 
     // Tabak Yığını — dinamik koordinat (stationLayout'tan al, yoksa sabit)

@@ -65,6 +65,7 @@ export interface WaitingGuest {
     dialogTimer?: number;
     bodyShape: 1 | 2 | 3 | 4;
     bodyColor: string;
+    groupId?: string; // Aynı grubu tanımlamak için (grup üyeleri aynı anda oturur)
 }
 
 export interface Upgrades {
@@ -191,6 +192,7 @@ export interface GameState {
 
     // ─── Internal (sunucu tarafı, client'a gönderilir ama kullanılmaz) ────────
     _stateTick?: number;
+    _seatCooldown?: number; // Müşteri oturma arası cooldown (tick)
 }
 
 // ─── Boyut ───────────────────────────────────────────────────────────────────
@@ -229,9 +231,9 @@ export function getSeatSlots(tableLayout: Record<string, TablePosition>): { x: n
 }
 
 // ─── Gün / Gece ──────────────────────────────────────────────────────────────
-export const DAY_TICKS = 4500;
+export const DAY_TICKS = 3900;
 export const NIGHT_TICKS = 1200;
-export const CLOSING_THRESHOLD = 450;
+export const CLOSING_THRESHOLD = 390;
 export const BURN_TICKS = 300;
 export const EAT_TICKS = 240;
 export const BURNED_FOOD = '⬛';
