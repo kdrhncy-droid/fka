@@ -274,6 +274,9 @@ io.on("connection", (socket) => {
     gs.revengeQueue = [];
     gs.lockedStations = {};
     gs.lockedTables = {};
+    gs._seatCooldown = 0;
+    // Tabakları tam kapasiteye geri doldur
+    gs.plateStack.count = gs.plateStack.maxCount;
     // Fırınları temizle
     gs.cookStations.forEach(s => { s.input = null; s.output = null; s.isBurned = false; s.burnTimer = 0; });
     // Kesme tahtalarını temizle
