@@ -205,18 +205,24 @@ function spawnTick(gs: GameState, io: Server, rid: string) {
 
   // Spawn hızı: günden güne artar ama imkansız olmaz
   // Gün 1: ~12-15 müşteri/gün, Gün 10: ~22-28 müşteri/gün
-  const baseRate = 0.0013 + Math.min(gs.day * 0.00045, 0.006);
+  // Spawn hızı: Başlangıcı sakinleştirip ilerlemeyi daha kontrollü hale getirdik
+  const baseRate = 0.0008 + Math.min(gs.day * 0.0003, 0.004);
   const dayProgress = 1 - gs.dayTimer / DAY_TICKS;
-  // Oyuncu sayısına göre ölçekleme: 1p=1x, 2p=1.7x, 3p=2.4x, 4p=3.1x
-  const spawnMultiplier = 1 + (playerCount - 1) * 0.7;
-  const queueLimit = (6 + gs.day) * Math.ceil(spawnMultiplier);
-  const currentRate = (baseRate + dayProgress * 0.001) * spawnMultiplier;
+  
+  // Oyuncu sayısına göre ölçekleme: 1p=1x, 2p=1.3x, 3p=1.6x, 4p=1.9x (PlateUp tarzı daha makul artış)
+  const spawnMultiplier = 1 + (playerCount - 1) * 0.3;
+  
+  // Kuyruk limiti: Günden bağımsız bir tavan (max 18 kişi) koyarak sistemin kilitlenmesini önledik
+  const queueLimit = Math.min(18, (6 + Math.floor(gs.day / 2)) * Math.ceil(spawnMultiplier));
+  
+  const currentRate = (baseRate + dayProgress * 0.0008) * spawnMultiplier;
 
   if (Math.random() < currentRate && gs.customers.length + gs.waitList.length < queueLimit) {
     // Grup mu, tekil mi? Gün ilerledikçe grup şansı artar
-    const groupChance = Math.min(0.20 + gs.day * 0.04, 0.50); // gün 1: %24, gün 8+: %52
+    const groupChance = Math.min(0.15 + gs.day * 0.03, 0.45); // Daha yavaş artan grup şansı
     const isGroup = Math.random() < groupChance;
-    const groupSize = isGroup ? 2 + Math.floor(Math.random() * (isSolo ? 2 : 3)) : 1; // solo: 2-3, multi: 2-4
+    // Grup büyüklüğü: 1-4 oyuncu fark etmeksizin max 3 kişi (PlateUp tarzı denge)
+    const groupSize = isGroup ? 2 + (Math.random() < 0.3 ? 1 : 0) : 1;
 
     // Kuyruğa sığıyor mu kontrol et
     const available = queueLimit - gs.customers.length - gs.waitList.length;

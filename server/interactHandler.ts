@@ -9,8 +9,8 @@ import {
   CHOPPABLE, CHOP_PREFIX, isChopped,
 } from "../shared/types.js";
 
-const INTERACT_R = 75;
-const SERVE_R = 95;
+const INTERACT_R = 110; // Fırın ve istasyonlar için daha geniş etkileşim alanı
+const SERVE_R = 125;   // Servis ve masa etkileşimi için daha geniş alan
 
 function earn(lv: number) { return 10 + 5 * lv; }
 function isDish(item: Item): item is string { return !!item && DISH_ITEMS.includes(item as any); }
@@ -32,7 +32,7 @@ export function registerInteractHandler(
 
     // Lavabo
     const sinkPos = gs.stationLayout['sink'] ?? SINK_STATION;
-    if (Math.hypot(px - sinkPos.x, py - sinkPos.y) < 90) {
+    if (Math.hypot(px - sinkPos.x, py - sinkPos.y) < INTERACT_R) {
       if (p.holding === DIRTY_PLATE) {
         p.holding = CLEAN_PLATE;
         socket.emit("sound", "success");
@@ -42,7 +42,7 @@ export function registerInteractHandler(
 
     // Çöp kovası — yanmış yemek atılabilir; temiz/kirli TABAK asla atılamaz
     const trashPos = gs.stationLayout['trash'] ?? TRASH_STATION;
-    if (Math.hypot(px - trashPos.x, py - trashPos.y) < 90) {
+    if (Math.hypot(px - trashPos.x, py - trashPos.y) < INTERACT_R) {
       if (p.holding) {
         // Temiz veya kirli tabak çöpe atılamaz
         if (p.holding === CLEAN_PLATE || p.holding === DIRTY_PLATE) {
@@ -66,7 +66,7 @@ export function registerInteractHandler(
 
     // Tepsi istasyonu — boş tepsi al veya tepsini geri bırak
     const trayPos = gs.stationLayout['tray'] ?? TRAY_STATION;
-    if (Math.hypot(px - trayPos.x, py - trayPos.y) < 90) {
+    if (Math.hypot(px - trayPos.x, py - trayPos.y) < INTERACT_R) {
       if (!p.holding) {
         // Boş tepsi al
         p.holding = createTray([]);
@@ -81,7 +81,7 @@ export function registerInteractHandler(
 
     // Kirli tepsi sepeti — kirli tabakları bırak, dirtyTrayCount artar
     const dirtyTrayPos = gs.stationLayout['dirty_tray'] ?? { x: 1050, y: 90 };
-    if (Math.hypot(px - dirtyTrayPos.x, py - dirtyTrayPos.y) < 90) {
+    if (Math.hypot(px - dirtyTrayPos.x, py - dirtyTrayPos.y) < INTERACT_R) {
       if (p.holding === DIRTY_PLATE) {
         gs.dirtyTrayCount = (gs.dirtyTrayCount || 0) + 1;
         p.holding = null;
