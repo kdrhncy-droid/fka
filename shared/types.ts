@@ -246,42 +246,41 @@ export const PLATE_STACK_PER_UPGRADE = 4; // Her upgrade başına +4 tabak (eski
 // Geriye uyum için (counter istasyonları hâlâ kullanılıyor)
 export const HOLDING_STATION_POSITIONS: { id: string; x: number; y: number; radius: number; type: 'plate' }[] = [];
 
-// ─── Servis Masaları ─────────────────────────────────────────────────────────
+// ─── Servis Masaları (Mutfağın daraltılmış hali, merkeze yakın) ─────────────────
 export const COUNTER_POSITIONS = [
-    { id: 'counter0', x: 180, y: 245, width: 40, height: 40, type: 'counter' as const },
-    { id: 'counter1', x: 220, y: 245, width: 40, height: 40, type: 'counter' as const },
-    { id: 'counter2', x: 440, y: 245, width: 40, height: 40, type: 'counter' as const },
-    { id: 'counter3', x: 480, y: 245, width: 40, height: 40, type: 'counter' as const },
-    { id: 'counter4', x: 580, y: 245, width: 40, height: 40, type: 'counter' as const },
-    { id: 'counter5', x: 620, y: 245, width: 40, height: 40, type: 'counter' as const },
-    { id: 'counter6', x: 660, y: 245, width: 40, height: 40, type: 'counter' as const },
-    { id: 'counter7', x: 700, y: 245, width: 40, height: 40, type: 'counter' as const },
-    { id: 'counter8', x: 800, y: 245, width: 40, height: 40, type: 'counter' as const },
-    { id: 'counter9', x: 840, y: 245, width: 40, height: 40, type: 'counter' as const },
-    { id: 'counter10', x: 1020, y: 245, width: 40, height: 40, type: 'counter' as const },
-    { id: 'counter11', x: 1060, y: 245, width: 40, height: 40, type: 'counter' as const },
+    // Kapının sol yanı
+    { id: 'counter0', x: 380, y: 360, width: 40, height: 40, type: 'counter' as const },
+    { id: 'counter1', x: 420, y: 360, width: 40, height: 40, type: 'counter' as const },
+    { id: 'counter2', x: 460, y: 360, width: 40, height: 40, type: 'counter' as const },
+    { id: 'counter3', x: 500, y: 360, width: 40, height: 40, type: 'counter' as const },
+
+    // Kapının sağ yanı
+    { id: 'counter4', x: 740, y: 360, width: 40, height: 40, type: 'counter' as const },
+    { id: 'counter5', x: 780, y: 360, width: 40, height: 40, type: 'counter' as const },
+    { id: 'counter6', x: 820, y: 360, width: 40, height: 40, type: 'counter' as const },
+    { id: 'counter7', x: 860, y: 360, width: 40, height: 40, type: 'counter' as const },
 ];
 
 // ─── Yatay Duvar & Kapılar ────────────────────────────────────────────────────
-export const WALL_Y1 = 225;
-export const WALL_Y2 = 265;
-// Tek kapı — ortada, 120px genişlik
+export const WALL_Y1 = 340;
+export const WALL_Y2 = 380;
+// Tek kapı — ortada, eski kapı daha da ortalandı
 export const DOOR_RANGES: [number, number][] = [
-    [580, 700],
+    [540, 740], // Kapı geçişi iyileştirildi
 ];
 export function isInDoor(x: number): boolean {
     return DOOR_RANGES.some(([a, b]) => x >= a && x <= b);
 }
 
-// ─── Tepsi ve Malzeme İstasyonları ──────────────────────────────────────────
-export const TRAY_STATION = { x: 80, y: 170 };
+// ─── Tepsi ve Malzeme İstasyonları (Daraltıldı, ortalandı) ──────────────────
+export const TRAY_STATION = { x: 300, y: 285 };
 
 export const INGREDIENTS = [
-    { key: '🍞' as StockKey, pos: { x: 100, y: 65 }, label: 'Hamur', color: '#fde68a' },
-    { key: '🥩' as StockKey, pos: { x: 190, y: 65 }, label: 'Et', color: '#fca5a5' },
-    { key: '🥬' as StockKey, pos: { x: 280, y: 65 }, label: 'Sebze', color: '#bbf7d0' },
-    { key: '🥘' as StockKey, pos: { x: 370, y: 65 }, label: 'Çorba', color: '#fbbf24' },
-    { key: '🍢' as StockKey, pos: { x: 460, y: 65 }, label: 'Kebap', color: '#92400e' },
+    { key: '🍞' as StockKey, pos: { x: 360, y: 65 }, label: 'Hamur', color: '#fde68a' },
+    { key: '🥩' as StockKey, pos: { x: 450, y: 65 }, label: 'Et', color: '#fca5a5' },
+    { key: '🥬' as StockKey, pos: { x: 540, y: 65 }, label: 'Sebze', color: '#bbf7d0' },
+    { key: '🥘' as StockKey, pos: { x: 630, y: 65 }, label: 'Çorba', color: '#fbbf24' },
+    { key: '🍢' as StockKey, pos: { x: 720, y: 65 }, label: 'Kebap', color: '#92400e' },
 ];
 
 // ─── Universal Fırın Sistemi ─────────────────────────────────────────────────
@@ -299,19 +298,19 @@ export const RECIPE_DEFS = {
 export const DISH_UNLOCK_POOL = ['🍕', '🍜', '🌯'] as const; // Kilidini açılabilecek yemekler
 
 export const INITIAL_OVEN_POSITIONS = [
-    { x: 200, y: 170 },
+    { x: 300, y: 170 },
 ];
 
 export const ADDITIONAL_OVEN_POSITIONS = [
-    { x: 350, y: 170 },
+    { x: 400, y: 170 },
     { x: 500, y: 170 },
-    { x: 650, y: 170 },
+    { x: 600, y: 170 },
 ];
 
 // ─── Çöp Kutusu, Kirli Sepeti & Lavabo ──────────────────────────────────────
-export const TRASH_STATION = { x: 1200, y: 190 };
-export const DIRTY_TRAY_POS = { x: 1050, y: 90 };
-export const SINK_STATION = { x: 1180, y: 90 };
+export const TRASH_STATION = { x: 920, y: 285 };
+export const DIRTY_TRAY_POS = { x: 860, y: 90 };
+export const SINK_STATION = { x: 960, y: 90 };
 
 // ─── Koltuklar — Artık dinamik, getSeatSlots(tableLayout) kullan ─────────────
 // SEAT_SLOTS kaldırıldı — bkz. getSeatSlots()
@@ -365,30 +364,30 @@ export function mkGameState(): GameState {
     // Başlangıçta sadece Salata + Burger açık (en hızlı yemekler)
     unlockedDishes: ['🥗', '🍔'],
     menuChoices: null,
-    // ─── Station Layout ───────────────────────────────────────────────────
+    // ─── Station Layout (Tüm y-koordinatları ve dar x-koordinatları uyarlandı) ──
     stationLayout: {
-      'ingredient_🍞': { id: 'ingredient_🍞', x: 100, y: 65 },
-      'ingredient_🥩': { id: 'ingredient_🥩', x: 190, y: 65 },
-      'ingredient_🥬': { id: 'ingredient_🥬', x: 280, y: 65 },
-      'ingredient_🥘': { id: 'ingredient_🥘', x: 370, y: 65 },
-      'ingredient_🍢': { id: 'ingredient_🍢', x: 460, y: 65 },
-      'oven1':         { id: 'oven1',         x: 200, y: 170 },
-      'tray':          { id: 'tray',          x: 80,  y: 170 },
-      'sink':          { id: 'sink',          x: 1180, y: 90 },
-      'trash':         { id: 'trash',         x: 1200, y: 190 },
-      'dirty_tray':    { id: 'dirty_tray',    x: 1050, y: 90 },
+      'ingredient_🍞': { id: 'ingredient_🍞', x: 360, y: 65 },
+      'ingredient_🥩': { id: 'ingredient_🥩', x: 450, y: 65 },
+      'ingredient_🥬': { id: 'ingredient_🥬', x: 540, y: 65 },
+      'ingredient_🥘': { id: 'ingredient_🥘', x: 630, y: 65 },
+      'ingredient_🍢': { id: 'ingredient_🍢', x: 720, y: 65 },
+      'oven1':         { id: 'oven1',         x: 300, y: 170 },
+      'tray':          { id: 'tray',          x: 300, y: 285 },
+      'sink':          { id: 'sink',          x: 960,  y: 90 },
+      'trash':         { id: 'trash',         x: 920, y: 285 },
+      'dirty_tray':    { id: 'dirty_tray',    x: 860,  y: 90 },
       'plate_stack':   { id: 'plate_stack',   x: 650, y: 65 },
       'chop1':         { id: 'chop1',         x: 760, y: 170 },
       // Counter'lar kasıtlı olarak buraya dahil edilmedi — duvara sabit, taşınamaz
     },
     lockedStations: {},
-    // ─── Table Layout ─────────────────────────────────────────────────────
+    // ─── Table Layout (Önceden duvarın olduğu y=500 -> y=570 oldu) ───────────
     tableLayout: {
-      'table0': { id: 'table0', x: 190, y: 500 },
-      'table1': { id: 'table1', x: 390, y: 500 },
-      'table2': { id: 'table2', x: 640, y: 500 },
-      'table3': { id: 'table3', x: 890, y: 500 },
-      'table4': { id: 'table4', x: 1090, y: 500 },
+      'table0': { id: 'table0', x: 260, y: 570 },
+      'table1': { id: 'table1', x: 450, y: 570 },
+      'table2': { id: 'table2', x: 640, y: 570 }, // TAM ORTA MASA
+      'table3': { id: 'table3', x: 830, y: 570 },
+      'table4': { id: 'table4', x: 1020, y: 570 },
     },
     lockedTables: {},
     // ─── Kesme Tahtaları ──────────────────────────────────────────────────

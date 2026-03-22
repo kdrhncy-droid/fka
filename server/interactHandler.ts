@@ -190,7 +190,9 @@ export function registerInteractHandler(
     // Kesme tahtaları — malzeme bırak/al (E tuşu)
     if (gs.choppingBoards) {
       for (const board of gs.choppingBoards) {
-        if (Math.hypot(px - board.x, py - board.y) < INTERACT_R) {
+        const dynX = gs.stationLayout?.[board.id]?.x ?? board.x;
+        const dynY = gs.stationLayout?.[board.id]?.y ?? board.y;
+        if (Math.hypot(px - dynX, py - dynY) < INTERACT_R) {
           if (!p.holding) {
             // Doğranmamış malzemeyi geri al (henüz tamamlanmamış)
             if (board.input && !isChopped(board.input)) {
@@ -228,7 +230,9 @@ export function registerInteractHandler(
 
     // Fırınlar
     for (const station of gs.cookStations) {
-      if (Math.hypot(px - station.x, py - station.y) < INTERACT_R) {
+      const dynX = gs.stationLayout?.[station.id]?.x ?? station.x;
+      const dynY = gs.stationLayout?.[station.id]?.y ?? station.y;
+      if (Math.hypot(px - dynX, py - dynY) < INTERACT_R) {
         const holding = p.holding;
         const isRawChoppable = typeof holding === 'string' && CHOPPABLE.includes(holding as any);
         const isChoppedItem = typeof holding === 'string' && holding.startsWith(CHOP_PREFIX);
