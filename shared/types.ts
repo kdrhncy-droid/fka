@@ -240,8 +240,8 @@ export const BURNED_FOOD = '⬛';
 
 // ─── Tabak Yığını İstasyonu (tek nokta, üst üste tabaklar) ─────────────────
 export const PLATE_STACK_POS = { x: 650, y: 65, radius: 55 };
-export const PLATE_STACK_BASE = 4;   // Başlangıç tabak kapasitesi
-export const PLATE_STACK_PER_UPGRADE = 2; // Her upgrade başına +2 tabak
+export const PLATE_STACK_BASE = 8;   // Başlangıç tabak kapasitesi 4 -> 8 yapıldı
+export const PLATE_STACK_PER_UPGRADE = 4; // Her upgrade başına +4 tabak (eski: 2)
 
 // Geriye uyum için (counter istasyonları hâlâ kullanılıyor)
 export const HOLDING_STATION_POSITIONS: { id: string; x: number; y: number; radius: number; type: 'plate' }[] = [];
@@ -327,7 +327,7 @@ export const DISH_ITEMS = ['🍕', '🍔', '🥗', '🍜', '🌯'] as const;
 export const UPGRADE_DEFS: Record<UpgradeKey, { costs: number[]; max: number }> = {
     patience: { costs: [50, 100, 200], max: 3 },
     earnings: { costs: [100, 250], max: 2 },
-    plateStackMax: { costs: [60, 120, 200], max: 3 }, // Her biri +2 tabak = 4→6→8→10
+    plateStackMax: { costs: [50, 100, 150, 200, 250], max: 5 }, // Her level +4 tabak
     safeOven: { costs: [80, 180], max: 2 }, // lv1: yanma süresi 2x, lv2: hiç yanmaz
 };
 
