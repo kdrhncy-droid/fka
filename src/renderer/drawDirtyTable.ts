@@ -1,9 +1,17 @@
-export function drawDirtyTable(ctx: CanvasRenderingContext2D, seatX: number, seatY: number) {
-  // seatY, masanın y'sinden ±47 uzakta (getSeatSlots'tan geliyor)
-  // Üst koltuk: seatY = tableY - 47 → tabak masanın üstünde (seatY + 27)
-  // Alt koltuk: seatY = tableY + 47 → tabak masanın altında (seatY - 27)
-  const tableY = seatY < 500 ? seatY + 47 : seatY - 47; // yaklaşık masa merkezi
-  const isTopSeat = seatY < tableY;
+export function drawDirtyTable(ctx: CanvasRenderingContext2D, seatX: number, seatY: number, tableLayout?: Record<string, { x: number; y: number }>) {
+  // seatY ve seatX üzerinden ilgili masanın Y koordinatını bul
+  let isTopSeat = true;
+  if (tableLayout && Object.keys(tableLayout).length > 0) {
+    // Müşterinin oturduğu koltuğun x eksenindeki en yakın masayı bul
+    const closestTable = Object.values(tableLayout).reduce((prev, curr) => 
+       Math.abs(curr.x - seatX) < Math.abs(prev.x - seatX) ? curr : prev
+    );
+    isTopSeat = seatY < closestTable.y;
+  } else {
+    // Güvenli fallback (Layout Editor bozuksa vs)
+    isTopSeat = seatY < 570; // Eskisi 500'dü
+  }
+  
   const plateY = isTopSeat ? seatY + 27 : seatY - 27;
 
   ctx.fillStyle = 'rgba(0,0,0,0.12)';

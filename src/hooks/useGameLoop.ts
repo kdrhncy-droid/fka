@@ -255,7 +255,7 @@ export function useGameLoop({
         const activeIds = new Set<string>(state.customers.map(c => c.id));
         cleanupCRS(activeIds);
       }
-      (state.dirtyTables ?? []).forEach((t) => drawDirtyTable(ctx, t.seatX, t.seatY));
+      (state.dirtyTables ?? []).forEach((t) => drawDirtyTable(ctx, t.seatX, t.seatY, state.tableLayout));
       drawWaitList(ctx, state.waitList ?? []);
 
       // Layout editor önizlemesi — oyunculardan ÖNCE çizilir (oyuncu üstte kalır)

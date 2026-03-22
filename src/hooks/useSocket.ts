@@ -23,7 +23,7 @@ const DEFAULT_STATE: GameState = {
     stock: { '🍞': 10, '🥩': 10, '🥬': 10, '🥘': 10, '🍢': 10 },
     marketName: '',
     dayPhase: 'prep',
-    dayTimer: 1800,
+    dayTimer: 2700,
     upgrades: { patience: 0, earnings: 0, plateStackMax: 0, safeOven: 0 },
     day: 1,
     hasOrderedTonight: false,

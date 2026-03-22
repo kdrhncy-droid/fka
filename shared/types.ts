@@ -247,10 +247,10 @@ export function getSeatSlots(tableLayout: Record<string, TablePosition>): { x: n
   ]);
 }
 
-// ─── Gün / Gece ──────────────────────────────────────────────────────────────
-export const DAY_TICKS = 3900;
-export const NIGHT_TICKS = 1200;
-export const CLOSING_THRESHOLD = 390;
+// ─── Gün / Gece (1.5 dakika gündüz, 30 saniye gece) ──────────────────────────
+export const DAY_TICKS = 2700;
+export const NIGHT_TICKS = 900;
+export const CLOSING_THRESHOLD = 270;
 export const BURN_TICKS = 300;
 export const EAT_TICKS = 240;
 export const BURNED_FOOD = '⬛';
