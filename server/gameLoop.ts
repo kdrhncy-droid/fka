@@ -205,17 +205,17 @@ function spawnTick(gs: GameState, io: Server, rid: string) {
 
   // Spawn hızı: günden güne artar ama imkansız olmaz
   // Gün 1: ~12-15 müşteri/gün, Gün 10: ~22-28 müşteri/gün
-  // Spawn hızı: Başlangıcı sakinleştirip ilerlemeyi daha kontrollü hale getirdik
-  const baseRate = 0.0008 + Math.min(gs.day * 0.0003, 0.004);
+  // Spawn hızı: %40-50 daha rahat ve chill bir seviyeye çekildi
+  const baseRate = 0.0004 + Math.min(gs.day * 0.0002, 0.0025);
   const dayProgress = 1 - gs.dayTimer / DAY_TICKS;
-  
+
   // Oyuncu sayısına göre ölçekleme: 1p=1x, 2p=1.3x, 3p=1.6x, 4p=1.9x (PlateUp tarzı daha makul artış)
   const spawnMultiplier = 1 + (playerCount - 1) * 0.3;
-  
-  // Kuyruk limiti: Günden bağımsız bir tavan (max 18 kişi) koyarak sistemin kilitlenmesini önledik
-  const queueLimit = Math.min(18, (6 + Math.floor(gs.day / 2)) * Math.ceil(spawnMultiplier));
-  
-  const currentRate = (baseRate + dayProgress * 0.0008) * spawnMultiplier;
+
+  // Kuyruk limiti: 14 kişi ile max kapı kilitlenmesi sınırlandırıldı
+  const queueLimit = Math.min(14, (4 + Math.floor(gs.day / 3)) * Math.ceil(spawnMultiplier));
+
+  const currentRate = (baseRate + dayProgress * 0.0005) * spawnMultiplier;
 
   if (Math.random() < currentRate && gs.customers.length + gs.waitList.length < queueLimit) {
     // Grup mu, tekil mi? Gün ilerledikçe grup şansı artar
