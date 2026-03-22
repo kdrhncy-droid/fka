@@ -116,6 +116,20 @@ export interface ChoppingBoard {
   choppingPlayerId: string | null;
 }
 
+// ─── Lavabo ───────────────────────────────────────────────────────────────────
+export const WASH_TICKS = 60; // ~2 saniye
+
+export interface WashingSink {
+  id: string;
+  x: number;
+  y: number;
+  input: string | null;   // üzerindeki tabak (DIRTY_PLATE veya CLEAN_PLATE)
+  progress: number;       // 0..WASH_TICKS
+  isWashing: boolean;     // oyuncu aktif yıkıyor mu
+  washingPlayerId: string | null;
+}
+
+
 // Kesme gerektiren malzemeler: et, sebze, kebap
 export const CHOPPABLE: StockKey[] = ['🥩', '🥬', '🍢'];
 export const CHOPPING_BOARD_POS = { x: 760, y: 170 };
@@ -189,6 +203,9 @@ export interface GameState {
 
     // ─── Kesme Tahtaları ─────────────────────────────────────────────────────
     choppingBoards: ChoppingBoard[];
+
+    // ─── Lavabolar ───────────────────────────────────────────────────────────
+    sinks: WashingSink[];
 
     // ─── Internal (sunucu tarafı, client'a gönderilir ama kullanılmaz) ────────
     _stateTick?: number;
@@ -393,6 +410,10 @@ export function mkGameState(): GameState {
     // ─── Kesme Tahtaları ──────────────────────────────────────────────────
     choppingBoards: [
       { id: 'chop1', x: CHOPPING_BOARD_POS.x, y: CHOPPING_BOARD_POS.y, input: null, progress: 0, isChopping: false, choppingPlayerId: null },
+    ],
+    // ─── Lavabolar ────────────────────────────────────────────────────────
+    sinks: [
+      { id: 'sink', x: SINK_STATION.x, y: SINK_STATION.y, input: null, progress: 0, isWashing: false, washingPlayerId: null },
     ],
   };
 }

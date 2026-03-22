@@ -7,6 +7,7 @@ import {
   GAME_HEIGHT, EXTERIOR_Y,
   CLOSING_THRESHOLD,
   CHOP_TICKS, CHOP_PREFIX,
+  WASH_TICKS, DIRTY_PLATE, CLEAN_PLATE,
 } from "../shared/types.js";
 import { DIALOGUES } from "../shared/dialogues.js";
 
@@ -125,6 +126,31 @@ export function gameTick(gs: GameState, io: Server, rid: string) {
           board.input = CHOP_PREFIX + board.input;
           board.isChopping = false;
           board.choppingPlayerId = null;
+        }
+      }
+    });
+  }
+
+  // Lavaboları güncelle
+  if (gs.sinks) {
+    gs.sinks.forEach(sink => {
+      // Yıkayıcı oyuncu uzaklaştıysa otomatik durdur
+      if (sink.isWashing && sink.washingPlayerId) {
+        const washer = gs.players[sink.washingPlayerId];
+        if (!washer || Math.hypot(washer.x - sink.x, washer.y - sink.y) > 110) {
+          sink.isWashing = false;
+          sink.washingPlayerId = null;
+        }
+      }
+
+      // Aktif yıkama ve içinde kirli tabak varsa progress artır
+      if (sink.isWashing && sink.input === DIRTY_PLATE && sink.progress < WASH_TICKS) {
+        sink.progress++;
+        if (sink.progress >= WASH_TICKS) {
+          sink.input = CLEAN_PLATE; // Tabağı temizle
+          sink.isWashing = false;
+          sink.washingPlayerId = null;
+          io.to(rid).emit("sound", "success");
         }
       }
     });

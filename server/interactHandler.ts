@@ -30,14 +30,40 @@ export function registerInteractHandler(
     if (!p) return;
     const px = p.x, py = p.y;
 
-    // Lavabo
-    const sinkPos = gs.stationLayout['sink'] ?? SINK_STATION;
-    if (Math.hypot(px - sinkPos.x, py - sinkPos.y) < INTERACT_R) {
-      if (p.holding === DIRTY_PLATE) {
-        p.holding = CLEAN_PLATE;
-        socket.emit("sound", "success");
+    // Lavabolar (Progressli Yıkama)
+    if (gs.sinks) {
+      for (const sink of gs.sinks) {
+        const dynX = gs.stationLayout?.[sink.id]?.x ?? sink.x;
+        const dynY = gs.stationLayout?.[sink.id]?.y ?? sink.y;
+        if (Math.hypot(px - dynX, py - dynY) < INTERACT_R) {
+          if (!p.holding) {
+            if (sink.input === CLEAN_PLATE) {
+              // Yıkanmış temiz tabağı al
+              p.holding = CLEAN_PLATE;
+              sink.input = null;
+              sink.progress = 0;
+              sink.isWashing = false;
+              sink.washingPlayerId = null;
+              socket.emit("sound", "pickup");
+            } else if (sink.input === DIRTY_PLATE && !sink.isWashing) {
+              // Yıkamayı başlat (El boşken lavabodaki kirli tabağı yıkamaya başla)
+              sink.isWashing = true;
+              sink.washingPlayerId = socket.id;
+            }
+          } else if (p.holding === DIRTY_PLATE && !sink.input) {
+            // Elindeki kirli tabağı boş lavaboya bırak
+            sink.input = DIRTY_PLATE;
+            sink.progress = 0;
+            sink.isWashing = false;
+            sink.washingPlayerId = null;
+            p.holding = null;
+            socket.emit("sound", "success");
+          } else {
+             socket.emit("sound", "fail");
+          }
+          return; // Lavabo etkileşim alanındayken başka istasyona bakma
+        }
       }
-      return;
     }
 
     // Çöp kovası — yanmış yemek atılabilir; temiz/kirli TABAK asla atılamaz
