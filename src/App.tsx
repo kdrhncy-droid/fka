@@ -4,13 +4,10 @@ import { MARKET_NAME } from './constants';
 import { useSocket } from './hooks/useSocket';
 import { useKeyboard } from './hooks/useKeyboard';
 import { useSettings } from './hooks/useSettings';
-import { useProfile } from './hooks/useProfile';
-import { useStats } from './hooks/useStats';
 import { WelcomeScreen } from './components/WelcomeScreen';
 import { CharacterSelect } from './components/CharacterSelect';
 import { GameScreen } from './components/GameScreen';
 import { SettingsPanel } from './components/SettingsPanel';
-import { StatsModal } from './components/StatsModal';
 
 export default function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -30,45 +27,20 @@ export default function App() {
     },
   });
   const { settings, update: updateSettings } = useSettings();
-  const { profile, update: updateProfile } = useProfile();
-  const { stats, startTracking, stopTracking, recordRun, resetStats } = useStats();
-  // gameStateRef üzerinden game over anını izle
-  const prevIsGameOverRef = useRef(false);
 
   const [isJoined, setIsJoined] = useState(false);
   const [entryScreen, setEntryScreen] = useState<'menu' | 'lobby'>('menu');
   const [showSettings, setShowSettings] = useState(false);
-  const [showStats, setShowStats] = useState(false);
 
-  const [playerName, setPlayerName] = useState(profile.playerName);
+  const [playerName, setPlayerName] = useState('');
   const [marketName, setMarketName] = useState(MARKET_NAME);
-  const [charType, setCharType] = useState(profile.charType);
-  const [playerColor, setPlayerColor] = useState(CHARACTER_TYPES[profile.charType]?.bodyColor ?? CHARACTER_TYPES[0].bodyColor);
+  const [charType, setCharType] = useState(0);
+  const [playerColor, setPlayerColor] = useState(CHARACTER_TYPES[0].bodyColor);
   const [playerHat, setPlayerHat] = useState('');
   const [roomId, setRoomId] = useState(() => Math.random().toString(36).substring(2, 6).toUpperCase());
   const [isJoiningExistingRoom, setIsJoiningExistingRoom] = useState(false);
 
-  // Game over anında istatistikleri kaydet
-  useEffect(() => {
-    if (!isJoined) return;
-    const id = setInterval(() => {
-      const gs = gameStateRef.current;
-      const isOver = gs.isGameOver ?? false;
-      if (isOver && !prevIsGameOverRef.current) {
-        recordRun({
-          day: gs.day,
-          score: gs.score,
-          earned: gs.score,
-          customersServed: gs.customers.length,
-        });
-      }
-      prevIsGameOverRef.current = isOver;
-    }, 500);
-    return () => clearInterval(id);
-  }, [isJoined]);
-
   const handleLeaveGame = () => {
-    stopTracking();
     isJoinedRef.current = false;
     socket?.emit('leave');
     setIsJoined(false);
@@ -82,8 +54,8 @@ export default function App() {
     if (audioCtxRef.current?.state === 'suspended') audioCtxRef.current.resume();
 
     setRoomId(quickRoomId);
-    updateProfile({ playerName: name });
     
+    // Varsayılan değerlerle hızlı başlama
     const defaultChar = CHARACTER_TYPES[0];
     socket.emit('join', {
       name: name,
@@ -96,15 +68,12 @@ export default function App() {
 
     isJoinedRef.current = true;
     setIsJoined(true);
-    startTracking();
   };
 
   const handleJoin = (e: React.FormEvent) => {
     e.preventDefault();
     if (!playerName.trim() || !socket) return;
     if (audioCtxRef.current?.state === 'suspended') audioCtxRef.current.resume();
-
-    updateProfile({ playerName: playerName.trim(), charType });
 
     socket.emit('join', {
       name: playerName.trim(),
@@ -117,18 +86,17 @@ export default function App() {
 
     isJoinedRef.current = true;
     setIsJoined(true);
-    startTracking();
   };
 
   const handleStartLobby = (targetRoomId?: string) => {
     if (targetRoomId) {
       setRoomId(targetRoomId);
       setIsJoiningExistingRoom(true);
-      setPlayerName(profile.playerName);
+      setPlayerName(''); // Katılırken oyuncu adı boş başlasın
     } else {
       setRoomId(Math.random().toString(36).substring(2, 6).toUpperCase());
       setIsJoiningExistingRoom(false);
-      setPlayerName(profile.playerName);
+      setPlayerName(''); // Yeni oda kurulurken de boş başlasın
     }
     setEntryScreen('lobby');
   };
@@ -164,15 +132,6 @@ export default function App() {
             onUpdate={updateSettings}
             onClose={() => setShowSettings(false)}
             isJoined={isJoined}
-            onOpenStats={() => { setShowSettings(false); setShowStats(true); }}
-          />
-        )}
-
-        {showStats && (
-          <StatsModal
-            stats={stats}
-            onClose={() => setShowStats(false)}
-            onReset={resetStats}
           />
         )}
       </>
@@ -181,7 +140,6 @@ export default function App() {
 
 
   return (
-    <>
     <GameScreen
       canvasRef={canvasRef}
       isJoined={isJoined}
@@ -197,15 +155,6 @@ export default function App() {
       onLeaveGame={handleLeaveGame}
       interactOverrideRef={interactOverrideRef}
       ping={ping}
-      onOpenStats={() => setShowStats(true)}
     />
-    {showStats && (
-      <StatsModal
-        stats={stats}
-        onClose={() => setShowStats(false)}
-        onReset={resetStats}
-      />
-    )}
-    </>
   );
 }
