@@ -38,6 +38,7 @@ export function useKeyboard({ isJoinedRef, socket, audioCtxRef, gameStateRef, lo
                 case 'd': case 'D': case 'ArrowRight': keys.current.d = true; break;
                 case ' ': case 'e': case 'E': {
                     e.preventDefault();
+                    if (e.repeat) break; // basılı tutunca tekrar tetiklenmesin
                     if (audioCtxRef.current?.state === 'suspended') {
                         audioCtxRef.current.resume();
                     }

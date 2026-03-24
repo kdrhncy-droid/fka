@@ -180,7 +180,6 @@ export function useLayoutEditor({ socket, gameStateRef, localPlayerRef, dayPhase
       );
       if (hasCust || hasDirty) continue;
       const dist = Math.hypot(lp.x - t.x, lp.y - t.y);
-      console.log('[TableEditor] masa:', id, 'pos:', t.x, t.y, 'dist:', dist.toFixed(1), 'limit:', MOVE_INTERACT_R);
       if (dist < MOVE_INTERACT_R && (!closestTable || dist < closestTable.dist)) {
         closestTable = { id, dist };
       }
@@ -191,7 +190,6 @@ export function useLayoutEditor({ socket, gameStateRef, localPlayerRef, dayPhase
       socket?.emit('lockTable', { tableId });
       const snapped = snapToGrid(lp.x, lp.y);
       const valid = isTablePositionValid(snapped.x, snapped.y, tableLayout ?? {}, tableId);
-      console.log('[TableEditor] masa seçildi:', tableId, 'valid:', valid);
       setState({
         ...DEFAULT_STATE,
         isMovingTable: true,
