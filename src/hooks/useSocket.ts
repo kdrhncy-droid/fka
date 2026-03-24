@@ -3,6 +3,12 @@ import { io, Socket } from 'socket.io-client';
 import { GameState } from '../types/game';
 import { playSound } from '../utils/audio';
 
+export interface DayEndSummary {
+    day: number;
+    score: number;
+    lives: number;
+}
+
 interface UseSocketReturn {
     socket: Socket | null;
     isConnected: boolean;
@@ -12,6 +18,8 @@ interface UseSocketReturn {
     connectionStatus: 'connected' | 'disconnected' | 'reconnecting';
     ping: number;
     chatMessages: ChatMessage[];
+    dayEndSummary: DayEndSummary | null;
+    clearDayEnd: () => void;
 }
 
 export interface ChatMessage {
@@ -68,6 +76,7 @@ export function useSocket(
     const [connectionStatus, setConnectionStatus] = useState<'connected' | 'disconnected' | 'reconnecting'>('disconnected');
     const [ping, setPing] = useState<number>(0);
     const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+    const [dayEndSummary, setDayEndSummary] = useState<DayEndSummary | null>(null);
     const gameStateRef = useRef<GameState>(DEFAULT_STATE);
     const audioCtxRef = useRef<AudioContext | null>(null);
     const roomIdRef = useRef<string>('');
@@ -201,6 +210,10 @@ export function useSocket(
             setChatMessages(prev => [...prev.slice(-49), msg]);
         });
 
+        newSocket.on('dayEnd', (summary: DayEndSummary) => {
+            setDayEndSummary(summary);
+        });
+
         // ─── Visibility API: Arka planda/Ön planda Algılama ───────────────
         const handleVisibilityChange = () => {
             if (document.hidden) {
@@ -242,5 +255,7 @@ export function useSocket(
         }
     }, [socket]);
 
-    return { socket, isConnected, myId, gameStateRef, audioCtxRef, connectionStatus, ping, chatMessages };
+    const clearDayEnd = () => setDayEndSummary(null);
+
+    return { socket, isConnected, myId, gameStateRef, audioCtxRef, connectionStatus, ping, chatMessages, dayEndSummary, clearDayEnd };
 }

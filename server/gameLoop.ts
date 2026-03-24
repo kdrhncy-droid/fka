@@ -169,6 +169,14 @@ export function gameTick(gs: GameState, io: Server, rid: string) {
       Object.values(gs.players).forEach((player: any) => {
         if (player.holding === '__dirty_plate__') player.holding = null;
       });
+
+      // Gün sonu özet event'i
+      io.to(rid).emit("dayEnd", {
+        day: gs.day,
+        score: gs.score,
+        lives: gs.lives,
+      });
+
       gs.dayPhase = 'night';
       gs.dayTimer = NIGHT_TICKS;
       gs.hasOrderedTonight = false;

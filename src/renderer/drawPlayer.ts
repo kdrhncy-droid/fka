@@ -228,5 +228,21 @@ export function drawPlayer(
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.fillText(label, 0, headY - HR - 18);
 
+    // ── TUTULAN EŞYA BALONU (isim etiketinin üstünde, herkese görünür) ────────
+    if (!isMe && isHolding) {
+        const bx = 0;
+        const by = headY - HR - 44;
+        // Balon arka planı
+        ctx.fillStyle = 'rgba(255,255,255,0.92)';
+        ctx.beginPath(); ctx.arc(bx, by, 13, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = accentColor; ctx.lineWidth = 2; ctx.stroke();
+        // Küçük üçgen (balon kuyruğu)
+        ctx.fillStyle = 'rgba(255,255,255,0.92)';
+        ctx.beginPath(); ctx.moveTo(bx - 5, by + 10); ctx.lineTo(bx + 5, by + 10); ctx.lineTo(bx, by + 17); ctx.closePath(); ctx.fill();
+        // Eşya emoji
+        ctx.font = '14px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(heldItem as string, bx, by - 1);
+    }
+
     ctx.restore();
 }

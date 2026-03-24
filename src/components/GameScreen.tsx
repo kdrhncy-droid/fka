@@ -16,6 +16,7 @@ import { useGameState } from '../hooks/useGameState';
 import { useLayoutEditor } from '../hooks/useLayoutEditor';
 import { playSound } from '../utils/audio';
 import { ChatPanel } from './ChatPanel';
+import { DayEndModal } from './DayEndModal';
 
 const MUSIC_URL = 'https://cdn.jsdelivr.net/gh/effacestudios/Royalty-Free-Music-Pack@main/Light%20Hearted%20-%20Jeremy%20Blake.mp3';
 
@@ -54,12 +55,14 @@ interface Props {
     ping?: number;
     onOpenStats?: () => void;
     chatMessages: import('../hooks/useSocket').ChatMessage[];
+    dayEndSummary: import('../hooks/useSocket').DayEndSummary | null;
+    onClearDayEnd: () => void;
 }
 
 export const GameScreen: React.FC<Props> = ({
     canvasRef, isJoined, myId, socket,
     gameStateRef, localPlayerRef, keysRef, audioCtxRef, settings, updateSettings, roomId, onLeaveGame,
-    interactOverrideRef, ping = 0, onOpenStats, chatMessages
+    interactOverrideRef, ping = 0, onOpenStats, chatMessages, dayEndSummary, onClearDayEnd
 }) => {
     const joystickVectorRef = useRef({ x: 0, y: 0 });
     const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -427,6 +430,11 @@ export const GameScreen: React.FC<Props> = ({
 
                 {/* Chat */}
                 <ChatPanel socket={socket} myId={myId} messages={chatMessages} />
+
+                {/* Gün Sonu Özeti */}
+                {dayEndSummary && (
+                    <DayEndModal summary={dayEndSummary} onClose={onClearDayEnd} />
+                )}
 
             </div>
 
