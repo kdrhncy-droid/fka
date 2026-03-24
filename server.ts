@@ -264,6 +264,7 @@ io.on("connection", (socket) => {
 
     gs.isGameOver = false;
     gs.lives = 3;
+    gs.day = 1;
     gs.customers = [];
     gs.waitList = [];
     gs.dirtyTables = [];

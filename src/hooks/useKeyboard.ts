@@ -143,6 +143,11 @@ export function useKeyboard({ isJoinedRef, socket, audioCtxRef, gameStateRef, lo
             window.removeEventListener('keydown', handleKeyDown);
             window.removeEventListener('keyup', handleKeyUp);
             window.removeEventListener('blur', handleBlur);
+            // Faz değişimi veya unmount'ta interval'i temizle
+            if (chopIntervalRef.current) {
+                clearInterval(chopIntervalRef.current);
+                chopIntervalRef.current = null;
+            }
         };
     }, [socket]); // socket değişirse interact emit doğru socket'e gitsin
 

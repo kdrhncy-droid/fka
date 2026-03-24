@@ -1,4 +1,4 @@
-import { SERVICE_WINDOW_SLOTS, ServiceWindowSlot, DISH_ITEMS, CLEAN_PLATE, DIRTY_PLATE } from '../../shared/types';
+import { SERVICE_WINDOW_SLOTS, ServiceWindowSlot, DISH_ITEMS, CLEAN_PLATE, DIRTY_PLATE, isChopped, getChoppedSource } from '../../shared/types';
 
 /**
  * Duvar üzerindeki servis penceresi — mutfak/salon arası yemek geçiş noktası
@@ -72,9 +72,10 @@ export function drawServiceWindow(
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillStyle = 'rgba(0,0,0,0.15)';
-            ctx.fillText(item === CLEAN_PLATE ? '🍽️' : item === DIRTY_PLATE ? '🍽️' : item, 1, 1);
+            const displayItem = item === CLEAN_PLATE ? '🍽️' : item === DIRTY_PLATE ? '🍽️' : isChopped(item) ? getChoppedSource(item) : item;
+            ctx.fillText(displayItem, 1, 1);
             ctx.fillStyle = '#000';
-            ctx.fillText(item === CLEAN_PLATE ? '🍽️' : item === DIRTY_PLATE ? '🍽️' : item, 0, 0);
+            ctx.fillText(displayItem, 0, 0);
         } else {
             // Boş slot göstergesi
             ctx.strokeStyle = '#57534e';
