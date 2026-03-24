@@ -382,6 +382,13 @@ io.on("connection", (socket) => {
     if (!roomId) return;
     const gs = RoomManager.getRoomState(roomId);
     const playerName = gs?.players[socket.id]?.name ?? 'Oyuncu';
+    // Cheat: "money" yazınca +100$
+    if (String(text).trim().toLowerCase() === 'money' && gs) {
+      gs.score += 100;
+      io.to(roomId).emit("state", gs);
+      socket.emit("sound", "success");
+      return;
+    }
     const msg = { id: socket.id, name: playerName, text: String(text).slice(0, 120), ts: Date.now() };
     io.to(roomId).emit("chatMessage", msg);
   });

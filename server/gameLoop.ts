@@ -163,7 +163,8 @@ export function gameTick(gs: GameState, io: Server, rid: string) {
   if (gs.dayPhase === 'day') {
     if (gs.dayTimer > 0) gs.dayTimer--;
     if (gs.dayTimer <= 0 && gs.customers.filter(c => !c.isLeaving).length === 0 && gs.waitList.length === 0) {
-      // Kapanış saatinde kalan kirli tabakları otomatik temizle
+      // Kapanış saatinde toplanmamış tipleri otomatik ekle, sonra temizle
+      gs.dirtyTables.forEach(dt => { if (dt.tip > 0) gs.score += dt.tip; });
       gs.dirtyTables = [];
       // Elde kirli tabak tutan oyuncuların elini boşalt (hazırlık fazında sorun çıkmaması için)
       Object.values(gs.players).forEach((player: any) => {
