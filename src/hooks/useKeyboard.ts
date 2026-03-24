@@ -25,6 +25,9 @@ export function useKeyboard({ isJoinedRef, socket, audioCtxRef, gameStateRef, lo
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (!isJoinedRef.current) return;
+            // Input/textarea odaklanmışsa oyun tuşlarını engelle
+            const tag = (e.target as HTMLElement)?.tagName;
+            if (tag === 'INPUT' || tag === 'TEXTAREA') return;
 
             // AudioContext'i uyandır (ilk tuşa basışta)
             if (audioCtxRef.current?.state === 'suspended') {
