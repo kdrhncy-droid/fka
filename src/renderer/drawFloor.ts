@@ -6,7 +6,6 @@ import {
   INGREDIENTS,
   SINK_STATION,
   PLATE_STACK_POS,
-  COUNTER_POSITIONS,
   RECIPE_DEFS,
   EXTERIOR_Y,
 } from "../types/game";
@@ -220,21 +219,6 @@ export function drawFloor(ctx: CanvasRenderingContext2D, unlockedDishes: string[
   }
 
 
-
-  // ══════════════════════════════════════════════════════════════════
-  // SERVİS TEZGAHI — metalik / açık
-  // ══════════════════════════════════════════════════════════════════
-  if (COUNTER_POSITIONS && COUNTER_POSITIONS.length > 0) {
-    const cp0 = COUNTER_POSITIONS[0], cpN = COUNTER_POSITIONS[COUNTER_POSITIONS.length - 1];
-    const cw = cpN.x - cp0.x + 90;
-    const cx = cp0.x - 44 + cw / 2;
-    const cy = cp0.y;
-
-    drawWorkstationBase(ctx, cx, cy, cw / 2 + 2, 26, 10, 0.28);
-
-    ctx.fillStyle = '#303030';
-    ctx.fillRect(cp0.x - 40, cp0.y + 24, cw - 8, 2);
-  }
 
   // ══════════════════════════════════════════════════════════════════
   // DIŞ ALAN — kaldırım + yol + çimen

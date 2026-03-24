@@ -280,21 +280,6 @@ export interface ServiceWindowSlot {
   item: Item;
 }
 
-// ─── Servis Masaları (Mutfağın daraltılmış hali, merkeze yakın) ─────────────────
-export const COUNTER_POSITIONS = [
-    // Kapının sol yanı
-    { id: 'counter0', x: 380, y: 360, width: 40, height: 40, type: 'counter' as const },
-    { id: 'counter1', x: 420, y: 360, width: 40, height: 40, type: 'counter' as const },
-    { id: 'counter2', x: 460, y: 360, width: 40, height: 40, type: 'counter' as const },
-    { id: 'counter3', x: 500, y: 360, width: 40, height: 40, type: 'counter' as const },
-
-    // Kapının sağ yanı
-    { id: 'counter4', x: 740, y: 360, width: 40, height: 40, type: 'counter' as const },
-    { id: 'counter5', x: 780, y: 360, width: 40, height: 40, type: 'counter' as const },
-    { id: 'counter6', x: 820, y: 360, width: 40, height: 40, type: 'counter' as const },
-    { id: 'counter7', x: 860, y: 360, width: 40, height: 40, type: 'counter' as const },
-];
-
 // ─── Yatay Duvar & Kapılar ────────────────────────────────────────────────────
 export const WALL_Y1 = 340;
 export const WALL_Y2 = 380;
@@ -376,14 +361,9 @@ export function mkGameState(): GameState {
     mkCook(`oven${i + 1}`, pos.x, pos.y)
   );
 
-  // Artık sadece counter istasyonları
-  const allHoldingStations = [
-    ...COUNTER_POSITIONS.map(p => ({ id: p.id, items: [], type: p.type as 'counter', maxItems: 1 })),
-  ];
-
   return {
     players: {}, customers: [], waitList: [],
-    holdingStations: allHoldingStations,
+    holdingStations: [],
     dirtyTables: [],
     score: 0, stock: { '🍞': 10, '🥩': 10, '🥬': 10, '🥘': 5, '🍢': 5 },
     marketName: "TerraMarket", dayPhase: 'prep', dayTimer: DAY_TICKS,

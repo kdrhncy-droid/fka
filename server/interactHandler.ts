@@ -2,10 +2,10 @@ import { Socket, Server } from "socket.io";
 import {
   GameState, Item,
   DISH_ITEMS, INGREDIENTS, RECIPE_DEFS,
-  COUNTER_POSITIONS, PLATE_STACK_POS,
+  PLATE_STACK_POS,
   CLEAN_PLATE, DIRTY_PLATE, BURNED_FOOD, EAT_TICKS,
   MAX_TRAY_CAPACITY, isTray, getTrayItems, createTray,
-  SINK_STATION, TRASH_STATION, TRAY_STATION,
+  TRASH_STATION, TRAY_STATION,
   CHOPPABLE, CHOP_PREFIX, isChopped,
   SERVICE_WINDOW_SLOTS, SERVICE_WINDOW_R,
 } from "../shared/types.js";
@@ -213,24 +213,7 @@ export function registerInteractHandler(
       }
     }
 
-    // Counter istasyonları
-    for (const station of gs.holdingStations) {
-      if (station.type !== 'counter') continue;
-      const stationDef = COUNTER_POSITIONS.find(pos => pos.id === station.id);
-      const dynPos = gs.stationLayout[station.id];
-      const posX = dynPos?.x ?? stationDef?.x ?? 0;
-      const posY = dynPos?.y ?? stationDef?.y ?? 0;
-      if (!stationDef || !(Math.abs(px - posX) < 50 && Math.abs(py - posY) < 70)) continue;
-      if (!p.holding && station.items.length > 0) {
-        p.holding = station.items.pop()!;
-        socket.emit("sound", "pickup"); return;
-      }
-      if (p.holding && station.items.length === 0) {
-        station.items.push(p.holding);
-        p.holding = null;
-        socket.emit("sound", "success"); return;
-      }
-    }
+    // Counter istasyonları kaldırıldı — servis penceresi kullanılıyor
 
     // Kesme tahtaları — malzeme bırak/al (E tuşu)
     if (gs.choppingBoards) {
