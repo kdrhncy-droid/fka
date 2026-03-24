@@ -24,7 +24,7 @@ export const DayEndModal: React.FC<Props> = ({ summary, onClose }) => {
             {/* Modal */}
             {open && (
                 <div
-                    className="absolute inset-0 z-40 flex items-center justify-center"
+                    className="fixed inset-0 z-50 flex items-center justify-center"
                     style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}
                     onClick={() => setOpen(false)}
                 >
