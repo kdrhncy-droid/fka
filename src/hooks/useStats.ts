@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 
 export interface PlayerStats {
     totalPlayTime: number;   // saniye
@@ -37,11 +37,13 @@ export function useStats() {
     const [stats, setStats] = useState<PlayerStats>(load);
     const sessionStartRef = useRef<number>(Date.now());
     const isTrackingRef = useRef(false);
+    const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-    // Oturum süresini periyodik kaydet
-    useEffect(() => {
-        if (!isTrackingRef.current) return;
-        const id = setInterval(() => {
+    const startTracking = () => {
+        sessionStartRef.current = Date.now();
+        isTrackingRef.current = true;
+        if (intervalRef.current) clearInterval(intervalRef.current);
+        intervalRef.current = setInterval(() => {
             const elapsed = Math.floor((Date.now() - sessionStartRef.current) / 1000);
             setStats(prev => {
                 const next = { ...prev, totalPlayTime: prev.totalPlayTime + elapsed };
@@ -49,17 +51,12 @@ export function useStats() {
                 sessionStartRef.current = Date.now();
                 return next;
             });
-        }, 30_000); // 30 saniyede bir kaydet
-        return () => clearInterval(id);
-    }, [isTrackingRef.current]);
-
-    const startTracking = () => {
-        sessionStartRef.current = Date.now();
-        isTrackingRef.current = true;
+        }, 30_000);
     };
 
     const stopTracking = () => {
         if (!isTrackingRef.current) return;
+        if (intervalRef.current) { clearInterval(intervalRef.current); intervalRef.current = null; }
         const elapsed = Math.floor((Date.now() - sessionStartRef.current) / 1000);
         isTrackingRef.current = false;
         setStats(prev => {
