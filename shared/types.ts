@@ -207,6 +207,9 @@ export interface GameState {
     // ─── Lavabolar ───────────────────────────────────────────────────────────
     sinks: WashingSink[];
 
+    // ─── Servis Penceresi ─────────────────────────────────────────────────────
+    serviceWindow: ServiceWindowSlot[];
+
     // ─── Internal (sunucu tarafı, client'a gönderilir ama kullanılmaz) ────────
     _stateTick?: number;
     _seatCooldown?: number; // Müşteri oturma arası cooldown (tick)
@@ -262,6 +265,20 @@ export const PLATE_STACK_PER_UPGRADE = 4; // Her upgrade başına +4 tabak (eski
 
 // Geriye uyum için (counter istasyonları hâlâ kullanılıyor)
 export const HOLDING_STATION_POSITIONS: { id: string; x: number; y: number; radius: number; type: 'plate' }[] = [];
+
+// ─── Servis Penceresi ────────────────────────────────────────────────────────
+export const SERVICE_WINDOW_SLOTS = [
+  { id: 'sw0', x: 480, y: 360 },
+  { id: 'sw1', x: 560, y: 360 },
+  { id: 'sw2', x: 640, y: 360 },
+  { id: 'sw3', x: 720, y: 360 },
+] as const;
+export const SERVICE_WINDOW_R = 70;
+
+export interface ServiceWindowSlot {
+  id: string;
+  item: Item;
+}
 
 // ─── Servis Masaları (Mutfağın daraltılmış hali, merkeze yakın) ─────────────────
 export const COUNTER_POSITIONS = [
@@ -415,5 +432,7 @@ export function mkGameState(): GameState {
     sinks: [
       { id: 'sink', x: SINK_STATION.x, y: SINK_STATION.y, input: null, progress: 0, isWashing: false, washingPlayerId: null },
     ],
+    // ─── Servis Penceresi ─────────────────────────────────────────────────
+    serviceWindow: SERVICE_WINDOW_SLOTS.map(s => ({ id: s.id, item: null })),
   };
 }

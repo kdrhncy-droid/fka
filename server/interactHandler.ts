@@ -7,6 +7,7 @@ import {
   MAX_TRAY_CAPACITY, isTray, getTrayItems, createTray,
   SINK_STATION, TRASH_STATION, TRAY_STATION,
   CHOPPABLE, CHOP_PREFIX, isChopped,
+  SERVICE_WINDOW_SLOTS, SERVICE_WINDOW_R,
 } from "../shared/types.js";
 
 const INTERACT_R = 110; // Fırın ve istasyonlar için daha geniş etkileşim alanı
@@ -29,6 +30,24 @@ export function registerInteractHandler(
     const p = gs.players[socket.id];
     if (!p) return;
     const px = p.x, py = p.y;
+
+    // Servis Penceresi — mutfak tarafından bırak, salon tarafından al
+    if (gs.serviceWindow?.length) {
+      for (const slot of gs.serviceWindow) {
+        const def = SERVICE_WINDOW_SLOTS.find(s => s.id === slot.id);
+        if (!def) continue;
+        if (Math.hypot(px - def.x, py - def.y) < SERVICE_WINDOW_R) {
+          if (!p.holding && slot.item) {
+            p.holding = slot.item; slot.item = null;
+            socket.emit('sound', 'pickup');
+          } else if (p.holding && !slot.item) {
+            slot.item = p.holding; p.holding = null;
+            socket.emit('sound', 'success');
+          }
+          return;
+        }
+      }
+    }
 
     // Lavabolar (Progressli Yıkama)
     if (gs.sinks) {

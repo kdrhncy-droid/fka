@@ -57,6 +57,7 @@ const DEFAULT_STATE: GameState = {
     lockedTables: {},
     choppingBoards: [],
     sinks: [],
+    serviceWindow: [],
 };
 
 /**

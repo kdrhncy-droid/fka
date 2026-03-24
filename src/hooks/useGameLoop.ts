@@ -32,6 +32,7 @@ import { drawDirtyTrayBasket } from '../renderer/drawDirtyTrayBasket';
 import { drawWaitList } from '../renderer/drawWaitList';
 import { drawDirtyTable } from '../renderer/drawDirtyTable';
 import { drawChoppingBoard } from '../renderer/drawChoppingBoard';
+import { drawServiceWindow } from '../renderer/drawServiceWindow';
 
 interface UseGameLoopProps {
   canvasRef: React.RefObject<HTMLCanvasElement>;
@@ -197,6 +198,9 @@ export function useGameLoop({
         }
         drawCounters(ctx, hs);
       }
+
+      // Servis penceresi
+      if (state.serviceWindow) drawServiceWindow(ctx, state.serviceWindow);
 
       if (state.cookStations) {
         for (const station of state.cookStations) drawCookStation(ctx, station, time);
