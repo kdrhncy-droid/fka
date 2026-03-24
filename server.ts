@@ -91,6 +91,13 @@ io.on("connection", (socket) => {
       for (const [id, lockerId] of Object.entries(gs.lockedTables)) {
         if (lockerId === playerId) delete gs.lockedTables[id];
       }
+      // Kesme tahtası ve lavabodaki oyuncu ID'sini temizle
+      gs.choppingBoards?.forEach(b => {
+        if (b.choppingPlayerId === playerId) { b.isChopping = false; b.choppingPlayerId = null; }
+      });
+      gs.sinks?.forEach(s => {
+        if (s.washingPlayerId === playerId) { s.isWashing = false; s.washingPlayerId = null; }
+      });
       if (Object.keys(gs.players).length === 0) {
         RoomManager.deleteRoom(roomId);
       } else {
@@ -208,9 +215,11 @@ io.on("connection", (socket) => {
     if (!roomId || !RoomManager.getRoomState(roomId)) return;
     const gs = RoomManager.getRoomState(roomId)!;
     // menuChoices hâlâ varsa seçim yapılmadan geçilmesin
-    // Race condition: zaten prep'e geçilmişse tekrar geçme
+    // dayPhase zaten prep'e geçmişse (gameLoop tetikledi) tekrar artırma
     if (gs.dayPhase === 'night' && !gs.menuChoices) {
       gs.day++; gs.dayPhase = 'prep'; gs.dayTimer = DAY_TICKS;
+      gs.dayTimer = 0; // gameLoop'un tekrar tetiklememesi için timer'ı sıfırla
+      gs.dayPhase = 'prep'; // gameLoop night kontrolünü geçemez artık
       io.to(roomId).emit("state", gs);
       socket.emit("sound", "success");
     }
@@ -276,6 +285,12 @@ io.on("connection", (socket) => {
     gs.lockedStations = {};
     gs.lockedTables = {};
     gs._seatCooldown = 0;
+    gs.menuChoices = null;
+    gs.hasOrderedTonight = false;
+    // Servis penceresini temizle
+    gs.serviceWindow?.forEach(s => { s.item = null; });
+    // Lavaboları temizle
+    gs.sinks?.forEach(s => { s.input = null; s.progress = 0; s.isWashing = false; s.washingPlayerId = null; });
     // Tabakları tam kapasiteye geri doldur
     gs.plateStack.count = gs.plateStack.maxCount;
     // Fırınları temizle

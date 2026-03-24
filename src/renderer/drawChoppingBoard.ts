@@ -71,44 +71,69 @@ export function drawChoppingBoard(
   const { x, y, input, progress, isChopping } = board;
 
   // Gölge
-  ctx.fillStyle = 'rgba(0,0,0,0.2)';
+  ctx.fillStyle = 'rgba(0,0,0,0.22)';
   ctx.beginPath();
   ctx.ellipse(x, y + 20, 38, 10, 0, 0, Math.PI * 2);
   ctx.fill();
 
-  // Ahşap tahta gövdesi
+  // Ahşap tahta gövdesi — SVG preview kalitesinde
   const woodGrad = ctx.createLinearGradient(x - 34, y - 12, x + 34, y + 16);
-  woodGrad.addColorStop(0, '#d4b483');
-  woodGrad.addColorStop(0.5, '#c8a96e');
-  woodGrad.addColorStop(1, '#a8834a');
+  woodGrad.addColorStop(0, '#c8956c');
+  woodGrad.addColorStop(0.5, '#a0522d');
+  woodGrad.addColorStop(1, '#78350f');
   ctx.fillStyle = woodGrad;
   roundRect(ctx, x - 34, y - 12, 68, 32, 5);
   ctx.fill();
 
-  // Ahşap doku çizgileri
-  ctx.strokeStyle = 'rgba(100, 60, 20, 0.2)';
-  ctx.lineWidth = 1;
-  for (let i = -1; i <= 2; i++) {
+  // Ahşap lif çizgileri
+  ctx.strokeStyle = 'rgba(120,53,15,0.45)';
+  ctx.lineWidth = 1.2;
+  for (let i = 0; i < 4; i++) {
     ctx.beginPath();
-    ctx.moveTo(x - 28, y - 4 + i * 8);
-    ctx.lineTo(x + 28, y - 2 + i * 8);
+    ctx.moveTo(x - 28, y - 6 + i * 7);
+    ctx.quadraticCurveTo(x, y - 4 + i * 7, x + 28, y - 6 + i * 7);
+    ctx.stroke();
+  }
+
+  // Bıçak izleri (dikey)
+  ctx.strokeStyle = 'rgba(69,26,3,0.35)';
+  ctx.lineWidth = 1.5;
+  for (let i = 0; i < 4; i++) {
+    const lx = x - 18 + i * 12;
+    ctx.beginPath();
+    ctx.moveTo(lx, y - 10);
+    ctx.lineTo(lx, y + 18);
     ctx.stroke();
   }
 
   // Tahta kenar
-  ctx.strokeStyle = isChopped(input ?? '') ? '#16a34a' : '#7a5535';
+  ctx.strokeStyle = isChopped(input ?? '') ? '#16a34a' : '#451a03';
   ctx.lineWidth = isChopped(input ?? '') ? 2.5 : 2;
   roundRect(ctx, x - 34, y - 12, 68, 32, 5);
   ctx.stroke();
 
-  // Tutma kolu
-  ctx.fillStyle = '#9a6a3a';
-  roundRect(ctx, x + 30, y - 4, 14, 18, 3);
+  // Yüzey parlaması
+  ctx.fillStyle = 'rgba(255,255,255,0.12)';
+  ctx.beginPath();
+  ctx.ellipse(x - 10, y - 6, 14, 5, -0.1, 0, Math.PI * 2);
   ctx.fill();
-  ctx.strokeStyle = '#6b4423';
+
+  // Tutma kolu — daha kaliteli
+  const kolGrad = ctx.createLinearGradient(x + 30, y - 4, x + 44, y + 14);
+  kolGrad.addColorStop(0, '#92400e');
+  kolGrad.addColorStop(1, '#451a03');
+  ctx.fillStyle = kolGrad;
+  roundRect(ctx, x + 30, y - 4, 14, 18, 4);
+  ctx.fill();
+  ctx.strokeStyle = '#2c0f00';
   ctx.lineWidth = 1.5;
-  roundRect(ctx, x + 30, y - 4, 14, 18, 3);
+  roundRect(ctx, x + 30, y - 4, 14, 18, 4);
   ctx.stroke();
+  // kol parlama
+  ctx.fillStyle = 'rgba(255,255,255,0.12)';
+  ctx.beginPath();
+  ctx.roundRect(x + 31, y - 3, 4, 10, 2);
+  ctx.fill();
 
   // Üzerindeki malzeme
   if (input) {

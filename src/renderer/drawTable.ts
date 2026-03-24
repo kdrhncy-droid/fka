@@ -1,5 +1,5 @@
 /**
- * Masa + 4 sandalye — PlateUp tarzı koyu estetik
+ * Masa + 4 sandalye — SVG preview kalitesinde canvas çizimi
  * Top-down (yukarıdan bakış) açısıyla
  */
 export function drawTable(ctx: CanvasRenderingContext2D, cx: number, cy: number) {
@@ -11,15 +11,15 @@ export function drawTable(ctx: CanvasRenderingContext2D, cx: number, cy: number)
     drawChair(ctx, cx + 28, cy + 40, 'down');
 
     // ── Masa Gölgesi ──────────────────────────────────────────────────────────
-    ctx.fillStyle = 'rgba(0,0,0,0.22)';
+    ctx.fillStyle = 'rgba(0,0,0,0.28)';
     ctx.beginPath();
-    ctx.roundRect(cx - 44 + 3, cy - 28 + 5, 88, 64, 12);
+    ctx.roundRect(cx - 44 + 4, cy - 28 + 6, 88, 64, 12);
     ctx.fill();
 
-    // ── Ahşap masa gövdesi — koyu meşe tonu ──────────────────────────────────
+    // ── Ahşap masa gövdesi ────────────────────────────────────────────────────
     const frameGrad = ctx.createLinearGradient(cx - 42, cy - 32, cx + 42, cy + 30);
-    frameGrad.addColorStop(0, '#5c3d1e');
-    frameGrad.addColorStop(0.5, '#4a2e10');
+    frameGrad.addColorStop(0, '#7c5230');
+    frameGrad.addColorStop(0.4, '#5c3d1e');
     frameGrad.addColorStop(1, '#3a2008');
     ctx.fillStyle = frameGrad;
     ctx.beginPath();
@@ -29,13 +29,13 @@ export function drawTable(ctx: CanvasRenderingContext2D, cx: number, cy: number)
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    // ── Ahşap desen: yatay lifler ─────────────────────────────────────────────
+    // ── Ahşap lif çizgileri ───────────────────────────────────────────────────
     ctx.save();
-    ctx.globalAlpha = 0.08;
+    ctx.globalAlpha = 0.07;
     ctx.strokeStyle = '#fff';
     ctx.lineWidth = 1;
-    for (let i = 0; i < 4; i++) {
-        const ly = cy - 22 + i * 13;
+    for (let i = 0; i < 5; i++) {
+        const ly = cy - 24 + i * 11;
         ctx.beginPath();
         ctx.moveTo(cx - 36, ly);
         ctx.bezierCurveTo(cx - 15, ly + 2, cx + 15, ly - 2, cx + 36, ly);
@@ -43,41 +43,71 @@ export function drawTable(ctx: CanvasRenderingContext2D, cx: number, cy: number)
     }
     ctx.restore();
 
-    // ── Masa üstü yüzey parlaması ─────────────────────────────────────────────
+    // ── Masa yüzey parlaması ──────────────────────────────────────────────────
     ctx.save();
-    ctx.globalAlpha = 0.13;
+    ctx.globalAlpha = 0.12;
     ctx.fillStyle = '#fff';
     ctx.beginPath();
-    ctx.ellipse(cx - 5, cy - 12, 30, 11, -0.1, 0, Math.PI * 2);
+    ctx.ellipse(cx - 8, cy - 14, 28, 10, -0.1, 0, Math.PI * 2);
     ctx.fill();
     ctx.restore();
 
-    // ── Masa üstü dekor: küçük çiçek vazosu ──────────────────────────────────
-    // Vazo
-    ctx.beginPath();
-    ctx.roundRect(cx - 4, cy - 14, 8, 10, [2, 2, 4, 4]);
+    // ── Vazo ─────────────────────────────────────────────────────────────────
     const vazoGrad = ctx.createLinearGradient(cx - 4, cy - 14, cx + 4, cy - 4);
-    vazoGrad.addColorStop(0, '#6a9fc0');
-    vazoGrad.addColorStop(1, '#3d6e8a');
+    vazoGrad.addColorStop(0, '#5b9ec9');
+    vazoGrad.addColorStop(1, '#2e6a8a');
     ctx.fillStyle = vazoGrad;
+    ctx.beginPath();
+    ctx.roundRect(cx - 4, cy - 14, 8, 11, [2, 2, 4, 4]);
     ctx.fill();
-    ctx.strokeStyle = '#2a4f68';
+    ctx.strokeStyle = '#1e4f68';
     ctx.lineWidth = 1;
     ctx.stroke();
-    // Vazo parlama
-    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+    // vazo parlama
+    ctx.fillStyle = 'rgba(255,255,255,0.32)';
     ctx.beginPath();
-    ctx.roundRect(cx - 2, cy - 13, 3, 5, 2);
+    ctx.roundRect(cx - 2, cy - 13, 3, 6, 2);
     ctx.fill();
-    // Çiçek
-    ctx.font = '11px Arial';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('🌿', cx, cy - 19);
+
+    // ── Çiçekler (SVG'deki gibi renkli) ──────────────────────────────────────
+    const flowers = [
+        { dx: -5, dy: -22, r: 4, color: '#f472b6' },
+        { dx:  3, dy: -24, r: 3.5, color: '#fb923c' },
+        { dx:  9, dy: -21, r: 3, color: '#facc15' },
+    ];
+    flowers.forEach(f => {
+        ctx.fillStyle = f.color;
+        ctx.beginPath();
+        ctx.arc(cx + f.dx, cy + f.dy, f.r, 0, Math.PI * 2);
+        ctx.fill();
+    });
+    // yaprak
+    ctx.fillStyle = '#4ade80';
+    ctx.beginPath();
+    ctx.arc(cx + 1, cy - 18, 2.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // ── Mum ──────────────────────────────────────────────────────────────────
+    ctx.fillStyle = '#fef3c7';
+    ctx.strokeStyle = '#d97706';
+    ctx.lineWidth = 0.5;
+    ctx.beginPath();
+    ctx.roundRect(cx + 14, cy - 12, 6, 10, 1);
+    ctx.fill();
+    ctx.stroke();
+    // alev
+    ctx.fillStyle = '#fbbf24';
+    ctx.beginPath();
+    ctx.ellipse(cx + 17, cy - 14, 2, 3, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.beginPath();
+    ctx.ellipse(cx + 17, cy - 15, 1, 1.5, 0, 0, Math.PI * 2);
+    ctx.fill();
 }
 
 /**
- * Tek bir sandalye — PlateUp tarzı koyu taupe/gri
+ * Tek bir sandalye — SVG preview kalitesinde
  */
 function drawChair(
     ctx: CanvasRenderingContext2D,
@@ -85,78 +115,82 @@ function drawChair(
     cy: number,
     dir: 'up' | 'down',
 ) {
-    const w = 24, h = 20;
+    const w = 26, h = 20;
+    const backH = 10;
 
     // ── Gölge ─────────────────────────────────────────────────────────────────
-    ctx.fillStyle = 'rgba(0,0,0,0.18)';
+    ctx.fillStyle = 'rgba(0,0,0,0.2)';
     ctx.beginPath();
-    ctx.roundRect(cx - w / 2 + 3, cy + 4, w, h, 5);
+    ctx.roundRect(cx - w / 2 + 3, cy + 5, w, h, 5);
     ctx.fill();
 
-    // ── Oturma yüzeyi ─────────────────────────────────────────────────────────
-    const cushionGrad = ctx.createLinearGradient(cx, cy, cx, cy + h);
-    cushionGrad.addColorStop(0, '#7c6f8a');
-    cushionGrad.addColorStop(1, '#564b66');
-    ctx.fillStyle = cushionGrad;
-    ctx.beginPath();
-    ctx.roundRect(cx - w / 2, cy, w, h, 6);
-    ctx.fill();
-
-    // ── Yastık parlama ────────────────────────────────────────────────────────
-    ctx.fillStyle = 'rgba(255,255,255,0.15)';
-    ctx.beginPath();
-    ctx.roundRect(cx - w / 2 + 3, cy + 2, w - 6, 6, 3);
-    ctx.fill();
-
-    // ── Kenar çizgisi ─────────────────────────────────────────────────────────
-    ctx.strokeStyle = '#3a3045';
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.roundRect(cx - w / 2, cy, w, h, 6);
-    ctx.stroke();
-
-    // ── Arkalık ───────────────────────────────────────────────────────────────
-    const backH = 9;
     if (dir === 'up') {
-        const grad2 = ctx.createLinearGradient(cx, cy - backH - 4, cx, cy - 4);
-        grad2.addColorStop(0, '#3a2e4a');
-        grad2.addColorStop(1, '#564b66');
-        ctx.fillStyle = grad2;
+        // arkalık önce (arkada kalır)
+        const backGrad = ctx.createLinearGradient(cx, cy - backH - 4, cx, cy - 4);
+        backGrad.addColorStop(0, '#3a2e4a');
+        backGrad.addColorStop(1, '#564b66');
+        ctx.fillStyle = backGrad;
         ctx.beginPath();
         ctx.roundRect(cx - w / 2 + 2, cy - backH - 4, w - 4, backH, [5, 5, 0, 0]);
         ctx.fill();
         ctx.strokeStyle = '#2a2035';
         ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.roundRect(cx - w / 2 + 2, cy - backH - 4, w - 4, backH, [5, 5, 0, 0]);
         ctx.stroke();
-        // Dekoratif çubuklar
-        ctx.strokeStyle = '#2a2035';
-        ctx.lineWidth = 1;
-        for (let i = 0; i < 2; i++) {
-            const lx = cx - 4 + i * 8;
+        // arkalık çubuklar
+        for (let i = 0; i < 3; i++) {
+            const lx = cx - 5 + i * 5;
+            ctx.strokeStyle = '#2a2035';
+            ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.moveTo(lx, cy - backH - 2);
             ctx.lineTo(lx, cy - 5);
             ctx.stroke();
         }
-    } else {
-        const grad2 = ctx.createLinearGradient(cx, cy + h + 4, cx, cy + h + backH + 4);
-        grad2.addColorStop(0, '#564b66');
-        grad2.addColorStop(1, '#3a2e4a');
-        ctx.fillStyle = grad2;
+    }
+
+    // ── Oturma yüzeyi ─────────────────────────────────────────────────────────
+    const cushionGrad = ctx.createLinearGradient(cx, cy, cx, cy + h);
+    cushionGrad.addColorStop(0, '#9d8baf');
+    cushionGrad.addColorStop(1, '#564b66');
+    ctx.fillStyle = cushionGrad;
+    ctx.beginPath();
+    ctx.roundRect(cx - w / 2, cy, w, h, 7);
+    ctx.fill();
+    ctx.strokeStyle = '#3a3045';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // yastık parlama
+    ctx.fillStyle = 'rgba(255,255,255,0.14)';
+    ctx.beginPath();
+    ctx.roundRect(cx - w / 2 + 3, cy + 2, w - 6, 7, 3);
+    ctx.fill();
+
+    // düğme
+    ctx.fillStyle = '#3a2e4a';
+    ctx.strokeStyle = '#2a2035';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(cx, cy + h - 5, 2.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    if (dir === 'down') {
+        // arkalık sonra (önde kalır)
+        const backGrad2 = ctx.createLinearGradient(cx, cy + h + 4, cx, cy + h + backH + 4);
+        backGrad2.addColorStop(0, '#564b66');
+        backGrad2.addColorStop(1, '#3a2e4a');
+        ctx.fillStyle = backGrad2;
         ctx.beginPath();
         ctx.roundRect(cx - w / 2 + 2, cy + h + 4, w - 4, backH, [0, 0, 5, 5]);
         ctx.fill();
         ctx.strokeStyle = '#2a2035';
         ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.roundRect(cx - w / 2 + 2, cy + h + 4, w - 4, backH, [0, 0, 5, 5]);
         ctx.stroke();
-        ctx.strokeStyle = '#2a2035';
-        ctx.lineWidth = 1;
-        for (let i = 0; i < 2; i++) {
-            const lx = cx - 4 + i * 8;
+        for (let i = 0; i < 3; i++) {
+            const lx = cx - 5 + i * 5;
+            ctx.strokeStyle = '#2a2035';
+            ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.moveTo(lx, cy + h + 5);
             ctx.lineTo(lx, cy + h + backH + 2);

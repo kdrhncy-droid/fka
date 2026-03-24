@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>SVG Önizleme</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #1c1917; font-family: 'Segoe UI', Arial, sans-serif; color: #e7e5e4; padding: 40px; }
+  h1 { color: #fbbf24; font-size: 22px; margin-bottom: 6px; }
+  .subtitle { color: #78716c; font-size: 12px; margin-bottom: 40px; }
+  h2 { color: #a78bfa; font-size: 11px; text-transform: uppercase; letter-spacing: 3px; margin: 40px 0 16px; border-bottom: 1px solid #292524; padding-bottom: 8px; }
+  .grid { display: flex; flex-wrap: wrap; gap: 20px; }
+  .card {
+    background: linear-gradient(145deg, #292524, #211f1e);
+    border: 1px solid #3a3330;
+    border-radius: 14px;
+    padding: 20px 16px 14px;
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+    transition: transform 0.15s, border-color 0.15s;
+    cursor: default;
+  }
+  .card:hover { transform: translateY(-3px); border-color: #a78bfa; }
+  .card span { font-size: 11px; color: #a8a29e; text-align: center; font-weight: 600; letter-spacing: 0.5px; }
+  .card.wide { width: 160px; }
+</style>
+</head>
+<body>
+<h1>🎨 SVG Önizleme</h1>
+<p class="subtitle">Beğendiklerini söyle, oyuna ekleriz. Hover ile büyür.</p>
+
+<h2>🪑 Masa & Sandalye Seti</h2>
+<div class="grid">
+
+<!-- MASA + 4 SANDALYE (top-down) -->
+<div class="card wide" style="width:180px">
+<svg width="160" height="160" viewBox="0 0 160 160">
+  <defs>
+    <radialGradient id="shadowG" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="rgba(0,0,0,0.35)"/>
+      <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
+    </radialGradient>
+    <linearGradient id="tableTop" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7c5230"/>
+      <stop offset="40%" stop-color="#5c3d1e"/>
+      <stop offset="100%" stop-color="#3a2008"/>
+    </linearGradient>
+    <linearGradient id="cushion" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#9d8baf"/>
+      <stop offset="100%" stop-color="#564b66"/>
+    </linearGradient>
+    <linearGradient id="backrest" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#3a2e4a"/>
+      <stop offset="100%" stop-color="#564b66"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Zemin gölgesi -->
+  <ellipse cx="82" cy="92" rx="52" ry="36" fill="url(#shadowG)"/>
+
+  <!-- ── ÜSTTEKI 2 SANDALYE ── -->
+  <!-- Sol üst sandalye -->
+  <g>
+    <!-- arkalık -->
+    <rect x="34" y="28" width="26" height="10" rx="5" fill="url(#backrest)" stroke="#2a2035" stroke-width="1"/>
+    <line x1="42" y1="29" x2="42" y2="37" stroke="#2a2035" stroke-width="1"/>
+    <line x1="50" y1="29" x2="50" y2="37" stroke="#2a2035" stroke-width="1"/>
+    <!-- oturma -->
+    <rect x="34" y="37" width="26" height="20" rx="7" fill="url(#cushion)" stroke="#3a3045" stroke-width="1.5"/>
+    <rect x="37" y="39" width="18" height="7" rx="3" fill="rgba(255,255,255,0.14)"/>
+  </g>
+  <!-- Sağ üst sandalye -->
+  <g>
+    <rect x="100" y="28" width="26" height="10" rx="5" fill="url(#backrest)" stroke="#2a2035" stroke-width="1"/>
+    <line x1="108" y1="29" x2="108" y2="37" stroke="#2a2035" stroke-width="1"/>
+    <line x1="116" y1="29" x2="116" y2="37" stroke="#2a2035" stroke-width="1"/>
+    <rect x="100" y="37" width="26" height="20" rx="7" fill="url(#cushion)" stroke="#3a3045" stroke-width="1.5"/>
+    <rect x="103" y="39" width="18" height="7" rx="3" fill="rgba(255,255,255,0.14)"/>
+  </g>
+
+  <!-- ── MASA ── -->
+  <!-- Masa gölgesi -->
+  <rect x="32" y="62" width="96" height="68" rx="12" fill="rgba(0,0,0,0.28)"/>
+  <!-- Masa gövdesi -->
+  <rect x="30" y="58" width="96" height="66" rx="12" fill="url(#tableTop)" stroke="#2a1505" stroke-width="2"/>
+  <!-- Ahşap lif çizgileri -->
+  <path d="M36 68 Q78 65 120 68" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1.5"/>
+  <path d="M36 78 Q78 75 120 78" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1.5"/>
+  <path d="M36 88 Q78 85 120 88" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1.5"/>
+  <path d="M36 98 Q78 95 120 98" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1.5"/>
+  <path d="M36 108 Q78 105 120 108" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1.5"/>
+  <!-- Masa yüzey parlaması -->
+  <ellipse cx="72" cy="74" rx="32" ry="11" fill="rgba(255,255,255,0.10)"/>
+  <!-- Vazo -->
+  <rect x="74" y="76" width="10" height="13" rx="2" fill="#4a8aaa" stroke="#2a5f7a" stroke-width="1"/>
+  <rect x="75" y="77" width="4" height="7" rx="1" fill="rgba(255,255,255,0.25)"/>
+  <!-- Çiçek -->
+  <circle cx="76" cy="73" r="4" fill="#f472b6" opacity="0.9"/>
+  <circle cx="82" cy="72" r="3.5" fill="#fb923c" opacity="0.9"/>
+  <circle cx="79" cy="70" r="3" fill="#facc15" opacity="0.9"/>
+  <circle cx="79" cy="73" r="2" fill="#4ade80"/>
+  <!-- Mum -->
+  <rect x="92" y="80" width="6" height="10" rx="1" fill="#fef3c7" stroke="#d97706" stroke-width="0.5"/>
+  <ellipse cx="95" cy="79" rx="2" ry="3" fill="#fbbf24" opacity="0.9"/>
+  <ellipse cx="95" cy="78" rx="1" ry="2" fill="#fff" opacity="0.7"/>
+
+  <!-- ── ALTTAKİ 2 SANDALYE ── -->
+  <!-- Sol alt sandalye -->
+  <g>
+    <rect x="34" y="124" width="26" height="20" rx="7" fill="url(#cushion)" stroke="#3a3045" stroke-width="1.5"/>
+    <rect x="37" y="126" width="18" height="7" rx="3" fill="rgba(255,255,255,0.14)"/>
+    <!-- arkalık aşağıda -->
+    <rect x="34" y="143" width="26" height="10" rx="5" fill="url(#backrest)" stroke="#2a2035" stroke-width="1"/>
+    <line x1="42" y1="144" x2="42" y2="152" stroke="#2a2035" stroke-width="1"/>
+    <line x1="50" y1="144" x2="50" y2="152" stroke="#2a2035" stroke-width="1"/>
+  </g>
+  <!-- Sağ alt sandalye -->
+  <g>
+    <rect x="100" y="124" width="26" height="20" rx="7" fill="url(#cushion)" stroke="#3a3045" stroke-width="1.5"/>
+    <rect x="103" y="126" width="18" height="7" rx="3" fill="rgba(255,255,255,0.14)"/>
+    <rect x="100" y="143" width="26" height="10" rx="5" fill="url(#backrest)" stroke="#2a2035" stroke-width="1"/>
+    <line x1="108" y1="144" x2="108" y2="152" stroke="#2a2035" stroke-width="1"/>
+    <line x1="116" y1="144" x2="116" y2="152" stroke="#2a2035" stroke-width="1"/>
+  </g>
+</svg>
+<span>Masa + 4 Sandalye</span>
+</div>
+
+<!-- TEK SANDALYE YAKINDEN -->
+<div class="card">
+<svg width="80" height="80" viewBox="0 0 80 80">
+  <defs>
+    <linearGradient id="c2" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#b09cc0"/>
+      <stop offset="100%" stop-color="#564b66"/>
+    </linearGradient>
+  </defs>
+  <!-- gölge -->
+  <ellipse cx="42" cy="68" rx="22" ry="7" fill="rgba(0,0,0,0.25)"/>
+  <!-- arkalık -->
+  <rect x="18" y="14" width="44" height="16" rx="8" fill="#3a2e4a" stroke="#2a2035" stroke-width="1.5"/>
+  <rect x="22" y="16" width="36" height="10" rx="5" fill="#4a3a5a"/>
+  <!-- dekoratif çubuklar -->
+  <line x1="32" y1="16" x2="32" y2="29" stroke="#2a2035" stroke-width="1.5"/>
+  <line x1="40" y1="15" x2="40" y2="29" stroke="#2a2035" stroke-width="1.5"/>
+  <line x1="48" y1="16" x2="48" y2="29" stroke="#2a2035" stroke-width="1.5"/>
+  <!-- oturma yüzeyi -->
+  <rect x="16" y="30" width="48" height="30" rx="10" fill="url(#c2)" stroke="#3a3045" stroke-width="2"/>
+  <!-- yastık dikiş çizgisi -->
+  <rect x="20" y="34" width="40" height="12" rx="5" fill="rgba(255,255,255,0.12)"/>
+  <!-- düğme -->
+  <circle cx="40" cy="52" r="3" fill="#3a2e4a" stroke="#2a2035" stroke-width="1"/>
+  <!-- bacaklar -->
+  <rect x="20" y="58" width="8" height="14" rx="3" fill="#2a1a3a" stroke="#1a0a2a" stroke-width="1"/>
+  <rect x="52" y="58" width="8" height="14" rx="3" fill="#2a1a3a" stroke="#1a0a2a" stroke-width="1"/>
+  <!-- ayak -->
+  <rect x="17" y="70" width="14" height="5" rx="2.5" fill="#1a0a2a"/>
+  <rect x="49" y="70" width="14" height="5" rx="2.5" fill="#1a0a2a"/>
+</svg>
+<span>Sandalye (yakın)</span>
+</div>
+
+<!-- MASA YAKINDEN -->
+<div class="card">
+<svg width="100" height="80" viewBox="0 0 100 80">
+  <defs>
+    <linearGradient id="mt" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7c5230"/>
+      <stop offset="50%" stop-color="#5c3d1e"/>
+      <stop offset="100%" stop-color="#3a2008"/>
+    </linearGradient>
+  </defs>
+  <!-- gölge -->
+  <ellipse cx="52" cy="72" rx="42" ry="8" fill="rgba(0,0,0,0.3)"/>
+  <!-- masa yüzeyi -->
+  <rect x="8" y="18" width="84" height="50" rx="10" fill="url(#mt)" stroke="#2a1505" stroke-width="2"/>
+  <!-- lif -->
+  <path d="M14 28 Q50 25 86 28" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="1.5"/>
+  <path d="M14 38 Q50 35 86 38" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="1.5"/>
+  <path d="M14 48 Q50 45 86 48" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="1.5"/>
+  <path d="M14 58 Q50 55 86 58" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="1.5"/>
+  <!-- parlama -->
+  <ellipse cx="40" cy="30" rx="26" ry="9" fill="rgba(255,255,255,0.10)"/>
+  <!-- vazo -->
+  <rect x="46" y="28" width="8" height="12" rx="2" fill="#4a8aaa" stroke="#2a5f7a" stroke-width="1"/>
+  <rect x="47" y="29" width="3" height="6" rx="1" fill="rgba(255,255,255,0.3)"/>
+  <!-- çiçekler -->
+  <circle cx="46" cy="26" r="4" fill="#f472b6"/>
+  <circle cx="52" cy="24" r="3.5" fill="#fb923c"/>
+  <circle cx="58" cy="26" r="3" fill="#facc15"/>
+  <!-- bacaklar -->
+  <rect x="14" y="66" width="8" height="10" rx="3" fill="#2a1505"/>
+  <rect x="78" y="66" width="8" height="10" rx="3" fill="#2a1505"/>
+</svg>
+<span>Masa (yakın)</span>
+</div>
+
+</div>
+
+<h2>🥩 Ham Malzemeler</h2>
+<div class="grid">
+
+<!-- HAMUR -->
+<div class="card">
+<svg width="72" height="72" viewBox="0 0 72 72">
+  <defs>
+    <radialGradient id="doughG" cx="40%" cy="35%" r="60%">
+      <stop offset="0%" stop-color="#fef9e7"/>
+      <stop offset="60%" stop-color="#fde68a"/>
+      <stop offset="100%" stop-color="#c8a96e"/>
+    </radialGradient>
+  </defs>
+  <ellipse cx="36" cy="44" rx="28" ry="12" fill="rgba(0,0,0,0.2)"/>
+  <ellipse cx="36" cy="38" rx="28" ry="18" fill="#c8a96e"/>
+  <ellipse cx="36" cy="35" rx="26" ry="16" fill="url(#doughG)"/>
+  <!-- yüzey doku -->
+  <path d="M20 32 Q28 28 36 30 Q44 28 52 32" fill="none" stroke="rgba(180,140,80,0.4)" stroke-width="1.5"/>
+  <path d="M18 38 Q28 34 36 36 Q44 34 54 38" fill="none" stroke="rgba(180,140,80,0.3)" stroke-width="1"/>
+  <!-- parlama -->
+  <ellipse cx="28" cy="30" rx="8" ry="4" fill="rgba(255,255,255,0.35)"/>
+  <ellipse cx="36" cy="35" rx="28" ry="16" fill="none" stroke="#c8a96e" stroke-width="1.5"/>
+</svg>
+<span>Hamur</span>
+</div>
+
+<!-- ET -->
+<div class="card">
+<svg width="72" height="72" viewBox="0 0 72 72">
+  <defs>
+    <radialGradient id="meatG" cx="35%" cy="30%" r="65%">
+      <stop offset="0%" stop-color="#f87171"/>
+      <stop offset="50%" stop-color="#dc2626"/>
+      <stop offset="100%" stop-color="#7f1d1d"/>
+    </radialGradient>
+  </defs>
+  <ellipse cx="38" cy="48" rx="24" ry="10" fill="rgba(0,0,0,0.25)"/>
+  <path d="M14 32 Q16 18 28 16 Q36 14 44 18 Q56 22 58 32 Q60 42 52 46 Q42 50 30 48 Q16 46 14 38 Z" fill="#7f1d1d"/>
+  <path d="M16 30 Q18 18 28 16 Q36 14 44 18 Q54 22 56 30 Q58 40 50 44 Q40 48 30 46 Q18 44 16 36 Z" fill="url(#meatG)"/>
+  <!-- yağ damarları -->
+  <path d="M24 24 Q30 20 38 24 Q34 28 28 28 Z" fill="rgba(255,220,200,0.5)"/>
+  <path d="M40 28 Q46 24 50 28 Q48 32 44 32 Z" fill="rgba(255,220,200,0.4)"/>
+  <path d="M22 36 Q28 32 34 36" fill="none" stroke="rgba(255,200,180,0.4)" stroke-width="1.5"/>
+  <!-- parlama -->
+  <ellipse cx="28" cy="26" rx="8" ry="5" fill="rgba(255,150,130,0.3)"/>
+</svg>
+<span>Et</span>
+</div>
+
+<!-- SEBZE -->
+<div class="card">
+<svg width="72" height="72" viewBox="0 0 72 72">
+  <ellipse cx="36" cy="50" rx="20" ry="8" fill="rgba(0,0,0,0.2)"/>
+  <!-- yapraklar -->
+  <path d="M36 12 Q42 22 38 32 Q46 22 54 24 Q48 32 40 34 Q50 36 48 44 Q40 40 36 42 Q32 40 24 44 Q22 36 32 34 Q24 32 18 24 Q26 22 34 32 Q30 22 36 12Z" fill="#15803d"/>
+  <path d="M36 16 Q41 24 38 32 Q44 24 50 26 Q45 32 40 34" fill="none" stroke="#166534" stroke-width="1.5"/>
+  <path d="M36 16 Q31 24 34 32 Q28 24 22 26 Q27 32 32 34" fill="none" stroke="#166534" stroke-width="1.5"/>
+  <!-- orta damar -->
+  <path d="M36 14 Q36 28 36 42" fill="none" stroke="#166534" stroke-width="1.5"/>
+  <!-- parlama -->
+  <ellipse cx="30" cy="26" rx="5" ry="3" fill="rgba(134,239,172,0.4)" transform="rotate(-20 30 26)"/>
+</svg>
+<span>Sebze</span>
+</div>
+
+<!-- ÇORBA MALZEMESİ -->
+<div class="card">
+<svg width="72" height="72" viewBox="0 0 72 72">
+  <defs>
+    <linearGradient id="bowlG" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#d97706"/>
+      <stop offset="100%" stop-color="#92400e"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="38" cy="54" rx="24" ry="9" fill="rgba(0,0,0,0.25)"/>
+  <!-- kase gövde -->
+  <path d="M14 36 Q14 58 36 60 Q58 58 58 36 Z" fill="url(#bowlG)"/>
+  <!-- kase ağzı -->
+  <ellipse cx="36" cy="36" rx="22" ry="8" fill="#f59e0b"/>
+  <ellipse cx="36" cy="36" rx="18" ry="6" fill="#fbbf24"/>
+  <ellipse cx="36" cy="36" rx="14" ry="4" fill="#fde68a"/>
+  <!-- yağ halkası -->
+  <ellipse cx="36" cy="36" rx="10" ry="3" fill="rgba(251,191,36,0.5)"/>
+  <!-- buhar -->
+  <path d="M26 28 Q24 22 26 16" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+  <path d="M36 26 Q34 20 36 14" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+  <path d="M46 28 Q44 22 46 16" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+  <!-- parlama -->
+  <ellipse cx="26" cy="38" rx="5" ry="2" fill="rgba(255,255,255,0.2)"/>
+</svg>
+<span>Çorba Malz.</span>
+</div>
+
+<!-- KEBAP MALZEMESİ -->
+<div class="card">
+<svg width="72" height="72" viewBox="0 0 72 72">
+  <defs>
+    <linearGradient id="skewer" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#d97706"/>
+      <stop offset="100%" stop-color="#78350f"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="38" cy="58" rx="16" ry="6" fill="rgba(0,0,0,0.2)"/>
+  <!-- şiş -->
+  <rect x="34" y="8" width="5" height="56" rx="2.5" fill="url(#skewer)"/>
+  <!-- et parçaları -->
+  <rect x="24" y="14" width="22" height="14" rx="5" fill="#7f1d1d"/>
+  <rect x="24" y="14" width="22" height="9" rx="5" fill="#dc2626"/>
+  <ellipse cx="35" cy="14" rx="11" ry="4" fill="#ef4444"/>
+  <!-- sebze -->
+  <rect x="26" y="30" width="18" height="10" rx="4" fill="#15803d"/>
+  <rect x="26" y="30" width="18" height="6" rx="4" fill="#22c55e"/>
+  <!-- et parçası 2 -->
+  <rect x="24" y="42" width="22" height="14" rx="5" fill="#7f1d1d"/>
+  <rect x="24" y="42" width="22" height="9" rx="5" fill="#dc2626"/>
+  <ellipse cx="35" cy="42" rx="11" ry="4" fill="#ef4444"/>
+  <!-- parlama -->
+  <ellipse cx="30" cy="18" rx="5" ry="2.5" fill="rgba(255,150,130,0.35)"/>
+</svg>
+<span>Kebap Malz.</span>
+</div>
+
+</div>
+
+<h2>🍽️ Pişmiş Yemekler</h2>
+<div class="grid">
+
+<!-- PİZZA -->
+<div class="card">
+<svg width="72" height="72" viewBox="0 0 72 72">
+  <defs>
+    <radialGradient id="pizzaBase" cx="50%" cy="60%" r="55%">
+      <stop offset="0%" stop-color="#fde68a"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </radialGradient>
+  </defs>
+  <ellipse cx="38" cy="52" rx="28" ry="10" fill="rgba(0,0,0,0.2)"/>
+  <!-- hamur kenarı -->
+  <path d="M36 10 L62 58 L10 58 Z" fill="#d97706"/>
+  <path d="M36 14 L58 56 L14 56 Z" fill="url(#pizzaBase)"/>
+  <!-- sos -->
+  <path d="M36 18 L54 54 L18 54 Z" fill="#dc2626" opacity="0.85"/>
+  <!-- peynir -->
+  <path d="M36 22 L50 52 L22 52 Z" fill="#fef3c7" opacity="0.9"/>
+  <ellipse cx="36" cy="44" rx="10" ry="5" fill="#fef9e7" opacity="0.8"/>
+  <!-- malzemeler -->
+  <circle cx="30" cy="38" r="3.5" fill="#dc2626" stroke="#7f1d1d" stroke-width="0.5"/>
+  <circle cx="40" cy="42" r="3" fill="#dc2626" stroke="#7f1d1d" stroke-width="0.5"/>
+  <circle cx="34" cy="48" r="2.5" fill="#16a34a"/>
+  <circle cx="42" cy="36" r="2" fill="#16a34a"/>
+  <!-- kenar çizgisi -->
+  <path d="M36 10 L62 58 L10 58 Z" fill="none" stroke="#92400e" stroke-width="1.5"/>
+  <!-- parlama -->
+  <ellipse cx="30" cy="30" rx="6" ry="3" fill="rgba(255,255,255,0.2)" transform="rotate(-30 30 30)"/>
+</svg>
+<span>Pizza</span>
+</div>
+
+<!-- BURGER -->
+<div class="card">
+<svg width="72" height="72" viewBox="0 0 72 72">
+  <defs>
+    <linearGradient id="bunTop" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fef3c7"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+    <linearGradient id="bunBot" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="38" cy="60" rx="26" ry="8" fill="rgba(0,0,0,0.25)"/>
+  <!-- alt ekmek -->
+  <path d="M14 50 Q14 60 36 62 Q58 60 58 50 L54 46 L18 46 Z" fill="url(#bunBot)"/>
+  <!-- et -->
+  <rect x="16" y="40" width="40" height="8" rx="4" fill="#7f1d1d"/>
+  <rect x="16" y="40" width="40" height="5" rx="4" fill="#b91c1c"/>
+  <!-- peynir -->
+  <path d="M14 38 L18 34 L54 34 L58 38 L14 38Z" fill="#fbbf24" opacity="0.9"/>
+  <!-- marul -->
+  <path d="M12 36 Q20 30 36 32 Q52 30 60 36 L58 38 L14 38 Z" fill="#16a34a"/>
+  <path d="M16 34 Q24 30 36 32 Q48 30 56 34" fill="none" stroke="#15803d" stroke-width="1"/>
+  <!-- domates -->
+  <path d="M16 32 Q24 28 36 30 Q48 28 56 32 L54 34 L18 34 Z" fill="#dc2626" opacity="0.85"/>
+  <!-- üst ekmek -->
+  <path d="M16 28 Q16 16 36 14 Q56 16 56 28 L56 32 L16 32 Z" fill="url(#bunTop)"/>
+  <ellipse cx="36" cy="20" rx="18" ry="7" fill="rgba(255,255,255,0.15)"/>
+  <!-- susam -->
+  <ellipse cx="28" cy="18" rx="2.5" ry="1.2" fill="#92400e"/>
+  <ellipse cx="36" cy="16" rx="2.5" ry="1.2" fill="#92400e"/>
+  <ellipse cx="44" cy="18" rx="2.5" ry="1.2" fill="#92400e"/>
+</svg>
+<span>Burger</span>
+</div>
+
+<!-- SALATA -->
+<div class="card">
+<svg width="72" height="72" viewBox="0 0 72 72">
+  <defs>
+    <linearGradient id="bowlSalad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#e2e8f0"/>
+      <stop offset="100%" stop-color="#94a3b8"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="38" cy="58" rx="26" ry="9" fill="rgba(0,0,0,0.25)"/>
+  <!-- kase -->
+  <path d="M12 40 Q12 60 36 62 Q60 60 60 40 Z" fill="url(#bowlSalad)"/>
+  <ellipse cx="36" cy="40" rx="24" ry="8" fill="#cbd5e1"/>
+  <!-- yeşillikler -->
+  <ellipse cx="24" cy="34" rx="12" ry="8" fill="#16a34a" transform="rotate(-15 24 34)"/>
+  <ellipse cx="36" cy="30" rx="13" ry="8" fill="#22c55e" transform="rotate(5 36 30)"/>
+  <ellipse cx="48" cy="34" rx="11" ry="8" fill="#16a34a" transform="rotate(15 48 34)"/>
+  <ellipse cx="30" cy="32" rx="9" ry="6" fill="#4ade80" transform="rotate(-8 30 32)"/>
+  <ellipse cx="42" cy="31" rx="8" ry="6" fill="#4ade80" transform="rotate(10 42 31)"/>
+  <!-- domates -->
+  <circle cx="26" cy="38" r="5" fill="#dc2626" stroke="#7f1d1d" stroke-width="0.5"/>
+  <circle cx="26" cy="38" r="3" fill="#ef4444"/>
+  <circle cx="44" cy="37" r="4.5" fill="#dc2626" stroke="#7f1d1d" stroke-width="0.5"/>
+  <circle cx="44" cy="37" r="2.5" fill="#ef4444"/>
+  <!-- havuç -->
+  <path d="M34 38 Q36 32 38 38 Q36 40 34 38Z" fill="#f97316"/>
+  <!-- kase parlama -->
+  <ellipse cx="22" cy="42" rx="6" ry="2.5" fill="rgba(255,255,255,0.25)"/>
+</svg>
+<span>Salata</span>
+</div>
+
+<!-- ÇORBA -->
+<div class="card">
+<svg width="72" height="72" viewBox="0 0 72 72">
+  <defs>
+    <linearGradient id="soupBowl" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#d97706"/>
+      <stop offset="100%" stop-color="#78350f"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="38" cy="58" rx="26" ry="9" fill="rgba(0,0,0,0.25)"/>
+  <!-- kase -->
+  <path d="M12 38 Q12 58 36 60 Q60 58 60 38 Z" fill="url(#soupBowl)"/>
+  <!-- çorba yüzeyi -->
+  <ellipse cx="36" cy="38" rx="24" ry="8" fill="#f59e0b"/>
+  <ellipse cx="36" cy="38" rx="20" ry="6" fill="#fbbf24"/>
+  <ellipse cx="36" cy="38" rx="16" ry="4.5" fill="#fde68a"/>
+  <!-- yağ damlacıkları -->
+  <circle cx="28" cy="37" r="2.5" fill="#f59e0b" opacity="0.7"/>
+  <circle cx="40" cy="39" r="2" fill="#fbbf24" opacity="0.7"/>
+  <circle cx="34" cy="41" r="1.5" fill="#fde68a" opacity="0.6"/>
+  <!-- kaşık -->
+  <path d="M54 16 Q58 20 56 28 Q54 34 52 32 Q50 28 52 22 Z" fill="#e2e8f0" stroke="#94a3b8" stroke-width="0.5"/>
+  <rect x="50" y="8" width="4" height="16" rx="2" fill="#cbd5e1"/>
+  <!-- buhar -->
+  <path d="M24 30 Q22 24 24 18" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" opacity="0.55"/>
+  <path d="M36 28 Q34 22 36 16" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" opacity="0.55"/>
+  <!-- parlama -->
+  <ellipse cx="24" cy="40" rx="5" ry="2" fill="rgba(255,255,255,0.2)"/>
+</svg>
+<span>Çorba</span>
+</div>
+
+<!-- DÜRÜM -->
+<div class="card">
+<svg width="72" height="72" viewBox="0 0 72 72">
+  <defs>
+    <linearGradient id="wrapG" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef9e7"/>
+      <stop offset="100%" stop-color="#fde68a"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="38" cy="58" rx="20" ry="8" fill="rgba(0,0,0,0.2)"/>
+  <!-- dürüm gövde -->
+  <path d="M18 22 Q18 56 36 58 Q54 56 54 22 Q46 16 36 16 Q26 16 18 22Z" fill="#d97706"/>
+  <path d="M20 24 Q20 54 36 56 Q52 54 52 24 Q44 18 36 18 Q28 18 20 24Z" fill="url(#wrapG)"/>
+  <!-- iç dolgu görünümü -->
+  <ellipse cx="36" cy="38" rx="12" ry="8" fill="#dc2626" opacity="0.75"/>
+  <path d="M26 32 Q30 26 40 28 Q44 30 42 36 Q38 30 30 32 Z" fill="#16a34a" opacity="0.9"/>
+  <path d="M26 42 Q36 38 46 42" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round"/>
+  <!-- üst kıvrım -->
+  <path d="M18 22 Q26 14 36 14 Q46 14 54 22" fill="none" stroke="#d97706" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- parlama -->
+  <ellipse cx="28" cy="28" rx="6" ry="3" fill="rgba(255,255,255,0.25)" transform="rotate(-15 28 28)"/>
+</svg>
+<span>Dürüm</span>
+</div>
+
+</div>
+
+<h2>🏭 İstasyonlar</h2>
+<div class="grid">
+
+<!-- FIRIN -->
+<div class="card">
+<svg width="72" height="80" viewBox="0 0 72 80">
+  <defs>
+    <linearGradient id="ovenBody" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#4b5563"/>
+      <stop offset="100%" stop-color="#1f2937"/>
+    </linearGradient>
+    <linearGradient id="ovenTop" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6b7280"/>
+      <stop offset="100%" stop-color="#374151"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="38" cy="72" rx="28" ry="8" fill="rgba(0,0,0,0.3)"/>
+  <!-- gövde -->
+  <rect x="8" y="24" width="56" height="44" rx="8" fill="url(#ovenBody)" stroke="#111827" stroke-width="2"/>
+  <!-- üst panel -->
+  <rect x="8" y="14" width="56" height="14" rx="6" fill="url(#ovenTop)" stroke="#111827" stroke-width="1.5"/>
+  <!-- kontrol düğmeleri -->
+  <circle cx="22" cy="21" r="4" fill="#ef4444" stroke="#7f1d1d" stroke-width="1"/>
+  <circle cx="22" cy="21" r="2" fill="#fca5a5"/>
+  <circle cx="36" cy="21" r="4" fill="#374151" stroke="#111827" stroke-width="1"/>
+  <circle cx="36" cy="21" r="2" fill="#6b7280"/>
+  <circle cx="50" cy="21" r="4" fill="#374151" stroke="#111827" stroke-width="1"/>
+  <circle cx="50" cy="21" r="2" fill="#6b7280"/>
+  <!-- cam kapı -->
+  <rect x="14" y="30" width="44" height="30" rx="6" fill="#0f172a" stroke="#374151" stroke-width="1.5"/>
+  <!-- cam yansıma -->
+  <rect x="16" y="32" width="16" height="8" rx="3" fill="rgba(255,255,255,0.07)"/>
+  <!-- ateş -->
+  <path d="M22 54 Q24 46 26 50 Q28 42 30 48 Q32 42 34 48 Q36 44 38 50 Q40 44 42 50 Q44 46 46 54" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" opacity="0.85"/>
+  <path d="M26 54 Q28 48 30 52 Q32 46 34 52 Q36 48 38 54" fill="none" stroke="#fbbf24" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
+  <!-- kol -->
+  <rect x="20" y="60" width="32" height="6" rx="3" fill="#4b5563" stroke="#374151" stroke-width="1"/>
+  <circle cx="36" cy="63" r="4" fill="#6b7280" stroke="#374151" stroke-width="1"/>
+</svg>
+<span>Fırın</span>
+</div>
+
+<!-- KESME TAHTASI -->
+<div class="card">
+<svg width="72" height="72" viewBox="0 0 72 72">
+  <defs>
+    <linearGradient id="boardG" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#c8956c"/>
+      <stop offset="50%" stop-color="#a0522d"/>
+      <stop offset="100%" stop-color="#78350f"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="38" cy="60" rx="30" ry="9" fill="rgba(0,0,0,0.25)"/>
+  <!-- tahta gövde -->
+  <rect x="8" y="18" width="50" height="36" rx="6" fill="#78350f" stroke="#451a03" stroke-width="2"/>
+  <rect x="10" y="20" width="46" height="32" rx="5" fill="url(#boardG)"/>
+  <!-- ahşap lif -->
+  <path d="M12 26 Q34 24 56 26" fill="none" stroke="rgba(120,53,15,0.5)" stroke-width="1.2"/>
+  <path d="M12 32 Q34 30 56 32" fill="none" stroke="rgba(120,53,15,0.5)" stroke-width="1.2"/>
+  <path d="M12 38 Q34 36 56 38" fill="none" stroke="rgba(120,53,15,0.5)" stroke-width="1.2"/>
+  <path d="M12 44 Q34 42 56 44" fill="none" stroke="rgba(120,53,15,0.5)" stroke-width="1.2"/>
+  <!-- bıçak izleri -->
+  <path d="M20 22 L20 48" stroke="rgba(69,26,3,0.4)" stroke-width="1.5"/>
+  <path d="M30 22 L30 48" stroke="rgba(69,26,3,0.4)" stroke-width="1.5"/>
+  <path d="M40 22 L40 48" stroke="rgba(69,26,3,0.4)" stroke-width="1.5"/>
+  <!-- sap -->
+  <rect x="58" y="26" width="10" height="20" rx="5" fill="#451a03" stroke="#2c0f00" stroke-width="1"/>
+  <rect x="59" y="28" width="4" height="14" rx="2" fill="rgba(255,255,255,0.1)"/>
+  <!-- parlama -->
+  <ellipse cx="24" cy="26" rx="8" ry="3" fill="rgba(255,255,255,0.15)"/>
+</svg>
+<span>Kesme Tahtası</span>
+</div>
+
+<!-- LAVABO -->
+<div class="card">
+<svg width="72" height="72" viewBox="0 0 72 72">
+  <defs>
+    <linearGradient id="sinkWater" cx="50%" cy="50%" r="50%" gradientUnits="objectBoundingBox">
+      <stop offset="0%" stop-color="#60a5fa"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="38" cy="62" rx="26" ry="8" fill="rgba(0,0,0,0.25)"/>
+  <!-- tezgah -->
+  <rect x="8" y="30" width="56" height="10" rx="4" fill="#6b7280" stroke="#374151" stroke-width="1.5"/>
+  <!-- havuz dış -->
+  <path d="M14 40 Q14 60 36 62 Q58 60 58 40 Z" fill="#1e3a5f"/>
+  <!-- su -->
+  <ellipse cx="36" cy="40" rx="22" ry="7" fill="#3b82f6" opacity="0.7"/>
+  <ellipse cx="36" cy="40" rx="18" ry="5" fill="#60a5fa" opacity="0.6"/>
+  <!-- su dalgaları -->
+  <path d="M22 40 Q28 38 36 40 Q44 42 50 40" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+  <path d="M26 43 Q32 41 36 43 Q40 45 46 43" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+  <!-- musluk gövde -->
+  <rect x="30" y="14" width="12" height="18" rx="4" fill="#9ca3af" stroke="#6b7280" stroke-width="1"/>
+  <!-- musluk kol -->
+  <rect x="20" y="12" width="32" height="6" rx="3" fill="#d1d5db" stroke="#9ca3af" stroke-width="1"/>
+  <!-- musluk parlama -->
+  <rect x="31" y="15" width="4" height="10" rx="2" fill="rgba(255,255,255,0.3)"/>
+  <!-- su damlası -->
+  <path d="M36 32 Q35 36 36 38 Q37 36 36 32Z" fill="#93c5fd"/>
+  <!-- parlama -->
+  <ellipse cx="22" cy="42" rx="5" ry="2" fill="rgba(255,255,255,0.2)"/>
+</svg>
+<span>Lavabo</span>
+</div>
+
+<!-- TABAK YIĞINI -->
+<div class="card">
+<svg width="72" height="72" viewBox="0 0 72 72">
+  <ellipse cx="38" cy="62" rx="22" ry="7" fill="rgba(0,0,0,0.3)"/>
+  <!-- tabaklar (5 adet, alttan üste) -->
+  <ellipse cx="36" cy="58" rx="22" ry="7" fill="#64748b" stroke="#475569" stroke-width="1"/>
+  <ellipse cx="36" cy="52" rx="22" ry="7" fill="#94a3b8" stroke="#64748b" stroke-width="1"/>
+  <ellipse cx="36" cy="46" rx="22" ry="7" fill="#cbd5e1" stroke="#94a3b8" stroke-width="1"/>
+  <ellipse cx="36" cy="40" rx="22" ry="7" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1"/>
+  <ellipse cx="36" cy="34" rx="22" ry="7" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1"/>
+  <!-- üst tabak detay -->
+  <ellipse cx="36" cy="34" rx="16" ry="5" fill="rgba(255,255,255,0.5)"/>
+  <ellipse cx="36" cy="34" rx="8" ry="2.5" fill="rgba(255,255,255,0.6)"/>
+  <!-- parlama -->
+  <ellipse cx="28" cy="32" rx="5" ry="2" fill="rgba(255,255,255,0.7)"/>
+</svg>
+<span>Tabak Yığını</span>
+</div>
+
+<!-- TEPSİ -->
+<div class="card">
+<svg width="80" height="72" viewBox="0 0 80 72">
+  <defs>
+    <linearGradient id="trayG" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#94a3b8"/>
+      <stop offset="100%" stop-color="#475569"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="42" cy="56" rx="32" ry="10" fill="rgba(0,0,0,0.25)"/>
+  <!-- tepsi gövde (3D) -->
+  <ellipse cx="40" cy="48" rx="32" ry="10" fill="#334155"/>
+  <ellipse cx="40" cy="44" rx="32" ry="10" fill="url(#trayG)" stroke="#334155" stroke-width="1.5"/>
+  <!-- yüzey -->
+  <ellipse cx="40" cy="44" rx="28" ry="8" fill="#b0bec5"/>
+  <ellipse cx="40" cy="44" rx="24" ry="6.5" fill="#cfd8dc"/>
+  <!-- parlama -->
+  <ellipse cx="30" cy="42" rx="10" ry="3.5" fill="rgba(255,255,255,0.3)"/>
+  <!-- tutma yerleri -->
+  <rect x="4" y="42" width="8" height="5" rx="2.5" fill="#334155" stroke="#1e293b" stroke-width="1"/>
+  <rect x="68" y="42" width="8" height="5" rx="2.5" fill="#334155" stroke="#1e293b" stroke-width="1"/>
+  <!-- kenar çizgisi -->
+  <ellipse cx="40" cy="44" rx="32" ry="10" fill="none" stroke="#334155" stroke-width="1.5"/>
+</svg>
+<span>Tepsi</span>
+</div>
+
+<!-- ÇÖP KOVASI -->
+<div class="card">
+<svg width="72" height="80" viewBox="0 0 72 80">
+  <defs>
+    <linearGradient id="trashG" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#4b5563"/>
+      <stop offset="100%" stop-color="#1f2937"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="38" cy="72" rx="22" ry="7" fill="rgba(0,0,0,0.3)"/>
+  <!-- gövde -->
+  <path d="M18 28 L22 66 L50 66 L54 28 Z" fill="url(#trashG)" stroke="#111827" stroke-width="1.5"/>
+  <!-- yatay çizgiler -->
+  <path d="M20 36 L52 36" stroke="#374151" stroke-width="1"/>
+  <path d="M19 44 L53 44" stroke="#374151" stroke-width="1"/>
+  <path d="M18 52 L54 52" stroke="#374151" stroke-width="1"/>
+  <path d="M18 60 L54 60" stroke="#374151" stroke-width="1"/>
+  <!-- kapak -->
+  <rect x="14" y="20" width="44" height="10" rx="4" fill="#374151" stroke="#111827" stroke-width="1.5"/>
+  <rect x="14" y="20" width="44" height="5" rx="4" fill="#4b5563"/>
+  <!-- kol -->
+  <rect x="28" y="10" width="16" height="12" rx="4" fill="#4b5563" stroke="#374151" stroke-width="1"/>
+  <rect x="30" y="11" width="6" height="8" rx="2" fill="rgba(255,255,255,0.1)"/>
+  <!-- çarpı -->
+  <path d="M26 40 L46 60 M46 40 L26 60" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+  <!-- parlama -->
+  <rect x="20" y="30" width="6" height="30" rx="3" fill="rgba(255,255,255,0.05)"/>
+</svg>
+<span>Çöp Kovası</span>
+</div>
+
+<!-- SERVİS PENCERESİ -->
+<div class="card wide" style="width:200px">
+<svg width="180" height="72" viewBox="0 0 180 72">
+  <defs>
+    <linearGradient id="frameG" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#5c3d1e"/>
+      <stop offset="100%" stop-color="#3b2410"/>
+    </linearGradient>
+  </defs>
+  <!-- çerçeve gölge -->
+  <rect x="8" y="12" width="168" height="52" rx="8" fill="rgba(0,0,0,0.3)"/>
+  <!-- çerçeve -->
+  <rect x="6" y="8" width="168" height="52" rx="8" fill="url(#frameG)" stroke="#2a1a08" stroke-width="2"/>
+  <!-- etiket -->
+  <text x="90" y="18" text-anchor="middle" font-size="8" fill="#f0ddb8" font-family="Arial" font-weight="bold">🍽️ SERVİS PENCERESİ</text>
+  <!-- slot 1 (boş) -->
+  <rect x="14" y="22" width="44" height="30" rx="5" fill="#1c1917" stroke="#44403c" stroke-width="1" stroke-dasharray="4,3"/>
+  <!-- slot 2 (dolu) -->
+  <rect x="68" y="22" width="44" height="30" rx="5" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+  <text x="90" y="40" text-anchor="middle" font-size="20" font-family="Arial">🍕</text>
+  <!-- slot 3 (boş) -->
+  <rect x="122" y="22" width="44" height="30" rx="5" fill="#1c1917" stroke="#44403c" stroke-width="1" stroke-dasharray="4,3"/>
+  <!-- parlama -->
+  <rect x="8" y="8" width="80" height="10" rx="4" fill="rgba(255,255,255,0.05)"/>
+</svg>
+<span>Servis Penceresi</span>
+</div>
+
+</div>
+
+<h2>🔪 Doğranmış Malzemeler</h2>
+<div class="grid">
+
+<!-- DOĞRANMIŞ ET -->
+<div class="card">
+<svg width="72" height="72" viewBox="0 0 72 72">
+  <ellipse cx="38" cy="58" rx="26" ry="8" fill="rgba(0,0,0,0.2)"/>
+  <rect x="10" y="24" width="18" height="14" rx="4" fill="#7f1d1d" stroke="#450a0a" stroke-width="1"/>
+  <rect x="10" y="24" width="18" height="9" rx="4" fill="#dc2626"/>
+  <rect x="32" y="20" width="16" height="14" rx="4" fill="#7f1d1d" stroke="#450a0a" stroke-width="1"/>
+  <rect x="32" y="20" width="16" height="9" rx="4" fill="#ef4444"/>
+  <rect x="52" y="24" width="14" height="14" rx="4" fill="#7f1d1d" stroke="#450a0a" stroke-width="1"/>
+  <rect x="52" y="24" width="14" height="9" rx="4" fill="#dc2626"/>
+  <rect x="18" y="40" width="16" height="14" rx="4" fill="#7f1d1d" stroke="#450a0a" stroke-width="1"/>
+  <rect x="18" y="40" width="16" height="9" rx="4" fill="#ef4444"/>
+  <rect x="38" y="38" width="18" height="14" rx="4" fill="#7f1d1d" stroke="#450a0a" stroke-width="1"/>
+  <rect x="38" y="38" width="18" height="9" rx="4" fill="#dc2626"/>
+  <!-- yağ -->
+  <ellipse cx="18" cy="26" rx="4" ry="2" fill="rgba(255,200,180,0.4)"/>
+  <ellipse cx="40" cy="22" rx="3" ry="1.5" fill="rgba(255,200,180,0.4)"/>
+</svg>
+<span>Doğranmış Et</span>
+</div>
+
+<!-- DOĞRANMIŞ SEBZE -->
+<div class="card">
+<svg width="72" height="72" viewBox="0 0 72 72">
+  <ellipse cx="38" cy="58" rx="26" ry="8" fill="rgba(0,0,0,0.2)"/>
+  <ellipse cx="22" cy="30" rx="10" ry="7" fill="#15803d" transform="rotate(-20 22 30)" stroke="#14532d" stroke-width="1"/>
+  <ellipse cx="22" cy="30" rx="7" ry="5" fill="#22c55e" transform="rotate(-20 22 30)"/>
+  <ellipse cx="38" cy="26" rx="11" ry="7" fill="#16a34a" transform="rotate(8 38 26)" stroke="#14532d" stroke-width="1"/>
+  <ellipse cx="38" cy="26" rx="8" ry="5" fill="#4ade80" transform="rotate(8 38 26)"/>
+  <ellipse cx="52" cy="30" rx="9" ry="7" fill="#15803d" transform="rotate(20 52 30)" stroke="#14532d" stroke-width="1"/>
+  <ellipse cx="52" cy="30" rx="6" ry="5" fill="#22c55e" transform="rotate(20 52 30)"/>
+  <ellipse cx="28" cy="44" rx="10" ry="6" fill="#16a34a" transform="rotate(-10 28 44)" stroke="#14532d" stroke-width="1"/>
+  <ellipse cx="28" cy="44" rx="7" ry="4" fill="#4ade80" transform="rotate(-10 28 44)"/>
+  <ellipse cx="46" cy="42" rx="9" ry="6" fill="#15803d" transform="rotate(15 46 42)" stroke="#14532d" stroke-width="1"/>
+  <ellipse cx="46" cy="42" rx="6" ry="4" fill="#22c55e" transform="rotate(15 46 42)"/>
+</svg>
+<span>Doğranmış Sebze</span>
+</div>
+
+<!-- DOĞRANMIŞ KEBAP -->
+<div class="card">
+<svg width="72" height="72" viewBox="0 0 72 72">
+  <ellipse cx="38" cy="58" rx="26" ry="8" fill="rgba(0,0,0,0.2)"/>
+  <!-- et parçaları -->
+  <rect x="10" y="22" width="20" height="14" rx="4" fill="#7f1d1d" stroke="#450a0a" stroke-width="1"/>
+  <rect x="10" y="22" width="20" height="9" rx="4" fill="#dc2626"/>
+  <!-- sebze parçaları -->
+  <rect x="34" y="18" width="16" height="12" rx="4" fill="#14532d" stroke="#052e16" stroke-width="1"/>
+  <rect x="34" y="18" width="16" height="7" rx="4" fill="#22c55e"/>
+  <!-- et parçası 2 -->
+  <rect x="54" y="22" width="14" height="14" rx="4" fill="#7f1d1d" stroke="#450a0a" stroke-width="1"/>
+  <rect x="54" y="22" width="14" height="9" rx="4" fill="#ef4444"/>
+  <!-- sebze 2 -->
+  <rect x="16" y="38" width="16" height="12" rx="4" fill="#14532d" stroke="#052e16" stroke-width="1"/>
+  <rect x="16" y="38" width="16" height="7" rx="4" fill="#16a34a"/>
+  <!-- et 3 -->
+  <rect x="36" y="36" width="18" height="14" rx="4" fill="#7f1d1d" stroke="#450a0a" stroke-width="1"/>
+  <rect x="36" y="36" width="18" height="9" rx="4" fill="#dc2626"/>
+  <!-- parlama -->
+  <ellipse cx="18" cy="24" rx="5" ry="2" fill="rgba(255,150,130,0.35)"/>
+</svg>
+<span>Doğranmış Kebap</span>
+</div>
+
+</div>
+
+<br><br>
+<p style="color:#44403c;font-size:11px;text-align:center;">svg-preview.html — Oyuna eklenmedi. Beğendiklerini söyle.</p>
+</body>
+</html>

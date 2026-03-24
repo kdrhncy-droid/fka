@@ -52,41 +52,78 @@ export function drawCookStation(
     ctx.ellipse(x, y + h / 2 + 5, w * 0.55, 12, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    let frontColor = '#78716c';
-    let topColor = '#a8a29e';
-    let winColor = '#292524';
-    let glowColor = '';
+    let frontColorA = '#4b5563';
+    let frontColorB = '#1f2937';
+    let topColorA   = '#6b7280';
+    let topColorB   = '#374151';
+    let winColor    = '#0f172a';
+    let glowColor   = '';
+    let borderColor = '#111827';
 
     if (station.input) {
-        frontColor = '#ea580c';
-        topColor = '#f97316';
-        winColor = '#fdba74';
-        glowColor = 'rgba(252, 211, 77, 0.4)';
-        updateSmoke(ctx, x, y - 20, 0.1); // Pişerken hafif duman
+        frontColorA = '#c2410c';
+        frontColorB = '#7c2d12';
+        topColorA   = '#f97316';
+        topColorB   = '#ea580c';
+        winColor    = '#431407';
+        glowColor   = 'rgba(251,146,60,0.35)';
+        borderColor = '#7c2d12';
+        updateSmoke(ctx, x, y - 20, 0.1);
     } else if (station.isBurned) {
-        frontColor = '#1c1917';
-        topColor = '#292524';
-        winColor = '#000000';
-        updateSmoke(ctx, x, y - 20, 0.6); // Yandığında yoğun siyah duman
+        frontColorA = '#1c1917';
+        frontColorB = '#0c0a09';
+        topColorA   = '#292524';
+        topColorB   = '#1c1917';
+        winColor    = '#000';
+        borderColor = '#0c0a09';
+        updateSmoke(ctx, x, y - 20, 0.6);
     } else if (station.output) {
-        frontColor = '#16a34a';
-        topColor = '#22c55e';
-        glowColor = 'rgba(134, 239, 172, 0.3)';
+        frontColorA = '#166534';
+        frontColorB = '#14532d';
+        topColorA   = '#22c55e';
+        topColorB   = '#16a34a';
+        glowColor   = 'rgba(74,222,128,0.25)';
+        borderColor = '#14532d';
     }
 
     const topDepth = 22;
     const boxY = y - h / 2 + 10;
 
-    ctx.fillStyle = frontColor;
+    // ── Ön yüz ───────────────────────────────────────────────────────────────
+    const frontGrad = ctx.createLinearGradient(x, boxY, x, boxY + h - 10);
+    frontGrad.addColorStop(0, frontColorA);
+    frontGrad.addColorStop(1, frontColorB);
+    ctx.fillStyle = frontGrad;
     ctx.beginPath();
     ctx.roundRect(x - w / 2, boxY, w, h - 10, 8);
     ctx.fill();
-
-    ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+    ctx.strokeStyle = borderColor;
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    ctx.fillStyle = topColor;
+    // kontrol düğmeleri (üst panel)
+    const btnY = boxY + 6;
+    [x - 18, x, x + 18].forEach((bx, i) => {
+        const colors = ['#ef4444', '#374151', '#374151'];
+        const inner  = ['#fca5a5', '#6b7280', '#6b7280'];
+        ctx.fillStyle = colors[i];
+        ctx.strokeStyle = borderColor;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(bx, btnY, 4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillStyle = inner[i];
+        ctx.beginPath();
+        ctx.arc(bx, btnY, 2, 0, Math.PI * 2);
+        ctx.fill();
+    });
+
+    // ── Üst yüz (trapez) ─────────────────────────────────────────────────────
+    const topGrad = ctx.createLinearGradient(x, boxY - topDepth, x, boxY);
+    topGrad.addColorStop(0, topColorA);
+    topGrad.addColorStop(1, topColorB);
+    ctx.fillStyle = topGrad;
     ctx.beginPath();
     ctx.moveTo(x - w / 2, boxY);
     ctx.lineTo(x - w / 2 + 12, boxY - topDepth);
@@ -94,16 +131,32 @@ export function drawCookStation(
     ctx.lineTo(x + w / 2, boxY);
     ctx.closePath();
     ctx.fill();
+    ctx.strokeStyle = borderColor;
+    ctx.lineWidth = 1.5;
     ctx.stroke();
 
+    // üst yüz parlama
+    ctx.fillStyle = 'rgba(255,255,255,0.15)';
+    ctx.beginPath();
+    ctx.moveTo(x - w / 2 + 12, boxY - topDepth);
+    ctx.lineTo(x - w / 2 + 30, boxY - topDepth);
+    ctx.lineTo(x - w / 2 + 18, boxY - topDepth * 0.5);
+    ctx.lineTo(x - w / 2 + 1, boxY - topDepth * 0.5);
+    ctx.closePath();
+    ctx.fill();
+
+    // ── Cam kapı ─────────────────────────────────────────────────────────────
     const winW = w * 0.65;
     const winH = (h - 10) * 0.45;
-    const winY = boxY + 12;
+    const winY = boxY + 14;
 
     ctx.fillStyle = winColor;
     ctx.beginPath();
     ctx.roundRect(x - winW / 2, winY, winW, winH, 4);
     ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
 
     if (glowColor) {
         ctx.fillStyle = glowColor;
@@ -112,14 +165,28 @@ export function drawCookStation(
         ctx.fill();
     }
 
-    // Cam parlaması
-    ctx.fillStyle = 'rgba(255,255,255,0.12)';
+    // cam sol parlama
+    ctx.fillStyle = 'rgba(255,255,255,0.10)';
     ctx.beginPath();
     ctx.moveTo(x - winW / 2, winY);
-    ctx.lineTo(x + winW / 2 - 10, winY);
-    ctx.lineTo(x + winW / 2 - 25, winY + winH);
+    ctx.lineTo(x + winW / 2 - 12, winY);
+    ctx.lineTo(x + winW / 2 - 26, winY + winH);
     ctx.lineTo(x - winW / 2, winY + winH);
     ctx.closePath();
+    ctx.fill();
+
+    // ── Kol ──────────────────────────────────────────────────────────────────
+    const kolY = boxY + h - 14;
+    ctx.fillStyle = '#4b5563';
+    ctx.strokeStyle = '#374151';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.roundRect(x - 16, kolY, 32, 5, 2.5);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = '#6b7280';
+    ctx.beginPath();
+    ctx.arc(x, kolY + 2.5, 4, 0, Math.PI * 2);
     ctx.fill();
 
     const contentY = boxY - topDepth / 2;

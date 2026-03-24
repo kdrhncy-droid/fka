@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>Dükkan Taslağı</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0f0e0d; font-family: 'Segoe UI', Arial, sans-serif; color: #e7e5e4; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; gap: 32px; }
+  h1 { color: #fbbf24; font-size: 20px; }
+  .subtitle { color: #78716c; font-size: 12px; }
+  .scene { background: #1c1917; border: 1px solid #292524; border-radius: 16px; padding: 24px; }
+  h2 { color: #a78bfa; font-size: 11px; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 16px; }
+</style>
+</head>
+<body>
+<h1>🏪 Dükkan Taslağı</h1>
+<p class="subtitle">Önizleme — oyuna eklenmedi</p>
+
+<div class="scene">
+<h2>Dış Cephe — Gündüz</h2>
+<svg width="600" height="420" viewBox="0 0 600 420">
+  <defs>
+    <!-- Gökyüzü -->
+    <linearGradient id="sky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#bfdbfe"/>
+      <stop offset="100%" stop-color="#e0f2fe"/>
+    </linearGradient>
+    <!-- Zemin -->
+    <linearGradient id="ground" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#a8a29e"/>
+      <stop offset="100%" stop-color="#78716c"/>
+    </linearGradient>
+    <!-- Bina duvarı -->
+    <linearGradient id="wall" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fef3c7"/>
+      <stop offset="100%" stop-color="#fde68a"/>
+    </linearGradient>
+    <!-- Çatı -->
+    <linearGradient id="roof" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#dc2626"/>
+      <stop offset="100%" stop-color="#7f1d1d"/>
+    </linearGradient>
+    <!-- Tente -->
+    <linearGradient id="awning" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#dc2626"/>
+      <stop offset="100%" stop-color="#b91c1c"/>
+    </linearGradient>
+    <!-- Cam -->
+    <linearGradient id="glass" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#bfdbfe" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#93c5fd" stop-opacity="0.6"/>
+    </linearGradient>
+    <!-- Kapı -->
+    <linearGradient id="door" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#5c3d1e"/>
+      <stop offset="100%" stop-color="#3a2008"/>
+    </linearGradient>
+  </defs>
+
+  <!-- ── ARKA PLAN ── -->
+  <rect width="600" height="420" fill="url(#sky)"/>
+  <!-- Bulutlar -->
+  <ellipse cx="80" cy="60" rx="40" ry="20" fill="white" opacity="0.8"/>
+  <ellipse cx="110" cy="50" rx="30" ry="18" fill="white" opacity="0.8"/>
+  <ellipse cx="55" cy="55" rx="25" ry="15" fill="white" opacity="0.8"/>
+  <ellipse cx="460" cy="80" rx="50" ry="22" fill="white" opacity="0.7"/>
+  <ellipse cx="500" cy="70" rx="35" ry="18" fill="white" opacity="0.7"/>
+  <ellipse cx="430" cy="75" rx="28" ry="16" fill="white" opacity="0.7"/>
+
+  <!-- ── ZEMIN ── -->
+  <rect x="0" y="320" width="600" height="100" fill="url(#ground)"/>
+  <!-- kaldırım taşları -->
+  <rect x="0" y="320" width="600" height="8" fill="#d6d3d1"/>
+  <line x1="0" y1="328" x2="600" y2="328" stroke="#a8a29e" stroke-width="1"/>
+  <!-- kaldırım çizgileri -->
+  <line x1="60" y1="320" x2="60" y2="420" stroke="#a8a29e" stroke-width="0.5" opacity="0.5"/>
+  <line x1="120" y1="320" x2="120" y2="420" stroke="#a8a29e" stroke-width="0.5" opacity="0.5"/>
+  <line x1="180" y1="320" x2="180" y2="420" stroke="#a8a29e" stroke-width="0.5" opacity="0.5"/>
+  <line x1="240" y1="320" x2="240" y2="420" stroke="#a8a29e" stroke-width="0.5" opacity="0.5"/>
+  <line x1="300" y1="320" x2="300" y2="420" stroke="#a8a29e" stroke-width="0.5" opacity="0.5"/>
+  <line x1="360" y1="320" x2="360" y2="420" stroke="#a8a29e" stroke-width="0.5" opacity="0.5"/>
+  <line x1="420" y1="320" x2="420" y2="420" stroke="#a8a29e" stroke-width="0.5" opacity="0.5"/>
+  <line x1="480" y1="320" x2="480" y2="420" stroke="#a8a29e" stroke-width="0.5" opacity="0.5"/>
+  <line x1="540" y1="320" x2="540" y2="420" stroke="#a8a29e" stroke-width="0.5" opacity="0.5"/>
+
+  <!-- ── BİNA GÖVDE ── -->
+  <!-- Yan binalar (arka) -->
+  <rect x="0" y="120" width="120" height="200" fill="#e5e7eb" stroke="#d1d5db" stroke-width="1"/>
+  <rect x="480" y="100" width="120" height="220" fill="#e5e7eb" stroke="#d1d5db" stroke-width="1"/>
+  <!-- Yan bina pencereleri -->
+  <rect x="20" y="140" width="30" height="25" rx="3" fill="url(#glass)" stroke="#93c5fd" stroke-width="1"/>
+  <rect x="65" y="140" width="30" height="25" rx="3" fill="url(#glass)" stroke="#93c5fd" stroke-width="1"/>
+  <rect x="20" y="185" width="30" height="25" rx="3" fill="url(#glass)" stroke="#93c5fd" stroke-width="1"/>
+  <rect x="65" y="185" width="30" height="25" rx="3" fill="url(#glass)" stroke="#93c5fd" stroke-width="1"/>
+  <rect x="500" y="130" width="30" height="25" rx="3" fill="url(#glass)" stroke="#93c5fd" stroke-width="1"/>
+  <rect x="548" y="130" width="30" height="25" rx="3" fill="url(#glass)" stroke="#93c5fd" stroke-width="1"/>
+  <rect x="500" y="175" width="30" height="25" rx="3" fill="url(#glass)" stroke="#93c5fd" stroke-width="1"/>
+  <rect x="548" y="175" width="30" height="25" rx="3" fill="url(#glass)" stroke="#93c5fd" stroke-width="1"/>
+
+  <!-- Ana bina -->
+  <rect x="100" y="80" width="400" height="240" fill="url(#wall)" stroke="#d97706" stroke-width="2"/>
+
+  <!-- ── ÇATI ── -->
+  <path d="M90 80 L300 20 L510 80 Z" fill="url(#roof)" stroke="#7f1d1d" stroke-width="2"/>
+  <!-- çatı kiremit çizgileri -->
+  <path d="M150 70 L300 24 L450 70" fill="none" stroke="rgba(127,29,29,0.4)" stroke-width="1"/>
+  <path d="M180 75 L300 28 L420 75" fill="none" stroke="rgba(127,29,29,0.4)" stroke-width="1"/>
+  <path d="M210 78 L300 32 L390 78" fill="none" stroke="rgba(127,29,29,0.4)" stroke-width="1"/>
+  <!-- çatı tepesi süsü -->
+  <circle cx="300" cy="18" r="8" fill="#fbbf24" stroke="#d97706" stroke-width="2"/>
+  <text x="300" y="22" text-anchor="middle" font-size="10" fill="#7f1d1d">★</text>
+
+  <!-- ── TENTE ── -->
+  <path d="M100 160 L500 160 L520 200 L80 200 Z" fill="url(#awning)"/>
+  <!-- tente çizgileri -->
+  <line x1="140" y1="160" x2="120" y2="200" stroke="white" stroke-width="1.5" opacity="0.3"/>
+  <line x1="180" y1="160" x2="160" y2="200" stroke="white" stroke-width="1.5" opacity="0.3"/>
+  <line x1="220" y1="160" x2="200" y2="200" stroke="white" stroke-width="1.5" opacity="0.3"/>
+  <line x1="260" y1="160" x2="240" y2="200" stroke="white" stroke-width="1.5" opacity="0.3"/>
+  <line x1="300" y1="160" x2="280" y2="200" stroke="white" stroke-width="1.5" opacity="0.3"/>
+  <line x1="340" y1="160" x2="320" y2="200" stroke="white" stroke-width="1.5" opacity="0.3"/>
+  <line x1="380" y1="160" x2="360" y2="200" stroke="white" stroke-width="1.5" opacity="0.3"/>
+  <line x1="420" y1="160" x2="400" y2="200" stroke="white" stroke-width="1.5" opacity="0.3"/>
+  <line x1="460" y1="160" x2="440" y2="200" stroke="white" stroke-width="1.5" opacity="0.3"/>
+  <!-- tente kenar çizgisi -->
+  <path d="M100 160 L500 160 L520 200 L80 200 Z" fill="none" stroke="#7f1d1d" stroke-width="1.5"/>
+  <!-- tente sarkıtları -->
+  <path d="M80 200 Q90 210 100 200 Q110 210 120 200 Q130 210 140 200 Q150 210 160 200 Q170 210 180 200 Q190 210 200 200 Q210 210 220 200 Q230 210 240 200 Q250 210 260 200 Q270 210 280 200 Q290 210 300 200 Q310 210 320 200 Q330 210 340 200 Q350 210 360 200 Q370 210 380 200 Q390 210 400 200 Q410 210 420 200 Q430 210 440 200 Q450 210 460 200 Q470 210 480 200 Q490 210 500 200 Q510 210 520 200" fill="none" stroke="#7f1d1d" stroke-width="2"/>
+
+  <!-- ── TABELASI ── -->
+  <rect x="160" y="90" width="280" height="50" rx="8" fill="#1c1917" stroke="#d97706" stroke-width="2.5"/>
+  <rect x="162" y="92" width="276" height="46" rx="7" fill="#292524"/>
+  <!-- tabela ışık efekti -->
+  <rect x="164" y="94" width="140" height="10" rx="3" fill="rgba(251,191,36,0.08)"/>
+  <text x="300" y="122" text-anchor="middle" font-size="22" font-family="Arial" font-weight="bold" fill="#fbbf24">🏪 TerraMarket</text>
+
+  <!-- ── VITRIN CAMLARI ── -->
+  <!-- Sol vitrin -->
+  <rect x="115" y="210" width="130" height="100" rx="4" fill="url(#glass)" stroke="#93c5fd" stroke-width="1.5"/>
+  <rect x="117" y="212" width="60" height="40" rx="2" fill="rgba(255,255,255,0.15)"/>
+  <!-- vitrin içi (yemek görseli) -->
+  <text x="180" y="268" text-anchor="middle" font-size="32">🍕</text>
+  <text x="155" y="295" text-anchor="middle" font-size="11" fill="#1e3a5f" font-family="Arial" font-weight="bold">Pizza</text>
+  <text x="205" y="295" text-anchor="middle" font-size="11" fill="#1e3a5f" font-family="Arial" font-weight="bold">$12</text>
+
+  <!-- Sağ vitrin -->
+  <rect x="355" y="210" width="130" height="100" rx="4" fill="url(#glass)" stroke="#93c5fd" stroke-width="1.5"/>
+  <rect x="357" y="212" width="60" height="40" rx="2" fill="rgba(255,255,255,0.15)"/>
+  <text x="420" y="268" text-anchor="middle" font-size="32">🍔</text>
+  <text x="395" y="295" text-anchor="middle" font-size="11" fill="#1e3a5f" font-family="Arial" font-weight="bold">Burger</text>
+  <text x="445" y="295" text-anchor="middle" font-size="11" fill="#1e3a5f" font-family="Arial" font-weight="bold">$10</text>
+
+  <!-- ── KAPI ── -->
+  <rect x="248" y="220" width="104" height="100" rx="4" fill="url(#door)" stroke="#2a1505" stroke-width="2"/>
+  <!-- kapı çerçeve -->
+  <rect x="250" y="222" width="100" height="96" rx="3" fill="none" stroke="#5c3d1e" stroke-width="2"/>
+  <!-- kapı cam -->
+  <rect x="258" y="228" width="38" height="50" rx="3" fill="url(#glass)" stroke="#93c5fd" stroke-width="1"/>
+  <rect x="304" y="228" width="38" height="50" rx="3" fill="url(#glass)" stroke="#93c5fd" stroke-width="1"/>
+  <!-- kapı kolu -->
+  <circle cx="296" cy="278" r="4" fill="#d97706" stroke="#92400e" stroke-width="1"/>
+  <circle cx="304" cy="278" r="4" fill="#d97706" stroke="#92400e" stroke-width="1"/>
+  <!-- kapı üstü yay -->
+  <path d="M248 220 Q300 200 352 220" fill="none" stroke="#d97706" stroke-width="2"/>
+  <!-- kapı üstü cam -->
+  <path d="M252 220 Q300 204 348 220 L348 222 Q300 206 252 222 Z" fill="url(#glass)" opacity="0.6"/>
+
+  <!-- ── DEKORLAR ── -->
+  <!-- Sol saksı -->
+  <rect x="108" y="296" width="24" height="24" rx="4" fill="#b45309" stroke="#92400e" stroke-width="1"/>
+  <rect x="110" y="298" width="8" height="14" rx="2" fill="rgba(255,255,255,0.15)"/>
+  <ellipse cx="120" cy="290" rx="14" ry="10" fill="#16a34a"/>
+  <ellipse cx="114" cy="286" rx="8" ry="6" fill="#22c55e"/>
+  <ellipse cx="126" cy="287" rx="7" ry="5" fill="#15803d"/>
+  <!-- Sağ saksı -->
+  <rect x="468" y="296" width="24" height="24" rx="4" fill="#b45309" stroke="#92400e" stroke-width="1"/>
+  <rect x="470" y="298" width="8" height="14" rx="2" fill="rgba(255,255,255,0.15)"/>
+  <ellipse cx="480" cy="290" rx="14" ry="10" fill="#16a34a"/>
+  <ellipse cx="474" cy="286" rx="8" ry="6" fill="#22c55e"/>
+  <ellipse cx="486" cy="287" rx="7" ry="5" fill="#15803d"/>
+
+  <!-- Açık tabelası -->
+  <rect x="352" y="148" width="50" height="24" rx="5" fill="#22c55e" stroke="#15803d" stroke-width="1.5"/>
+  <text x="377" y="164" text-anchor="middle" font-size="11" font-family="Arial" font-weight="bold" fill="white">AÇIK</text>
+
+  <!-- Menü tahtası -->
+  <rect x="108" y="148" width="50" height="50" rx="4" fill="#292524" stroke="#44403c" stroke-width="1.5"/>
+  <text x="133" y="163" text-anchor="middle" font-size="8" fill="#fbbf24" font-family="Arial" font-weight="bold">MENÜ</text>
+  <text x="133" y="176" text-anchor="middle" font-size="9" fill="#e7e5e4" font-family="Arial">🍕 $12</text>
+  <text x="133" y="188" text-anchor="middle" font-size="9" fill="#e7e5e4" font-family="Arial">🍔 $10</text>
+
+  <!-- Güneş ışığı efekti -->
+  <ellipse cx="300" cy="320" rx="200" ry="15" fill="rgba(251,191,36,0.08)"/>
+</svg>
+</div>
+
+<div class="scene">
+<h2>Dış Cephe — Gece</h2>
+<svg width="600" height="420" viewBox="0 0 600 420">
+  <defs>
+    <linearGradient id="nightSky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e1b4b"/>
+    </linearGradient>
+    <linearGradient id="nightWall" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#d4b896"/>
+      <stop offset="100%" stop-color="#b8956a"/>
+    </linearGradient>
+    <radialGradient id="lampGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#fbbf24" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="signGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#fbbf24" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Gece gökyüzü -->
+  <rect width="600" height="420" fill="url(#nightSky)"/>
+  <!-- Yıldızlar -->
+  <circle cx="50" cy="30" r="1.5" fill="white" opacity="0.8"/>
+  <circle cx="120" cy="50" r="1" fill="white" opacity="0.6"/>
+  <circle cx="200" cy="20" r="1.5" fill="white" opacity="0.9"/>
+  <circle cx="320" cy="40" r="1" fill="white" opacity="0.7"/>
+  <circle cx="420" cy="25" r="1.5" fill="white" opacity="0.8"/>
+  <circle cx="500" cy="45" r="1" fill="white" opacity="0.6"/>
+  <circle cx="560" cy="15" r="1.5" fill="white" opacity="0.9"/>
+  <circle cx="80" cy="70" r="1" fill="white" opacity="0.5"/>
+  <circle cx="450" cy="60" r="1" fill="white" opacity="0.7"/>
+  <!-- Ay -->
+  <circle cx="520" cy="50" r="28" fill="#fef3c7" opacity="0.9"/>
+  <circle cx="534" cy="44" r="22" fill="#1e1b4b" opacity="0.9"/>
+
+  <!-- Zemin -->
+  <rect x="0" y="320" width="600" height="100" fill="#1c1917"/>
+  <rect x="0" y="320" width="600" height="6" fill="#292524"/>
+
+  <!-- Yan binalar -->
+  <rect x="0" y="120" width="120" height="200" fill="#1e293b" stroke="#0f172a" stroke-width="1"/>
+  <rect x="480" y="100" width="120" height="220" fill="#1e293b" stroke="#0f172a" stroke-width="1"/>
+  <!-- Yan bina ışıklı pencereleri -->
+  <rect x="20" y="140" width="30" height="25" rx="3" fill="#fef3c7" opacity="0.8"/>
+  <rect x="65" y="140" width="30" height="25" rx="3" fill="#fef3c7" opacity="0.4"/>
+  <rect x="20" y="185" width="30" height="25" rx="3" fill="#fef3c7" opacity="0.6"/>
+  <rect x="65" y="185" width="30" height="25" rx="3" fill="#fef3c7" opacity="0.9"/>
+  <rect x="500" y="130" width="30" height="25" rx="3" fill="#fef3c7" opacity="0.7"/>
+  <rect x="548" y="130" width="30" height="25" rx="3" fill="#fef3c7" opacity="0.3"/>
+  <rect x="500" y="175" width="30" height="25" rx="3" fill="#fef3c7" opacity="0.9"/>
+  <rect x="548" y="175" width="30" height="25" rx="3" fill="#fef3c7" opacity="0.5"/>
+
+  <!-- Ana bina -->
+  <rect x="100" y="80" width="400" height="240" fill="url(#nightWall)" stroke="#92400e" stroke-width="2"/>
+
+  <!-- Çatı -->
+  <path d="M90 80 L300 20 L510 80 Z" fill="#7f1d1d" stroke="#450a0a" stroke-width="2"/>
+  <circle cx="300" cy="18" r="8" fill="#fbbf24" stroke="#d97706" stroke-width="2"/>
+  <text x="300" y="22" text-anchor="middle" font-size="10" fill="#7f1d1d">★</text>
+
+  <!-- Tente (gece) -->
+  <path d="M100 160 L500 160 L520 200 L80 200 Z" fill="#7f1d1d"/>
+  <path d="M80 200 Q90 210 100 200 Q110 210 120 200 Q130 210 140 200 Q150 210 160 200 Q170 210 180 200 Q190 210 200 200 Q210 210 220 200 Q230 210 240 200 Q250 210 260 200 Q270 210 280 200 Q290 210 300 200 Q310 210 320 200 Q330 210 340 200 Q350 210 360 200 Q370 210 380 200 Q390 210 400 200 Q410 210 420 200 Q430 210 440 200 Q450 210 460 200 Q470 210 480 200 Q490 210 500 200 Q510 210 520 200" fill="none" stroke="#450a0a" stroke-width="2"/>
+
+  <!-- Tabela (parlıyor) -->
+  <ellipse cx="300" cy="115" rx="160" ry="40" fill="url(#signGlow)"/>
+  <rect x="160" y="90" width="280" height="50" rx="8" fill="#1c1917" stroke="#fbbf24" stroke-width="2.5"/>
+  <rect x="162" y="92" width="276" height="46" rx="7" fill="#0f0e0d"/>
+  <text x="300" y="122" text-anchor="middle" font-size="22" font-family="Arial" font-weight="bold" fill="#fbbf24">🏪 TerraMarket</text>
+
+  <!-- Vitrin camları (içeriden ışık) -->
+  <rect x="115" y="210" width="130" height="100" rx="4" fill="#fef3c7" opacity="0.15" stroke="#fbbf24" stroke-width="1"/>
+  <rect x="355" y="210" width="130" height="100" rx="4" fill="#fef3c7" opacity="0.15" stroke="#fbbf24" stroke-width="1"/>
+  <!-- vitrin ışık yayılımı -->
+  <ellipse cx="180" cy="320" rx="70" ry="20" fill="#fef3c7" opacity="0.08"/>
+  <ellipse cx="420" cy="320" rx="70" ry="20" fill="#fef3c7" opacity="0.08"/>
+
+  <!-- Kapı -->
+  <rect x="248" y="220" width="104" height="100" rx="4" fill="#1c1917" stroke="#5c3d1e" stroke-width="2"/>
+  <rect x="258" y="228" width="38" height="50" rx="3" fill="#fef3c7" opacity="0.1" stroke="#fbbf24" stroke-width="0.5"/>
+  <rect x="304" y="228" width="38" height="50" rx="3" fill="#fef3c7" opacity="0.1" stroke="#fbbf24" stroke-width="0.5"/>
+  <circle cx="296" cy="278" r="4" fill="#d97706"/>
+  <circle cx="304" cy="278" r="4" fill="#d97706"/>
+  <!-- kapı ışık yayılımı -->
+  <ellipse cx="300" cy="320" rx="60" ry="15" fill="#fef3c7" opacity="0.06"/>
+
+  <!-- Sokak lambaları -->
+  <!-- Sol lamba -->
+  <rect x="88" y="200" width="6" height="120" rx="3" fill="#374151"/>
+  <path d="M91 200 Q91 185 106 185 L120 185" fill="none" stroke="#374151" stroke-width="5" stroke-linecap="round"/>
+  <ellipse cx="120" cy="185" rx="12" ry="8" fill="url(#lampGlow)"/>
+  <ellipse cx="120" cy="185" rx="6" ry="4" fill="#fef3c7" opacity="0.9"/>
+  <!-- lamba ışık konisi -->
+  <path d="M108 185 L90 240 L150 240 L132 185 Z" fill="#fef3c7" opacity="0.04"/>
+  <!-- Sağ lamba -->
+  <rect x="506" y="200" width="6" height="120" rx="3" fill="#374151"/>
+  <path d="M509 200 Q509 185 494 185 L480 185" fill="none" stroke="#374151" stroke-width="5" stroke-linecap="round"/>
+  <ellipse cx="480" cy="185" rx="12" ry="8" fill="url(#lampGlow)"/>
+  <ellipse cx="480" cy="185" rx="6" ry="4" fill="#fef3c7" opacity="0.9"/>
+  <path d="M468 185 L450 240 L510 240 L492 185 Z" fill="#fef3c7" opacity="0.04"/>
+
+  <!-- Kapalı tabelası -->
+  <rect x="352" y="148" width="50" height="24" rx="5" fill="#7f1d1d" stroke="#450a0a" stroke-width="1.5"/>
+  <text x="377" y="164" text-anchor="middle" font-size="11" font-family="Arial" font-weight="bold" fill="#fca5a5">KAPALI</text>
+
+  <!-- Saksılar (gece) -->
+  <rect x="108" y="296" width="24" height="24" rx="4" fill="#78350f"/>
+  <ellipse cx="120" cy="290" rx="14" ry="10" fill="#14532d"/>
+  <rect x="468" y="296" width="24" height="24" rx="4" fill="#78350f"/>
+  <ellipse cx="480" cy="290" rx="14" ry="10" fill="#14532d"/>
+</svg>
+</div>
+
+<br>
+<p style="color:#44403c;font-size:11px;">shop-preview.html — Oyuna eklenmedi. Beğendiklerini söyle.</p>
+</body>
+</html>
