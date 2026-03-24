@@ -242,6 +242,9 @@ export const GameScreen: React.FC<Props> = ({
                     <button onClick={() => setShowSettings(true)}
                         className="w-8 h-8 bg-stone-700 hover:bg-stone-600 text-stone-300 rounded-lg flex items-center justify-center text-sm"
                     >⚙️</button>
+                    {dayPhase === 'night' && dayEndSummary && (
+                        <DayEndModal summary={dayEndSummary} onClose={onClearDayEnd} />
+                    )}
                 </div>
             </div>
 
@@ -326,8 +329,8 @@ export const GameScreen: React.FC<Props> = ({
                     </div>
                 )}
 
-                {/* Gece: Upgrade Shop (menü seçimi yoksa veya bittiyse, gün sonu özeti kapandıktan sonra) */}
-                {dayPhase === 'night' && !isGameOver && (!menuChoices || menuChoices.length === 0) && !dayEndSummary && (
+                {/* Gece: Upgrade Shop (menü seçimi yoksa veya bittiyse) */}
+                {dayPhase === 'night' && !isGameOver && (!menuChoices || menuChoices.length === 0) && (
                     <UpgradeShop
                         score={score} upgrades={upgrades} day={day}
                         lives={lives}
@@ -430,11 +433,6 @@ export const GameScreen: React.FC<Props> = ({
 
                 {/* Chat */}
                 <ChatPanel socket={socket} myId={myId} messages={chatMessages} />
-
-                {/* Gün Sonu Özeti */}
-                {dayEndSummary && (
-                    <DayEndModal summary={dayEndSummary} onClose={onClearDayEnd} />
-                )}
 
             </div>
 
