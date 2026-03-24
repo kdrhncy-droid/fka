@@ -326,8 +326,8 @@ export const GameScreen: React.FC<Props> = ({
                     </div>
                 )}
 
-                {/* Gece: Upgrade Shop (menü seçimi yoksa veya bittiyse) */}
-                {dayPhase === 'night' && !isGameOver && (!menuChoices || menuChoices.length === 0) && (
+                {/* Gece: Upgrade Shop (menü seçimi yoksa veya bittiyse, gün sonu özeti kapandıktan sonra) */}
+                {dayPhase === 'night' && !isGameOver && (!menuChoices || menuChoices.length === 0) && !dayEndSummary && (
                     <UpgradeShop
                         score={score} upgrades={upgrades} day={day}
                         lives={lives}

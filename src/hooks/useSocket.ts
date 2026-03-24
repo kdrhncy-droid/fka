@@ -211,7 +211,7 @@ export function useSocket(
         });
 
         newSocket.on('dayEnd', (summary: DayEndSummary) => {
-            setDayEndSummary(summary);
+            setDayEndSummary(prev => prev ?? summary); // zaten varsa ezme
         });
 
         // ─── Visibility API: Arka planda/Ön planda Algılama ───────────────

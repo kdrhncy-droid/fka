@@ -170,16 +170,17 @@ export function gameTick(gs: GameState, io: Server, rid: string) {
         if (player.holding === '__dirty_plate__') player.holding = null;
       });
 
-      // Gün sonu özet event'i
+      // Gün sonu özet event'i — dayPhase'i hemen değiştir, tekrar tetiklenmesin
+      gs.dayPhase = 'night';
+      gs.dayTimer = NIGHT_TICKS;
+      gs.hasOrderedTonight = false;
+
       io.to(rid).emit("dayEnd", {
         day: gs.day,
         score: gs.score,
         lives: gs.lives,
       });
 
-      gs.dayPhase = 'night';
-      gs.dayTimer = NIGHT_TICKS;
-      gs.hasOrderedTonight = false;
       // Sadece belirli günlerde yemek seçim ekranı çıkar
       if (MENU_UNLOCK_DAYS.includes(gs.day + 1)) {
         generateMenuChoices(gs);
