@@ -11,6 +11,14 @@ interface UseSocketReturn {
     audioCtxRef: React.MutableRefObject<AudioContext | null>;
     connectionStatus: 'connected' | 'disconnected' | 'reconnecting';
     ping: number;
+    chatMessages: ChatMessage[];
+}
+
+export interface ChatMessage {
+    id: string;
+    name: string;
+    text: string;
+    ts: number;
 }
 
 const DEFAULT_STATE: GameState = {
@@ -59,6 +67,7 @@ export function useSocket(
     const [myId, setMyId] = useState('');
     const [connectionStatus, setConnectionStatus] = useState<'connected' | 'disconnected' | 'reconnecting'>('disconnected');
     const [ping, setPing] = useState<number>(0);
+    const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
     const gameStateRef = useRef<GameState>(DEFAULT_STATE);
     const audioCtxRef = useRef<AudioContext | null>(null);
     const roomIdRef = useRef<string>('');
@@ -188,6 +197,10 @@ export function useSocket(
             playSound(audioCtxRef, type);
         });
 
+        newSocket.on('chatMessage', (msg: ChatMessage) => {
+            setChatMessages(prev => [...prev.slice(-49), msg]);
+        });
+
         // ─── Visibility API: Arka planda/Ön planda Algılama ───────────────
         const handleVisibilityChange = () => {
             if (document.hidden) {
@@ -229,5 +242,5 @@ export function useSocket(
         }
     }, [socket]);
 
-    return { socket, isConnected, myId, gameStateRef, audioCtxRef, connectionStatus, ping };
+    return { socket, isConnected, myId, gameStateRef, audioCtxRef, connectionStatus, ping, chatMessages };
 }

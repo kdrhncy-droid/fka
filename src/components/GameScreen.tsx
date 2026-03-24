@@ -15,6 +15,7 @@ import { useVoiceChat } from '../hooks/useVoiceChat';
 import { useGameState } from '../hooks/useGameState';
 import { useLayoutEditor } from '../hooks/useLayoutEditor';
 import { playSound } from '../utils/audio';
+import { ChatPanel } from './ChatPanel';
 
 const MUSIC_URL = 'https://cdn.jsdelivr.net/gh/effacestudios/Royalty-Free-Music-Pack@main/Light%20Hearted%20-%20Jeremy%20Blake.mp3';
 
@@ -51,12 +52,14 @@ interface Props {
     onLeaveGame?: () => void;
     interactOverrideRef?: React.MutableRefObject<(() => void) | null>;
     ping?: number;
+    onOpenStats?: () => void;
+    chatMessages: import('../hooks/useSocket').ChatMessage[];
 }
 
 export const GameScreen: React.FC<Props> = ({
     canvasRef, isJoined, myId, socket,
     gameStateRef, localPlayerRef, keysRef, audioCtxRef, settings, updateSettings, roomId, onLeaveGame,
-    interactOverrideRef, ping = 0
+    interactOverrideRef, ping = 0, onOpenStats, chatMessages
 }) => {
     const joystickVectorRef = useRef({ x: 0, y: 0 });
     const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -421,6 +424,9 @@ export const GameScreen: React.FC<Props> = ({
                     </div>
                 </div>
                 )}
+
+                {/* Chat */}
+                <ChatPanel socket={socket} myId={myId} messages={chatMessages} />
 
             </div>
 

@@ -377,6 +377,15 @@ io.on("connection", (socket) => {
     io.to(roomId).emit("peerMap", RoomManager.getPeerMap(roomId));
   });
 
+  // ─── Chat ────────────────────────────────────────────────────────────────
+  socket.on("chatMessage", (text: string) => {
+    if (!roomId) return;
+    const gs = RoomManager.getRoomState(roomId);
+    const playerName = gs?.players[socket.id]?.name ?? 'Oyuncu';
+    const msg = { id: socket.id, name: playerName, text: String(text).slice(0, 120), ts: Date.now() };
+    io.to(roomId).emit("chatMessage", msg);
+  });
+
   socket.on("ping_check", (t0: number) => {
     socket.emit("pong_check", t0);
   });
