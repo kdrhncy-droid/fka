@@ -51,12 +51,13 @@ interface Props {
     onLeaveGame?: () => void;
     interactOverrideRef?: React.MutableRefObject<(() => void) | null>;
     ping?: number;
+    onOpenStats?: () => void;
 }
 
 export const GameScreen: React.FC<Props> = ({
     canvasRef, isJoined, myId, socket,
     gameStateRef, localPlayerRef, keysRef, audioCtxRef, settings, updateSettings, roomId, onLeaveGame,
-    interactOverrideRef, ping = 0
+    interactOverrideRef, ping = 0, onOpenStats
 }) => {
     const joystickVectorRef = useRef({ x: 0, y: 0 });
     const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -465,6 +466,7 @@ export const GameScreen: React.FC<Props> = ({
             {showSettings && (
                 <SettingsPanel settings={settings} onUpdate={updateSettings} onClose={() => setShowSettings(false)} onLeaveGame={onLeaveGame} isJoined={isJoined}
                     onOpenHudEditor={() => { setShowSettings(false); setShowHudEditor(true); }}
+                    onOpenStats={() => { setShowSettings(false); onOpenStats?.(); }}
                 />
             )}
 
