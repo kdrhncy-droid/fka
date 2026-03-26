@@ -11,10 +11,10 @@ export const PatchNotesModal: React.FC<Props> = ({ onClose }) => {
             {/* Header */}
             <div className="bg-stone-800/50 p-6 flex justify-between items-center border-b border-stone-700/50">
                 <div>
-                    <h2 className="text-3xl font-black text-amber-400 tracking-tight">Yama Notları 📜</h2>
+                    <h2 className="text-3xl font-black text-amber-400 tracking-tight">Oyun Rehberi & Yenilikler 📜</h2>
                     <div className="flex items-center gap-2 mt-1">
-                        <span className="bg-amber-400/10 text-amber-400 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest border border-amber-400/20">v1.3.0</span>
-                        <span className="text-stone-500 text-[10px] font-bold uppercase tracking-widest">Güvenli Fırın & Ping Güncellemesi</span>
+                        <span className="bg-amber-400/10 text-amber-400 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest border border-amber-400/20">v1.4.0</span>
+                        <span className="text-stone-500 text-[10px] font-bold uppercase tracking-widest">Görsel Geri Bildirim & Modern UI</span>
                     </div>
                 </div>
                 <button
@@ -157,6 +157,31 @@ export const PatchNotesModal: React.FC<Props> = ({ onClose }) => {
                     </ul>
                 </section>
 
+                {/* Son Güncellemeler */}
+                <section>
+                    <h3 className="text-xs font-black text-stone-500 mb-4 uppercase tracking-[0.3em] flex items-center gap-3">
+                        <span className="h-px flex-1 bg-stone-800"></span>
+                        🚀 Son Güncellemeler (v1.4.0)
+                        <span className="h-px flex-1 bg-stone-800"></span>
+                    </h3>
+                    <div className="bg-amber-500/5 border border-amber-500/20 p-6 rounded-[2rem] space-y-4">
+                        <div className="flex items-start gap-3">
+                            <span className="text-amber-400 font-bold">🟢</span>
+                            <div>
+                                <div className="text-sm font-bold text-stone-200 uppercase tracking-wider">Etkileşim Halkası (UX)</div>
+                                <p className="text-xs text-stone-400 mt-1 leading-relaxed">Yaklaştığın istasyon veya masanın altında artık yumuşak yeşil bir halka belirecek. Neyle etkileşime girdiğini artık çok daha net göreceksin!</p>
+                            </div>
+                        </div>
+                        <div className="flex items-start gap-3">
+                            <span className="text-amber-400 font-bold">✨</span>
+                            <div>
+                                <div className="text-sm font-bold text-stone-200 uppercase tracking-wider">Modern Glassmorphism UI</div>
+                                <p className="text-xs text-stone-400 mt-1 leading-relaxed">Ana menü butonları ve bilgi paneli modern, yarı saydam ve şık bir görünüme kavuşturuldu.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
                 {/* Yakında */}
                 <section>
                     <h3 className="text-xs font-black text-stone-500 mb-4 uppercase tracking-[0.3em] flex items-center gap-3">
@@ -167,13 +192,13 @@ export const PatchNotesModal: React.FC<Props> = ({ onClose }) => {
                     <div className="bg-purple-500/5 border border-purple-500/20 p-6 rounded-[2rem]">
                         <ul className="space-y-3">
                             <li className="text-sm text-purple-200/70 flex items-center gap-3">
+                                <span className="text-purple-400">✦</span> Restoran Düzeni (Layout) Seçimi: Farklı mutfak tipleriyle başla
+                            </li>
+                            <li className="text-sm text-purple-200/70 flex items-center gap-3">
+                                <span className="text-purple-400">✦</span> Dinamik Masa Kapasitesi: 1-4 kişilik farklı masalar
+                            </li>
+                            <li className="text-sm text-purple-200/70 flex items-center gap-3">
                                 <span className="text-purple-400">✦</span> Zor Mod (Hardcore): Tek Hata = Game Over
-                            </li>
-                            <li className="text-sm text-purple-200/70 flex items-center gap-3">
-                                <span className="text-purple-400">✦</span> İçecek İstasyonu: Hızlı servis edilebilen soğuk içecekler
-                            </li>
-                            <li className="text-sm text-purple-200/70 flex items-center gap-3">
-                                <span className="text-purple-400">✦</span> Yeni müşteri tipleri ve özel etkinlikler
                             </li>
                         </ul>
                     </div>

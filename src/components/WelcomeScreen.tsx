@@ -18,14 +18,23 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onPlay, onQuickSta
     return (
         <div className="menu-screen bg-[#0f0e0c] safe-top safe-bottom overflow-y-auto relative flex items-center justify-center">
 
-            {/* Sağ Üst — Yama Notları */}
-            <div className="absolute top-4 right-4 z-20">
+            {/* Sol Alt — Bilgi Butonu (Glassmorphism) */}
+            <div className="fixed bottom-6 left-6 z-20">
                 <button
                     onClick={() => setShowPatchNotes(true)}
-                    className="w-10 h-10 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl flex items-center justify-center text-lg text-stone-400 transition-all active:scale-90"
-                    title="Yama Notları"
+                    className="
+                        group relative flex items-center justify-center
+                        w-14 h-14 
+                        bg-white/5 backdrop-blur-xl 
+                        border border-white/10 rounded-2xl
+                        shadow-[0_8px_32px_0_rgba(0,0,0,0.36)]
+                        hover:bg-white/10 hover:border-white/20
+                        active:scale-90 transition-all duration-300
+                    "
+                    title="Nasıl Oynanır & Yama Notları"
                 >
-                    ℹ️
+                    <div className="absolute inset-0 bg-amber-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl" />
+                    <span className="text-2xl filter drop-shadow-md group-hover:scale-110 transition-transform">ℹ️</span>
                 </button>
             </div>
 
