@@ -128,19 +128,39 @@ export function useGameLoop({
         let minDist = 110; // INTERACT_R
         const candidates: { x: number; y: number; id?: string }[] = [];
         
-        // İstasyonlar, Kesme Tahtaları, Lavabolar, Masalar
-        if (gs.cookStations) candidates.push(...gs.cookStations);
-        if (gs.choppingBoards) candidates.push(...gs.choppingBoards);
-        if (gs.sinks) candidates.push(...gs.sinks);
-        if (gs.tableLayout) {
-          Object.values(gs.tableLayout).forEach(t => candidates.push({ x: t.x, y: t.y, id: t.id }));
+        // 1. Dinamik İstasyonlar (cookStations, choppingBoards, sinks)
+        // Bunlar hem gs listesinde hem de stationLayout'ta olabilir. stationLayout önceliklidir.
+        if (gs.cookStations) {
+          gs.cookStations.forEach(s => {
+            const dyn = gs.stationLayout?.[s.id];
+            candidates.push({ x: dyn?.x ?? s.x, y: dyn?.y ?? s.y });
+          });
         }
-        // Malzemeler
+        if (gs.choppingBoards) {
+          gs.choppingBoards.forEach(b => {
+            const dyn = gs.stationLayout?.[b.id];
+            candidates.push({ x: dyn?.x ?? b.x, y: dyn?.y ?? b.y });
+          });
+        }
+        if (gs.sinks) {
+          gs.sinks.forEach(s => {
+            const dyn = gs.stationLayout?.[s.id];
+            candidates.push({ x: dyn?.x ?? s.x, y: dyn?.y ?? s.y });
+          });
+        }
+
+        // 2. Masalar (Daima tableLayout'tan gelir)
+        if (gs.tableLayout) {
+          Object.values(gs.tableLayout).forEach(t => candidates.push({ x: t.x, y: t.y }));
+        }
+
+        // 3. Malzemeler (stationLayout'ta yoksa varsayılan konumu kullan)
         INGREDIENTS.forEach(ing => {
           const dynPos = gs.stationLayout?.[`ingredient_${ing.key}`];
           candidates.push({ x: dynPos?.x ?? ing.pos.x, y: dynPos?.y ?? ing.pos.y });
         });
-        // Diğer sabitler
+
+        // 4. Diğer Sabit İstasyonlar (Tepsi, Çöp, Tabak Yığını, Kirli Sepet)
         const trayPos = gs.stationLayout?.['tray'] ?? TRAY_STATION;
         candidates.push({ x: trayPos.x, y: trayPos.y });
         const trashPos = gs.stationLayout?.['trash'] ?? TRASH_STATION;
