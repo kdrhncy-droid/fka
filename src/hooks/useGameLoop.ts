@@ -122,6 +122,41 @@ export function useGameLoop({
 
       movePlayer(time, lastEmitRef, frameScale, { socket, gameStateRef, localPlayerRef, keysRef, joystickVectorRef });
 
+      // ── En yakın etkileşim kurulabilir objeyi bul ──
+      const getNearestInteractable = (px: number, py: number, gs: GameState) => {
+        let nearest = null;
+        let minDist = 110; // INTERACT_R
+        const candidates: { x: number; y: number; id?: string }[] = [];
+        
+        // İstasyonlar, Kesme Tahtaları, Lavabolar, Masalar
+        if (gs.cookStations) candidates.push(...gs.cookStations);
+        if (gs.choppingBoards) candidates.push(...gs.choppingBoards);
+        if (gs.sinks) candidates.push(...gs.sinks);
+        if (gs.tableLayout) {
+          Object.values(gs.tableLayout).forEach(t => candidates.push({ x: t.x, y: t.y, id: t.id }));
+        }
+        // Malzemeler
+        INGREDIENTS.forEach(ing => {
+          const dynPos = gs.stationLayout?.[`ingredient_${ing.key}`];
+          candidates.push({ x: dynPos?.x ?? ing.pos.x, y: dynPos?.y ?? ing.pos.y });
+        });
+        // Diğer sabitler
+        const trayPos = gs.stationLayout?.['tray'] ?? TRAY_STATION;
+        candidates.push({ x: trayPos.x, y: trayPos.y });
+        const trashPos = gs.stationLayout?.['trash'] ?? TRASH_STATION;
+        candidates.push({ x: trashPos.x, y: trashPos.y });
+        const platePos = gs.stationLayout?.['plate_stack'] ?? PLATE_STACK_POS;
+        candidates.push({ x: platePos.x, y: platePos.y });
+        const dirtyTrayPos = gs.stationLayout?.['dirty_tray'] ?? DIRTY_TRAY_POS;
+        candidates.push({ x: dirtyTrayPos.x, y: dirtyTrayPos.y });
+
+        candidates.forEach(obj => {
+          const d = Math.hypot(px - obj.x, py - obj.y);
+          if (d < minDist) { minDist = d; nearest = obj; }
+        });
+        return nearest;
+      };
+
       const isEditing = !!(editorStateRef?.current?.isMoving || editorStateRef?.current?.isMovingTable);
       // stationLayout'tan ingredient pozisyonlarını çıkar
       const ingPositions: Record<string, { x: number; y: number }> = {};
@@ -137,6 +172,21 @@ export function useGameLoop({
       const sinkDynPos = state.stationLayout?.['sink'] ?? undefined;
       const chopBoardDynPos = state.stationLayout?.['chop1'] ?? undefined;
       drawFloorCached(ctx, state.unlockedDishes, isEditing, ingPositions, state.tableLayout, movingTableId, plateStackDynPos, sinkDynPos, chopBoardDynPos);
+
+      // ── Etkileşim Halkası Çizimi ──
+      const lp = localPlayerRef.current;
+      const nearest = getNearestInteractable(lp.x, lp.y, state);
+      if (nearest && !isEditing) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(nearest.x, nearest.y, 45, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(34, 197, 94, 0.25)"; // Soft Yeşil
+        ctx.fill();
+        ctx.strokeStyle = "rgba(34, 197, 94, 0.6)";
+        ctx.lineWidth = 3;
+        ctx.stroke();
+        ctx.restore();
+      }
 
       const stock = state.stock ?? { "🍞": 0, "🥩": 0, "🥬": 0 };
       const movingId = editorStateRef?.current?.movingStationId;
