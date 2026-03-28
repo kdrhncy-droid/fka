@@ -16,7 +16,6 @@ export function drawPlayer(
 ) {
     const rawHolding = p.holding;
     const isHolding = !!rawHolding;
-    // CHOPPED_ prefix'ini soy — görsel olarak sadece emoji göster
     const stripChopped = (item: string) => isChopped(item) ? getChoppedSource(item) : item;
     const heldItem = rawHolding === CLEAN_PLATE ? '🍽️' : rawHolding === DIRTY_PLATE ? '🧽' : rawHolding ? stripChopped(rawHolding) : rawHolding;
     
@@ -34,16 +33,15 @@ export function drawPlayer(
     st.isMoving = dx * dx + dy * dy > 0.5;
     if (Math.abs(dx) > 0.5) st.faceRight = dx > 0;
     if (st.isMoving) {
-        st.walkTimer += 0.28;
+        st.walkTimer += 0.35; // Biraz daha hızlı yürüme animasyonu
     } else {
         st.walkTimer = st.walkTimer % (Math.PI * 2);
-        if (st.walkTimer > 0) { st.walkTimer += 0.28; if (st.walkTimer >= Math.PI * 2) st.walkTimer = 0; }
+        if (st.walkTimer > 0) { st.walkTimer += 0.35; if (st.walkTimer >= Math.PI * 2) st.walkTimer = 0; }
     }
     st.lastX = x; st.lastY = y;
 
-    const bobY   = (st.isMoving || st.walkTimer > 0) ? Math.abs(Math.sin(st.walkTimer)) * 5 : 0;
-    const tilt   = st.isMoving ? Math.sin(st.walkTimer) * 0.11 : 0;
-    const swing  = st.isMoving ? Math.sin(st.walkTimer) * 6 : 0;
+    const bobY   = (st.isMoving || st.walkTimer > 0) ? Math.abs(Math.sin(st.walkTimer)) * 6 : 0;
+    const swing  = st.isMoving ? Math.sin(st.walkTimer) * 8 : 0;
     const dirMul = st.faceRight ? 1 : -1;
 
     ctx.save();
@@ -51,167 +49,123 @@ export function drawPlayer(
 
     // ── Aura (sadece ben) ────────────────────────────────────────────────────
     if (isMe) {
-        const aura = ctx.createRadialGradient(0, 18, 2, 0, 18, 32);
-        aura.addColorStop(0, 'rgba(120,190,255,0.50)');
-        aura.addColorStop(1, 'rgba(120,190,255,0)');
+        const aura = ctx.createRadialGradient(0, 18, 2, 0, 18, 35);
+        aura.addColorStop(0, 'rgba(255,255,255,0.4)');
+        aura.addColorStop(1, 'rgba(255,255,255,0)');
         ctx.fillStyle = aura;
-        ctx.beginPath(); ctx.ellipse(0, 18, 32, 13, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(0, 18, 35, 15, 0, 0, Math.PI * 2); ctx.fill();
     }
 
-    // ── Zemin gölgesi — ayakların tam altında, bobY'den bağımsız ─────────────
-    const shSc = 1 - bobY / 30;
-    drawShadowEllipse(ctx, 0, 30, 18 * shSc, 6 * shSc);
+    // ── Zemin gölgesi ────────────────────────────────────────────────────────
+    const shSc = 1 - bobY / 40;
+    drawShadowEllipse(ctx, 0, 28, 20 * shSc, 8 * shSc);
 
-    // ── Karakter zıplama + eğilme başlıyor ──────────────────────────────────
+    // ── Chibi Karakter Çizimi ───────────────────────────────────────────────
     ctx.translate(0, -bobY);
-    ctx.rotate(tilt);
     ctx.scale(dirMul, 1);
 
-    // ── BACAKLAR ─────────────────────────────────────────────────────────────
-    // Sol bacak
-    ctx.beginPath(); ctx.roundRect(-10 + swing, 14, 9, 16, 4);
-    ctx.fillStyle = '#1e1e1e'; ctx.fill(); stk(ctx, '#111', 2.5);
-    // Sol ayakkabı
-    ctx.beginPath(); ctx.ellipse(-5 + swing, 31, 8, 4, 0, 0, Math.PI * 2);
-    ctx.fillStyle = '#0f0f0f'; ctx.fill(); stk(ctx, '#000', 2);
+    // ── AYAKLAR (Küçük yuvarlaklar) ──────────────────────────────────────────
+    const footY = 22;
+    const footX = 8;
+    
+    // Sol Ayak
+    ctx.fillStyle = '#333';
+    ctx.beginPath(); ctx.arc(-footX + (st.isMoving ? -swing : 0), footY, 6, 0, Math.PI * 2); ctx.fill();
+    stk(ctx, '#000', 1.5);
 
-    // Sağ bacak
-    ctx.beginPath(); ctx.roundRect(1 - swing, 14, 9, 16, 4);
-    ctx.fillStyle = '#282828'; ctx.fill(); stk(ctx, '#111', 2.5);
-    // Sağ ayakkabı
-    ctx.beginPath(); ctx.ellipse(6 - swing, 31, 8, 4, 0, 0, Math.PI * 2);
-    ctx.fillStyle = '#0f0f0f'; ctx.fill(); stk(ctx, '#000', 2);
+    // Sağ Ayak
+    ctx.fillStyle = '#333';
+    ctx.beginPath(); ctx.arc(footX + (st.isMoving ? swing : 0), footY, 6, 0, Math.PI * 2); ctx.fill();
+    stk(ctx, '#000', 1.5);
 
-    // ── GÖVDE ────────────────────────────────────────────────────────────────
-    ctx.beginPath(); ctx.roundRect(-16, -4, 32, 20, 10);
-    const bodyG = ctx.createLinearGradient(-16, -4, 16, 16);
-    bodyG.addColorStop(0, adjustColor(bodyColor, 30));
+    // ── GÖVDE (Küçük ve tombul) ──────────────────────────────────────────────
+    const bodyW = 28;
+    const bodyH = 22;
+    const bodyY = 2;
+
+    ctx.beginPath(); ctx.roundRect(-bodyW/2, bodyY, bodyW, bodyH, 12);
+    const bodyG = ctx.createLinearGradient(0, bodyY, 0, bodyY + bodyH);
+    bodyG.addColorStop(0, adjustColor(bodyColor, 20));
     bodyG.addColorStop(1, bodyColor);
-    ctx.fillStyle = bodyG; ctx.fill(); stk(ctx);
+    ctx.fillStyle = bodyG; ctx.fill(); stk(ctx, '#000', 2);
 
-    // Yaka aksesuar şeridi
-    ctx.beginPath(); ctx.roundRect(-13, -4, 26, 7, [10, 10, 0, 0]);
-    ctx.fillStyle = accentColor; ctx.globalAlpha = 0.88; ctx.fill(); ctx.globalAlpha = 1;
+    // Kıyafet detayı (Yaka/Önlük)
+    ctx.fillStyle = accentColor;
+    ctx.globalAlpha = 0.6;
+    ctx.beginPath(); ctx.roundRect(-bodyW/2 + 4, bodyY + 2, bodyW - 8, 6, 4); ctx.fill();
+    ctx.globalAlpha = 1;
 
-    // Gövde parlaması
-    ctx.fillStyle = 'rgba(255,255,255,0.18)';
-    ctx.beginPath(); ctx.roundRect(-10, -2, 20, 7, 4); ctx.fill();
-
-    // ── KOLLAR + ELLER (PlateUp Tarzı) ────────────────────────────────────────
+    // ── ELLER (Küçük yuvarlaklar) ────────────────────────────────────────────
+    const handY = 12;
+    const handX = 16;
     const skinTone = '#f5c090';
-    const armSwing = st.isMoving ? Math.sin(st.walkTimer + Math.PI) * 5 : 0;
 
     if (isHolding) {
-        // Eşya tutarken kollar öne doğru uzanır
-        // Arka kol (sol)
-        ctx.beginPath(); ctx.roundRect(-14, 2, 16, 8, 4);
-        ctx.fillStyle = adjustColor(bodyColor, -15); ctx.fill(); stk(ctx);
-        // Sol el
-        ctx.beginPath(); ctx.arc(2, 6, 5, 0, Math.PI * 2);
-        ctx.fillStyle = skinTone; ctx.fill(); stk(ctx, '#c8845a', 2);
-
-        // Ön kol (sağ)
-        ctx.beginPath(); ctx.roundRect(4, 2, 16, 8, 4);
-        ctx.fillStyle = bodyColor; ctx.fill(); stk(ctx);
-        // Sağ el
-        ctx.beginPath(); ctx.arc(20, 6, 5, 0, Math.PI * 2);
-        ctx.fillStyle = skinTone; ctx.fill(); stk(ctx, '#c8845a', 2);
+        // Eşya tutarken eller önde
+        ctx.fillStyle = skinTone;
+        ctx.beginPath(); ctx.arc(8, handY, 5, 0, Math.PI * 2); ctx.fill(); stk(ctx, '#000', 1.5);
+        ctx.beginPath(); ctx.arc(22, handY, 5, 0, Math.PI * 2); ctx.fill(); stk(ctx, '#000', 1.5);
     } else {
-        // Boşta kollar yanlarda sallanır
-        // Arka kol (sol)
-        ctx.beginPath(); ctx.roundRect(-23, -1 - armSwing, 8, 14, 4);
-        ctx.fillStyle = adjustColor(bodyColor, -15); ctx.fill(); stk(ctx);
-        // Sol el
-        ctx.beginPath(); ctx.arc(-19, 14 - armSwing, 5, 0, Math.PI * 2);
-        ctx.fillStyle = skinTone; ctx.fill(); stk(ctx, '#c8845a', 2);
-
-        // Ön kol (sağ)
-        ctx.beginPath(); ctx.roundRect(15, -1 + armSwing, 8, 14, 4);
-        ctx.fillStyle = bodyColor; ctx.fill(); stk(ctx);
-        // Sağ el
-        ctx.beginPath(); ctx.arc(19, 14 + armSwing, 5, 0, Math.PI * 2);
-        ctx.fillStyle = skinTone; ctx.fill(); stk(ctx, '#c8845a', 2);
+        // Boşta eller yanlarda
+        const armSwing = st.isMoving ? Math.sin(st.walkTimer) * 5 : 0;
+        ctx.fillStyle = skinTone;
+        ctx.beginPath(); ctx.arc(-handX, handY + armSwing, 5, 0, Math.PI * 2); ctx.fill(); stk(ctx, '#000', 1.5);
+        ctx.beginPath(); ctx.arc(handX, handY - armSwing, 5, 0, Math.PI * 2); ctx.fill(); stk(ctx, '#000', 1.5);
     }
 
-    // ── BAŞ ──────────────────────────────────────────────────────────────────
-    const HR = 13;
-    const headY = -4 - HR - 3;
+    // ── KAFA (Büyük ve yuvarlak) ─────────────────────────────────────────────
+    const headR = 22;
+    const headY = -18;
 
-    // Boyun
-    ctx.beginPath(); ctx.roundRect(-5, -7, 10, 6, 3);
-    ctx.fillStyle = '#f5c090'; ctx.fill();
+    ctx.beginPath(); ctx.arc(0, headY, headR, 0, Math.PI * 2);
+    const headG = ctx.createRadialGradient(-5, headY - 5, 2, 0, headY, headR);
+    headG.addColorStop(0, '#fff1e0'); headG.addColorStop(1, '#f5c090');
+    ctx.fillStyle = headG; ctx.fill(); stk(ctx, '#000', 2);
 
-    // Kafa
-    ctx.beginPath(); ctx.arc(0, headY, HR, 0, Math.PI * 2);
-    const headG = ctx.createRadialGradient(-3, headY - 3, 1, 0, headY, HR);
-    headG.addColorStop(0, '#fde8cc'); headG.addColorStop(1, '#f0b880');
-    ctx.fillStyle = headG; ctx.fill(); stk(ctx);
+    // Yanaklar (Pembe)
+    ctx.fillStyle = 'rgba(255,182,193,0.5)';
+    ctx.beginPath(); ctx.arc(-12, headY + 6, 5, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(12, headY + 6, 5, 0, Math.PI * 2); ctx.fill();
 
-    // Yanaklar
-    ctx.fillStyle = 'rgba(255,130,100,0.28)';
-    ctx.beginPath(); ctx.ellipse(-HR * 0.55, headY + 2, HR * 0.35, HR * 0.26, -0.15, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.ellipse(HR * 0.55, headY + 2, HR * 0.35, HR * 0.26, 0.15, 0, Math.PI * 2); ctx.fill();
-
-    // Gözler
-    ctx.fillStyle = '#1a0a0a';
-    ctx.beginPath(); ctx.ellipse(-HR * 0.38, headY - 1, 3, 4, 0, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.ellipse(HR * 0.38, headY - 1, 3, 4, 0, 0, Math.PI * 2); ctx.fill();
+    // Gözler (Büyük chibi gözleri)
+    ctx.fillStyle = '#222';
+    // Sol Göz
+    ctx.beginPath(); ctx.ellipse(-8, headY + 2, 3.5, 5, 0, 0, Math.PI * 2); ctx.fill();
+    // Sağ Göz
+    ctx.beginPath(); ctx.ellipse(8, headY + 2, 3.5, 5, 0, 0, Math.PI * 2); ctx.fill();
+    
     // Göz parıltısı
-    ctx.fillStyle = 'rgba(255,255,255,0.82)';
-    ctx.beginPath(); ctx.ellipse(-HR * 0.30, headY - 3, 1.4, 1.8, 0, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.ellipse(HR * 0.46, headY - 3, 1.4, 1.8, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.arc(-7, headY, 1.5, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(9, headY, 1.5, 0, Math.PI * 2); ctx.fill();
 
-    // Gülümseme
-    ctx.strokeStyle = '#7a3020'; ctx.lineWidth = 1.8; ctx.lineCap = 'round';
-    ctx.beginPath(); ctx.arc(0, headY + 4, 5, 0.2, Math.PI - 0.2); ctx.stroke();
+    // Ağız (Küçük bir gülümseme)
+    ctx.strokeStyle = '#844'; ctx.lineWidth = 2; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.arc(0, headY + 8, 4, 0.2, Math.PI - 0.2); ctx.stroke();
 
     // ── ŞAPKA ────────────────────────────────────────────────────────────────
-    ctx.font = '15px Arial';
+    ctx.font = '22px Arial';
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText(charDef.hat as string, 0, headY - HR - 8);
+    ctx.fillText(charDef.hat as string, 0, headY - headR - 5);
 
-    // ── TUTULAN EŞYA (PlateUp Tarzı - Önde) ───────────────────────────────────
+    // ── TUTULAN EŞYA ─────────────────────────────────────────────────────────
     if (isHolding) {
-        const itemX = 12;
-        const itemY = 6;
-        const itemBob = Math.sin(st.walkTimer) * 2; // Yürürken eşya da zıplasın
-
+        const itemX = 15;
+        const itemY = 12;
         ctx.save();
-        ctx.translate(itemX, itemY + itemBob);
-
+        ctx.translate(itemX, itemY);
+        
         if (isTray(rawHolding)) {
-            // Tepsi görseli
-            ctx.fillStyle = '#cbd5e1'; // Açık gri tepsi
-            ctx.beginPath(); ctx.roundRect(-18, -2, 36, 12, 4); ctx.fill();
-            ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1.5; ctx.stroke();
-
+            ctx.fillStyle = '#eee';
+            ctx.beginPath(); ctx.roundRect(-15, -4, 30, 10, 3); ctx.fill();
+            stk(ctx, '#999', 1);
             const items = getTrayItems(rawHolding);
-            if (items.length > 0) {
-                ctx.font = '14px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-                // Eşyaları tepsi üzerinde yanyana diz
-                items.forEach((item, idx) => {
-                    const offset = (idx - (items.length - 1) / 2) * 12;
-                    ctx.fillText(stripChopped(item), offset, -4);
-                });
-            } else {
-                ctx.font = '12px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-                ctx.fillText('🪣', 0, -4);
-            }
-        } else if (heldItem === '🍽️' || heldItem === '🧽') {
-            // Tabak görseli
-            ctx.fillStyle = '#f8fafc';
-            ctx.beginPath(); ctx.ellipse(0, 0, 15, 8, 0, 0, Math.PI * 2); ctx.fill();
-            ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1.5; ctx.stroke();
-            
-            ctx.font = '14px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-            ctx.fillText(heldItem, 0, -2);
+            ctx.font = '12px Arial';
+            items.forEach((item, idx) => {
+                ctx.fillText(stripChopped(item), (idx - (items.length-1)/2) * 10, -6);
+            });
         } else {
-            // Normal eşya balonu (biraz daha şık)
-            ctx.fillStyle = '#ffffff';
-            ctx.beginPath(); ctx.arc(0, 0, 14, 0, Math.PI * 2); ctx.fill();
-            ctx.strokeStyle = accentColor; ctx.lineWidth = 2; ctx.stroke();
-            
-            ctx.font = '16px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.font = '18px Arial';
             ctx.fillText(heldItem as string, 0, 0);
         }
         ctx.restore();
@@ -220,29 +174,13 @@ export function drawPlayer(
     // ── İSİM ETİKETİ ─────────────────────────────────────────────────────────
     ctx.scale(dirMul, 1);
     const label = isMe ? `★ ${p.name}` : p.name;
-    ctx.font = 'bold 10px Arial';
-    const lw = ctx.measureText(label).width + 14;
-    ctx.fillStyle = isMe ? 'rgba(20,50,110,0.85)' : 'rgba(20,20,20,0.75)';
-    ctx.beginPath(); ctx.roundRect(-lw / 2, headY - HR - 26, lw, 16, 8); ctx.fill();
+    ctx.font = 'bold 11px Arial';
+    const lw = ctx.measureText(label).width + 16;
+    ctx.fillStyle = isMe ? 'rgba(59, 130, 246, 0.9)' : 'rgba(0, 0, 0, 0.7)';
+    ctx.beginPath(); ctx.roundRect(-lw / 2, headY - headR - 35, lw, 18, 9); ctx.fill();
     ctx.fillStyle = '#fff';
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText(label, 0, headY - HR - 18);
-
-    // ── TUTULAN EŞYA BALONU (isim etiketinin üstünde, herkese görünür) ────────
-    if (!isMe && isHolding) {
-        const bx = 0;
-        const by = headY - HR - 44;
-        // Balon arka planı
-        ctx.fillStyle = 'rgba(255,255,255,0.92)';
-        ctx.beginPath(); ctx.arc(bx, by, 13, 0, Math.PI * 2); ctx.fill();
-        ctx.strokeStyle = accentColor; ctx.lineWidth = 2; ctx.stroke();
-        // Küçük üçgen (balon kuyruğu)
-        ctx.fillStyle = 'rgba(255,255,255,0.92)';
-        ctx.beginPath(); ctx.moveTo(bx - 5, by + 10); ctx.lineTo(bx + 5, by + 10); ctx.lineTo(bx, by + 17); ctx.closePath(); ctx.fill();
-        // Eşya emoji
-        ctx.font = '14px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.fillText(heldItem as string, bx, by - 1);
-    }
+    ctx.fillText(label, 0, headY - headR - 26);
 
     ctx.restore();
 }
