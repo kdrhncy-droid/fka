@@ -25,13 +25,13 @@ function getCRS(id: string, x: number, y: number): CRS {
     return crs.get(id)!;
 }
 
-// Chibi vücut şekli parametreleri
+// Chibi vücut şekli parametreleri (Kafa yarıçapları 100/15 oranında küçültüldü)
 function chibiBodyProps(shape: 1 | 2 | 3 | 4) {
     switch (shape) {
-        case 2: return { bw: 32, bh: 22, hr: 24 }; // Tombul Chibi
-        case 3: return { bw: 22, bh: 26, hr: 20 }; // Uzun Chibi
-        case 4: return { bw: 28, bh: 18, hr: 22 }; // Kısa Chibi
-        default:return { bw: 26, bh: 22, hr: 22 }; // Normal Chibi
+        case 2: return { bw: 32, bh: 22, hr: 20.4 }; // Tombul Chibi (24 -> 20.4)
+        case 3: return { bw: 22, bh: 26, hr: 17 };   // Uzun Chibi (20 -> 17)
+        case 4: return { bw: 28, bh: 18, hr: 18.7 }; // Kısa Chibi (22 -> 18.7)
+        default:return { bw: 26, bh: 22, hr: 18.7 }; // Normal Chibi (22 -> 18.7)
     }
 }
 
@@ -99,13 +99,12 @@ export function drawCustomer(ctx: CanvasRenderingContext2D, customer: Customer, 
     ctx.translate(0, -bobY + eatBob);
     if (!isSeated) ctx.scale(st.faceRight ? 1 : -1, 1);
 
-    // ── AYAKLAR (Ayaktayken) ──────────────────────────────────────────────────
+    // ── AYAKLAR ──────────────────────────────────────────────────────────────
     if (!isSeated) {
         ctx.fillStyle = '#333';
         ctx.beginPath(); ctx.arc(-8 + swing, 20, 5, 0, Math.PI * 2); ctx.fill(); stk(ctx, '#000', 1.5);
         ctx.beginPath(); ctx.arc(8 - swing, 20, 5, 0, Math.PI * 2); ctx.fill(); stk(ctx, '#000', 1.5);
     } else {
-        // Otururken bacaklar
         const legDir = facingBack ? -1 : 1;
         ctx.fillStyle = '#222';
         ctx.beginPath(); ctx.roundRect(-bw/2, legDir > 0 ? 12 : -15, bw, 6, 3); ctx.fill(); stk(ctx, '#000', 1.5);
@@ -124,7 +123,6 @@ export function drawCustomer(ctx: CanvasRenderingContext2D, customer: Customer, 
     const handX = bw/2 + 4;
     ctx.fillStyle = skin;
     if (isEating) {
-        // Yemek yerken eller masada
         ctx.beginPath(); ctx.arc(-handX + 4, handY + 4, 4, 0, Math.PI * 2); ctx.fill(); stk(ctx, '#000', 1.2);
         ctx.beginPath(); ctx.arc(handX - 4, handY + 4, 4, 0, Math.PI * 2); ctx.fill(); stk(ctx, '#000', 1.2);
     } else if (!isSeated) {
@@ -137,62 +135,54 @@ export function drawCustomer(ctx: CanvasRenderingContext2D, customer: Customer, 
     const headY = bodyY - hr + 4;
     
     if (facingBack) {
-        // Arkadan kafa (sadece saç)
         ctx.beginPath(); ctx.arc(0, headY, hr, 0, Math.PI * 2);
         ctx.fillStyle = hair; ctx.fill(); stk(ctx, '#000', 2);
     } else {
-        // Önden kafa
         ctx.beginPath(); ctx.arc(0, headY, hr, 0, Math.PI * 2);
         const hg = ctx.createRadialGradient(-4, headY - 4, 2, 0, headY, hr);
         hg.addColorStop(0, '#fff1e0'); hg.addColorStop(1, '#f5c090');
         ctx.fillStyle = hg; ctx.fill(); stk(ctx, '#000', 2);
 
-        // Saç (Basit chibi saçı)
         ctx.fillStyle = hair;
         ctx.beginPath(); ctx.arc(0, headY, hr, Math.PI, 0); ctx.fill();
         ctx.beginPath(); ctx.arc(0, headY - hr + 5, hr * 0.8, Math.PI, 0); ctx.fill();
 
-        // Gözler
         ctx.fillStyle = '#222';
         const eyeY = headY + 2;
         const eyeX = hr * 0.35;
-        ctx.beginPath(); ctx.ellipse(-eyeX, eyeY, 3, 4.5, 0, 0, Math.PI * 2); ctx.fill();
-        ctx.beginPath(); ctx.ellipse(eyeX, eyeY, 3, 4.5, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(-eyeX, eyeY, 2.8, 4.2, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(eyeX, eyeY, 2.8, 4.2, 0, 0, Math.PI * 2); ctx.fill();
         
-        // Göz parıltısı
         ctx.fillStyle = '#fff';
-        ctx.beginPath(); ctx.arc(-eyeX + 1, eyeY - 1.5, 1.2, 0, Math.PI * 2); ctx.fill();
-        ctx.beginPath(); ctx.arc(eyeX + 1, eyeY - 1.5, 1.2, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(-eyeX + 1, eyeY - 1.5, 1.1, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(eyeX + 1, eyeY - 1.5, 1.1, 0, Math.PI * 2); ctx.fill();
 
-        // Yanaklar
         ctx.fillStyle = 'rgba(255,182,193,0.4)';
-        ctx.beginPath(); ctx.arc(-hr * 0.6, headY + 6, 4, 0, Math.PI * 2); ctx.fill();
-        ctx.beginPath(); ctx.arc(hr * 0.6, headY + 6, 4, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(-hr * 0.6, headY + 5, 3.5, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(hr * 0.6, headY + 5, 3.5, 0, Math.PI * 2); ctx.fill();
     }
 
     // ── SABIR ÇUBUĞU ─────────────────────────────────────────────────────────
     if (isSeated && !isEating && patience < maxPatience) {
-        const barW = 40;
-        const barH = 6;
+        const barW = 35;
+        const barH = 5;
         const bx = -barW / 2;
-        const by = headY - hr - 15;
+        const by = headY - hr - 12;
         const pct = patience / maxPatience;
         ctx.fillStyle = 'rgba(0,0,0,0.4)';
-        ctx.beginPath(); ctx.roundRect(bx, by, barW, barH, 3); ctx.fill();
+        ctx.beginPath(); ctx.roundRect(bx, by, barW, barH, 2.5); ctx.fill();
         ctx.fillStyle = pct > 0.5 ? '#22c55e' : pct > 0.25 ? '#eab308' : '#ef4444';
-        ctx.beginPath(); ctx.roundRect(bx, by, barW * pct, barH, 3); ctx.fill();
+        ctx.beginPath(); ctx.roundRect(bx, by, barW * pct, barH, 2.5); ctx.fill();
     }
 
-    // ── DİALOG BALONU ────────────────────────────────────────────────────────
     if (currentDialog) {
         drawDialogBubble(ctx, currentDialog, 0, headY - hr - 10, '#fff', bodyColor, '#333');
     } else if (wants && isSeated && !isEating) {
-        // İstek balonu
-        const bx = 0, by = headY - hr - 25;
+        const bx = 0, by = headY - hr - 22;
         ctx.fillStyle = '#fff';
-        ctx.beginPath(); ctx.arc(bx, by, 14, 0, Math.PI * 2); ctx.fill();
-        stk(ctx, bodyColor, 2);
-        ctx.font = '16px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.beginPath(); ctx.arc(bx, by, 12, 0, Math.PI * 2); ctx.fill();
+        stk(ctx, bodyColor, 1.8);
+        ctx.font = '14px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
         ctx.fillText(wants, bx, by);
     }
 
@@ -200,11 +190,10 @@ export function drawCustomer(ctx: CanvasRenderingContext2D, customer: Customer, 
 }
 
 function drawDialogBubble(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, bgColor: string, borderColor: string, textColor: string) {
-    const maxWidth = 150;
-    const padding = 8;
-    const lineHeight = 14;
-
-    ctx.font = 'bold 10px Arial';
+    const maxWidth = 130;
+    const padding = 7;
+    const lineHeight = 13;
+    ctx.font = 'bold 9px Arial';
     const words = text.split(' ');
     const lines: string[] = [];
     let currentLine = '';
@@ -216,16 +205,13 @@ function drawDialogBubble(ctx: CanvasRenderingContext2D, text: string, x: number
         } else { currentLine = testLine; }
     }
     if (currentLine) lines.push(currentLine);
-
     const bubbleW = Math.max(...lines.map(l => ctx.measureText(l).width)) + padding * 2;
     const bubbleH = lines.length * lineHeight + padding * 2;
     const dbx = x - bubbleW / 2;
     const dby = y - bubbleH;
-
     ctx.fillStyle = bgColor;
-    ctx.beginPath(); ctx.roundRect(dbx, dby, bubbleW, bubbleH, 8); ctx.fill();
-    ctx.strokeStyle = borderColor; ctx.lineWidth = 1.5; ctx.stroke();
-
+    ctx.beginPath(); ctx.roundRect(dbx, dby, bubbleW, bubbleH, 7); ctx.fill();
+    ctx.strokeStyle = borderColor; ctx.lineWidth = 1.2; ctx.stroke();
     ctx.fillStyle = textColor;
     ctx.textAlign = 'center'; ctx.textBaseline = 'top';
     lines.forEach((line, i) => { ctx.fillText(line, x, dby + padding + i * lineHeight); });
