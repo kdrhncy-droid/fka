@@ -313,6 +313,7 @@ export const DISH_UNLOCK_POOL = ['🍕', '🍜', '🌯'] as const;
 export const INITIAL_OVEN_POSITIONS = [
     { x: 400, y: 90 },
     { x: 500, y: 90 },
+    { x: 600, y: 90 },
 ];
 
 export const ADDITIONAL_OVEN_POSITIONS = [
@@ -321,7 +322,7 @@ export const ADDITIONAL_OVEN_POSITIONS = [
     { x: 600, y: 170 },
 ];
 
-export const OVEN_UPGRADE_COSTS = [200, 400, 800];
+export const OVEN_UPGRADE_COSTS = [400, 800, 1600];
 
 export const TRASH_STATION = { x: 920, y: 285 };
 export const DIRTY_TRAY_POS = { x: 860, y: 90 };
@@ -365,7 +366,9 @@ export function mkGameState(): GameState {
       'ingredient_🥬': { id: 'ingredient_🥬', x: 540, y: 65 },
       'ingredient_🥘': { id: 'ingredient_🥘', x: 630, y: 65 },
       'ingredient_🍢': { id: 'ingredient_🍢', x: 720, y: 65 },
-      'oven1':         { id: 'oven1',         x: 300, y: 170 },
+      'oven1':         { id: 'oven1',         x: 400, y: 90 },
+      'oven2':         { id: 'oven2',         x: 500, y: 90 },
+      'oven3':         { id: 'oven3',         x: 600, y: 90 },
       'tray':          { id: 'tray',          x: 300, y: 285 },
       'sink':          { id: 'sink',          x: 960,  y: 90 },
       'trash':         { id: 'trash',         x: 920, y: 285 },
