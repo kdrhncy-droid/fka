@@ -20,11 +20,16 @@ export interface Player {
     peerId?: string;
 }
 
-// Sadeleştirilmiş Karakter Tipleri — Sadece Aşçı, Garson ve Bulaşıkçı
+// 8 Karakter Tipi — CharacterSelect + drawPlayer kullanır
 export const CHARACTER_TYPES = [
-    { id: 0, name: 'Aşçı',     hat: '👨‍🍳', bodyColor: '#f5f5f4', accent: '#a78bfa', label: 'Usta Aşçı' },
-    { id: 1, name: 'Garson',   hat: '🎩',   bodyColor: '#fef3c7', accent: '#92400e', label: 'Hızlı Garson' },
-    { id: 2, name: 'Bulaşıkçı', hat: '🧹', bodyColor: '#e0f2fe', accent: '#0284c7', label: 'Titiz Bulaşıkçı' },
+    { id: 0, name: 'Aşçı',     hat: '👨‍🍳', bodyColor: '#f5f5f4', accent: '#a78bfa', label: 'Klasik Aşçı' },
+    { id: 1, name: 'Chef',     hat: '🧑‍🍳', bodyColor: '#fed7aa', accent: '#f97316', label: 'Baş Chef' },
+    { id: 2, name: 'Garson',   hat: '🎩',   bodyColor: '#fef3c7', accent: '#92400e', label: 'Şık Garson' },
+    { id: 3, name: 'Kasiyer',  hat: '💼',   bodyColor: '#dbeafe', accent: '#1d4ed8', label: 'Kasiyer' },
+    { id: 4, name: 'Temizlikçi', hat: '🧹', bodyColor: '#e0f2fe', accent: '#0284c7', label: 'Temizlikçi' },
+    { id: 5, name: 'Kasap',    hat: '🔪',   bodyColor: '#fca5a5', accent: '#dc2626', label: 'Kasap' },
+    { id: 6, name: 'Fırıncı',  hat: '🥐',   bodyColor: '#fde68a', accent: '#d97706', label: 'Fırıncı' },
+    { id: 7, name: 'Müdür',    hat: '📋',   bodyColor: '#bbf7d0', accent: '#16a34a', label: 'Müdür' },
 ] as const;
 
 export interface Customer {
@@ -297,6 +302,8 @@ export const INGREDIENTS = [
     { key: '🍢' as StockKey, pos: { x: 720, y: 65 }, label: 'Kebap', color: '#92400e' },
 ];
 
+// ─── Universal Fırın Sistemi ─────────────────────────────────────────────────
+// CHOPPABLE malzemeler önce doğranmalı, sonra fırına girer
 export const RECIPE_DEFS = {
     '🍞':          { output: '🍕', time: 90,  label: '🍕 Pizza' },
     'CHOPPED_🥩':  { output: '🍔', time: 35,  label: '🍔 Burger' },
@@ -305,11 +312,12 @@ export const RECIPE_DEFS = {
     'CHOPPED_🍢':  { output: '🌯', time: 60,  label: '🌯 Dürüm' },
 } as const;
 
-export const DISH_UNLOCK_POOL = ['🍕', '🍜', '🌯'] as const;
+// ─── Yemek kilidi sırası — her gece 1 yeni yemek seçilir ─────────────────────
+// Başlangıçta Salata + Burger açık, geri kalanlar gece seçimiyle açılır
+export const DISH_UNLOCK_POOL = ['🍕', '🍜', '🌯'] as const; // Kilidini açılabilecek yemekler
 
 export const INITIAL_OVEN_POSITIONS = [
-    { x: 400, y: 90 },
-    { x: 500, y: 90 },
+    { x: 300, y: 170 },
 ];
 
 export const ADDITIONAL_OVEN_POSITIONS = [
@@ -318,21 +326,32 @@ export const ADDITIONAL_OVEN_POSITIONS = [
     { x: 600, y: 170 },
 ];
 
-export const OVEN_UPGRADE_COSTS = [200, 400, 800];
-
+// ─── Çöp Kutusu, Kirli Sepeti & Lavabo ──────────────────────────────────────
 export const TRASH_STATION = { x: 920, y: 285 };
 export const DIRTY_TRAY_POS = { x: 860, y: 90 };
 export const SINK_STATION = { x: 960, y: 90 };
+
+// ─── Koltuklar — Artık dinamik, getSeatSlots(tableLayout) kullan ─────────────
+// SEAT_SLOTS kaldırıldı — bkz. getSeatSlots()
+
+// Geriye uyum için (drawDirtyTable, drawCustomer, usePlayerMovement kullanır)
+// Dinamik tableLayout'a geçildiğinde bu sabit kaldırılabilir
 export const TABLE_Y_DEFAULT = 500;
+
+// ─── Yemek Çıktıları (tüm olası yemekler) ────────────────────────────────────
 export const DISH_ITEMS = ['🍕', '🍔', '🥗', '🍜', '🌯'] as const;
 
+// ─── Upgrade Tanımları ───────────────────────────────────────────────────────
 export const UPGRADE_DEFS: Record<UpgradeKey, { costs: number[]; max: number }> = {
-    patience:      { costs: [150, 300, 600, 1200], max: 4 },
-    earnings:      { costs: [200, 400, 800, 1600], max: 4 },
-    plateStackMax: { costs: [100, 200, 400, 800],  max: 4 },
-    safeOven:      { costs: [500],                 max: 1 },
+    patience: { costs: [50, 100, 200], max: 3 },
+    earnings: { costs: [100, 250], max: 2 },
+    plateStackMax: { costs: [50, 100, 150, 200, 250], max: 5 }, // Her level +4 tabak
+    safeOven: { costs: [80, 180], max: 2 }, // lv1: yanma süresi 2x, lv2: hiç yanmaz
 };
 
+export const OVEN_UPGRADE_COSTS = [80, 120, 180];
+
+// ─── Yardımcı Fonksiyonlar ───────────────────────────────────────────────────
 export function mkCook(id: string, x: number, y: number): CookStation {
   return { input: null, timer: 0, output: null, id, x, y };
 }
@@ -341,6 +360,7 @@ export function mkGameState(): GameState {
   const initialOvens = INITIAL_OVEN_POSITIONS.map((pos, i) =>
     mkCook(`oven${i + 1}`, pos.x, pos.y)
   );
+
   return {
     players: {}, customers: [], waitList: [],
     holdingStations: [],
@@ -350,12 +370,15 @@ export function mkGameState(): GameState {
     upgrades: { patience: 0, earnings: 0, plateStackMax: 0, safeOven: 0 }, day: 1, hasOrderedTonight: false,
     cookStations: initialOvens,
     dirtyTrayCount: 0,
+    // ─── Tabak Yığını ─────────────────────────────────────────────────────
     plateStack: { count: PLATE_STACK_BASE, maxCount: PLATE_STACK_BASE },
     lives: 3,
     isGameOver: false,
     revengeQueue: [],
+    // Başlangıçta sadece Salata + Burger açık (en hızlı yemekler)
     unlockedDishes: ['🥗', '🍔'],
     menuChoices: null,
+    // ─── Station Layout (Tüm y-koordinatları ve dar x-koordinatları uyarlandı) ──
     stationLayout: {
       'ingredient_🍞': { id: 'ingredient_🍞', x: 360, y: 65 },
       'ingredient_🥩': { id: 'ingredient_🥩', x: 450, y: 65 },
@@ -369,22 +392,27 @@ export function mkGameState(): GameState {
       'dirty_tray':    { id: 'dirty_tray',    x: 860,  y: 90 },
       'plate_stack':   { id: 'plate_stack',   x: 650, y: 65 },
       'chop1':         { id: 'chop1',         x: 760, y: 170 },
+      // Counter'lar kasıtlı olarak buraya dahil edilmedi — duvara sabit, taşınamaz
     },
     lockedStations: {},
+    // ─── Table Layout (Önceden duvarın olduğu y=500 -> y=570 oldu) ───────────
     tableLayout: {
       'table0': { id: 'table0', x: 260, y: 570 },
       'table1': { id: 'table1', x: 450, y: 570 },
-      'table2': { id: 'table2', x: 640, y: 570 },
+      'table2': { id: 'table2', x: 640, y: 570 }, // TAM ORTA MASA
       'table3': { id: 'table3', x: 830, y: 570 },
       'table4': { id: 'table4', x: 1020, y: 570 },
     },
     lockedTables: {},
+    // ─── Kesme Tahtaları ──────────────────────────────────────────────────
     choppingBoards: [
       { id: 'chop1', x: CHOPPING_BOARD_POS.x, y: CHOPPING_BOARD_POS.y, input: null, progress: 0, isChopping: false, choppingPlayerId: null },
     ],
+    // ─── Lavabolar ────────────────────────────────────────────────────────
     sinks: [
       { id: 'sink', x: SINK_STATION.x, y: SINK_STATION.y, input: null, progress: 0, isWashing: false, washingPlayerId: null },
     ],
+    // ─── Servis Penceresi ─────────────────────────────────────────────────
     serviceWindow: SERVICE_WINDOW_SLOTS.map(s => ({ id: s.id, item: null })),
   };
 }
