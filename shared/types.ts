@@ -18,6 +18,9 @@ export interface Player {
     holding: Item; color: string; name: string; hat: string;
     charType?: number;
     peerId?: string;
+    hairColor?: string;
+    clothingColor?: string;
+    faceShape?: number;
 }
 
 // Sadeleştirilmiş Karakter Tipleri — Sadece Aşçı, Garson ve Bulaşıkçı

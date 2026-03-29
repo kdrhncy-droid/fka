@@ -11,6 +11,12 @@ interface CharacterSelectProps {
     setPlayerColor: (v: string) => void;
     playerHat: string;
     setPlayerHat: (v: string) => void;
+    hairColor: string;
+    setHairColor: (v: string) => void;
+    clothingColor: string;
+    setClothingColor: (v: string) => void;
+    faceShape: number;
+    setFaceShape: (v: number) => void;
     charType: number;
     setCharType: (v: number) => void;
     marketName: string;
@@ -28,6 +34,9 @@ export const CharacterSelect: React.FC<CharacterSelectProps> = ({
     playerName, setPlayerName,
     setPlayerColor,
     setPlayerHat,
+    hairColor, setHairColor,
+    clothingColor, setClothingColor,
+    faceShape, setFaceShape,
     charType, setCharType,
     marketName, setMarketName,
     roomId, setRoomId,
@@ -36,6 +45,13 @@ export const CharacterSelect: React.FC<CharacterSelectProps> = ({
     isJoiningExistingRoom = false,
 }) => {
     const selectedChar = CHARACTER_TYPES[charType] ?? CHARACTER_TYPES[0];
+    const HAIR_COLORS = ['#4b2c20', '#24150e', '#8d5524', '#c68642', '#e8beac', '#f1c27d', '#ffdbac', '#ffffff', '#ef4444', '#3b82f6'];
+    const CLOTHING_COLORS = ['#f5f5f4', '#fef3c7', '#e0f2fe', '#ef4444', '#3b82f6', '#22c55e', '#a855f7', '#f97316', '#ec4899', '#1c1917'];
+    const FACE_SHAPES = [
+        { id: 0, name: 'Yuvarlak', icon: '⚪' },
+        { id: 1, name: 'Kare', icon: '⬜' },
+        { id: 2, name: 'Sivri', icon: '▽' },
+    ];
     const [isFormValid, setIsFormValid] = useState(false);
 
     useEffect(() => {
@@ -96,11 +112,72 @@ export const CharacterSelect: React.FC<CharacterSelectProps> = ({
                                 }`}
                             >
                                 <div className="w-20 h-20 flex items-center justify-center">
-                                    <CharacterPreview charType={index} size={80} />
+                                    <CharacterPreview 
+                                        charType={index} 
+                                        size={80} 
+                                        hairColor={charType === index ? hairColor : undefined}
+                                        clothingColor={charType === index ? clothingColor : undefined}
+                                        faceShape={charType === index ? faceShape : undefined}
+                                    />
                                 </div>
                                 <div className="text-[10px] font-bold uppercase tracking-wider">{char.name}</div>
                             </button>
                         ))}
+                    </div>
+                </div>
+
+                {/* Özelleştirme Seçenekleri */}
+                <div className="space-y-4 bg-stone-900/50 p-4 rounded-2xl border border-stone-800">
+                    {/* Saç Rengi */}
+                    <div>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-stone-600 mb-2">Saç Rengi</p>
+                        <div className="flex flex-wrap gap-2">
+                            {HAIR_COLORS.map(color => (
+                                <button
+                                    key={color}
+                                    type="button"
+                                    onClick={() => setHairColor(color)}
+                                    className={`w-6 h-6 rounded-full border-2 transition-transform active:scale-90 ${hairColor === color ? 'border-white scale-110 shadow-lg' : 'border-transparent'}`}
+                                    style={{ backgroundColor: color }}
+                                />
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Kıyafet Rengi */}
+                    <div>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-stone-600 mb-2">Kıyafet Rengi</p>
+                        <div className="flex flex-wrap gap-2">
+                            {CLOTHING_COLORS.map(color => (
+                                <button
+                                    key={color}
+                                    type="button"
+                                    onClick={() => {
+                                        setClothingColor(color);
+                                        setPlayerColor(color);
+                                    }}
+                                    className={`w-6 h-6 rounded-full border-2 transition-transform active:scale-90 ${clothingColor === color ? 'border-white scale-110 shadow-lg' : 'border-transparent'}`}
+                                    style={{ backgroundColor: color }}
+                                />
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Yüz Şekli */}
+                    <div>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-stone-600 mb-2">Yüz Şekli</p>
+                        <div className="grid grid-cols-3 gap-2">
+                            {FACE_SHAPES.map(shape => (
+                                <button
+                                    key={shape.id}
+                                    type="button"
+                                    onClick={() => setFaceShape(shape.id)}
+                                    className={`py-2 rounded-lg border transition-all text-xs font-bold ${faceShape === shape.id ? 'bg-amber-500 border-amber-500 text-stone-950' : 'bg-stone-800 border-stone-700 text-stone-400 hover:border-stone-600'}`}
+                                >
+                                    {shape.icon} {shape.name}
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 </div>
 

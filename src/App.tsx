@@ -37,6 +37,9 @@ export default function App() {
   const [charType, setCharType] = useState(0);
   const [playerColor, setPlayerColor] = useState(CHARACTER_TYPES[0].bodyColor);
   const [playerHat, setPlayerHat] = useState('');
+  const [hairColor, setHairColor] = useState('#4b2c20');
+  const [clothingColor, setClothingColor] = useState(CHARACTER_TYPES[0].bodyColor);
+  const [faceShape, setFaceShape] = useState(0);
   const [roomId, setRoomId] = useState(() => Math.random().toString(36).substring(2, 6).toUpperCase());
   const [isJoiningExistingRoom, setIsJoiningExistingRoom] = useState(false);
 
@@ -62,6 +65,9 @@ export default function App() {
       color: defaultChar.bodyColor,
       hat: defaultChar.hat,
       charType: 0,
+      hairColor: '#4b2c20',
+      clothingColor: defaultChar.bodyColor,
+      faceShape: 0,
       roomId: quickRoomId,
       marketName: MARKET_NAME,
     });
@@ -80,6 +86,9 @@ export default function App() {
       color: playerColor,
       hat: playerHat,
       charType,
+      hairColor,
+      clothingColor,
+      faceShape,
       roomId: roomId.trim().toUpperCase() || 'TERRAMARKET',
       marketName: isJoiningExistingRoom ? '' : (marketName.trim() || MARKET_NAME),
     });
@@ -116,6 +125,9 @@ export default function App() {
             playerName={playerName} setPlayerName={setPlayerName}
             playerColor={playerColor} setPlayerColor={setPlayerColor}
             playerHat={playerHat} setPlayerHat={setPlayerHat}
+            hairColor={hairColor} setHairColor={setHairColor}
+            clothingColor={clothingColor} setClothingColor={setClothingColor}
+            faceShape={faceShape} setFaceShape={setFaceShape}
             charType={charType} setCharType={setCharType}
             marketName={marketName} setMarketName={setMarketName}
             roomId={roomId} setRoomId={setRoomId}

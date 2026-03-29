@@ -21,8 +21,10 @@ export function drawPlayer(
     
     const typeId   = Math.min(p.charType ?? 0, CHARACTER_TYPES.length - 1);
     const charDef  = CHARACTER_TYPES[typeId];
-    const bodyColor   = p.color || charDef.bodyColor;
+    const bodyColor   = p.clothingColor || p.color || charDef.bodyColor;
     const accentColor = charDef.accent;
+    const hairColor   = p.hairColor || '#4b2c20';
+    const faceShape   = p.faceShape ?? 0;
 
     // ── Animasyon state ──────────────────────────────────────────────────────
     if (!playerRenderState.has(p.id)) {
@@ -101,10 +103,38 @@ export function drawPlayer(
     const headR = 18.7;
     const headY = -15;
 
-    ctx.beginPath(); ctx.arc(0, headY, headR, 0, Math.PI * 2);
+    // Yüz Şekli Uygulama
+    ctx.beginPath();
+    if (faceShape === 1) { // Karemsi
+        ctx.roundRect(-headR, headY - headR, headR * 2, headR * 2, 8);
+    } else if (faceShape === 2) { // Sivri
+        ctx.moveTo(0, headY + headR + 2);
+        ctx.lineTo(-headR, headY - headR / 2);
+        ctx.lineTo(-headR / 2, headY - headR);
+        ctx.lineTo(headR / 2, headY - headR);
+        ctx.lineTo(headR, headY - headR / 2);
+        ctx.closePath();
+    } else { // Normal (Yuvarlak)
+        ctx.arc(0, headY, headR, 0, Math.PI * 2);
+    }
+    
     const headG = ctx.createRadialGradient(-4, headY - 4, 2, 0, headY, headR);
     headG.addColorStop(0, '#fff1e0'); headG.addColorStop(1, '#f5c090');
     ctx.fillStyle = headG; ctx.fill(); stk(ctx, '#000', 2);
+
+    // ── SAÇ ──────────────────────────────────────────────────────────────────
+    ctx.fillStyle = hairColor;
+    ctx.beginPath();
+    ctx.arc(0, headY - 5, headR + 1, Math.PI, 0); // Üst saç
+    ctx.lineTo(headR + 1, headY + 2);
+    ctx.lineTo(headR - 4, headY + 2);
+    ctx.lineTo(headR - 8, headY - 2);
+    ctx.lineTo(-headR + 8, headY - 2);
+    ctx.lineTo(-headR + 4, headY + 2);
+    ctx.lineTo(-headR - 1, headY + 2);
+    ctx.closePath();
+    ctx.fill();
+    stk(ctx, adjustColor(hairColor, -20), 1);
 
     // Yanaklar
     ctx.fillStyle = 'rgba(255,182,193,0.5)';

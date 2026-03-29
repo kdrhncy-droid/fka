@@ -5,14 +5,18 @@ import { stk, adjustColor } from '../renderer/rendererUtils';
 interface CharacterPreviewProps {
     charType: number;
     size?: number;
+    hairColor?: string;
+    clothingColor?: string;
+    faceShape?: number;
 }
 
-export const CharacterPreview: React.FC<CharacterPreviewProps> = ({ charType, size = 120 }) => {
+export const CharacterPreview: React.FC<CharacterPreviewProps> = ({ charType, size = 120, hairColor, clothingColor, faceShape = 0 }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const typeId = Math.min(charType, CHARACTER_TYPES.length - 1);
     const charDef = CHARACTER_TYPES[typeId];
-    const bodyColor = charDef.bodyColor;
+    const bodyColor = clothingColor || charDef.bodyColor;
     const accentColor = charDef.accent;
+    const hairCol = hairColor || '#4b2c20';
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -69,10 +73,38 @@ export const CharacterPreview: React.FC<CharacterPreviewProps> = ({ charType, si
         const headR = 18.7;
         const headY = -15;
 
-        ctx.beginPath(); ctx.arc(0, headY, headR, 0, Math.PI * 2);
+        // Yüz Şekli Uygulama
+        ctx.beginPath();
+        if (faceShape === 1) { // Karemsi
+            ctx.roundRect(-headR, headY - headR, headR * 2, headR * 2, 8);
+        } else if (faceShape === 2) { // Sivri
+            ctx.moveTo(0, headY + headR + 2);
+            ctx.lineTo(-headR, headY - headR / 2);
+            ctx.lineTo(-headR / 2, headY - headR);
+            ctx.lineTo(headR / 2, headY - headR);
+            ctx.lineTo(headR, headY - headR / 2);
+            ctx.closePath();
+        } else { // Normal (Yuvarlak)
+            ctx.arc(0, headY, headR, 0, Math.PI * 2);
+        }
+        
         const headG = ctx.createRadialGradient(-4, headY - 4, 2, 0, headY, headR);
         headG.addColorStop(0, '#fff1e0'); headG.addColorStop(1, '#f5c090');
         ctx.fillStyle = headG; ctx.fill(); stk(ctx, '#000', 2);
+
+        // ── SAÇ ──────────────────────────────────────────────────────────────
+        ctx.fillStyle = hairCol;
+        ctx.beginPath();
+        ctx.arc(0, headY - 5, headR + 1, Math.PI, 0); // Üst saç
+        ctx.lineTo(headR + 1, headY + 2);
+        ctx.lineTo(headR - 4, headY + 2);
+        ctx.lineTo(headR - 8, headY - 2);
+        ctx.lineTo(-headR + 8, headY - 2);
+        ctx.lineTo(-headR + 4, headY + 2);
+        ctx.lineTo(-headR - 1, headY + 2);
+        ctx.closePath();
+        ctx.fill();
+        stk(ctx, adjustColor(hairCol, -20), 1);
 
         // Yanaklar
         ctx.fillStyle = 'rgba(255,182,193,0.5)';
@@ -99,7 +131,7 @@ export const CharacterPreview: React.FC<CharacterPreviewProps> = ({ charType, si
         ctx.fillText(charDef.hat as string, 0, headY - headR - 4);
 
         ctx.restore();
-    }, [charType]);
+    }, [charType, hairColor, clothingColor, faceShape]);
 
     return (
         <canvas

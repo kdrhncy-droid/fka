@@ -108,7 +108,7 @@ io.on("connection", (socket) => {
     }
   }
 
-  socket.on("join", ({ room, roomId: clientRoomId, name, color, hat, charType }) => {
+  socket.on("join", ({ room, roomId: clientRoomId, name, color, hat, charType, hairColor, clothingColor, faceShape }) => {
     // Önceki odadan temizle (aynı socket yeni odaya geçiyorsa)
     removePlayerFromRoom();
 
@@ -136,10 +136,29 @@ io.on("connection", (socket) => {
     const gs = RoomManager.getRoomState(roomId)!;
     gs.players[socket.id] = {
       id: socket.id, name, color, hat, charType,
+      hairColor, clothingColor, faceShape,
       x: 640, y: 350, holding: null
     };
     socket.emit("init", { id: socket.id, state: gs });
     io.to(roomId).emit("state", gs);
+  });
+
+  socket.on("changeCosmetic", (id: number) => {
+    if (!roomId || !RoomManager.getRoomState(roomId)) return;
+    const gs = RoomManager.getRoomState(roomId)!;
+    if (gs.players[socket.id]) {
+      gs.players[socket.id].charType = id;
+      io.to(roomId).emit("state", gs);
+    }
+  });
+
+  socket.on("updateAppearance", (data: { hairColor?: string, clothingColor?: string, faceShape?: number, color?: string, hat?: string }) => {
+    if (!roomId || !RoomManager.getRoomState(roomId)) return;
+    const gs = RoomManager.getRoomState(roomId)!;
+    if (gs.players[socket.id]) {
+      Object.assign(gs.players[socket.id], data);
+      io.to(roomId).emit("state", gs);
+    }
   });
 
   socket.on("move", (pos) => {
