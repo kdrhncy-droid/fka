@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { setSfxEnabled } from '../utils/audio';
+import { setBgmVolume, setBgmEnabled } from '../utils/bgm';
 
 export interface HudElementLayout {
     x: number;  // % cinsinden (0-100), sol kenardan
@@ -25,7 +26,10 @@ export const DEFAULT_HUD_LAYOUT: HudLayout = {
 
 export interface Settings {
     masterVolume: number;
+    bgmVolume: number;
+    sfxVolume: number;
     sfxOn: boolean;
+    bgmOn: boolean;
     joystickSide: 'left' | 'right';
     hudLayout: HudLayout;
     showPerfStats: boolean;
@@ -33,7 +37,10 @@ export interface Settings {
 
 const DEFAULTS: Settings = {
     masterVolume: 0.5,
+    bgmVolume: 0.5,
+    sfxVolume: 0.8,
     sfxOn: true,
+    bgmOn: true,
     joystickSide: 'left',
     hudLayout: DEFAULT_HUD_LAYOUT,
     showPerfStats: false,
@@ -49,6 +56,9 @@ function load(): Settings {
         // hudLayout yoksa default ekle
         if (!parsed.hudLayout) parsed.hudLayout = DEFAULT_HUD_LAYOUT;
         // Yeni eklenen alanlar için fallback
+        if (parsed.bgmVolume === undefined) parsed.bgmVolume = DEFAULTS.bgmVolume;
+        if (parsed.sfxVolume === undefined) parsed.sfxVolume = DEFAULTS.sfxVolume;
+        if (parsed.bgmOn === undefined) parsed.bgmOn = DEFAULTS.bgmOn;
         if (!parsed.hudLayout.chopBtn) parsed.hudLayout.chopBtn = DEFAULT_HUD_LAYOUT.chopBtn;
         return { ...DEFAULTS, ...parsed };
     } catch {
@@ -66,6 +76,14 @@ export function useSettings() {
     useEffect(() => {
         setSfxEnabled(settings.sfxOn);
     }, [settings.sfxOn]);
+
+    useEffect(() => {
+        setBgmVolume(settings.bgmVolume);
+    }, [settings.bgmVolume]);
+
+    useEffect(() => {
+        setBgmEnabled(settings.bgmOn);
+    }, [settings.bgmOn]);
 
     const update = (patch: Partial<Settings>) =>
         setSettings(prev => {

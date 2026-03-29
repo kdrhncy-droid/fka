@@ -15,6 +15,7 @@ import { useVoiceChat } from '../hooks/useVoiceChat';
 import { useGameState } from '../hooks/useGameState';
 import { useLayoutEditor } from '../hooks/useLayoutEditor';
 import { playSound } from '../utils/audio';
+import { setBgmPhase } from '../utils/bgm';
 import { ChatPanel } from './ChatPanel';
 import { DayEndModal } from './DayEndModal';
 
@@ -113,6 +114,11 @@ export const GameScreen: React.FC<Props> = ({
             clearInterval(chopTouchIntervalRef.current);
             chopTouchIntervalRef.current = null;
         }
+    }, [dayPhase]);
+
+    // BGM: Evre değişince müziği değiştir
+    useEffect(() => {
+        if (dayPhase) setBgmPhase(dayPhase);
     }, [dayPhase]);
 
     const { isMuted, toggleMute, audioStreams } = useVoiceChat({

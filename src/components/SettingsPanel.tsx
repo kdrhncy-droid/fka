@@ -56,26 +56,67 @@ export const SettingsPanel: React.FC<Props> = ({ settings, onUpdate, onClose, is
             </div>
 
             <div className="mt-5 space-y-4">
+
+                    {/* ─── MÜZİK BÖLÜMÜ ─────────────────────────────────── */}
+                    <div className="rounded-2xl border border-violet-500/30 bg-violet-500/8 p-4 space-y-4">
+                        <div className="text-xs font-black uppercase tracking-[0.22em] text-violet-400">🎵 Arka Plan Müziği</div>
+
+                        {/* BGM Aç/Kapat */}
+                        <div className="flex items-center justify-between gap-4">
+                            <div>
+                                <div className="text-sm font-black uppercase tracking-[0.14em] text-stone-200">Müzik</div>
+                                <div className="mt-0.5 text-xs text-stone-400">Arka plan müziğini aç / kapat</div>
+                            </div>
+                            <Toggle on={settings.bgmOn} onClick={() => onUpdate({ bgmOn: !settings.bgmOn })} />
+                        </div>
+
+                        {/* BGM Ses Seviyesi */}
+                        <div className={settings.bgmOn ? '' : 'opacity-40 pointer-events-none'}>
+                            <div className="flex items-center justify-between mb-2">
+                                <span className="text-sm font-black uppercase tracking-[0.14em] text-stone-200">Müzik Seviyesi</span>
+                                <span className="text-xs font-black uppercase tracking-[0.16em] text-violet-300">{Math.round(settings.bgmVolume * 100)}%</span>
+                            </div>
+                            <input type="range" min={0} max={1} step={0.05} value={settings.bgmVolume}
+                                onChange={(e) => onUpdate({ bgmVolume: Number(e.target.value) })}
+                                className="w-full accent-violet-400" />
+                        </div>
+                    </div>
+
+                    {/* ─── SES EFEKTLERİ BÖLÜMÜ ─────────────────────────── */}
+                    <div className="rounded-2xl border border-amber-500/30 bg-amber-500/8 p-4 space-y-4">
+                        <div className="text-xs font-black uppercase tracking-[0.22em] text-amber-400">🔊 Ses Efektleri</div>
+
+                        {/* SFX Aç/Kapat */}
+                        <div className="flex items-center justify-between gap-4">
+                            <div>
+                                <div className="text-sm font-black uppercase tracking-[0.14em] text-stone-200">Ses Efektleri</div>
+                                <div className="mt-0.5 text-xs text-stone-400">Mutfak / etkileşim seslerini aç / kapat</div>
+                            </div>
+                            <Toggle on={settings.sfxOn} onClick={() => onUpdate({ sfxOn: !settings.sfxOn })} />
+                        </div>
+
+                        {/* SFX Ses Seviyesi */}
+                        <div className={settings.sfxOn ? '' : 'opacity-40 pointer-events-none'}>
+                            <div className="flex items-center justify-between mb-2">
+                                <span className="text-sm font-black uppercase tracking-[0.14em] text-stone-200">Efekt Seviyesi</span>
+                                <span className="text-xs font-black uppercase tracking-[0.16em] text-amber-300">{Math.round(settings.sfxVolume * 100)}%</span>
+                            </div>
+                            <input type="range" min={0} max={1} step={0.05} value={settings.sfxVolume}
+                                onChange={(e) => onUpdate({ sfxVolume: Number(e.target.value) })}
+                                className="w-full accent-amber-400" />
+                        </div>
+                    </div>
+
+                    {/* ─── ANA SES ──────────────────────────────────────── */}
                     <SliderRow
-                        label="Ana ses seviyesi"
+                        label="Ana Ses (Master)"
                         valueLabel={`${Math.round(settings.masterVolume * 100)}%`}
-                        min={0}
-                        max={1}
-                        step={0.05}
+                        min={0} max={1} step={0.05}
                         value={settings.masterVolume}
                         onChange={(value) => onUpdate({ masterVolume: value })}
                     />
 
-                    <div className="rounded-2xl border border-white/8 bg-white/4 p-4">
-                        <div className="flex items-center justify-between gap-4">
-                            <div>
-                                <div className="text-sm font-black uppercase tracking-[0.14em] text-stone-200">Ses efektleri</div>
-                                <div className="mt-1 text-sm text-stone-400">Mutfak feedback seslerini ac kapa.</div>
-                            </div>
-                            <Toggle on={settings.sfxOn} onClick={() => onUpdate({ sfxOn: !settings.sfxOn })} />
-                        </div>
-                    </div>
-
+                    {/* ─── DİĞER ────────────────────────────────────────── */}
                     <div className="rounded-2xl border border-white/8 bg-white/4 p-4">
                         <div className="flex items-center justify-between gap-4">
                             <div>
