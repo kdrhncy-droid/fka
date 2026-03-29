@@ -67,6 +67,7 @@ export const GameScreen: React.FC<Props> = ({
     const joystickVectorRef = useRef({ x: 0, y: 0 });
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const lastPunchTimeRef = useRef<number>(0);
+    const chopTouchIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
     const [musicOn, setMusicOn] = useState(false);
     const [showSettings, setShowSettings] = useState(false);
@@ -104,6 +105,14 @@ export const GameScreen: React.FC<Props> = ({
         window.addEventListener('keydown', onKey);
         return () => window.removeEventListener('keydown', onKey);
     }, [handleCancel, editorStateRef]);
+
+    // Gün bittiğinde touch doğrama sesini durdur
+    useEffect(() => {
+        if (dayPhase !== 'day' && chopTouchIntervalRef.current) {
+            clearInterval(chopTouchIntervalRef.current);
+            chopTouchIntervalRef.current = null;
+        }
+    }, [dayPhase]);
 
     const { isMuted, toggleMute, audioStreams } = useVoiceChat({
         isJoined: voiceActive && isJoined,
@@ -404,16 +413,23 @@ export const GameScreen: React.FC<Props> = ({
                             e.preventDefault();
                             const gs = gameStateRef.current; const lp = localPlayerRef.current;
                             const board = gs.choppingBoards?.find(b => Math.hypot(b.x - lp.x, b.y - lp.y) < 90);
-                            if (board) { socket?.emit('chop_start', board.id); playSound(null, 'chop'); (e.currentTarget as any)._chopInterval = setInterval(() => playSound(null, 'chop'), 300); }
+                            if (board) {
+                                socket?.emit('chop_start', board.id);
+                                playSound(null, 'chop');
+                                if (chopTouchIntervalRef.current) clearInterval(chopTouchIntervalRef.current);
+                                chopTouchIntervalRef.current = setInterval(() => playSound(null, 'chop'), 300);
+                            }
                         }}
                         onPointerUp={(e) => {
-                            e.preventDefault(); clearInterval((e.currentTarget as any)._chopInterval);
+                            e.preventDefault();
+                            if (chopTouchIntervalRef.current) { clearInterval(chopTouchIntervalRef.current); chopTouchIntervalRef.current = null; }
                             const gs = gameStateRef.current; const lp = localPlayerRef.current;
                             const board = gs.choppingBoards?.find(b => Math.hypot(b.x - lp.x, b.y - lp.y) < 90);
                             if (board) socket?.emit('chop_stop', board.id);
                         }}
                         onPointerLeave={(e) => {
-                            e.preventDefault(); clearInterval((e.currentTarget as any)._chopInterval);
+                            e.preventDefault();
+                            if (chopTouchIntervalRef.current) { clearInterval(chopTouchIntervalRef.current); chopTouchIntervalRef.current = null; }
                             gameStateRef.current.choppingBoards?.forEach(b => socket?.emit('chop_stop', b.id));
                         }}
                         style={{

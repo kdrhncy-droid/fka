@@ -155,10 +155,7 @@ export function drawPlayer(
     ctx.strokeStyle = '#844'; ctx.lineWidth = 1.8; ctx.lineCap = 'round';
     ctx.beginPath(); ctx.arc(0, headY + 7, 3.5, 0.2, Math.PI - 0.2); ctx.stroke();
 
-    // ── ŞAPKA ────────────────────────────────────────────────────────────────
-    ctx.font = '18px Arial';
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText(charDef.hat as string, 0, headY - headR - 4);
+    // ── ŞAPKA (kaldırıldı — emoji artık çizilmiyor) ────────────────────────
 
     // ── TUTULAN EŞYA ─────────────────────────────────────────────────────────
     if (isHolding) {

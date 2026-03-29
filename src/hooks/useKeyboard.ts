@@ -22,6 +22,19 @@ export function useKeyboard({ isJoinedRef, socket, audioCtxRef, gameStateRef, lo
     const lastPunchTime = useRef(0);
     const chopIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+    // Gün bittiğinde (sunucudan dayEnd geldiğinde) doğrama sesini durdur
+    useEffect(() => {
+        if (!socket) return;
+        const onDayEnd = () => {
+            if (chopIntervalRef.current) {
+                clearInterval(chopIntervalRef.current);
+                chopIntervalRef.current = null;
+            }
+        };
+        socket.on('dayEnd', onDayEnd);
+        return () => { socket.off('dayEnd', onDayEnd); };
+    }, [socket]);
+
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (!isJoinedRef.current) return;
