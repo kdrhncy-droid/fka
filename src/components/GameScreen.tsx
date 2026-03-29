@@ -371,8 +371,13 @@ export const GameScreen: React.FC<Props> = ({
                             });
                             if (punchTarget) socket?.emit('punchCustomer', punchTarget.id);
                         }}
-                        style={{ width: punchButtonSize, height: punchButtonSize, touchAction: 'none' }}
-                        className="bg-red-500 active:bg-red-700 text-white rounded-full shadow-xl font-black text-sm border-4 border-red-300 flex items-center justify-center active:scale-95"
+                        style={{
+                            width: punchButtonSize,
+                            height: punchButtonSize,
+                            touchAction: 'none',
+                            background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.9) 0%, rgba(220, 38, 38, 0.9) 100%)',
+                        }}
+                        className="text-white rounded-full shadow-lg font-black text-sm border-2 border-red-400/50 flex items-center justify-center active:scale-95 transition-all duration-150 hover:shadow-xl"
                     >DÖV<br />👊</button>
                 </div>
                 )}
@@ -381,8 +386,13 @@ export const GameScreen: React.FC<Props> = ({
                 <div className="absolute z-10" style={{ left: `${settings.hudLayout.actionBtn.x}%`, top: `${settings.hudLayout.actionBtn.y}%`, transform: `scale(${settings.hudLayout.actionBtn.scale})`, transformOrigin: 'top left' }}>
                     <button
                         onPointerDown={(e) => { e.preventDefault(); if (dayPhase === 'prep') handleInteract(); else emit('interact'); }}
-                        style={{ width: bs, height: bs, touchAction: 'none' }}
-                        className="bg-blue-500 active:bg-blue-700 text-white rounded-full shadow-xl font-black text-sm border-4 border-blue-300 flex items-center justify-center active:scale-95"
+                        style={{
+                            width: bs,
+                            height: bs,
+                            touchAction: 'none',
+                            background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(37, 99, 235, 0.9) 100%)',
+                        }}
+                        className="text-white rounded-full shadow-lg font-black text-sm border-2 border-blue-400/50 flex items-center justify-center active:scale-95 transition-all duration-150 hover:shadow-xl"
                     >AL<br />VER</button>
                 </div>
                 )}
@@ -406,16 +416,30 @@ export const GameScreen: React.FC<Props> = ({
                             e.preventDefault(); clearInterval((e.currentTarget as any)._chopInterval);
                             gameStateRef.current.choppingBoards?.forEach(b => socket?.emit('chop_stop', b.id));
                         }}
-                        style={{ width: Math.round(bs * 0.7), height: Math.round(bs * 0.7), touchAction: 'none' }}
-                        className="bg-amber-600 active:bg-amber-800 text-white rounded-full shadow-xl font-black text-xs border-4 border-amber-400 flex items-center justify-center active:scale-95"
+                        style={{
+                            width: Math.round(bs * 0.7),
+                            height: Math.round(bs * 0.7),
+                            touchAction: 'none',
+                            background: 'linear-gradient(135deg, rgba(217, 119, 6, 0.9) 0%, rgba(180, 83, 9, 0.9) 100%)',
+                        }}
+                        className="text-white rounded-full shadow-lg font-black text-xs border-2 border-amber-400/50 flex items-center justify-center active:scale-95 transition-all duration-150 hover:shadow-xl"
                     >🔪<br />DOĞRA</button>
                 </div>
                 )}
                 {/* Müzik */}
                 {!showHudEditor && (
                 <div className="absolute z-10" style={{ left: `${settings.hudLayout.musicBtn.x}%`, top: `${settings.hudLayout.musicBtn.y}%`, transform: `scale(${settings.hudLayout.musicBtn.scale})`, transformOrigin: 'top left' }}>
-                    <button onClick={toggleMusic} style={{ width: Math.round(bs * 0.55), height: Math.round(bs * 0.55) }}
-                        className={`rounded-full shadow-md text-base border-2 flex items-center justify-center ${musicOn ? 'bg-purple-500 border-purple-400 text-white' : 'bg-stone-700 border-stone-600 text-stone-400'}`}
+                    <button onClick={toggleMusic}
+                        style={{
+                            width: Math.round(bs * 0.55),
+                            height: Math.round(bs * 0.55),
+                            background: musicOn
+                                ? 'linear-gradient(135deg, rgba(168, 85, 247, 0.9) 0%, rgba(147, 51, 234, 0.9) 100%)'
+                                : 'linear-gradient(135deg, rgba(87, 83, 82, 0.7) 0%, rgba(64, 63, 63, 0.7) 100%)',
+                        }}
+                        className={`rounded-full shadow-lg text-base border-2 flex items-center justify-center transition-all duration-150 hover:shadow-xl ${
+                            musicOn ? 'border-purple-400/50 text-white' : 'border-slate-500/50 text-slate-300'
+                        }`}
                     >{musicOn ? '🎵' : '🔇'}</button>
                 </div>
                 )}

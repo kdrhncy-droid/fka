@@ -97,20 +97,25 @@ export const Joystick: React.FC<JoystickProps> = ({ onMove, size = 128 }) => {
   return (
     <div
       ref={joystickRef}
-      className="rounded-full bg-stone-400/70 border-4 border-stone-600 flex items-center justify-center touch-none select-none cursor-pointer"
-      style={{ width: size, height: size }}
+      className="rounded-full flex items-center justify-center touch-none select-none cursor-pointer shadow-lg border-2 border-slate-400/30 transition-all duration-200"
+      style={{
+        width: size,
+        height: size,
+        background: `linear-gradient(135deg, rgba(148, 163, 184, 0.6) 0%, rgba(71, 85, 105, 0.6) 100%)`,
+      }}
       onMouseDown={handleMouseDown}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
       <div
-        className="rounded-full bg-stone-700 shadow-lg pointer-events-none"
+        className="rounded-full pointer-events-none shadow-md transition-shadow duration-200"
         style={{
           width: knobSize,
           height: knobSize,
           transform: `translate(${knobPos.x}px, ${knobPos.y}px)`,
           transition: isDraggingState ? 'none' : 'transform 0.2s ease-out',
+          background: `linear-gradient(135deg, rgba(100, 116, 139, 0.9) 0%, rgba(51, 65, 85, 0.9) 100%)`,
         }}
       />
     </div>

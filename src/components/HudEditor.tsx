@@ -191,36 +191,60 @@ export const HudEditor: React.FC<Props> = ({ layout, onChange, onClose }) => {
                 />
 
                 <DraggableHudItem id="joystick" layout={layout.joystick} containerRef={containerRef} onUpdate={updateElement} label="Joystick">
-                    <div className="rounded-full bg-stone-400/70 border-4 border-stone-600 flex items-center justify-center"
-                        style={{ width: joystickSize, height: joystickSize }}>
-                        <div className="rounded-full bg-stone-700" style={{ width: joystickSize / 2, height: joystickSize / 2 }} />
+                    <div className="rounded-full border-2 border-slate-400/30 flex items-center justify-center shadow-lg"
+                        style={{
+                            width: joystickSize,
+                            height: joystickSize,
+                            background: `linear-gradient(135deg, rgba(148, 163, 184, 0.6) 0%, rgba(71, 85, 105, 0.6) 100%)`,
+                        }}>
+                        <div className="rounded-full" style={{
+                            width: joystickSize / 2,
+                            height: joystickSize / 2,
+                            background: `linear-gradient(135deg, rgba(100, 116, 139, 0.9) 0%, rgba(51, 65, 85, 0.9) 100%)`,
+                        }} />
                     </div>
                 </DraggableHudItem>
 
                 <DraggableHudItem id="punchBtn" layout={layout.punchBtn} containerRef={containerRef} onUpdate={updateElement} label="Döv">
-                    <div className="bg-red-500 text-white rounded-full shadow-xl font-black text-sm border-4 border-red-300 flex items-center justify-center"
-                        style={{ width: punchBtnSize, height: punchBtnSize }}>
+                    <div className="text-white rounded-full shadow-lg font-black text-sm border-2 border-red-400/50 flex items-center justify-center"
+                        style={{
+                            width: punchBtnSize,
+                            height: punchBtnSize,
+                            background: `linear-gradient(135deg, rgba(239, 68, 68, 0.9) 0%, rgba(220, 38, 38, 0.9) 100%)`,
+                        }}>
                         DÖV<br />👊
                     </div>
                 </DraggableHudItem>
 
                 <DraggableHudItem id="actionBtn" layout={layout.actionBtn} containerRef={containerRef} onUpdate={updateElement} label="AL/VER">
-                    <div className="bg-blue-500 text-white rounded-full shadow-xl font-black text-sm border-4 border-blue-300 flex items-center justify-center"
-                        style={{ width: actionBtnSize, height: actionBtnSize }}>
+                    <div className="text-white rounded-full shadow-lg font-black text-sm border-2 border-blue-400/50 flex items-center justify-center"
+                        style={{
+                            width: actionBtnSize,
+                            height: actionBtnSize,
+                            background: `linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(37, 99, 235, 0.9) 100%)`,
+                        }}>
                         AL<br />VER
                     </div>
                 </DraggableHudItem>
 
                 <DraggableHudItem id="musicBtn" layout={layout.musicBtn} containerRef={containerRef} onUpdate={updateElement} label="Müzik">
-                    <div className="rounded-full shadow-md text-base border-2 flex items-center justify-center bg-stone-700 border-stone-600 text-stone-400"
-                        style={{ width: musicBtnSize, height: musicBtnSize }}>
+                    <div className="rounded-full shadow-lg text-base border-2 border-slate-500/50 flex items-center justify-center text-slate-300"
+                        style={{
+                            width: musicBtnSize,
+                            height: musicBtnSize,
+                            background: `linear-gradient(135deg, rgba(87, 83, 82, 0.7) 0%, rgba(64, 63, 63, 0.7) 100%)`,
+                        }}>
                         🔇
                     </div>
                 </DraggableHudItem>
 
                 <DraggableHudItem id="chopBtn" layout={layout.chopBtn} containerRef={containerRef} onUpdate={updateElement} label="Doğra">
-                    <div className="bg-amber-600 text-white rounded-full shadow-xl font-black text-xs border-4 border-amber-400 flex items-center justify-center"
-                        style={{ width: Math.round(actionBtnSize * 0.7), height: Math.round(actionBtnSize * 0.7) }}>
+                    <div className="text-white rounded-full shadow-lg font-black text-xs border-2 border-amber-400/50 flex items-center justify-center"
+                        style={{
+                            width: Math.round(actionBtnSize * 0.7),
+                            height: Math.round(actionBtnSize * 0.7),
+                            background: `linear-gradient(135deg, rgba(217, 119, 6, 0.9) 0%, rgba(180, 83, 9, 0.9) 100%)`,
+                        }}>
                         🔪<br />DOĞRA
                     </div>
                 </DraggableHudItem>
