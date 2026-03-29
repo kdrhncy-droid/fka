@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { CHARACTER_TYPES } from '../types/game';
 import { MARKET_NAME } from '../constants';
+import { CharacterPreview } from './CharacterPreview';
 
 interface CharacterSelectProps {
     isConnected: boolean;
@@ -78,7 +79,7 @@ export const CharacterSelect: React.FC<CharacterSelectProps> = ({
                 {/* Karakter seçimi */}
                 <div>
                     <p className="text-[10px] font-bold uppercase tracking-widest text-stone-600 mb-2">Karakter</p>
-                    <div className="grid grid-cols-4 gap-2">
+                    <div className="grid grid-cols-3 gap-3">
                         {CHARACTER_TYPES.map((char, index) => (
                             <button
                                 key={char.id}
@@ -88,14 +89,16 @@ export const CharacterSelect: React.FC<CharacterSelectProps> = ({
                                     setPlayerHat('');
                                     setPlayerColor(char.bodyColor);
                                 }}
-                                className={`rounded-xl p-2 text-center transition-all ${
+                                className={`rounded-xl p-4 text-center transition-all flex flex-col items-center gap-2 ${
                                     charType === index
-                                        ? 'bg-stone-100 text-stone-900 shadow-md scale-[1.04]'
+                                        ? 'bg-amber-500/20 border-2 border-amber-500 shadow-md scale-[1.02]'
                                         : 'bg-stone-900 border border-stone-800 text-stone-400 hover:border-stone-600'
                                 }`}
                             >
-                                <div className="text-xl">{char.hat}</div>
-                                <div className="text-[9px] font-bold mt-1 truncate">{char.name}</div>
+                                <div className="w-20 h-20 flex items-center justify-center">
+                                    <CharacterPreview charType={index} size={80} />
+                                </div>
+                                <div className="text-[10px] font-bold uppercase tracking-wider">{char.name}</div>
                             </button>
                         ))}
                     </div>

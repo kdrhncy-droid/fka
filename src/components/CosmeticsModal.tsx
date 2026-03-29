@@ -1,6 +1,7 @@
 import React from 'react';
 import { CHARACTER_TYPES } from '../../shared/types';
 import { BaseModal } from './BaseModal';
+import { CharacterPreview } from './CharacterPreview';
 
 interface Props {
     onClose: () => void;
@@ -34,7 +35,7 @@ export const CosmeticsModal: React.FC<Props> = ({ onClose, socket, myCharType })
 
             {/* İçerik Gövdesi */}
             <div className="p-6 overflow-y-auto no-scrollbar pb-10">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                         {CHARACTER_TYPES.map((char) => {
                             const isSelected = char.id === myCharType;
 
@@ -47,12 +48,9 @@ export const CosmeticsModal: React.FC<Props> = ({ onClose, socket, myCharType })
                                         }`}
                                     onClick={() => !isSelected && handleSelect(char.id)}
                                 >
-                                    {/* Icon / Head */}
-                                    <div
-                                        className="w-16 h-16 rounded-full flex items-center justify-center text-3xl shadow-inner mb-3"
-                                        style={{ backgroundColor: char.bodyColor, border: `3px solid ${char.accent}` }}
-                                    >
-                                        {char.hat}
+                                    {/* Karakter Önizlemesi */}
+                                    <div className="w-24 h-24 flex items-center justify-center mb-3">
+                                        <CharacterPreview charType={char.id} size={100} />
                                     </div>
 
                                     {/* Info */}
