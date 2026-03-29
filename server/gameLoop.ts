@@ -41,8 +41,6 @@ export function tryQueueSeat(gs: GameState, io: Server, rid: string) {
     ...gs.customers.map(c => `${c.seatX},${c.seatY}`),
     ...gs.dirtyTables.map(t => `${t.seatX},${t.seatY}`),
   ]);
-  const freeSeats = getSeatSlots(gs.tableLayout).filter(s => !occupied.has(`${s.x},${s.y}`));
-  if (!freeSeats.length) return;
 
   // İlk misafirin grubunu belirle — tüm grup üyeleri aynı anda oturur
   const firstGuest = gs.waitList[0];
@@ -51,18 +49,39 @@ export function tryQueueSeat(gs: GameState, io: Server, rid: string) {
     ? gs.waitList.filter(g => g.groupId === groupId)
     : [firstGuest];
 
-  const canSeat = Math.min(groupToSeat.length, freeSeats.length);
-  if (canSeat <= 0) return;
+  // Grubu parçalamamak için TAM olarak bu grubun sığabileceği BİR masa bul
+  let selectedSeats: { x: number; y: number }[] | null = null;
+  for (const t of Object.values(gs.tableLayout)) {
+    // Sadece bu masanın koltuklarını al
+    const s = t.seats ?? 4;
+    const tableSlots: { x: number; y: number }[] = [];
+    if (s === 1) tableSlots.push({ x: t.x, y: t.y + 35 });
+    else if (s === 2) tableSlots.push({ x: t.x, y: t.y - 50 }, { x: t.x, y: t.y + 40 });
+    else if (s === 3) tableSlots.push({ x: t.x, y: t.y - 50 }, { x: t.x - 28, y: t.y + 40 }, { x: t.x + 28, y: t.y + 40 });
+    else tableSlots.push({ x: t.x - 28, y: t.y - 50 }, { x: t.x + 28, y: t.y - 50 }, { x: t.x - 28, y: t.y + 40 }, { x: t.x + 28, y: t.y + 40 });
+    
+    // Boş olan sandalyeleri filtrele
+    const tableFree = tableSlots.filter(s => !occupied.has(`${s.x},${s.y}`));
+    
+    // Yeterli yer varsa masayı kap!
+    if (tableFree.length >= groupToSeat.length) {
+      selectedSeats = tableFree.slice(0, groupToSeat.length);
+      break;
+    }
+  }
+
+  // Hiçbir masa bu gruba tamamen sığmıyorsa bekle (sıra ilerlemez)
+  if (!selectedSeats) return;
 
   const playerCount = Object.keys(gs.players).length || 1;
   const maxP = patLimit(gs.upgrades.patience, gs.day, playerCount);
 
-  for (let i = 0; i < canSeat; i++) {
+  for (let i = 0; i < groupToSeat.length; i++) {
     const guest = groupToSeat[i];
     const idx = gs.waitList.indexOf(guest);
     if (idx !== -1) gs.waitList.splice(idx, 1);
 
-    const seat = freeSeats[i];
+    const seat = selectedSeats[i];
     gs.customers.push({
       id: guest.id, seatX: seat.x, seatY: seat.y,
       x: DOOR_X, y: DOOR_ENTRY_Y, targetY: EXTERIOR_Y - 10,
@@ -80,8 +99,8 @@ export function tryQueueSeat(gs: GameState, io: Server, rid: string) {
     });
   }
   io.to(rid).emit("sound", "arrive");
-  // Grup büyüklüğüne göre cooldown: solo 85 tick, 2 kişi 100 tick, 3 kişi 115 tick
-  gs._seatCooldown = 70 + canSeat * 15;
+  // Grup büyüklüğüne göre cooldown: solo 85 tick, 2 kişi 100 tick, etc...
+  gs._seatCooldown = 70 + groupToSeat.length * 15;
 }
 
 export function gameTick(gs: GameState, io: Server, rid: string) {
