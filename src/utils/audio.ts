@@ -1,7 +1,9 @@
 // BUG-2: Global SFX bayrak — SettingsPanel'den kontrol edilir
 let _sfxEnabled = true;
+let _sfxVolume = 0.8;
 export function setSfxEnabled(v: boolean) { _sfxEnabled = v; }
 export function isSfxEnabled() { return _sfxEnabled; }
+export function setSfxVolume(v: number) { _sfxVolume = v; }
 
 let _audioCtx: AudioContext | null = null;
 let chopBufferCache: AudioBuffer | null = null;
@@ -29,10 +31,12 @@ function playNote(ctx: AudioContext, freq: number, startTime: number, duration: 
   osc.type = type;
   osc.frequency.setValueAtTime(freq, startTime);
 
+  const actualVol = vol * _sfxVolume;
+  
   // ADSR — saldırı/bırakma zarfı (doğal his)
   gain.gain.setValueAtTime(0, startTime);
-  gain.gain.linearRampToValueAtTime(vol, startTime + 0.015); // hızlı saldırı
-  gain.gain.setValueAtTime(vol, startTime + duration * 0.6);
+  gain.gain.linearRampToValueAtTime(actualVol, startTime + 0.015); // hızlı saldırı
+  gain.gain.setValueAtTime(actualVol, startTime + duration * 0.6);
   gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
 
   osc.connect(filter);
@@ -96,7 +100,7 @@ export function playSound(_audioCtxRef: any, type: string) {
       const noise = ctx.createBufferSource();
       noise.buffer = chopBufferCache;
       const noiseGain = ctx.createGain();
-      noiseGain.gain.setValueAtTime(0.18, now);
+      noiseGain.gain.setValueAtTime(0.18 * _sfxVolume, now);
       noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
       const hpf = ctx.createBiquadFilter();
       hpf.type = 'highpass';

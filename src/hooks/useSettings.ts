@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { setSfxEnabled } from '../utils/audio';
+import { setSfxEnabled, setSfxVolume } from '../utils/audio';
 import { setBgmVolume, setBgmEnabled } from '../utils/bgm';
 
 export interface HudElementLayout {
@@ -76,6 +76,10 @@ export function useSettings() {
     useEffect(() => {
         setSfxEnabled(settings.sfxOn);
     }, [settings.sfxOn]);
+
+    useEffect(() => {
+        setSfxVolume(settings.sfxVolume);
+    }, [settings.sfxVolume]);
 
     useEffect(() => {
         setBgmVolume(settings.bgmVolume);

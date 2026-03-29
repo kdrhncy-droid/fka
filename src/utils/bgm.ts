@@ -17,6 +17,7 @@ export const BGM_TRACKS: Record<GamePhase, string[]> = {
   day: [
     '/sounds/Balzan Groove.mp3',
     '/sounds/Fluffing a Duck.mp3',
+    '/sounds/Monkeys Spinning Monkeys.mp3',
   ],
   night: [
     '/sounds/Dissappointment.mp3',
