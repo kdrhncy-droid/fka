@@ -157,7 +157,14 @@ export interface DirtyTable {
 }
 
 // ─── Masa Çarpışma Boyutları ───────────────────────────────────────────────
-export const TABLE_HALF_W = 45;
+export function getTableDims(seats?: 1 | 2 | 3 | 4): { hw: number; hh: number } {
+  const s = seats ?? 4;
+  if (s === 1) return { hw: 25, hh: 25 };
+  if (s === 2) return { hw: 25, hh: 35 };
+  if (s === 3) return { hw: 35, hh: 35 };
+  return { hw: 45, hh: 35 };
+}
+export const TABLE_HALF_W = 45; // Geriye dönük uyumluluk (gerekiyorsa)
 export const TABLE_HALF_H = 35;
 
 export interface GameState {
@@ -239,19 +246,40 @@ export interface TablePosition {
   id: string;
   x: number;
   y: number;
+  seats?: 1 | 2 | 3 | 4; // Müşteri kapasitesi
 }
 
 export function getSeatSlots(tableLayout: Record<string, TablePosition>): { x: number; y: number }[] {
-  return Object.values(tableLayout).flatMap(t => [
-    { x: t.x, y: t.y - 47 },
-    { x: t.x, y: t.y + 47 },
-  ]);
+  return Object.values(tableLayout).flatMap(t => {
+    const s = t.seats ?? 4;
+    // Eğer 1 ise sadece üst, 2 ise alt/üst, 3 ise üst/alt/sağ, 4 ise standart çapraz (sol üst, sağ üst, sol alt, sağ alt... HAYIR)
+    // Aslında drawTable.ts önceden 4 masayı şu yerlere çiziyordu:
+    // cx - 28, cy - 56 (up) | cx + 28, cy - 56 (up) | cx - 28, cy + 40 (down) | cx + 28, cy + 40 (down)
+    // Ama `getSeatSlots` SADECE 2 döndürüyordu (y-47 ve y+47, x sabitti).
+    // Artık tam çizeceğiz! (Sandalyelere tam hizalı).
+    
+    // YENİ DÜZEN (Tam ortalanmış ve düzgün yerleşim):
+    if (s === 1) return [{ x: t.x, y: t.y + 35 }]; // masanın altı (yukarı bakacak)
+    if (s === 2) return [{ x: t.x, y: t.y - 50 }, { x: t.x, y: t.y + 40 }]; // Karşılıklı
+    if (s === 3) return [
+      { x: t.x, y: t.y - 50 }, // üst
+      { x: t.x - 28, y: t.y + 40 }, // alt-sol
+      { x: t.x + 28, y: t.y + 40 }, // alt-sağ
+    ];
+    // 4 kişilik:
+    return [
+      { x: t.x - 28, y: t.y - 50 }, // üst-sol
+      { x: t.x + 28, y: t.y - 50 }, // üst-sağ
+      { x: t.x - 28, y: t.y + 40 }, // alt-sol
+      { x: t.x + 28, y: t.y + 40 }, // alt-sağ
+    ];
+  });
 }
 
 // ─── Gün / Gece (1.5 dakika gündüz, 30 saniye gece) ──────────────────────────
 export const DAY_TICKS = 2700;
 export const NIGHT_TICKS = 900;
-export const CLOSING_THRESHOLD = 270;
+export const CLOSING_THRESHOLD = 600; // Son 10 saniye (600 tick) yeni müşteri gelmez
 export const BURN_TICKS = 300;
 export const EAT_TICKS = 240;
 export const BURNED_FOOD = '⬛';

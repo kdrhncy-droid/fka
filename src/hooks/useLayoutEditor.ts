@@ -75,10 +75,10 @@ export function useLayoutEditor({ socket, gameStateRef, localPlayerRef, dayPhase
       delete gs.lockedStations[stationId];
     };
 
-    const onTableMoved = ({ tableId, x, y }: { tableId: string; x: number; y: number }) => {
+    const onTableMoved = ({ tableId, x, y, seats }: { tableId: string; x: number; y: number; seats?: 1 | 2 | 3 | 4 }) => {
       const gs = gameStateRef.current;
       if (gs.tableLayout[tableId]) {
-        gs.tableLayout[tableId] = { id: tableId, x, y };
+        gs.tableLayout[tableId] = { id: tableId, x, y, seats: seats ?? gs.tableLayout[tableId].seats };
       }
     };
 
@@ -173,10 +173,10 @@ export function useLayoutEditor({ socket, gameStateRef, localPlayerRef, dayPhase
     for (const [id, t] of Object.entries(tableLayout ?? {}) as [string, { id: string; x: number; y: number }][]) {
       if ((gs.lockedTables ?? {})[id]) continue;
       const hasCust = gs.customers.some(c =>
-        c.seatX === t.x && (c.seatY === t.y - 47 || c.seatY === t.y + 47)
+        Math.hypot(c.seatX - t.x, c.seatY - t.y) < 60
       );
       const hasDirty = gs.dirtyTables.some(d =>
-        d.seatX === t.x && (d.seatY === t.y - 47 || d.seatY === t.y + 47)
+        Math.hypot(d.seatX - t.x, d.seatY - t.y) < 60
       );
       if (hasCust || hasDirty) continue;
       const dist = Math.hypot(lp.x - t.x, lp.y - t.y);
@@ -241,5 +241,15 @@ export function useLayoutEditor({ socket, gameStateRef, localPlayerRef, dayPhase
     setState(DEFAULT_STATE);
   }, [socket, setState]);
 
-  return { editorState, editorStateRef, handleInteract, handleCancel };
+  const handleCycleSeats = useCallback(() => {
+    if (dayPhase !== 'prep') return;
+    if (editorStateRef.current.isMovingTable) {
+      const { movingTableId } = editorStateRef.current;
+      if (movingTableId) {
+        socket?.emit('cycleTableSeats', { tableId: movingTableId });
+      }
+    }
+  }, [dayPhase, socket]);
+
+  return { editorState, editorStateRef, handleInteract, handleCancel, handleCycleSeats };
 }

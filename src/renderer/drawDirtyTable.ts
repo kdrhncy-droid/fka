@@ -4,7 +4,7 @@ export function drawDirtyTable(ctx: CanvasRenderingContext2D, seatX: number, sea
   if (tableLayout && Object.keys(tableLayout).length > 0) {
     // Müşterinin oturduğu koltuğun x eksenindeki en yakın masayı bul
     const closestTable = Object.values(tableLayout).reduce((prev, curr) => 
-       Math.abs(curr.x - seatX) < Math.abs(prev.x - seatX) ? curr : prev
+       Math.hypot(curr.x - seatX, curr.y - seatY) < Math.hypot(prev.x - seatX, prev.y - seatY) ? curr : prev
     );
     isTopSeat = seatY < closestTable.y;
   } else {

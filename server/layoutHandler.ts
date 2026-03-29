@@ -1,5 +1,5 @@
 import { Socket, Server } from "socket.io";
-import { GameState, GRID_CELL_SIZE, GAME_WIDTH, GAME_HEIGHT, TablePosition, TABLE_HALF_W, TABLE_HALF_H, WALL_Y1, WALL_Y2 } from "../shared/types.js";
+import { GameState, GRID_CELL_SIZE, GAME_WIDTH, GAME_HEIGHT, TablePosition, getTableDims, WALL_Y1, WALL_Y2 } from "../shared/types.js";
 
 function snapToGrid(x: number, y: number): { x: number; y: number } {
   const col = Math.floor(x / GRID_CELL_SIZE);
@@ -25,15 +25,17 @@ function isOccupied(
 const MIN_TABLE_Y = 320;
 
 function tableOverlaps(
-  x: number, y: number,
+  x: number, y: number, seats: 1 | 2 | 3 | 4 | undefined,
   layout: Record<string, TablePosition>,
   excludeId: string
 ): boolean {
-  return Object.values(layout).some(t =>
-    t.id !== excludeId &&
-    Math.abs(t.x - x) < TABLE_HALF_W * 2 + 10 &&
-    Math.abs(t.y - y) < TABLE_HALF_H * 2 + 10
-  );
+  const incoming = getTableDims(seats);
+  return Object.values(layout).some(t => {
+    if (t.id === excludeId) return false;
+    const existing = getTableDims(t.seats);
+    return Math.abs(t.x - x) < (existing.hw + incoming.hw + 10) &&
+           Math.abs(t.y - y) < (existing.hh + incoming.hh + 10);
+  });
 }
 
 export function registerLayoutHandler(
@@ -138,12 +140,12 @@ export function registerLayoutHandler(
     const t = gs.tableLayout[tableId];
     // Masada müşteri var mı?
     const hasCust = gs.customers.some(c =>
-      c.seatX === t.x && (c.seatY === t.y - 47 || c.seatY === t.y + 47)
+      Math.hypot(c.seatX - t.x, c.seatY - t.y) < 60
     );
     if (hasCust) return;
     // Kirli masa var mı?
     const hasDirty = gs.dirtyTables.some(d =>
-      d.seatX === t.x && (d.seatY === t.y - 47 || d.seatY === t.y + 47)
+      Math.hypot(d.seatX - t.x, d.seatY - t.y) < 60
     );
     if (hasDirty) return;
     // Zaten kilitli mi?
@@ -168,11 +170,12 @@ export function registerLayoutHandler(
     if (snapped.y < MIN_TABLE_Y) { socket.emit("sound", "fail"); return; }
     if (snapped.y >= WALL_Y1 && snapped.y <= WALL_Y2) { socket.emit("sound", "fail"); return; }
     if (snapped.y > GAME_HEIGHT - 60) { socket.emit("sound", "fail"); return; }
-    // AABB çakışma
-    if (tableOverlaps(snapped.x, snapped.y, gs.tableLayout, tableId)) {
+    // AABB çakışma (kendi kapladığı boyuta göre)
+    const t = gs.tableLayout[tableId];
+    if (tableOverlaps(snapped.x, snapped.y, t.seats, gs.tableLayout, tableId)) {
       socket.emit("sound", "fail"); return;
     }
-    gs.tableLayout[tableId] = { id: tableId, x: snapped.x, y: snapped.y };
+    gs.tableLayout[tableId] = { id: tableId, x: snapped.x, y: snapped.y, seats: t.seats };
     delete gs.lockedTables[tableId];
     io.to(roomId).emit("tableMoved", { tableId, x: snapped.x, y: snapped.y });
     io.to(roomId).emit("tableUnlocked", { tableId });
@@ -187,5 +190,33 @@ export function registerLayoutHandler(
     if (gs.lockedTables[tableId] !== socket.id) return;
     delete gs.lockedTables[tableId];
     io.to(roomId).emit("tableUnlocked", { tableId });
+  });
+
+  socket.on("cycleTableSeats", ({ tableId }: { tableId: string }) => {
+    const roomId = getRoomId();
+    if (!roomId) return;
+    const gs = getRoomState(roomId);
+    if (!gs) return;
+    if (gs.dayPhase !== "prep") return;
+    if (!(tableId in gs.tableLayout)) return;
+    if (gs.lockedTables[tableId] !== socket.id) return; // Sadece masayı elinde tutan değiştirebilir
+
+    const t = gs.tableLayout[tableId];
+    let nextSeats: 1 | 2 | 3 | 4 = 1;
+    const current = t.seats ?? 4;
+    if (current === 1) nextSeats = 2;
+    else if (current === 2) nextSeats = 3;
+    else if (current === 3) nextSeats = 4;
+    else if (current === 4) nextSeats = 1;
+
+    // Yeni boyutuyla çakışma yapıyor mu?
+    if (tableOverlaps(t.x, t.y, nextSeats, gs.tableLayout, tableId)) {
+      socket.emit("sound", "fail"); return;
+    }
+
+    t.seats = nextSeats;
+    // Client'lara 'tableMoved' göndererek seats verisini de yolluyoruz.
+    io.to(roomId).emit("tableMoved", { tableId, x: t.x, y: t.y, seats: t.seats });
+    socket.emit("sound", "pickup");
   });
 }

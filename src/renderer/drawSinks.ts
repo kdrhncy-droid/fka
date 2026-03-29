@@ -1,8 +1,8 @@
-import { Sink } from "../types/game";
+import { WashingSink } from "../types/game";
 
 export function drawSinks(
   ctx: CanvasRenderingContext2D,
-  sinks: Sink[],
+  sinks: WashingSink[],
   stationLayout?: Record<string, { x: number; y: number }>,
   movingId?: string | null
 ) {

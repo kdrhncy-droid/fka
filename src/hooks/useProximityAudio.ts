@@ -14,9 +14,10 @@ export function updateProximityAudio(
   const lp = localPlayerRef.current;
 
   Object.entries(audioElementsRef.current).forEach(([socketId, el]) => {
+    const audioEl = el as HTMLAudioElement;
     const other = players[socketId];
-    if (!other) { el.volume = 0; return; }
+    if (!other) { audioEl.volume = 0; return; }
     const dist = Math.hypot(lp.x - other.x, lp.y - other.y);
-    el.volume = Math.max(0, Math.min(1, 1 - dist / MAX_HEAR_DIST)) * globalVolume;
+    audioEl.volume = Math.max(0, Math.min(1, 1 - dist / MAX_HEAR_DIST)) * globalVolume;
   });
 }

@@ -1,4 +1,4 @@
-import { GRID_CELL_SIZE, GAME_WIDTH, GAME_HEIGHT, StationPosition, TablePosition, TABLE_HALF_W, TABLE_HALF_H, WALL_Y1, WALL_Y2 } from '../../shared/types';
+import { GRID_CELL_SIZE, GAME_WIDTH, GAME_HEIGHT, StationPosition, TablePosition, getTableDims, WALL_Y1, WALL_Y2 } from '../../shared/types';
 
 const GRID_COLS = Math.floor(GAME_WIDTH / GRID_CELL_SIZE);
 const GRID_ROWS = Math.floor(GAME_HEIGHT / GRID_CELL_SIZE);
@@ -58,23 +58,29 @@ export function isTablePositionValid(
 ): boolean {
   if (y < MIN_TABLE_Y || y > GAME_HEIGHT - 60) return false;
   if (y >= WALL_Y1 && y <= WALL_Y2) return false;
-  return !Object.values(tableLayout).some(t =>
-    t.id !== excludeId &&
-    Math.abs(t.x - x) < TABLE_HALF_W * 2 + 10 &&
-    Math.abs(t.y - y) < TABLE_HALF_H * 2 + 10
-  );
+  
+  const incomingSeats = tableLayout[excludeId]?.seats;
+  const incoming = getTableDims(incomingSeats);
+
+  return !Object.values(tableLayout).some(t => {
+    if (t.id === excludeId) return false;
+    const existing = getTableDims(t.seats);
+    return Math.abs(t.x - x) < (existing.hw + incoming.hw + 10) &&
+           Math.abs(t.y - y) < (existing.hh + incoming.hh + 10);
+  });
 }
 
 export function drawLayoutPreview(
   ctx: CanvasRenderingContext2D,
   editorState: LayoutEditorState,
-  stationLayout: Record<string, StationPosition>
+  stationLayout: Record<string, StationPosition>,
+  tableLayout: Record<string, TablePosition>
 ): void {
   // Masa taşıma preview
   if (editorState.isMovingTable && editorState.movingTableId && editorState.previewPos) {
     const { previewPos, isPreviewValid, originalPos } = editorState;
-    const hw = TABLE_HALF_W;
-    const hh = TABLE_HALF_H;
+    const t = tableLayout[editorState.movingTableId];
+    const { hw, hh } = getTableDims(t?.seats);
 
     // Orijinal konum — yarı saydam overlay
     if (originalPos) {

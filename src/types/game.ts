@@ -17,6 +17,7 @@ export {
   type GameState,
   type HoldingStation,
   type PlateStack,
+  type WashingSink,
   // Constants
   GAME_WIDTH,
   GAME_HEIGHT,

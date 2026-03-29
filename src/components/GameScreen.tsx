@@ -80,7 +80,7 @@ export const GameScreen: React.FC<Props> = ({
 
     const { score, dayPhase, dayTimer, upgrades, day, ovenCount, queueLen, lives, isGameOver, menuChoices, unlockedDishes } = useGameState(gameStateRef);
 
-    const { editorState, editorStateRef, handleInteract, handleCancel } = useLayoutEditor({
+    const { editorState, editorStateRef, handleInteract, handleCancel, handleCycleSeats } = useLayoutEditor({
         socket,
         gameStateRef,
         localPlayerRef,
@@ -101,6 +101,7 @@ export const GameScreen: React.FC<Props> = ({
     useEffect(() => {
         const onKey = (e: KeyboardEvent) => {
             if (e.key === 'Escape' && (editorStateRef.current.isMoving || editorStateRef.current.isMovingTable)) handleCancel();
+            if ((e.key === 'r' || e.key === 'R') && editorStateRef.current.isMovingTable) handleCycleSeats();
         };
         window.addEventListener('keydown', onKey);
         return () => window.removeEventListener('keydown', onKey);
@@ -479,9 +480,19 @@ export const GameScreen: React.FC<Props> = ({
             {/* ── Düzenleme Modu Bar (Canvas Dışı, Mobil Yatay) ── */}
             {dayPhase === 'prep' && (editorState.isMoving || editorState.isMovingTable) && (
                 <div className="flex-none flex items-center justify-between gap-3 px-3 py-1.5 bg-stone-900 border-t border-purple-700/60">
-                    <span className="font-black text-[11px] uppercase tracking-wider text-purple-300">
-                        {editorState.isMoving ? '📦 İstasyon Taşı' : '🪑 Masa Taşı'}
-                    </span>
+                    <div className="flex items-center gap-3">
+                        <span className="font-black text-[11px] uppercase tracking-wider text-purple-300">
+                            {editorState.isMoving ? '📦 İstasyon Taşı' : '🪑 Masa Taşı'}
+                        </span>
+                        {editorState.isMovingTable && (
+                            <button
+                                onClick={handleCycleSeats}
+                                className="pointer-events-auto flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white px-2 py-1 rounded text-[10px] font-bold border-b-2 border-blue-800 active:border-b-0 active:translate-y-0.5"
+                            >
+                                🔁 {isTouchDevice ? 'Masa Tipi(Kişi Sayısı)' : 'Masayı Büyüt/Küçült (R)'}
+                            </button>
+                        )}
+                    </div>
                     <span className="font-bold text-[10px] text-stone-400">
                         {isTouchDevice ? 'Yeni konuma git → AL/VER\'e bas' : 'Yeni konuma git → E\'ye bas'}
                     </span>

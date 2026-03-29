@@ -13,7 +13,16 @@ import {
 const INTERACT_R = 110;
 const SERVE_R = 125;
 
-function earn(lv: number) { return 10 + 5 * lv; }
+function earn(lv: number, maxPatience: number, currentPatience: number) {
+  const base = 10 + 5 * lv;
+  const ratio = Math.max(0, currentPatience / maxPatience);
+  let mult = 0.5;
+  if (ratio > 0.8) mult = 2.0;      // Çok hızlı
+  else if (ratio > 0.5) mult = 1.5; // Hızlı
+  else if (ratio > 0.2) mult = 1.0; // Normal
+  else mult = 0.5;                  // Yavaş
+  return Math.floor(base * mult);
+}
 function isDish(item: Item): item is string { return !!item && DISH_ITEMS.includes(item as any); }
 
 // Başarılı etkileşim seslerini odaya broadcast et, fail sadece o oyuncuya
@@ -265,7 +274,7 @@ const handleCustomers: InteractionHandler = ({ gs, p, px, py, snd }) => {
     const c = gs.customers[ci];
     if (c.isSeated && !c.isEating && Math.hypot(px - c.seatX, py - c.seatY) < SERVE_R) {
       if (!isTray(p.holding) && c.wants === p.holding) {
-        c.tipAmount = earn(gs.upgrades.earnings);
+        c.tipAmount = earn(gs.upgrades.earnings, c.maxPatience, c.patience);
         c.isEating = true; c.eatTimer = EAT_TICKS; c.wants = null; p.holding = null;
         snd("success"); return true;
       } else if (isTray(p.holding)) {
@@ -273,7 +282,7 @@ const handleCustomers: InteractionHandler = ({ gs, p, px, py, snd }) => {
         const wIdx = items.indexOf(c.wants as string);
         if (wIdx !== -1) {
           items.splice(wIdx, 1); p.holding = createTray(items);
-          c.tipAmount = earn(gs.upgrades.earnings);
+          c.tipAmount = earn(gs.upgrades.earnings, c.maxPatience, c.patience);
           c.isEating = true; c.eatTimer = EAT_TICKS; c.wants = null;
           snd("success"); return true;
         }

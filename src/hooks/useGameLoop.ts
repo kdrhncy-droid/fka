@@ -152,7 +152,7 @@ export function useGameLoop({
 
       // Layout editor önizlemesi — oyunculardan ÖNCE çizilir (oyuncu üstte kalır)
       if ((editorStateRef?.current?.isMoving || editorStateRef?.current?.isMovingTable) && state.stationLayout) {
-        drawLayoutPreview(ctx, editorStateRef.current, state.stationLayout);
+        drawLayoutPreview(ctx, editorStateRef.current, state.stationLayout, state.tableLayout);
       }
 
       const sp = state.players;

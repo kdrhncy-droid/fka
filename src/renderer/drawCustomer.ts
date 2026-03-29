@@ -42,16 +42,22 @@ function hairColor(id: string): string {
 }
 
 export function drawCustomer(ctx: CanvasRenderingContext2D, customer: Customer, tableLayout?: Record<string, { id: string; x: number; y: number }>) {
-    const { id, x, y, seatY, wants, patience, maxPatience, isSeated, isEating, eatTimer, beatUpTimer, currentDialog } = customer;
+    const { id, x, y, seatX, seatY, wants, patience, maxPatience, isSeated, isEating, eatTimer, beatUpTimer, currentDialog } = customer;
     const shape = customer.bodyShape ?? 1;
     const bodyColor = customer.bodyColor ?? '#475569';
     
     let tableY = 500;
     if (tableLayout) {
-      const table = Object.values(tableLayout).find(t =>
-        Math.abs(t.x - customer.seatX) < 5 && (Math.abs(t.y - (seatY + 47)) < 5 || Math.abs(t.y - (seatY - 47)) < 5)
-      );
-      if (table) tableY = table.y;
+      let nearestTable: { id: string; x: number; y: number } | null = null;
+      let minD = Infinity;
+      for (const t of Object.values(tableLayout)) {
+        const d = Math.hypot(t.x - seatX, t.y - seatY);
+        if (d < minD && d < 75) {
+          minD = d;
+          nearestTable = t;
+        }
+      }
+      if (nearestTable) tableY = nearestTable.y;
       else tableY = seatY < 500 ? seatY + 47 : seatY - 47;
     } else {
       tableY = seatY < 500 ? seatY + 47 : seatY - 47;
