@@ -127,7 +127,7 @@ function MenuBackground() {
 }
 
 // ── Tip tipleri ──────────────────────────────────────────────────────────────
-type Screen = 'main' | 'multiplayer' | 'join' | 'name';
+type Screen = 'main' | 'multiplayer' | 'create' | 'join' | 'name';
 
 interface WelcomeScreenProps {
   onPlay: (roomId?: string) => void;
@@ -154,12 +154,31 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   const [screen, setScreen] = useState<Screen>('main');
   const [joinCode, setJoinCode] = useState('');
   const [pendingRoomId, setPendingRoomId] = useState<string | undefined>(undefined);
+  const [generatedRoomId, setGeneratedRoomId] = useState('');
+  const [copied, setCopied] = useState(false);
   const [showPatchNotes, setShowPatchNotes] = useState(false);
   const [showStats, setShowStats] = useState(false);
   const [showChar, setShowChar] = useState(false);
 
+  const openCreate = () => {
+    const rid = Math.random().toString(36).substring(2, 6).toUpperCase();
+    setGeneratedRoomId(rid);
+    setCopied(false);
+    if (!playerName.trim()) {
+      setPendingRoomId(rid);
+      setScreen('name');
+    } else {
+      setScreen('create');
+    }
+  };
+
+  const copyRoomId = () => {
+    navigator.clipboard.writeText(generatedRoomId).catch(() => {});
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   const goPlay = (rid?: string) => {
-    // 'solo' özel değeri — tek oyunculu, kendi odasında
     const actualRid = rid === 'solo' ? undefined : rid;
     if (!playerName.trim()) {
       setPendingRoomId(rid);
@@ -224,7 +243,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
         {/* Çok oyunculu */}
         {screen === 'multiplayer' && (
           <div className="w-full space-y-2.5">
-            <button onClick={() => goPlay()}
+            <button onClick={openCreate}
               className="w-full py-3.5 rounded-2xl bg-amber-500 hover:bg-amber-400 active:scale-[0.97] text-stone-950 font-black text-sm uppercase tracking-widest shadow-lg transition-all">
               🏠 Oda Kur
             </button>
@@ -233,6 +252,31 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
               🔗 Odaya Katıl
             </button>
             <button onClick={() => setScreen('main')}
+              className="w-full py-2.5 rounded-2xl bg-white/8 hover:bg-white/15 backdrop-blur border border-white/10 text-white/60 font-bold text-xs uppercase tracking-widest transition-all">
+              ← Geri
+            </button>
+          </div>
+        )}
+
+        {/* Oda Kur — kod göster */}
+        {screen === 'create' && (
+          <div className="w-full space-y-3">
+            <div className="rounded-2xl bg-black/30 backdrop-blur border border-white/15 p-5 text-center space-y-3">
+              <p className="text-white/60 text-xs uppercase tracking-widest">Oda Kodun</p>
+              <div className="text-4xl font-black tracking-[0.3em] text-amber-400 drop-shadow-lg">
+                {generatedRoomId}
+              </div>
+              <button onClick={copyRoomId}
+                className={`w-full py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${copied ? 'bg-emerald-600 text-white' : 'bg-white/10 hover:bg-white/20 text-white/70'}`}>
+                {copied ? '✓ Kopyalandı!' : '📋 Kodu Kopyala'}
+              </button>
+              <p className="text-white/40 text-[10px]">Arkadaşlarına bu kodu gönder</p>
+            </div>
+            <button onClick={() => onPlay(generatedRoomId)}
+              className="w-full py-3.5 rounded-2xl bg-amber-500 hover:bg-amber-400 active:scale-[0.97] text-stone-950 font-black text-sm uppercase tracking-widest shadow-lg transition-all">
+              Oyuna Gir →
+            </button>
+            <button onClick={() => setScreen('multiplayer')}
               className="w-full py-2.5 rounded-2xl bg-white/8 hover:bg-white/15 backdrop-blur border border-white/10 text-white/60 font-bold text-xs uppercase tracking-widest transition-all">
               ← Geri
             </button>
@@ -274,7 +318,13 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
               className="w-full rounded-2xl border border-white/20 bg-black/30 backdrop-blur px-4 py-3 text-sm font-bold text-white outline-none placeholder:text-white/40 focus:border-amber-400"
             />
             <button
-              onClick={() => { if (playerName.trim()) onPlay(pendingRoomId === 'solo' ? undefined : pendingRoomId); }}
+              onClick={() => {
+                if (playerName.trim()) {
+                  if (pendingRoomId === 'solo') { onPlay(undefined); }
+                  else if (pendingRoomId) { setScreen('create'); }
+                  else { onPlay(undefined); }
+                }
+              }}
               disabled={!playerName.trim()}
               className="w-full py-3.5 rounded-2xl bg-amber-500 hover:bg-amber-400 active:scale-[0.97] text-stone-950 font-black text-sm uppercase tracking-widest shadow-lg transition-all disabled:bg-white/20 disabled:text-white/40">
               Devam →
