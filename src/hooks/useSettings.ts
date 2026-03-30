@@ -33,6 +33,8 @@ export interface Settings {
     joystickSide: 'left' | 'right';
     hudLayout: HudLayout;
     showPerfStats: boolean;
+    graphicsQuality: 'low' | 'medium' | 'high';
+    vibration: boolean;
 }
 
 const DEFAULTS: Settings = {
@@ -44,6 +46,8 @@ const DEFAULTS: Settings = {
     joystickSide: 'left',
     hudLayout: DEFAULT_HUD_LAYOUT,
     showPerfStats: false,
+    graphicsQuality: 'high',
+    vibration: true,
 };
 
 const LS_KEY = 'terracraft-settings';
@@ -60,6 +64,8 @@ function load(): Settings {
         if (parsed.sfxVolume === undefined) parsed.sfxVolume = DEFAULTS.sfxVolume;
         if (parsed.bgmOn === undefined) parsed.bgmOn = DEFAULTS.bgmOn;
         if (!parsed.hudLayout.chopBtn) parsed.hudLayout.chopBtn = DEFAULT_HUD_LAYOUT.chopBtn;
+        if (parsed.graphicsQuality === undefined) parsed.graphicsQuality = DEFAULTS.graphicsQuality;
+        if (parsed.vibration === undefined) parsed.vibration = DEFAULTS.vibration;
         return { ...DEFAULTS, ...parsed };
     } catch {
         return DEFAULTS;
