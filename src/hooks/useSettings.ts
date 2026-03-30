@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { setSfxEnabled, setSfxVolume } from '../utils/audio';
 import { setBgmVolume, setBgmEnabled } from '../utils/bgm';
 
@@ -87,7 +87,7 @@ export function useSettings() {
 
     // bgmOn sadece kullanıcı toggle yaptığında çağrılsın,
     // ilk mount'ta çağrılmaması için skipFirst pattern
-    const bgmOnMountedRef = React.useRef(false);
+    const bgmOnMountedRef = useRef(false);
     useEffect(() => {
         if (!bgmOnMountedRef.current) { bgmOnMountedRef.current = true; return; }
         setBgmEnabled(settings.bgmOn);
