@@ -283,7 +283,7 @@ export const GameScreen: React.FC<Props> = ({
 
             {/* ── Canvas ────────────────────────────────────────────────────────── */}
             <div className="flex-1 min-h-0 relative flex items-center justify-center" style={{ background: '#9a7858' }}>
-                <div className="relative" style={{ aspectRatio: '1280/870', maxWidth: isTouchDevice ? '100vw' : '100vw', maxHeight: isTouchDevice ? 'calc(100% - 0px)' : '100%', width: '100%' }}>
+                <div className="relative" style={{ aspectRatio: '1280/870', maxWidth: '100vw', maxHeight: '100%', width: '100%' }}>
 
                 <canvas
                     ref={canvasRef}
@@ -379,15 +379,15 @@ export const GameScreen: React.FC<Props> = ({
                 )}
                 </div> {/* inner aspect-ratio wrapper */}
 
-                {/* ── HUD Butonları — PC: absolute, Mobil: alt bar'da ── */}
-                {/* Joystick — sadece PC'de absolute */}
-                {!showHudEditor && !isTouchDevice && (
+                {/* ── HUD Butonları — outer wrapper'da, tüm ekrana serbestçe konumlanabilir ── */}
+                {/* Joystick */}
+                {!showHudEditor && (
                 <div className="absolute z-10 touch-none" style={{ left: `${settings.hudLayout.joystick.x}%`, top: `${settings.hudLayout.joystick.y}%`, transform: `scale(${settings.hudLayout.joystick.scale})`, transformOrigin: 'top left' }}>
                     <Joystick size={joystickSize} onMove={(x, y) => { joystickVectorRef.current = { x, y }; }} />
                 </div>
                 )}
-                {/* Döv — sadece PC'de absolute */}
-                {!showHudEditor && !isTouchDevice && (
+                {/* Döv */}
+                {!showHudEditor && (
                 <div className="absolute z-10" style={{ left: `${settings.hudLayout.punchBtn.x}%`, top: `${settings.hudLayout.punchBtn.y}%`, transform: `scale(${settings.hudLayout.punchBtn.scale})`, transformOrigin: 'top left' }}>
                     <button
                         onPointerDown={(e) => {
@@ -412,8 +412,8 @@ export const GameScreen: React.FC<Props> = ({
                     </button>
                 </div>
                 )}
-                {/* AL/VER — sadece PC'de absolute */}
-                {!showHudEditor && !isTouchDevice && (
+                {/* AL/VER */}
+                {!showHudEditor && (
                 <div className="absolute z-10" style={{ left: `${settings.hudLayout.actionBtn.x}%`, top: `${settings.hudLayout.actionBtn.y}%`, transform: `scale(${settings.hudLayout.actionBtn.scale})`, transformOrigin: 'top left' }}>
                     <button
                         onPointerDown={(e) => { e.preventDefault(); if (dayPhase === 'prep') handleInteract(); else emit('interact'); }}
@@ -425,8 +425,8 @@ export const GameScreen: React.FC<Props> = ({
                     </button>
                 </div>
                 )}
-                {/* DOĞRA — sadece PC'de absolute */}
-                {!showHudEditor && !isTouchDevice && dayPhase === 'day' && (
+                {/* DOĞRA */}
+                {!showHudEditor && dayPhase === 'day' && (
                 <div className="absolute z-10" style={{ left: `${settings.hudLayout.chopBtn.x}%`, top: `${settings.hudLayout.chopBtn.y}%`, transform: `scale(${settings.hudLayout.chopBtn.scale})`, transformOrigin: 'top left' }}>
                     <button
                         onPointerDown={(e) => {
@@ -460,8 +460,8 @@ export const GameScreen: React.FC<Props> = ({
                     </button>
                 </div>
                 )}
-                {/* Müzik — sadece PC'de absolute */}
-                {!showHudEditor && !isTouchDevice && (
+                {/* Müzik */}
+                {!showHudEditor && (
                 <div className="absolute z-10" style={{ left: `${settings.hudLayout.musicBtn.x}%`, top: `${settings.hudLayout.musicBtn.y}%`, transform: `scale(${settings.hudLayout.musicBtn.scale})`, transformOrigin: 'top left' }}>
                     <button onClick={toggleMusic}
                         style={{ width: Math.round(bs * 0.55), height: Math.round(bs * 0.55) }}
@@ -523,89 +523,7 @@ export const GameScreen: React.FC<Props> = ({
                 </div>
             )}
 
-            {/* ── Mobil Alt Buton Bar ── */}
-            {isTouchDevice && !showHudEditor && (
-                <div className="flex-none bg-stone-950/95 border-t border-stone-800 safe-bottom">
-                    <div className="flex items-center justify-between px-3 py-2 gap-2">
-                        {/* Sol: Joystick */}
-                        <div className="touch-none flex-shrink-0">
-                            <Joystick size={100} onMove={(x, y) => { joystickVectorRef.current = { x, y }; }} />
-                        </div>
-
-                        {/* Orta: Doğra (sadece gündüz) */}
-                        <div className="flex flex-col items-center gap-1">
-                            {dayPhase === 'day' && (
-                                <button
-                                    onPointerDown={(e) => {
-                                        e.preventDefault();
-                                        const gs = gameStateRef.current; const lp = localPlayerRef.current;
-                                        const board = gs.choppingBoards?.find(b => Math.hypot(b.x - lp.x, b.y - lp.y) < 90);
-                                        if (board) {
-                                            socket?.emit('chop_start', board.id);
-                                            playSound(null, 'chop');
-                                            if (chopTouchIntervalRef.current) clearInterval(chopTouchIntervalRef.current);
-                                            chopTouchIntervalRef.current = setInterval(() => playSound(null, 'chop'), 300);
-                                        }
-                                    }}
-                                    onPointerUp={(e) => {
-                                        e.preventDefault();
-                                        if (chopTouchIntervalRef.current) { clearInterval(chopTouchIntervalRef.current); chopTouchIntervalRef.current = null; }
-                                        const gs = gameStateRef.current; const lp = localPlayerRef.current;
-                                        const board = gs.choppingBoards?.find(b => Math.hypot(b.x - lp.x, b.y - lp.y) < 90);
-                                        if (board) socket?.emit('chop_stop', board.id);
-                                    }}
-                                    onPointerLeave={(e) => {
-                                        e.preventDefault();
-                                        if (chopTouchIntervalRef.current) { clearInterval(chopTouchIntervalRef.current); chopTouchIntervalRef.current = null; }
-                                        gameStateRef.current.choppingBoards?.forEach(b => socket?.emit('chop_stop', b.id));
-                                    }}
-                                    style={{ width: 56, height: 56, touchAction: 'none' }}
-                                    className="bg-amber-600/85 active:scale-90 text-white rounded-2xl font-black text-xs flex flex-col items-center justify-center gap-0.5 border border-amber-400/30"
-                                >
-                                    <span className="text-base leading-none">🔪</span>
-                                    <span className="text-[9px]">Doğra</span>
-                                </button>
-                            )}
-                            <button onClick={toggleMusic}
-                                style={{ width: 44, height: 44 }}
-                                className={`rounded-xl text-base flex items-center justify-center border ${musicOn ? 'bg-violet-600/80 border-violet-400/30 text-white' : 'bg-stone-700/70 border-stone-600/30 text-stone-400'}`}
-                            >{musicOn ? '🎵' : '🔇'}</button>
-                        </div>
-
-                        {/* Sağ: Döv + AL/VER */}
-                        <div className="flex flex-col items-end gap-2 flex-shrink-0">
-                            <button
-                                onPointerDown={(e) => {
-                                    e.preventDefault();
-                                    const now = Date.now();
-                                    if (now - lastPunchTimeRef.current < 250) return;
-                                    lastPunchTimeRef.current = now;
-                                    const gs = gameStateRef.current; const lp = localPlayerRef.current;
-                                    const punchTarget = gs.customers.find(c => {
-                                        if (c.isLeaving) return false;
-                                        const visualY = c.isSeated ? c.seatY + 20 : c.y;
-                                        return Math.hypot(c.x - lp.x, visualY - lp.y) <= 120 && (c.personality === 'rude' || c.personality === 'recep' || c.personality === 'thug');
-                                    });
-                                    if (punchTarget) socket?.emit('punchCustomer', punchTarget.id);
-                                }}
-                                style={{ width: 64, height: 64, touchAction: 'none' }}
-                                className="bg-red-600/85 active:scale-90 text-white rounded-2xl font-black text-xs flex flex-col items-center justify-center gap-0.5 border border-red-400/30"
-                            >
-                                <span className="text-lg leading-none">👊</span>
-                                <span className="text-[9px]">Döv</span>
-                            </button>
-                            <button
-                                onPointerDown={(e) => { e.preventDefault(); if (dayPhase === 'prep') handleInteract(); else emit('interact'); }}
-                                style={{ width: 80, height: 80, touchAction: 'none' }}
-                                className="bg-blue-600/85 active:scale-90 text-white rounded-2xl font-black text-sm flex flex-col items-center justify-center gap-0.5 border border-blue-400/30"
-                            >
-                                <span className="text-xl leading-none">🤲</span>
-                                <span className="text-[10px]">Al/Ver</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+            {/* PC İpuçları */}
             {!isTouchDevice && (
                 <div className="flex-none h-6 hidden md:flex items-center justify-center gap-4 text-stone-500 text-[11px] font-medium bg-stone-950">
                     <span>Hareket: <kbd className="bg-stone-800 text-stone-300 px-1 rounded">WASD</kbd></span>
