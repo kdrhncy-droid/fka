@@ -234,53 +234,65 @@ export function drawFloor(ctx: CanvasRenderingContext2D, unlockedDishes: string[
   // ÜST DUVAR
   drawTopWall(ctx, 30);
 
-  // ── Split harita: dikey orta duvar ──────────────────────────────
+  // ── Split harita: mutfak dar üstte, bulaşıkhane sağ altta ──────
   if (mapId === 'split') {
-    const wallX = GAME_WIDTH / 2; // x=640
-    const wallW = 28;
+    const kitchenH = 220; // Mutfak yüksekliği
+    const dishX = 1000;   // Bulaşıkhane başlangıç x (daha dar)
+    const dishY = kitchenH; // Bulaşıkhane başlangıç y
 
-    // Duvar gövdesi
-    const wallGrad = ctx.createLinearGradient(wallX - wallW/2, 0, wallX + wallW/2, 0);
-    wallGrad.addColorStop(0, '#1a1a1a');
-    wallGrad.addColorStop(0.3, '#2d2d2d');
-    wallGrad.addColorStop(0.7, '#252525');
-    wallGrad.addColorStop(1, '#1a1a1a');
-    ctx.fillStyle = wallGrad;
-    // Üst kısım (mutfak): y=0 → WALL_Y1, kapı aralıkları bırak
-    // Kapı 1: y=140-220 (mutfak kapısı)
-    // Kapı 2: y=250-320 (bulaşıkhane kapısı)
-    const doorGap1 = { y1: 130, y2: 220 };
-    const doorGap2 = { y1: 250, y2: 330 };
+    // Mutfak alt duvarı (yatay) — mutfak bölgesini kapatır
+    // Sadece sol kısım (x:0 → dishX), sağ kısım bulaşıkhane kapısı
+    const wallColor = '#1e1e1e';
+    const wallH = 22;
 
-    // Duvar segmentleri (kapılar hariç)
-    [[30, doorGap1.y1], [doorGap1.y2, doorGap2.y1], [doorGap2.y2, WALL_Y1]].forEach(([y1, y2]) => {
-      ctx.fillRect(wallX - wallW/2, y1, wallW, y2 - y1);
-    });
+    // Mutfak alt duvarı — sol segment (kapı aralığı bırak: x:380-480)
+    ctx.fillStyle = wallColor;
+    ctx.fillRect(30, kitchenH, 340, wallH);           // sol parça
+    ctx.fillRect(490, kitchenH, dishX - 490, wallH);  // sağ parça
+    // Mutfak kapısı (x:380-490)
+    ctx.fillStyle = '#111';
+    ctx.fillRect(380, kitchenH, 110, wallH);
+    ctx.strokeStyle = '#444'; ctx.lineWidth = 2;
+    ctx.strokeRect(382, kitchenH, 106, wallH);
+    ctx.font = '14px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#666';
+    ctx.fillText('🚪', 435, kitchenH + wallH / 2);
 
-    // Kapı çerçeveleri
-    [doorGap1, doorGap2].forEach(({ y1, y2 }) => {
-      // Kapı açıklığı — koyu zemin
-      ctx.fillStyle = '#111';
-      ctx.fillRect(wallX - wallW/2, y1, wallW, y2 - y1);
-      // Kapı çerçevesi
-      ctx.strokeStyle = '#555';
-      ctx.lineWidth = 3;
-      ctx.strokeRect(wallX - wallW/2 + 2, y1, wallW - 4, y2 - y1);
-      // Kapı etiketi
-      ctx.font = 'bold 10px Arial';
-      ctx.fillStyle = '#888';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('🚪', wallX, (y1 + y2) / 2);
-    });
+    // Bulaşıkhane sol duvarı (dikey) — x=dishX, y=kitchenH → WALL_Y1
+    // Kapı aralığı: y=280-360
+    ctx.fillStyle = wallColor;
+    ctx.fillRect(dishX, kitchenH + wallH, wallH, 280 - kitchenH - wallH); // üst parça
+    ctx.fillRect(dishX, 370, wallH, WALL_Y1 - 370);                        // alt parça
+
+    // Bulaşıkhane kapısı (y:280-370)
+    ctx.fillStyle = '#111';
+    ctx.fillRect(dishX, 280, wallH, 90);
+    ctx.strokeStyle = '#444'; ctx.lineWidth = 2;
+    ctx.strokeRect(dishX + 1, 282, wallH - 2, 86);
+    ctx.font = '14px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#666';
+    ctx.fillText('🚪', dishX + wallH / 2, 325);
+
+    // Bulaşıkhane zemin — farklı renk (koyu mavi-gri)
+    ctx.fillStyle = '#1a2030';
+    ctx.fillRect(dishX + wallH, kitchenH + wallH, GAME_WIDTH - dishX - wallH - 30, WALL_Y1 - kitchenH - wallH);
+    // Karo ızgarası
+    const tileS = 40;
+    ctx.strokeStyle = 'rgba(100,150,200,0.08)';
+    ctx.lineWidth = 1;
+    for (let ty = kitchenH + wallH; ty < WALL_Y1; ty += tileS) {
+      ctx.beginPath(); ctx.moveTo(dishX + wallH, ty); ctx.lineTo(GAME_WIDTH - 30, ty); ctx.stroke();
+    }
+    for (let tx = dishX + wallH; tx < GAME_WIDTH - 30; tx += tileS) {
+      ctx.beginPath(); ctx.moveTo(tx, kitchenH + wallH); ctx.lineTo(tx, WALL_Y1); ctx.stroke();
+    }
 
     // Etiketler
-    ctx.font = 'bold 11px Arial';
-    ctx.fillStyle = 'rgba(255,255,255,0.25)';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('MUTFAK', wallX / 2, 20);
-    ctx.fillText('BULAŞIKHANE', wallX + (GAME_WIDTH - wallX) / 2, 20);
+    ctx.font = 'bold 12px Arial';
+    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('MUTFAK', GAME_WIDTH / 2, 18);
+    ctx.fillText('BULAŞIKHANE', dishX + (GAME_WIDTH - dishX) / 2, kitchenH + 30);
   }
 }
 
