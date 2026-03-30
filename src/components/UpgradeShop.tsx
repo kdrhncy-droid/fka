@@ -6,6 +6,8 @@ const UPGRADE_UI: { id: UpgradeKey; icon: string; name: string; desc: string }[]
     { id: 'earnings', icon: '💰', name: 'Servis Kazancı', desc: 'Her servisten +5 ekstra puan' },
     { id: 'plateStackMax', icon: '🍽️', name: 'Tabak Yığını', desc: 'Başlangıçta daha çok tabak' },
     { id: 'safeOven', icon: '🛡️', name: 'Güvenli Fırın', desc: 'Lv1: yanma 2x yavaş · Lv2: hiç yanmaz' },
+    { id: 'fryerSpeed', icon: '🍟', name: 'Fritöz Hızı', desc: 'Patates daha hızlı kızarır' },
+    { id: 'fridgeCapacity', icon: '🧊', name: 'Buzdolabı Kapasitesi', desc: '+3 içecek kapasitesi' },
 ];
 
 const DISH_NAMES: Record<string, string> = {

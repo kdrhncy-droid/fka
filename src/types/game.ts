@@ -68,6 +68,26 @@ export {
   getChoppedSource,
   CHOPPABLE,
   CHOPPING_BOARD_POS,
+  // Fritöz
+  type Fryer,
+  FRYER_TICKS,
+  FRYER_BURN_TICKS,
+  // Buzdolabı
+  type Fridge,
+  DRINK_ITEM,
+  FRIDGE_BASE_CAPACITY,
+  // Servis Penceresi
+  type ServiceWindowSlot,
+  SERVICE_WINDOW_SLOTS,
+  SERVICE_WINDOW_R,
+  // Diğer
+  type StationPosition,
+  getTableDims,
+  mkGameState,
+  PLATE_STACK_BASE,
+  PLATE_STACK_PER_UPGRADE,
+  DISH_UNLOCK_POOL,
+  UPGRADE_DEFS as UPGRADE_DEFS_SHARED,
 } from '../../shared/types';
 
 // ─── Client-Only Sabitler ────────────────────────────────────────────────────

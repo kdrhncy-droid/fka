@@ -8,6 +8,7 @@ import {
   TRASH_STATION, TRAY_STATION,
   CHOPPABLE, CHOP_PREFIX, isChopped,
   SERVICE_WINDOW_SLOTS, SERVICE_WINDOW_R,
+  FRYER_TICKS, DRINK_ITEM,
 } from "../shared/types.js";
 
 const INTERACT_R = 110;
@@ -314,7 +315,60 @@ const handleIngredients: InteractionHandler = ({ gs, p, px, py, snd }) => {
   return false;
 };
 
-// Sırayla çalıştırılacak etkileşim zinciri
+const handleFryers: InteractionHandler = ({ gs, p, px, py, snd }) => {
+  if (!gs.fryers) return false;
+  for (const fryer of gs.fryers) {
+    const dynX = gs.stationLayout?.[fryer.id]?.x ?? fryer.x;
+    const dynY = gs.stationLayout?.[fryer.id]?.y ?? fryer.y;
+    if (Math.hypot(px - dynX, py - dynY) < INTERACT_R) {
+      if (!p.holding) {
+        if (fryer.output && !fryer.isBurned) {
+          // Tabak gerekli
+          snd('fail');
+        } else if (fryer.isBurned) {
+          p.holding = '⬛'; fryer.output = null; fryer.isBurned = false; fryer.burnTimer = 0; snd('trash');
+        }
+      } else if (p.holding === '🥔' && !fryer.input && !fryer.output) {
+        fryer.input = '🥔'; fryer.timer = FRYER_TICKS; fryer.isBurned = false; fryer.burnTimer = 0;
+        p.holding = null; snd('pickup');
+      } else if (p.holding === CLEAN_PLATE && fryer.output && !fryer.isBurned) {
+        p.holding = fryer.output; fryer.output = null; fryer.burnTimer = 0; snd('success');
+      } else if (isTray(p.holding) && fryer.output && !fryer.isBurned) {
+        const items = getTrayItems(p.holding);
+        const cpIdx = items.indexOf(CLEAN_PLATE);
+        if (cpIdx !== -1) {
+          items[cpIdx] = fryer.output; p.holding = createTray(items);
+          fryer.output = null; fryer.burnTimer = 0; snd('success');
+        }
+      }
+      return true;
+    }
+  }
+  return false;
+};
+
+const handleFridges: InteractionHandler = ({ gs, p, px, py, snd }) => {
+  if (!gs.fridges) return false;
+  for (const fridge of gs.fridges) {
+    const dynX = gs.stationLayout?.[fridge.id]?.x ?? fridge.x;
+    const dynY = gs.stationLayout?.[fridge.id]?.y ?? fridge.y;
+    if (Math.hypot(px - dynX, py - dynY) < INTERACT_R) {
+      if (!p.holding && fridge.drinks > 0) {
+        p.holding = DRINK_ITEM; fridge.drinks--; snd('pickup');
+      } else if (isTray(p.holding) && fridge.drinks > 0) {
+        const items = getTrayItems(p.holding);
+        if (items.length < MAX_TRAY_CAPACITY) {
+          items.push(DRINK_ITEM); p.holding = createTray(items);
+          fridge.drinks--; snd('pickup');
+        }
+      } else {
+        snd('fail');
+      }
+      return true;
+    }
+  }
+  return false;
+};
 const INTERACTION_CHAIN: InteractionHandler[] = [
   handleServiceWindow,
   handleSinks,
@@ -324,6 +378,8 @@ const INTERACTION_CHAIN: InteractionHandler[] = [
   handleDirtyTables,
   handlePlateStack,
   handleChoppingBoards,
+  handleFryers,
+  handleFridges,
   handleCookStations,
   handleCustomers,
   handleIngredients

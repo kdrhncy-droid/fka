@@ -8,6 +8,7 @@ import {
   CLOSING_THRESHOLD,
   CHOP_TICKS, CHOP_PREFIX,
   WASH_TICKS, DIRTY_PLATE, CLEAN_PLATE,
+  FRYER_TICKS, FRYER_BURN_TICKS, FRIDGE_BASE_CAPACITY,
 } from "../shared/types.js";
 import { DIALOGUES } from "../shared/dialogues.js";
 
@@ -153,8 +154,7 @@ export function gameTick(gs: GameState, io: Server, rid: string) {
   }
 
   // Lavaboları güncelle
-  if (gs.sinks) {
-    gs.sinks.forEach(sink => {
+  if (gs.sinks) {    gs.sinks.forEach(sink => {
       // Yıkayıcı oyuncu uzaklaştıysa otomatik durdur
       if (sink.isWashing && sink.washingPlayerId) {
         const washer = gs.players[sink.washingPlayerId];
@@ -174,6 +174,32 @@ export function gameTick(gs: GameState, io: Server, rid: string) {
           io.to(rid).emit("sound", "success");
         }
       }
+    });
+  }
+
+  // Fritözleri güncelle
+  if (gs.fryers) {
+    const speedBonus = gs.upgrades.fryerSpeed ?? 0;
+    gs.fryers.forEach(f => {
+      if (f.input && f.timer > 0) {
+        f.timer -= 1 + speedBonus;
+        if (f.timer <= 0) {
+          f.output = '🍟';
+          f.input = null;
+          f.burnTimer = FRYER_BURN_TICKS;
+        }
+      } else if (f.output && f.burnTimer !== undefined && f.burnTimer > 0) {
+        f.burnTimer--;
+        if (f.burnTimer <= 0) { f.isBurned = true; f.output = '⬛'; }
+      }
+    });
+  }
+
+  // Buzdolabını güncelle — gece fazında içecekleri yenile
+  if (gs.dayPhase === 'night' && gs.fridges) {
+    gs.fridges.forEach(fridge => {
+      fridge.maxDrinks = FRIDGE_BASE_CAPACITY + (gs.upgrades.fridgeCapacity ?? 0) * 3;
+      fridge.drinks = fridge.maxDrinks;
     });
   }
 

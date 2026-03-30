@@ -278,6 +278,12 @@ io.on("connection", (socket) => {
         gs.plateStack.maxCount += PLATE_STACK_PER_UPGRADE;
         gs.plateStack.count = Math.min(gs.plateStack.count + PLATE_STACK_PER_UPGRADE, gs.plateStack.maxCount);
       }
+      if (key === 'fridgeCapacity') {
+        gs.fridges?.forEach(f => {
+          f.maxDrinks += 3;
+          f.drinks = f.maxDrinks;
+        });
+      }
       io.to(roomId).emit("state", gs);
       socket.emit("sound", "success");
     } else {
@@ -320,6 +326,10 @@ io.on("connection", (socket) => {
     gs.plateStack.count = gs.plateStack.maxCount;
     // Fırınları temizle
     gs.cookStations.forEach(s => { s.input = null; s.output = null; s.isBurned = false; s.burnTimer = 0; });
+    // Fritözleri temizle
+    gs.fryers?.forEach(f => { f.input = null; f.output = null; f.isBurned = false; f.burnTimer = 0; f.timer = 0; });
+    // Buzdolabını doldur
+    gs.fridges?.forEach(fridge => { fridge.drinks = fridge.maxDrinks; });
     // Kesme tahtalarını temizle
     gs.choppingBoards?.forEach(b => { b.input = null; b.progress = 0; b.isChopping = false; b.choppingPlayerId = null; });
     // Oyuncuların elindeki itemları temizle

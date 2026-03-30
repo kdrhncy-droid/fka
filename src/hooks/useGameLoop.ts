@@ -39,6 +39,8 @@ import { drawBasicStations } from '../renderer/drawBasicStations';
 import { drawPlateStack } from '../renderer/drawPlateStack';
 import { drawSinks } from '../renderer/drawSinks';
 import { drawPerfStats } from '../renderer/drawPerfStats';
+import { drawFryer } from '../renderer/drawFryer';
+import { drawFridge } from '../renderer/drawFridge';
 
 interface UseGameLoopProps {
   canvasRef: React.RefObject<HTMLCanvasElement>;
@@ -143,6 +145,26 @@ export function useGameLoop({
       // Lavabolar (3D Tabaklar ve Yıkama Barı)
       if (state.sinks) {
         drawSinks(ctx, state.sinks, state.stationLayout, movingId);
+      }
+
+      // Fritözler
+      if (state.fryers) {
+        for (const fryer of state.fryers) {
+          if (movingId === fryer.id) continue;
+          const dynX = state.stationLayout?.[fryer.id]?.x ?? fryer.x;
+          const dynY = state.stationLayout?.[fryer.id]?.y ?? fryer.y;
+          drawFryer(ctx, { ...fryer, x: dynX, y: dynY }, time);
+        }
+      }
+
+      // Buzdolabı
+      if (state.fridges) {
+        for (const fridge of state.fridges) {
+          if (movingId === fridge.id) continue;
+          const dynX = state.stationLayout?.[fridge.id]?.x ?? fridge.x;
+          const dynY = state.stationLayout?.[fridge.id]?.y ?? fridge.y;
+          drawFridge(ctx, { ...fridge, x: dynX, y: dynY });
+        }
       }
 
       state.customers.forEach((c) => drawCustomer(ctx, c, state.tableLayout));
