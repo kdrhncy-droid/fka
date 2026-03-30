@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════════════════
-// BGM Manager — Tüm şarkılar sırayla çalar, phase bağımsız
+// BGM Manager — Tüm şarkılar sırayla çalar
 // ═══════════════════════════════════════════════════════════════════════════════
 
 const PLAYLIST = [
@@ -11,64 +11,67 @@ const PLAYLIST = [
   '/sounds/Return of Lazarus.mp3',
 ];
 
-let currentAudio: HTMLAudioElement | null = null;
-let currentIndex = 0;
-let _bgmVolume = 0.5;
-let _bgmEnabled = true;
-let _started = false;
+let audio: HTMLAudioElement | null = null;
+let index = 0;
+let volume = 0.5;
+let enabled = true;
 
-function clamp(v: number, min: number, max: number) {
-  return Math.max(min, Math.min(max, v));
-}
-
-function playTrack(index: number) {
-  if (currentAudio) {
-    currentAudio.pause();
-    currentAudio.src = '';
+function playIndex(i: number) {
+  // Öncekini temizle
+  if (audio) {
+    audio.onended = null;
+    audio.pause();
+    audio.src = '';
   }
 
-  currentIndex = index % PLAYLIST.length;
-  const audio = new Audio(PLAYLIST[currentIndex]);
-  audio.volume = _bgmVolume;
-  audio.addEventListener('ended', () => playTrack(currentIndex + 1));
-  currentAudio = audio;
+  index = ((i % PLAYLIST.length) + PLAYLIST.length) % PLAYLIST.length;
+  audio = new Audio(PLAYLIST[index]);
+  audio.volume = volume;
+  audio.onended = () => playIndex(index + 1);
 
-  if (_bgmEnabled) {
-    audio.play().catch(() => {});
+  const promise = audio.play();
+  if (promise !== undefined) {
+    promise.catch((err) => {
+      // Autoplay engellendiyse sessizce geç — kullanıcı etkileşimi zaten oldu
+      console.warn('[BGM] play() engellendi:', err);
+    });
   }
 }
 
-/** Oyuna girilince çağır — ilk şarkıyı başlatır */
+/** Oyuna girilince çağır — kullanıcı etkileşimi anında çağrılmalı */
 export function startBgm() {
-  if (_started) return;
-  _started = true;
-  playTrack(0);
+  if (audio && !audio.paused) return; // Zaten çalıyor
+  if (!enabled) return;
+  playIndex(index);
 }
 
 /** settings.bgmVolume (0–1) değişince çağır */
-export function setBgmVolume(volume: number) {
-  _bgmVolume = clamp(volume, 0, 1);
-  if (currentAudio) currentAudio.volume = _bgmVolume;
+export function setBgmVolume(v: number) {
+  volume = Math.max(0, Math.min(1, v));
+  if (audio) audio.volume = volume;
 }
 
 /** BGM aç/kapat */
-export function setBgmEnabled(enabled: boolean) {
-  _bgmEnabled = enabled;
-  if (!enabled) {
-    currentAudio?.pause();
-  } else if (currentAudio) {
-    currentAudio.play().catch(() => {});
+export function setBgmEnabled(v: boolean) {
+  enabled = v;
+  if (!v) {
+    audio?.pause();
+  } else {
+    startBgm();
   }
 }
 
 /** Oda bırakınca çağır */
 export function stopBgm() {
-  currentAudio?.pause();
-  currentAudio = null;
-  _started = false;
+  if (audio) {
+    audio.onended = null;
+    audio.pause();
+    audio.src = '';
+    audio = null;
+  }
 }
 
-// Geriye dönük uyumluluk — phase sistemi artık kullanılmıyor
+// Geriye dönük uyumluluk
 export type GamePhase = 'prep' | 'day' | 'night';
 export function setBgmPhase(_phase: GamePhase) {}
 export function unlockBgm() {}
