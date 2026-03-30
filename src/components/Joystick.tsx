@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback } from 'react';
+import React, { useRef, useState, useCallback, useEffect } from 'react';
 
 interface JoystickProps {
   onMove: (x: number, y: number) => void;
@@ -81,7 +81,6 @@ export const Joystick: React.FC<JoystickProps> = ({ onMove, size = 128 }) => {
 
   const handleTouchMove = (e: React.TouchEvent) => {
     e.preventDefault();
-    // isDraggingRef kullanıyoruz — ref her zaman güncel değeri döner!
     if (isDraggingRef.current && e.touches[0]) {
       handleMove(e.touches[0].clientX, e.touches[0].clientY);
     }
@@ -93,6 +92,17 @@ export const Joystick: React.FC<JoystickProps> = ({ onMove, size = 128 }) => {
   };
 
   const knobSize = size / 2;
+
+  // iOS'ta passive touchmove engellemek için native listener
+  useEffect(() => {
+    const el = joystickRef.current;
+    if (!el) return;
+    const onTouchMove = (e: TouchEvent) => {
+      if (isDraggingRef.current) e.preventDefault();
+    };
+    el.addEventListener('touchmove', onTouchMove, { passive: false });
+    return () => el.removeEventListener('touchmove', onTouchMove);
+  }, []);
 
   return (
     <div

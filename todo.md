@@ -23,6 +23,6 @@
 - [x] Butonların görünümünü modernleştir (çocuksu görünümden kurtar)
 
 ## Oyun Mekaniği
-- [ ] Masa küçült/büyüt sistemini düzelt (1-2-3-4 kişilik masa görselleri)
+- [x] Masa küçült/büyüt sistemini düzelt (1-2-3-4 kişilik masa görselleri)
 - [ ] Yeni mutfak eşyaları ve nesneler ekle
 - [ ] Yeni harita tasarımı

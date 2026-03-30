@@ -14,9 +14,6 @@ body {
   user-select: none;
   -webkit-user-select: none;
   font-family: "Trebuchet MS", "Avenir Next", "Segoe UI", sans-serif;
-  
-  /* Mobil tarayıcının sayfa uyutmasını engelle */
-  -webkit-app-region: drag;
 }
 
 #root {

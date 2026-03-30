@@ -122,6 +122,23 @@ export const GameScreen: React.FC<Props> = ({
         return () => stopBgm();
     }, []);
 
+    // WakeLock — oyun açıkken ekran kapanmasın
+    useEffect(() => {
+        let lock: WakeLockSentinel | null = null;
+        const request = async () => {
+            if ('wakeLock' in navigator) {
+                try { lock = await (navigator as any).wakeLock.request('screen'); } catch {}
+            }
+        };
+        request();
+        const onForeground = () => request();
+        window.addEventListener('app-foreground', onForeground);
+        return () => {
+            lock?.release().catch(() => {});
+            window.removeEventListener('app-foreground', onForeground);
+        };
+    }, []);
+
     const { isMuted, toggleMute, audioStreams } = useVoiceChat({
         isJoined: voiceActive && isJoined,
         myId,
@@ -250,7 +267,7 @@ export const GameScreen: React.FC<Props> = ({
 
             {/* ── Canvas ────────────────────────────────────────────────────────── */}
             <div className="flex-1 min-h-0 relative flex items-center justify-center" style={{ background: '#9a7858' }}>
-                <div className="relative" style={{ aspectRatio: '1280/870', maxWidth: '80vw', maxHeight: '100%', width: '100%' }}>
+                <div className="relative" style={{ aspectRatio: '1280/870', maxWidth: '100vw', maxHeight: '100%', width: '100%' }}>
 
                 <canvas
                     ref={canvasRef}
