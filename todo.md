@@ -20,7 +20,7 @@
 ## Performans & Uyumluluk
 - [ ] Ping/ms yüksek görünme sorununu çöz
 - [ ] PC / Mobil / iOS uyumsuzluklarını tespit et ve düzelt
-- [ ] Butonların görünümünü modernleştir (çocuksu görünümden kurtar)
+- [x] Butonların görünümünü modernleştir (çocuksu görünümden kurtar)
 
 ## Oyun Mekaniği
 - [ ] Masa küçült/büyüt sistemini düzelt (1-2-3-4 kişilik masa görselleri)

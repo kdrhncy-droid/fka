@@ -76,6 +76,7 @@ export function useSocket(
     const [myId, setMyId] = useState('');
     const [connectionStatus, setConnectionStatus] = useState<'connected' | 'disconnected' | 'reconnecting'>('disconnected');
     const [ping, setPing] = useState<number>(0);
+    const pingBufferRef = useRef<number[]>([]);
     const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
     const [dayEndSummary, setDayEndSummary] = useState<DayEndSummary | null>(null);
     const gameStateRef = useRef<GameState>(DEFAULT_STATE);
@@ -108,12 +109,11 @@ export function useSocket(
             reconnectAttemptsRef.current = 0;
             reconnectDelayRef.current = 1000;
 
-            // Ping ölçümü — her 3 saniyede bir
+            // Ping ölçümü — her 2 saniyede bir, 5 örnekli hareketli ortalama
             const pingInterval = setInterval(() => {
                 if (!newSocket.connected) return;
-                const t0 = Date.now();
-                newSocket.emit('ping_check', t0);
-            }, 3000);
+                newSocket.emit('ping_check', Date.now());
+            }, 2000);
             // Cleanup için ref'e kaydet
             (newSocket as any)._pingInterval = pingInterval;
 
@@ -200,7 +200,11 @@ export function useSocket(
         });
 
         newSocket.on('pong_check', (t0: number) => {
-            setPing(Date.now() - t0);
+            const sample = Date.now() - t0;
+            pingBufferRef.current.push(sample);
+            if (pingBufferRef.current.length > 5) pingBufferRef.current.shift();
+            const avg = Math.round(pingBufferRef.current.reduce((a, b) => a + b, 0) / pingBufferRef.current.length);
+            setPing(avg);
         });
 
         newSocket.on('sound', (type: string) => {
