@@ -35,7 +35,7 @@ function drawWorkstationBase(
 }
 
 /** Restoran zemini — PlateUp tarzı koyu mutfak + sıcak ahşap salon */
-export function drawFloor(ctx: CanvasRenderingContext2D, unlockedDishes: string[] = [], ingredientPositions?: Record<string, { x: number; y: number }>, plateStackPos?: { x: number; y: number }, sinkPos?: { x: number; y: number }, choppingBoardPos?: { x: number; y: number }) {
+export function drawFloor(ctx: CanvasRenderingContext2D, unlockedDishes: string[] = [], ingredientPositions?: Record<string, { x: number; y: number }>, plateStackPos?: { x: number; y: number }, sinkPos?: { x: number; y: number }, choppingBoardPos?: { x: number; y: number }, mapId?: string) {
 
   // ══════════════════════════════════════════════════════════════════
   // SALON — sıcak açık ahşap parke (PlateUp dining room tonu)
@@ -228,14 +228,60 @@ export function drawFloor(ctx: CanvasRenderingContext2D, unlockedDishes: string[
 
   // ══════════════════════════════════════════════════════════════════
   // SOL / SAĞ DUVARLAR — mutfak + salon boyunca (y=0 → EXTERIOR_Y)
-  // ══════════════════════════════════════════════════════════════════
   drawSideWall(ctx, 0, 30, 0, EXTERIOR_Y);
   drawSideWall(ctx, GAME_WIDTH - 30, 30, 0, EXTERIOR_Y);
 
-  // ══════════════════════════════════════════════════════════════════
-  // ÜST DUVAR — yatay tuğla şerit (y=0..30)
-  // ══════════════════════════════════════════════════════════════════
+  // ÜST DUVAR
   drawTopWall(ctx, 30);
+
+  // ── Split harita: dikey orta duvar ──────────────────────────────
+  if (mapId === 'split') {
+    const wallX = GAME_WIDTH / 2; // x=640
+    const wallW = 28;
+
+    // Duvar gövdesi
+    const wallGrad = ctx.createLinearGradient(wallX - wallW/2, 0, wallX + wallW/2, 0);
+    wallGrad.addColorStop(0, '#1a1a1a');
+    wallGrad.addColorStop(0.3, '#2d2d2d');
+    wallGrad.addColorStop(0.7, '#252525');
+    wallGrad.addColorStop(1, '#1a1a1a');
+    ctx.fillStyle = wallGrad;
+    // Üst kısım (mutfak): y=0 → WALL_Y1, kapı aralıkları bırak
+    // Kapı 1: y=140-220 (mutfak kapısı)
+    // Kapı 2: y=250-320 (bulaşıkhane kapısı)
+    const doorGap1 = { y1: 130, y2: 220 };
+    const doorGap2 = { y1: 250, y2: 330 };
+
+    // Duvar segmentleri (kapılar hariç)
+    [[30, doorGap1.y1], [doorGap1.y2, doorGap2.y1], [doorGap2.y2, WALL_Y1]].forEach(([y1, y2]) => {
+      ctx.fillRect(wallX - wallW/2, y1, wallW, y2 - y1);
+    });
+
+    // Kapı çerçeveleri
+    [doorGap1, doorGap2].forEach(({ y1, y2 }) => {
+      // Kapı açıklığı — koyu zemin
+      ctx.fillStyle = '#111';
+      ctx.fillRect(wallX - wallW/2, y1, wallW, y2 - y1);
+      // Kapı çerçevesi
+      ctx.strokeStyle = '#555';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(wallX - wallW/2 + 2, y1, wallW - 4, y2 - y1);
+      // Kapı etiketi
+      ctx.font = 'bold 10px Arial';
+      ctx.fillStyle = '#888';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('🚪', wallX, (y1 + y2) / 2);
+    });
+
+    // Etiketler
+    ctx.font = 'bold 11px Arial';
+    ctx.fillStyle = 'rgba(255,255,255,0.25)';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('MUTFAK', wallX / 2, 20);
+    ctx.fillText('BULAŞIKHANE', wallX + (GAME_WIDTH - wallX) / 2, 20);
+  }
 }
 
 /**

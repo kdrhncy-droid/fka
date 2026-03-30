@@ -105,7 +105,7 @@ export function useGameLoop({
       const plateStackDynPos = state.stationLayout?.['plate_stack'] ?? undefined;
       const sinkDynPos = state.stationLayout?.['sink'] ?? undefined;
       const chopBoardDynPos = state.stationLayout?.['chop1'] ?? undefined;
-      drawFloorCached(ctx, state.unlockedDishes, isEditing, ingPositions, state.tableLayout, movingTableId, plateStackDynPos, sinkDynPos, chopBoardDynPos);
+      drawFloorCached(ctx, state.unlockedDishes, isEditing, ingPositions, state.tableLayout, movingTableId, plateStackDynPos, sinkDynPos, chopBoardDynPos, state.mapId);
 
       // ── Etkileşim Halkası Çizimi ──
       const lp = localPlayerRef.current;

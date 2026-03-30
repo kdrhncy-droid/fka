@@ -251,7 +251,8 @@ export interface GameState {
 
     // ─── Internal (sunucu tarafı, client'a gönderilir ama kullanılmaz) ────────
     _stateTick?: number;
-    _seatCooldown?: number; // Müşteri oturma arası cooldown (tick)
+    _seatCooldown?: number;
+    mapId?: string;
 }
 
 // ─── Boyut ───────────────────────────────────────────────────────────────────
@@ -418,6 +419,7 @@ function mkClassicMapState(): GameState {
     mkCook(`oven${i + 1}`, pos.x, pos.y)
   );
   return {
+    mapId: 'classic',
     players: {}, customers: [], waitList: [],
     holdingStations: [],
     dirtyTables: [],
@@ -477,10 +479,9 @@ function mkClassicMapState(): GameState {
 // ─── Split Harita: Mutfak sol, Bulaşıkhane sağ, Salon alt ────────────────────
 function mkSplitMapState(): GameState {
   const base = mkClassicMapState();
-  // Mutfak sol tarafta (x: 0-640), bulaşıkhane sağda (x: 640-1280)
-  // Dikey duvar x=640'ta, kapılar y=170 ve y=285'te
   return {
     ...base,
+    mapId: 'split',
     stationLayout: {
       // Mutfak (sol)
       'ingredient_🍞': { id: 'ingredient_🍞', x: 120, y: 65 },

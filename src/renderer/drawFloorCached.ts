@@ -16,7 +16,8 @@ export function drawFloorCached(
   movingTableId?: string | null,
   plateStackPos?: { x: number; y: number },
   sinkPos?: { x: number; y: number },
-  choppingBoardPos?: { x: number; y: number }
+  choppingBoardPos?: { x: number; y: number },
+  mapId?: string
 ) {
   const currentDishesStr = [...unlockedDishes].sort().join(',');
   const ingPosStr = ingredientPositions
@@ -28,11 +29,12 @@ export function drawFloorCached(
   const platePosStr = plateStackPos ? `${plateStackPos.x},${plateStackPos.y}` : '';
   const sinkPosStr = sinkPos ? `${sinkPos.x},${sinkPos.y}` : '';
   const chopPosStr = choppingBoardPos ? `${choppingBoardPos.x},${choppingBoardPos.y}` : '';
+  const mapStr = mapId ?? 'classic';
   
-  if (forceRedraw || floorCacheVersion !== FLOOR_CACHE_VERSION || cachedUnlockedDishes !== currentDishesStr + ingPosStr + tablePosStr + platePosStr + sinkPosStr + chopPosStr) {
+  if (forceRedraw || floorCacheVersion !== FLOOR_CACHE_VERSION || cachedUnlockedDishes !== currentDishesStr + ingPosStr + tablePosStr + platePosStr + sinkPosStr + chopPosStr + mapStr) {
     floorCache = null; 
     floorCacheVersion = FLOOR_CACHE_VERSION; 
-    cachedUnlockedDishes = currentDishesStr + ingPosStr + tablePosStr + platePosStr + sinkPosStr + chopPosStr;
+    cachedUnlockedDishes = currentDishesStr + ingPosStr + tablePosStr + platePosStr + sinkPosStr + chopPosStr + mapStr;
   }
   
   if (!floorCache) {
@@ -41,7 +43,7 @@ export function drawFloorCached(
       : Object.assign(document.createElement("canvas"), { width: GAME_WIDTH, height: GAME_HEIGHT });
     const offCtx = floorCache.getContext("2d");
     if (offCtx) {
-      drawFloor(offCtx as unknown as CanvasRenderingContext2D, unlockedDishes, ingredientPositions, plateStackPos, sinkPos, choppingBoardPos);
+      drawFloor(offCtx as unknown as CanvasRenderingContext2D, unlockedDishes, ingredientPositions, plateStackPos, sinkPos, choppingBoardPos, mapId);
       const tables = tablePositions ? Object.values(tablePositions) : [];
       tables.forEach((t) => {
         if (movingTableId === t.id) {
