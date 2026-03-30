@@ -371,7 +371,7 @@ export const RECIPE_DEFS = {
     'CHOPPED_🍢':  { output: '🌯', time: 60,  label: '🌯 Dürüm' },
 } as const;
 
-export const DISH_UNLOCK_POOL = ['🍕', '🍜', '🌯'] as const;
+export const DISH_UNLOCK_POOL = ['🍕', '🍜', '🌯', '🍟', '🥤'] as const;
 
 export const INITIAL_OVEN_POSITIONS = [
     { x: 400, y: 90 },

@@ -30,15 +30,18 @@ const DISH_NAMES: Record<string, string> = {
     '🥗': 'Salata',
     '🍜': 'Çorba',
     '🌯': 'Dürüm',
+    '🍟': 'Patates',
+    '🥤': 'İçecek',
 };
 
-// Yemek → malzeme haritası (Menü seçiminde göstermek için)
 const DISH_INFO: Record<string, { ingredient: string; time: string; color: string }> = {
     '🍕': { ingredient: '🍞 Hamur',        time: '3 sn',   color: 'from-orange-600 to-red-600' },
     '🍔': { ingredient: '🥩 Et (doğra)',   time: '1.2 sn', color: 'from-amber-600 to-yellow-600' },
     '🥗': { ingredient: '🥬 Sebze (doğra)',time: '0.5 sn', color: 'from-green-600 to-emerald-600' },
     '🍜': { ingredient: '🥘 Çorba',        time: '4 sn',   color: 'from-yellow-600 to-amber-600' },
     '🌯': { ingredient: '🍢 Kebap (doğra)',time: '2 sn',   color: 'from-stone-600 to-amber-800' },
+    '🍟': { ingredient: '🥔 Patates',      time: '1 sn',   color: 'from-yellow-500 to-amber-500' },
+    '🥤': { ingredient: '🧊 Buzdolabı',    time: 'Anında', color: 'from-sky-500 to-blue-600' },
 };
 
 interface Props {

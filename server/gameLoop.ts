@@ -277,7 +277,10 @@ export function gameTick(gs: GameState, io: Server, rid: string) {
 }
 
 function spawnTick(gs: GameState, io: Server, rid: string) {
-  const availableDishes = gs.unlockedDishes.length > 0 ? gs.unlockedDishes : [...DISH_ITEMS];
+  // 🥤 buzdolabı boşsa menüden çıkar
+  const fridgeEmpty = !gs.fridges || gs.fridges.every(f => f.drinks === 0);
+  const availableDishes = (gs.unlockedDishes.length > 0 ? gs.unlockedDishes : [...DISH_ITEMS])
+    .filter(d => d !== '🥤' || !fridgeEmpty);
   const playerCount = Object.keys(gs.players).length || 1;
   const isSolo = playerCount === 1;
 

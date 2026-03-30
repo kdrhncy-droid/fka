@@ -12,6 +12,7 @@ const UPGRADE_UI: { id: UpgradeKey; icon: string; name: string; desc: string }[]
 
 const DISH_NAMES: Record<string, string> = {
     '🍕': 'Pizza', '🍔': 'Burger', '🥗': 'Salata', '🍜': 'Çorba', '🌯': 'Dürüm',
+    '🍟': 'Patates', '🥤': 'İçecek',
 };
 
 interface Props {
