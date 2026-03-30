@@ -9,6 +9,7 @@ import {
   CHOP_TICKS, CHOP_PREFIX,
   WASH_TICKS, DIRTY_PLATE, CLEAN_PLATE,
   FRYER_TICKS, FRYER_BURN_TICKS, FRIDGE_BASE_CAPACITY,
+  CAKE_TICKS, CAKE_BURN_TICKS, COFFEE_BASE_CAPACITY,
 } from "../shared/types.js";
 import { DIALOGUES } from "../shared/dialogues.js";
 
@@ -192,6 +193,27 @@ export function gameTick(gs: GameState, io: Server, rid: string) {
         f.burnTimer--;
         if (f.burnTimer <= 0) { f.isBurned = true; f.output = '⬛'; }
       }
+    });
+  }
+
+  // Pasta fırınlarını güncelle
+  if (gs.cakeBakers) {
+    gs.cakeBakers.forEach(c => {
+      if (c.input && c.timer > 0) {
+        c.timer--;
+        if (c.timer <= 0) { c.output = '🍰'; c.input = null; c.burnTimer = CAKE_BURN_TICKS; }
+      } else if (c.output && c.burnTimer !== undefined && c.burnTimer > 0) {
+        c.burnTimer--;
+        if (c.burnTimer <= 0) { c.isBurned = true; c.output = '⬛'; }
+      }
+    });
+  }
+
+  // Kahve makinelerini güncelle — gece fazında yenile
+  if (gs.dayPhase === 'night' && gs.coffeeMachines) {
+    gs.coffeeMachines.forEach(cm => {
+      cm.maxCups = COFFEE_BASE_CAPACITY + (gs.upgrades.coffeeMachine ?? 0) * 2;
+      cm.cups = cm.maxCups;
     });
   }
 

@@ -41,6 +41,8 @@ import { drawSinks } from '../renderer/drawSinks';
 import { drawPerfStats } from '../renderer/drawPerfStats';
 import { drawFryer } from '../renderer/drawFryer';
 import { drawFridge } from '../renderer/drawFridge';
+import { drawCakeBaker } from '../renderer/drawCakeBaker';
+import { drawCoffeeMachine } from '../renderer/drawCoffeeMachine';
 
 interface UseGameLoopProps {
   canvasRef: React.RefObject<HTMLCanvasElement>;
@@ -163,6 +165,26 @@ export function useGameLoop({
           const dynX = state.stationLayout?.[fridge.id]?.x ?? fridge.x;
           const dynY = state.stationLayout?.[fridge.id]?.y ?? fridge.y;
           drawFridge(ctx, { ...fridge, x: dynX, y: dynY });
+        }
+      }
+
+      // Pasta fırını — sadece 🍰 unlock edilmişse göster
+      if (state.cakeBakers && state.unlockedDishes.includes('🍰')) {
+        for (const baker of state.cakeBakers) {
+          if (movingId === baker.id) continue;
+          const dynX = state.stationLayout?.[baker.id]?.x ?? baker.x;
+          const dynY = state.stationLayout?.[baker.id]?.y ?? baker.y;
+          drawCakeBaker(ctx, { ...baker, x: dynX, y: dynY }, time);
+        }
+      }
+
+      // Kahve makinesi — sadece ☕ unlock edilmişse göster
+      if (state.coffeeMachines && state.unlockedDishes.includes('☕')) {
+        for (const cm of state.coffeeMachines) {
+          if (movingId === cm.id) continue;
+          const dynX = state.stationLayout?.[cm.id]?.x ?? cm.x;
+          const dynY = state.stationLayout?.[cm.id]?.y ?? cm.y;
+          drawCoffeeMachine(ctx, { ...cm, x: dynX, y: dynY });
         }
       }
 

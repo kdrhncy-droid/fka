@@ -65,6 +65,10 @@ export function useLayoutEditor({ socket, gameStateRef, localPlayerRef, dayPhase
       if (fryer) { fryer.x = x; fryer.y = y; }
       const fridge = gs.fridges?.find(f => f.id === stationId);
       if (fridge) { fridge.x = x; fridge.y = y; }
+      const cakeBaker = gs.cakeBakers?.find(c => c.id === stationId);
+      if (cakeBaker) { cakeBaker.x = x; cakeBaker.y = y; }
+      const coffeeMachine = gs.coffeeMachines?.find(c => c.id === stationId);
+      if (coffeeMachine) { coffeeMachine.x = x; coffeeMachine.y = y; }
     };
 
     const onLocked = ({ stationId, lockedBy }: { stationId: string; lockedBy: string }) => {

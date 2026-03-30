@@ -8,8 +8,8 @@ import { Personality } from './dialogues';
 export type { Personality };
 
 export type Item = string | null;
-export type StockKey = '🍞' | '🥩' | '🥬' | '🥘' | '🍢' | '🥔';
-export type UpgradeKey = 'patience' | 'earnings' | 'plateStackMax' | 'safeOven' | 'fryerSpeed' | 'fridgeCapacity';
+export type StockKey = '🍞' | '🥩' | '🥬' | '🥘' | '🍢' | '🥔' | '🧁';
+export type UpgradeKey = 'patience' | 'earnings' | 'plateStackMax' | 'safeOven' | 'fryerSpeed' | 'fridgeCapacity' | 'cakeBaker' | 'coffeeMachine';
 export const CLEAN_PLATE = '__clean_plate__';
 export const DIRTY_PLATE = '__dirty_plate__';
 
@@ -69,6 +69,7 @@ export interface WaitingGuest {
 export interface Upgrades {
     patience: number; earnings: number; plateStackMax: number; safeOven: number;
     fryerSpeed: number; fridgeCapacity: number;
+    cakeBaker: number; coffeeMachine: number;
 }
 
 export interface CookStation {
@@ -113,6 +114,33 @@ export interface ChoppingBoard {
   progress: number;       // 0..CHOP_TICKS
   isChopping: boolean;    // oyuncu aktif kesiyor mu
   choppingPlayerId: string | null;
+}
+
+// ─── Pasta Fırını ────────────────────────────────────────────────────────────
+export const CAKE_TICKS = 180; // ~6 saniye (uzun ama yüksek bahşiş)
+export const CAKE_BURN_TICKS = 300;
+
+export interface CakeBaker {
+  id: string;
+  x: number;
+  y: number;
+  input: string | null;
+  timer: number;
+  output: string | null;
+  isBurned?: boolean;
+  burnTimer?: number;
+}
+
+// ─── Kahve Makinesi ───────────────────────────────────────────────────────────
+export const COFFEE_ITEM = '☕';
+export const COFFEE_BASE_CAPACITY = 4;
+
+export interface CoffeeMachine {
+  id: string;
+  x: number;
+  y: number;
+  cups: number;
+  maxCups: number;
 }
 
 // ─── Fritöz ──────────────────────────────────────────────────────────────────
@@ -246,6 +274,12 @@ export interface GameState {
     // ─── Buzdolabı ───────────────────────────────────────────────────────────
     fridges: Fridge[];
 
+    // ─── Pasta Fırını ────────────────────────────────────────────────────────
+    cakeBakers: CakeBaker[];
+
+    // ─── Kahve Makinesi ──────────────────────────────────────────────────────
+    coffeeMachines: CoffeeMachine[];
+
     // ─── Servis Penceresi ─────────────────────────────────────────────────────
     serviceWindow: ServiceWindowSlot[];
 
@@ -362,6 +396,7 @@ export const INGREDIENTS = [
     { key: '🥘' as StockKey, pos: { x: 630, y: 65 }, label: 'Çorba', color: '#fbbf24' },
     { key: '🍢' as StockKey, pos: { x: 720, y: 65 }, label: 'Kebap', color: '#92400e' },
     { key: '🥔' as StockKey, pos: { x: 810, y: 65 }, label: 'Patates', color: '#d4a017' },
+    { key: '🧁' as StockKey, pos: { x: 900, y: 65 }, label: 'Hamur Tatlı', color: '#f9a8d4' },
 ];
 
 export const RECIPE_DEFS = {
@@ -370,9 +405,10 @@ export const RECIPE_DEFS = {
     'CHOPPED_🥬':  { output: '🥗', time: 15,  label: '🥗 Salata' },
     '🥘':          { output: '🍜', time: 120, label: '🍜 Çorba' },
     'CHOPPED_🍢':  { output: '🌯', time: 60,  label: '🌯 Dürüm' },
+    '🧁':          { output: '🍰', time: 180, label: '🍰 Pasta' },
 } as const;
 
-export const DISH_UNLOCK_POOL = ['🍕', '🍜', '🌯', '🍟', '🥤'] as const;
+export const DISH_UNLOCK_POOL = ['🍕', '🍜', '🌯', '🍟', '🥤', '🍰', '☕'] as const;
 
 export const INITIAL_OVEN_POSITIONS = [
     { x: 400, y: 90 },
@@ -392,7 +428,7 @@ export const TRASH_STATION = { x: 920, y: 285 };
 export const DIRTY_TRAY_POS = { x: 860, y: 90 };
 export const SINK_STATION = { x: 960, y: 90 };
 export const TABLE_Y_DEFAULT = 500;
-export const DISH_ITEMS = ['🍕', '🍔', '🥗', '🍜', '🌯', '🍟', '🥤'] as const;
+export const DISH_ITEMS = ['🍕', '🍔', '🥗', '🍜', '🌯', '🍟', '🥤', '🍰', '☕'] as const;
 
 export const UPGRADE_DEFS: Record<UpgradeKey, { costs: number[]; max: number }> = {
     patience:      { costs: [150, 300, 600, 1200], max: 4 },
@@ -401,6 +437,8 @@ export const UPGRADE_DEFS: Record<UpgradeKey, { costs: number[]; max: number }> 
     safeOven:      { costs: [500],                 max: 1 },
     fryerSpeed:    { costs: [300, 600],             max: 2 },
     fridgeCapacity:{ costs: [250, 500],             max: 2 },
+    cakeBaker:     { costs: [400],                  max: 1 },
+    coffeeMachine: { costs: [350],                  max: 1 },
 };
 
 export function mkCook(id: string, x: number, y: number): CookStation {
@@ -422,9 +460,9 @@ function mkClassicMapState(): GameState {
     players: {}, customers: [], waitList: [],
     holdingStations: [],
     dirtyTables: [],
-    score: 0, stock: { '🍞': 10, '🥩': 10, '🥬': 10, '🥘': 5, '🍢': 5 },
+    score: 0, stock: { '🍞': 10, '🥩': 10, '🥬': 10, '🥘': 5, '🍢': 5, '🥔': 8, '🧁': 6 },
     marketName: "TerraMarket", dayPhase: 'prep', dayTimer: DAY_TICKS,
-    upgrades: { patience: 0, earnings: 0, plateStackMax: 0, safeOven: 0, fryerSpeed: 0, fridgeCapacity: 0 }, day: 1, hasOrderedTonight: false,
+    upgrades: { patience: 0, earnings: 0, plateStackMax: 0, safeOven: 0, fryerSpeed: 0, fridgeCapacity: 0, cakeBaker: 0, coffeeMachine: 0 }, day: 1, hasOrderedTonight: false,
     cookStations: initialOvens,
     dirtyTrayCount: 0,
     plateStack: { count: PLATE_STACK_BASE, maxCount: PLATE_STACK_BASE },
@@ -440,6 +478,7 @@ function mkClassicMapState(): GameState {
       'ingredient_🥘': { id: 'ingredient_🥘', x: 630, y: 65 },
       'ingredient_🍢': { id: 'ingredient_🍢', x: 720, y: 65 },
       'ingredient_🥔': { id: 'ingredient_🥔', x: 810, y: 65 },
+      'ingredient_🧁': { id: 'ingredient_🧁', x: 900, y: 65 },
       'oven1':         { id: 'oven1',         x: 400, y: 90 },
       'tray':          { id: 'tray',          x: 300, y: 285 },
       'sink':          { id: 'sink',          x: 960,  y: 90 },
@@ -449,6 +488,8 @@ function mkClassicMapState(): GameState {
       'chop1':         { id: 'chop1',         x: 760, y: 170 },
       'fryer1':        { id: 'fryer1',        x: 300, y: 170 },
       'fridge1':       { id: 'fridge1',       x: 200, y: 285 },
+      'cakebaker1':    { id: 'cakebaker1',    x: 500, y: 170 },
+      'coffee1':       { id: 'coffee1',       x: 100, y: 285 },
     },
     lockedStations: {},
     tableLayout: {
@@ -470,6 +511,12 @@ function mkClassicMapState(): GameState {
     ],
     fridges: [
       { id: 'fridge1', x: 200, y: 285, drinks: FRIDGE_BASE_CAPACITY, maxDrinks: FRIDGE_BASE_CAPACITY },
+    ],
+    cakeBakers: [
+      { id: 'cakebaker1', x: 500, y: 170, input: null, timer: 0, output: null },
+    ],
+    coffeeMachines: [
+      { id: 'coffee1', x: 100, y: 285, cups: COFFEE_BASE_CAPACITY, maxCups: COFFEE_BASE_CAPACITY },
     ],
     serviceWindow: SERVICE_WINDOW_SLOTS.map(s => ({ id: s.id, item: null })),
   };

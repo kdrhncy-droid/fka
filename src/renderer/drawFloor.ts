@@ -167,6 +167,8 @@ export function drawFloor(ctx: CanvasRenderingContext2D, unlockedDishes: string[
     if (recipe && !unlockedDishes.includes(recipe.output)) return;
     // 🥔 patates — fritöz sistemi, RECIPE_DEFS'te yok, 🍟 unlock kontrolü
     if (ing.key === '🥔' && !unlockedDishes.includes('🍟')) return;
+    // 🧁 tatlı hamuru — pasta fırını sistemi, 🍰 unlock kontrolü
+    if (ing.key === '🧁' && !unlockedDishes.includes('🍰')) return;
 
     const pos = ingredientPositions?.[ing.key] ?? ing.pos;
     const { x, y } = pos;

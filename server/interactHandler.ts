@@ -8,7 +8,7 @@ import {
   TRASH_STATION, TRAY_STATION,
   CHOPPABLE, CHOP_PREFIX, isChopped,
   SERVICE_WINDOW_SLOTS, SERVICE_WINDOW_R,
-  FRYER_TICKS, DRINK_ITEM,
+  FRYER_TICKS, DRINK_ITEM, CAKE_TICKS, COFFEE_ITEM,
 } from "../shared/types.js";
 
 const INTERACT_R = 110;
@@ -312,6 +312,10 @@ const handleIngredients: InteractionHandler = ({ gs, p, px, py, snd }) => {
       if (s.key === '🥔' && !gs.unlockedDishes.includes('🍟')) {
         snd("fail"); return true;
       }
+      // 🧁 tatlı hamuru — 🍰 unlock edilmemişse alma
+      if (s.key === '🧁' && !gs.unlockedDishes.includes('🍰')) {
+        snd("fail"); return true;
+      }
       if (!p.holding) {
         p.holding = s.key; snd("pickup"); return true;
       }
@@ -366,9 +370,56 @@ const handleFridges: InteractionHandler = ({ gs, p, px, py, snd }) => {
           items.push(DRINK_ITEM); p.holding = createTray(items);
           fridge.drinks--; snd('pickup');
         }
-      } else {
-        snd('fail');
+      } else { snd('fail'); }
+      return true;
+    }
+  }
+  return false;
+};
+
+const handleCakeBakers: InteractionHandler = ({ gs, p, px, py, snd }) => {
+  if (!gs.cakeBakers) return false;
+  for (const baker of gs.cakeBakers) {
+    const dynX = gs.stationLayout?.[baker.id]?.x ?? baker.x;
+    const dynY = gs.stationLayout?.[baker.id]?.y ?? baker.y;
+    if (Math.hypot(px - dynX, py - dynY) < INTERACT_R) {
+      if (!p.holding) {
+        if (baker.output && !baker.isBurned) { snd('fail'); }
+        else if (baker.isBurned) { p.holding = '⬛'; baker.output = null; baker.isBurned = false; baker.burnTimer = 0; snd('trash'); }
+      } else if (p.holding === '🧁' && !baker.input && !baker.output) {
+        baker.input = '🧁'; baker.timer = CAKE_TICKS; baker.isBurned = false; baker.burnTimer = 0;
+        p.holding = null; snd('pickup');
+      } else if (p.holding === CLEAN_PLATE && baker.output && !baker.isBurned) {
+        p.holding = baker.output; baker.output = null; baker.burnTimer = 0; snd('success');
+      } else if (isTray(p.holding) && baker.output && !baker.isBurned) {
+        const items = getTrayItems(p.holding);
+        const cpIdx = items.indexOf(CLEAN_PLATE);
+        if (cpIdx !== -1) {
+          items[cpIdx] = baker.output; p.holding = createTray(items);
+          baker.output = null; baker.burnTimer = 0; snd('success');
+        }
       }
+      return true;
+    }
+  }
+  return false;
+};
+
+const handleCoffeeMachines: InteractionHandler = ({ gs, p, px, py, snd }) => {
+  if (!gs.coffeeMachines) return false;
+  for (const cm of gs.coffeeMachines) {
+    const dynX = gs.stationLayout?.[cm.id]?.x ?? cm.x;
+    const dynY = gs.stationLayout?.[cm.id]?.y ?? cm.y;
+    if (Math.hypot(px - dynX, py - dynY) < INTERACT_R) {
+      if (!p.holding && cm.cups > 0) {
+        p.holding = COFFEE_ITEM; cm.cups--; snd('pickup');
+      } else if (isTray(p.holding) && cm.cups > 0) {
+        const items = getTrayItems(p.holding);
+        if (items.length < MAX_TRAY_CAPACITY) {
+          items.push(COFFEE_ITEM); p.holding = createTray(items);
+          cm.cups--; snd('pickup');
+        }
+      } else { snd('fail'); }
       return true;
     }
   }
@@ -385,6 +436,8 @@ const INTERACTION_CHAIN: InteractionHandler[] = [
   handleChoppingBoards,
   handleFryers,
   handleFridges,
+  handleCakeBakers,
+  handleCoffeeMachines,
   handleCookStations,
   handleCustomers,
   handleIngredients

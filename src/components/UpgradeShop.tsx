@@ -8,6 +8,8 @@ const UPGRADE_UI: { id: UpgradeKey; icon: string; name: string; desc: string }[]
     { id: 'safeOven', icon: '🛡️', name: 'Güvenli Fırın', desc: 'Lv1: yanma 2x yavaş · Lv2: hiç yanmaz' },
     { id: 'fryerSpeed', icon: '🍟', name: 'Fritöz Hızı', desc: 'Patates daha hızlı kızarır' },
     { id: 'fridgeCapacity', icon: '🧊', name: 'Buzdolabı Kapasitesi', desc: '+3 içecek kapasitesi' },
+    { id: 'cakeBaker', icon: '🍰', name: 'Pasta Fırını Hızı', desc: 'Pasta daha hızlı pişer' },
+    { id: 'coffeeMachine', icon: '☕', name: 'Kahve Kapasitesi', desc: '+2 kahve kapasitesi' },
 ];
 
 const DISH_NAMES: Record<string, string> = {

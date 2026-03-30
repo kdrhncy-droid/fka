@@ -121,6 +121,14 @@ export function registerLayoutHandler(
     const fridge = gs.fridges?.find(f => f.id === stationId);
     if (fridge) { fridge.x = snapped.x; fridge.y = snapped.y; }
 
+    // Pasta fırını ise cakeBakers koordinatını da güncelle
+    const cakeBaker = gs.cakeBakers?.find(c => c.id === stationId);
+    if (cakeBaker) { cakeBaker.x = snapped.x; cakeBaker.y = snapped.y; }
+
+    // Kahve makinesi ise coffeeMachines koordinatını da güncelle
+    const coffeeMachine = gs.coffeeMachines?.find(c => c.id === stationId);
+    if (coffeeMachine) { coffeeMachine.x = snapped.x; coffeeMachine.y = snapped.y; }
+
     delete gs.lockedStations[stationId];
     io.to(roomId).emit("stationMoved", { stationId, x: snapped.x, y: snapped.y });
     io.to(roomId).emit("stationUnlocked", { stationId });

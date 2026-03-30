@@ -33,6 +33,8 @@ const DISH_NAMES: Record<string, string> = {
     '🌯': 'Dürüm',
     '🍟': 'Patates',
     '🥤': 'İçecek',
+    '🍰': 'Pasta',
+    '☕': 'Kahve',
 };
 
 const DISH_INFO: Record<string, { ingredient: string; time: string; color: string }> = {
@@ -43,6 +45,8 @@ const DISH_INFO: Record<string, { ingredient: string; time: string; color: strin
     '🌯': { ingredient: '🍢 Kebap (doğra)',time: '2 sn',   color: 'from-stone-600 to-amber-800' },
     '🍟': { ingredient: '🥔 Patates',      time: '1 sn',   color: 'from-yellow-500 to-amber-500' },
     '🥤': { ingredient: '🧊 Buzdolabı',    time: 'Anında', color: 'from-sky-500 to-blue-600' },
+    '🍰': { ingredient: '🧁 Hamur Tatlı',  time: '6 sn',   color: 'from-pink-500 to-rose-500' },
+    '☕': { ingredient: '☕ Kahve Makinesi', time: 'Anında', color: 'from-amber-800 to-stone-800' },
 };
 
 interface Props {

@@ -328,8 +328,9 @@ io.on("connection", (socket) => {
     gs.cookStations.forEach(s => { s.input = null; s.output = null; s.isBurned = false; s.burnTimer = 0; });
     // Fritözleri temizle
     gs.fryers?.forEach(f => { f.input = null; f.output = null; f.isBurned = false; f.burnTimer = 0; f.timer = 0; });
-    // Buzdolabını doldur
+    gs.cakeBakers?.forEach(c => { c.input = null; c.output = null; c.isBurned = false; c.burnTimer = 0; c.timer = 0; });
     gs.fridges?.forEach(fridge => { fridge.drinks = fridge.maxDrinks; });
+    gs.coffeeMachines?.forEach(cm => { cm.cups = cm.maxCups; });
     // Kesme tahtalarını temizle
     gs.choppingBoards?.forEach(b => { b.input = null; b.progress = 0; b.isChopping = false; b.choppingPlayerId = null; });
     // Oyuncuların elindeki itemları temizle
