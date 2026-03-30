@@ -15,11 +15,11 @@ import { useVoiceChat } from '../hooks/useVoiceChat';
 import { useGameState } from '../hooks/useGameState';
 import { useLayoutEditor } from '../hooks/useLayoutEditor';
 import { playSound } from '../utils/audio';
-import { setBgmPhase } from '../utils/bgm';
+import { setBgmPhase, unlockBgm } from '../utils/bgm';
 import { ChatPanel } from './ChatPanel';
 import { DayEndModal } from './DayEndModal';
 
-const MUSIC_URL = 'https://cdn.jsdelivr.net/gh/effacestudios/Royalty-Free-Music-Pack@main/Light%20Hearted%20-%20Jeremy%20Blake.mp3';
+
 
 // Yemek isim haritası
 const DISH_NAMES: Record<string, string> = {
@@ -66,11 +66,10 @@ export const GameScreen: React.FC<Props> = ({
     interactOverrideRef, ping = 0, onOpenStats, chatMessages, dayEndSummary, onClearDayEnd
 }) => {
     const joystickVectorRef = useRef({ x: 0, y: 0 });
-    const audioRef = useRef<HTMLAudioElement | null>(null);
     const lastPunchTimeRef = useRef<number>(0);
     const chopTouchIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-    const [musicOn, setMusicOn] = useState(false);
+    const [musicOn, setMusicOn] = useState(settings.bgmOn);
     const [showSettings, setShowSettings] = useState(false);
     const [showCosmetics, setShowCosmetics] = useState(false);
     const [showHudEditor, setShowHudEditor] = useState(false);
@@ -156,26 +155,16 @@ export const GameScreen: React.FC<Props> = ({
         showPerfStats: settings.showPerfStats,
     });
 
-    // Müzik
-    useEffect(() => {
-        const a = new Audio(MUSIC_URL);
-        a.loop = true; a.volume = settings.masterVolume;
-        audioRef.current = a;
-        return () => { a.pause(); };
-    }, []);
-
-    useEffect(() => {
-        if (audioRef.current) audioRef.current.volume = settings.masterVolume;
-    }, [settings.masterVolume]);
-
+    // Müzik butonu BGM toggle'ına bağlı
     const toggleMusic = () => {
-        const a = audioRef.current; if (!a) return;
-        if (musicOn) { a.pause(); setMusicOn(false); }
-        else { a.play().catch(() => { }); setMusicOn(true); }
+        const next = !musicOn;
+        setMusicOn(next);
+        updateSettings({ bgmOn: next });
     };
 
     const emit = (event: string, data?: unknown) => {
         if (audioCtxRef.current?.state === 'suspended') audioCtxRef.current.resume();
+        unlockBgm();
         socket?.emit(event, data);
     };
 
@@ -273,6 +262,7 @@ export const GameScreen: React.FC<Props> = ({
                     width={GAME_WIDTH}
                     height={GAME_HEIGHT}
                     onContextMenu={(e) => e.preventDefault()}
+                    onPointerDown={() => unlockBgm()}
                     className="w-full h-full block touch-none select-none"
                 />
 

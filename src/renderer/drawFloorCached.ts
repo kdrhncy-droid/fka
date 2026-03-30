@@ -12,7 +12,7 @@ export function drawFloorCached(
   unlockedDishes: string[] = [],
   forceRedraw = false,
   ingredientPositions?: Record<string, { x: number; y: number }>,
-  tablePositions?: Record<string, { id: string; x: number; y: number }>,
+  tablePositions?: Record<string, { id: string; x: number; y: number; seats?: 1 | 2 | 3 | 4 }>,
   movingTableId?: string | null,
   plateStackPos?: { x: number; y: number },
   sinkPos?: { x: number; y: number },
@@ -23,7 +23,7 @@ export function drawFloorCached(
     ? Object.entries(ingredientPositions).map(([k, v]) => `${k}:${v.x},${v.y}`).join(';')
     : '';
   const tablePosStr = tablePositions
-    ? Object.entries(tablePositions).map(([k, v]) => `${k}:${v.x},${v.y}`).join(';')
+    ? Object.entries(tablePositions).map(([k, v]) => `${k}:${v.x},${v.y},${v.seats}`).join(';')
     : '';
   const platePosStr = plateStackPos ? `${plateStackPos.x},${plateStackPos.y}` : '';
   const sinkPosStr = sinkPos ? `${sinkPos.x},${sinkPos.y}` : '';
@@ -47,10 +47,10 @@ export function drawFloorCached(
         if (movingTableId === t.id) {
           (offCtx as unknown as CanvasRenderingContext2D).save();
           (offCtx as unknown as CanvasRenderingContext2D).globalAlpha = 0.4;
-          drawTable(offCtx as unknown as CanvasRenderingContext2D, t.x, t.y);
+          drawTable(offCtx as unknown as CanvasRenderingContext2D, t.x, t.y, t.seats);
           (offCtx as unknown as CanvasRenderingContext2D).restore();
         } else {
-          drawTable(offCtx as unknown as CanvasRenderingContext2D, t.x, t.y);
+          drawTable(offCtx as unknown as CanvasRenderingContext2D, t.x, t.y, t.seats);
         }
       });
     }

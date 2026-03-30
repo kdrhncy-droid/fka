@@ -32,6 +32,7 @@ let currentTrackIndex = 0;
 let _bgmVolume = 0.5;
 let _bgmEnabled = true;
 let _isFading = false;
+let _unlocked = false; // Kullanıcı etkileşimi gerçekleşti mi?
 
 // ─── Yardımcı ───────────────────────────────────────────────────────────────
 function getRandom(phase: GamePhase): { src: string; index: number } {
@@ -56,7 +57,7 @@ function crossfadeTo(src: string, fadeDuration = 1200 /* ms */) {
   newAudio.volume = 0;
   newAudio.addEventListener('ended', onTrackEnded);
 
-  if (_bgmEnabled) {
+  if (_bgmEnabled && _unlocked) {
     newAudio.play().catch(() => {
       // mobilde autoplay policy hatası → sessizce geç
       _isFading = false;
@@ -135,4 +136,17 @@ export function stopBgm() {
   currentAudio?.pause();
   currentAudio = null;
   currentPhase = null;
+}
+
+/**
+ * Kullanıcı ilk etkileşiminde çağır (click, keydown vs.)
+ * Autoplay policy'yi aşmak için gerekli.
+ */
+export function unlockBgm() {
+  if (_unlocked) return;
+  _unlocked = true;
+  // Bekleyen bir phase varsa şimdi başlat
+  if (_bgmEnabled && currentPhase && currentAudio && currentAudio.paused) {
+    currentAudio.play().catch(() => {});
+  }
 }
