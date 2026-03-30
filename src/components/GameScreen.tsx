@@ -18,6 +18,7 @@ import { playSound } from '../utils/audio';
 import { stopBgm } from '../utils/bgm';
 import { ChatPanel } from './ChatPanel';
 import { DayEndModal } from './DayEndModal';
+import { LeaveModal } from './LeaveModal';
 
 
 
@@ -71,6 +72,7 @@ export const GameScreen: React.FC<Props> = ({
 
     const [musicOn, setMusicOn] = useState(settings.bgmOn);
     const [showSettings, setShowSettings] = useState(false);
+    const [showLeave, setShowLeave] = useState(false);
     const [showCosmetics, setShowCosmetics] = useState(false);
     const [showHudEditor, setShowHudEditor] = useState(false);
     const [voiceActive, setVoiceActive] = useState(false);
@@ -520,8 +522,19 @@ export const GameScreen: React.FC<Props> = ({
             )}
 
             {showSettings && (
-                <SettingsPanel settings={settings} onUpdate={updateSettings} onClose={() => setShowSettings(false)} onLeaveGame={onLeaveGame} isJoined={isJoined}
+                <SettingsPanel settings={settings} onUpdate={updateSettings} onClose={() => setShowSettings(false)}
+                    onLeaveGame={() => { setShowSettings(false); setShowLeave(true); }}
+                    isJoined={isJoined}
                     onOpenHudEditor={() => { setShowSettings(false); setShowHudEditor(true); }}
+                />
+            )}
+
+            {showLeave && (
+                <LeaveModal
+                    score={score}
+                    day={day}
+                    onConfirm={() => { setShowLeave(false); onLeaveGame?.(); }}
+                    onCancel={() => setShowLeave(false)}
                 />
             )}
 

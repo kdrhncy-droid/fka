@@ -2,10 +2,10 @@
 
 ## UI / Ekranlar
 - [ ] Odadan ayrılma ekranı (ayrılmadan önce onay/özet ekranı)
-- [ ] Ana menü arka planı — yükleme ekranı gibi animasyonlu
-- [ ] Ana menü butonlarını yenile (Tek Oyunculu / Çok Oyunculu → Oda Kur / Odaya Katıl)
-- [ ] Ana menüye karakter oluşturma ekranını taşı (oyuna başlamadan önce seçilebilsin)
-- [ ] Ana menüye İstatistikler butonu ekle
+- [x] Ana menü arka planı — yükleme ekranı gibi animasyonlu
+- [x] Ana menü butonlarını yenile (Tek Oyunculu / Çok Oyunculu → Oda Kur / Odaya Katıl)
+- [x] Ana menüye karakter oluşturma ekranını taşı (oyuna başlamadan önce seçilebilsin)
+- [x] Ana menüye İstatistikler butonu ekle
 - [ ] Ana menüye Öğretici Mod ekle
 - [ ] Oyun içi gereksiz bilgi/UI kısımlarını temizle
 
