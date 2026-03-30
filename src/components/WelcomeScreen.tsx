@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { MARKET_NAME } from '../constants';
 import { PatchNotesModal } from './PatchNotesModal';
 import { StatsModal } from './StatsModal';
+import { TutorialOverlay, markTutorialDone } from './TutorialOverlay';
 import { CharacterPreview } from './CharacterPreview';
 import { CHARACTER_TYPES } from '../types/game';
 import { stk, adjustColor, drawShadowEllipse } from '../renderer/rendererUtils';
@@ -158,6 +159,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   const [copied, setCopied] = useState(false);
   const [showPatchNotes, setShowPatchNotes] = useState(false);
   const [showStats, setShowStats] = useState(false);
+  const [showTutorial, setShowTutorial] = useState(false);
   const [showChar, setShowChar] = useState(false);
 
   const openCreate = () => {
@@ -237,6 +239,10 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                 📊 İstatistik
               </button>
             </div>
+            <button onClick={() => { markTutorialDone(); setShowTutorial(true); }}
+              className="w-full py-2.5 rounded-2xl bg-white/8 hover:bg-white/15 backdrop-blur border border-white/10 text-white/60 font-bold text-xs uppercase tracking-widest transition-all">
+              📖 Nasıl Oynanır?
+            </button>
           </div>
         )}
 
@@ -384,6 +390,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
 
       {showPatchNotes && <PatchNotesModal onClose={() => setShowPatchNotes(false)} />}
       {showStats && <StatsModal onClose={() => setShowStats(false)} />}
+      {showTutorial && <TutorialOverlay onClose={() => setShowTutorial(false)} />}
     </div>
   );
 };

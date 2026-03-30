@@ -20,6 +20,7 @@ import { ChatPanel } from './ChatPanel';
 import { DayEndModal } from './DayEndModal';
 import { LeaveModal } from './LeaveModal';
 import { saveStats, loadStats } from './StatsModal';
+import { TutorialOverlay, isTutorialDone } from './TutorialOverlay';
 
 
 
@@ -77,6 +78,7 @@ export const GameScreen: React.FC<Props> = ({
     const [musicOn, setMusicOn] = useState(settings.bgmOn);
     const [showSettings, setShowSettings] = useState(false);
     const [showLeave, setShowLeave] = useState(false);
+    const [showTutorial, setShowTutorial] = useState(!isTutorialDone());
     const [showCosmetics, setShowCosmetics] = useState(false);
     const [showHudEditor, setShowHudEditor] = useState(false);
     const [voiceActive, setVoiceActive] = useState(false);
@@ -552,6 +554,10 @@ export const GameScreen: React.FC<Props> = ({
                     onConfirm={() => { setShowLeave(false); onLeaveGame?.(); }}
                     onCancel={() => setShowLeave(false)}
                 />
+            )}
+
+            {showTutorial && (
+                <TutorialOverlay onClose={() => setShowTutorial(false)} />
             )}
 
             {showHudEditor && (
