@@ -108,28 +108,25 @@ export function useLayoutEditor({ socket, gameStateRef, localPlayerRef, dayPhase
     };
   }, [socket, gameStateRef]);
 
-  // Önizleme pozisyonunu oyuncu hareketiyle güncelle
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const state = editorStateRef.current;
-      if (!state.isMoving && !state.isMovingTable) return;
-      const { x, y } = localPlayerRef.current;
-      const snapped = snapToGrid(x, y);
-      const gs = gameStateRef.current;
+  // Önizleme pozisyonunu oyuncu hareketiyle güncelle — render loop'tan çağrılır (16ms)
+  const updatePreview = useCallback(() => {
+    const state = editorStateRef.current;
+    if (!state.isMoving && !state.isMovingTable) return;
+    const { x, y } = localPlayerRef.current;
+    const snapped = snapToGrid(x, y);
+    const gs = gameStateRef.current;
 
-      let valid: boolean;
-      if (state.isMovingTable && state.movingTableId) {
-        valid = isTablePositionValid(snapped.x, snapped.y, gs.tableLayout, state.movingTableId);
-      } else if (state.movingStationId) {
-        const { col, row } = pixelToGridIndex(snapped.x, snapped.y);
-        valid = !isGridCellOccupied(col, row, gs.stationLayout, state.movingStationId);
-      } else return;
+    let valid: boolean;
+    if (state.isMovingTable && state.movingTableId) {
+      valid = isTablePositionValid(snapped.x, snapped.y, gs.tableLayout, state.movingTableId);
+    } else if (state.movingStationId) {
+      const { col, row } = pixelToGridIndex(snapped.x, snapped.y);
+      valid = !isGridCellOccupied(col, row, gs.stationLayout, state.movingStationId);
+    } else return;
 
-      if (state.previewPos?.x !== snapped.x || state.previewPos?.y !== snapped.y || state.isPreviewValid !== valid) {
-        setState({ ...state, previewPos: snapped, isPreviewValid: valid });
-      }
-    }, 50);
-    return () => clearInterval(interval);
+    if (state.previewPos?.x !== snapped.x || state.previewPos?.y !== snapped.y || state.isPreviewValid !== valid) {
+      setState({ ...state, previewPos: snapped, isPreviewValid: valid });
+    }
   }, [localPlayerRef, gameStateRef, setState]);
 
   const handleInteract = useCallback(() => {
@@ -251,5 +248,5 @@ export function useLayoutEditor({ socket, gameStateRef, localPlayerRef, dayPhase
     }
   }, [dayPhase, socket]);
 
-  return { editorState, editorStateRef, handleInteract, handleCancel, handleCycleSeats };
+  return { editorState, editorStateRef, handleInteract, handleCancel, handleCycleSeats, updatePreview };
 }

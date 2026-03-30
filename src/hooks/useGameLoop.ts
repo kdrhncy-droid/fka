@@ -53,11 +53,12 @@ interface UseGameLoopProps {
   globalVolume?: number;
   editorStateRef?: React.MutableRefObject<LayoutEditorState>;
   showPerfStats?: boolean;
+  onPreviewUpdate?: () => void;
 }
 
 export function useGameLoop({
   canvasRef, isJoined, myId, socket, gameStateRef,
-  localPlayerRef, keysRef, joystickVectorRef, audioElementsRef, globalVolume = 1.0, editorStateRef, showPerfStats = false,
+  localPlayerRef, keysRef, joystickVectorRef, audioElementsRef, globalVolume = 1.0, editorStateRef, showPerfStats = false, onPreviewUpdate,
 }: UseGameLoopProps) {
   useEffect(() => {
     if (!isJoined) return;
@@ -84,6 +85,9 @@ export function useGameLoop({
       const frameScale = deltaMs / (1000 / 60);
 
       movePlayer(time, lastEmitRef, frameScale, { socket, gameStateRef, localPlayerRef, keysRef, joystickVectorRef });
+
+      // Editor preview her frame güncellenir — gecikme sıfır
+      onPreviewUpdate?.();
 
       const isEditing = !!(editorStateRef?.current?.isMoving || editorStateRef?.current?.isMovingTable);
       // stationLayout'tan ingredient pozisyonlarını çıkar

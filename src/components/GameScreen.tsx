@@ -83,7 +83,7 @@ export const GameScreen: React.FC<Props> = ({
 
     const { score, dayPhase, dayTimer, upgrades, day, ovenCount, queueLen, lives, isGameOver, menuChoices, unlockedDishes } = useGameState(gameStateRef);
 
-    const { editorState, editorStateRef, handleInteract, handleCancel, handleCycleSeats } = useLayoutEditor({
+    const { editorState, editorStateRef, handleInteract, handleCancel, handleCycleSeats, updatePreview } = useLayoutEditor({
         socket,
         gameStateRef,
         localPlayerRef,
@@ -178,6 +178,7 @@ export const GameScreen: React.FC<Props> = ({
         canvasRef, isJoined, myId, socket, gameStateRef, localPlayerRef, keysRef, joystickVectorRef,
         audioElementsRef, globalVolume: globalVoiceVol, editorStateRef,
         showPerfStats: settings.showPerfStats,
+        onPreviewUpdate: updatePreview,
     });
 
     // Müzik butonu BGM toggle'ına bağlı
