@@ -57,12 +57,14 @@ export function useLayoutEditor({ socket, gameStateRef, localPlayerRef, dayPhase
         gs.stationLayout[stationId].x = x;
         gs.stationLayout[stationId].y = y;
       }
-      // Fırın ise cookStations koordinatını da güncelle
       const oven = gs.cookStations?.find(s => s.id === stationId);
       if (oven) { oven.x = x; oven.y = y; }
-      // Kesme tahtası ise choppingBoards koordinatını da güncelle
       const board = gs.choppingBoards?.find(b => b.id === stationId);
       if (board) { board.x = x; board.y = y; }
+      const fryer = gs.fryers?.find(f => f.id === stationId);
+      if (fryer) { fryer.x = x; fryer.y = y; }
+      const fridge = gs.fridges?.find(f => f.id === stationId);
+      if (fridge) { fridge.x = x; fridge.y = y; }
     };
 
     const onLocked = ({ stationId, lockedBy }: { stationId: string; lockedBy: string }) => {

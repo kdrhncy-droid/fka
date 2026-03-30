@@ -113,6 +113,14 @@ export function registerLayoutHandler(
     const board = gs.choppingBoards?.find(b => b.id === stationId);
     if (board) { board.x = snapped.x; board.y = snapped.y; }
 
+    // Fritöz ise fryers koordinatını da güncelle
+    const fryer = gs.fryers?.find(f => f.id === stationId);
+    if (fryer) { fryer.x = snapped.x; fryer.y = snapped.y; }
+
+    // Buzdolabı ise fridges koordinatını da güncelle
+    const fridge = gs.fridges?.find(f => f.id === stationId);
+    if (fridge) { fridge.x = snapped.x; fridge.y = snapped.y; }
+
     delete gs.lockedStations[stationId];
     io.to(roomId).emit("stationMoved", { stationId, x: snapped.x, y: snapped.y });
     io.to(roomId).emit("stationUnlocked", { stationId });
