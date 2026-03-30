@@ -8,6 +8,7 @@ import { WelcomeScreen } from './components/WelcomeScreen';
 import { CharacterSelect } from './components/CharacterSelect';
 import { GameScreen } from './components/GameScreen';
 import { SettingsPanel } from './components/SettingsPanel';
+import { startBgm, stopBgm } from './utils/bgm';
 
 export default function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -46,6 +47,7 @@ export default function App() {
   const handleLeaveGame = () => {
     isJoinedRef.current = false;
     socket?.emit('leave');
+    stopBgm();
     setIsJoined(false);
     setEntryScreen('menu');
     setRoomId(Math.random().toString(36).substring(2, 6).toUpperCase());
@@ -55,6 +57,7 @@ export default function App() {
   const handleQuickStart = (name: string, quickRoomId: string) => {
     if (!socket) return;
     if (audioCtxRef.current?.state === 'suspended') audioCtxRef.current.resume();
+    startBgm();
 
     setRoomId(quickRoomId);
     
@@ -80,6 +83,7 @@ export default function App() {
     e.preventDefault();
     if (!playerName.trim() || !socket) return;
     if (audioCtxRef.current?.state === 'suspended') audioCtxRef.current.resume();
+    startBgm();
 
     socket.emit('join', {
       name: playerName.trim(),

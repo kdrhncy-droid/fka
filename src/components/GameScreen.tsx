@@ -15,7 +15,7 @@ import { useVoiceChat } from '../hooks/useVoiceChat';
 import { useGameState } from '../hooks/useGameState';
 import { useLayoutEditor } from '../hooks/useLayoutEditor';
 import { playSound } from '../utils/audio';
-import { startBgm, stopBgm } from '../utils/bgm';
+import { stopBgm } from '../utils/bgm';
 import { ChatPanel } from './ChatPanel';
 import { DayEndModal } from './DayEndModal';
 
@@ -115,9 +115,8 @@ export const GameScreen: React.FC<Props> = ({
         }
     }, [dayPhase]);
 
-    // BGM: Oyuna girilince başlat, çıkınca durdur
+    // BGM: App.tsx'te join anında başlatılıyor, burada sadece unmount'ta durdur
     useEffect(() => {
-        startBgm();
         return () => stopBgm();
     }, []);
 
