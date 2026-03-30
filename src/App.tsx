@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { CHARACTER_TYPES } from './types/game';
 import { MARKET_NAME } from './constants';
 import { useSocket } from './hooks/useSocket';
@@ -30,9 +30,18 @@ export default function App() {
   });
   const { settings, update: updateSettings } = useSettings();
 
+  // Uygulama ilk açılışında socket bağlanana kadar splash göster
+  useEffect(() => {
+    if (isConnected && !appReady) {
+      // Kısa bir gecikme — daha dramatik hissettiriyor
+      setTimeout(() => setAppReady(true), 600);
+    }
+  }, [isConnected]);
+
   const [isJoined, setIsJoined] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [loadProgress, setLoadProgress] = useState(0);
+  const [appReady, setAppReady] = useState(false);
   const [entryScreen, setEntryScreen] = useState<'menu' | 'lobby'>('menu');
   const [showSettings, setShowSettings] = useState(false);
 
@@ -133,6 +142,14 @@ export default function App() {
     }
     setEntryScreen('lobby');
   };
+
+  if (!appReady) {
+    return (
+      <div className="w-full h-screen bg-[#87ceeb] flex items-center justify-center">
+        <LoadingScreen progress={isConnected ? 100 : 40} message={isConnected ? 'Hazırlanıyor' : 'Sunucuya bağlanılıyor'} />
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
