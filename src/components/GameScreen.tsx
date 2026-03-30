@@ -15,7 +15,7 @@ import { useVoiceChat } from '../hooks/useVoiceChat';
 import { useGameState } from '../hooks/useGameState';
 import { useLayoutEditor } from '../hooks/useLayoutEditor';
 import { playSound } from '../utils/audio';
-import { setBgmPhase, unlockBgm } from '../utils/bgm';
+import { startBgm, stopBgm } from '../utils/bgm';
 import { ChatPanel } from './ChatPanel';
 import { DayEndModal } from './DayEndModal';
 
@@ -115,10 +115,11 @@ export const GameScreen: React.FC<Props> = ({
         }
     }, [dayPhase]);
 
-    // BGM: Evre değişince müziği değiştir
+    // BGM: Oyuna girilince başlat, çıkınca durdur
     useEffect(() => {
-        if (dayPhase) setBgmPhase(dayPhase);
-    }, [dayPhase]);
+        startBgm();
+        return () => stopBgm();
+    }, []);
 
     const { isMuted, toggleMute, audioStreams } = useVoiceChat({
         isJoined: voiceActive && isJoined,
@@ -164,7 +165,6 @@ export const GameScreen: React.FC<Props> = ({
 
     const emit = (event: string, data?: unknown) => {
         if (audioCtxRef.current?.state === 'suspended') audioCtxRef.current.resume();
-        unlockBgm();
         socket?.emit(event, data);
     };
 
@@ -262,7 +262,6 @@ export const GameScreen: React.FC<Props> = ({
                     width={GAME_WIDTH}
                     height={GAME_HEIGHT}
                     onContextMenu={(e) => e.preventDefault()}
-                    onPointerDown={() => unlockBgm()}
                     className="w-full h-full block touch-none select-none"
                 />
 
