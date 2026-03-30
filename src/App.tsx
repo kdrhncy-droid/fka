@@ -186,7 +186,6 @@ export default function App() {
         {entryScreen === 'menu' ? (
           <WelcomeScreen
             onPlay={(rid) => handleDirectJoin(rid)}
-            onQuickStart={handleQuickStart}
             onSettings={() => setShowSettings(true)}
             playerName={playerName} setPlayerName={setPlayerName}
             charType={charType} setCharType={setCharType}

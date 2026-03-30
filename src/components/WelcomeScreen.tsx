@@ -131,7 +131,6 @@ type Screen = 'main' | 'multiplayer' | 'join' | 'name';
 
 interface WelcomeScreenProps {
   onPlay: (roomId?: string) => void;
-  onQuickStart: (playerName: string, roomId: string) => void;
   onSettings: () => void;
   playerName: string;
   setPlayerName: (v: string) => void;
@@ -148,8 +147,7 @@ const CLOTHING_COLORS = ['#f5f5f4','#fef3c7','#e0f2fe','#ef4444','#3b82f6','#22c
 
 export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   onPlay, onSettings,
-  playerName, setPlayerName,
-  charType, setCharType, hairColor, setHairColor,
+  playerName, setPlayerName,  charType, setCharType, hairColor, setHairColor,
   clothingColor, setClothingColor, faceShape, setFaceShape,
   setPlayerColor, setPlayerHat,
 }) => {
