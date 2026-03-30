@@ -162,12 +162,11 @@ export function drawFloor(ctx: CanvasRenderingContext2D, unlockedDishes: string[
   // ══════════════════════════════════════════════════════════════════
   INGREDIENTS.forEach((ing) => {
     // Gizli malzemelerin raflarını da gizle
-    // CHOPPABLE malzemelerin recipe key'i 'CHOPPED_X' formatında
     const recipeKey = (ing.key in RECIPE_DEFS) ? ing.key : `CHOPPED_${ing.key}`;
     const recipe = RECIPE_DEFS[recipeKey as keyof typeof RECIPE_DEFS];
-    if (recipe && !unlockedDishes.includes(recipe.output)) {
-      return;
-    }
+    if (recipe && !unlockedDishes.includes(recipe.output)) return;
+    // 🥔 patates — fritöz sistemi, RECIPE_DEFS'te yok, 🍟 unlock kontrolü
+    if (ing.key === '🥔' && !unlockedDishes.includes('🍟')) return;
 
     const pos = ingredientPositions?.[ing.key] ?? ing.pos;
     const { x, y } = pos;

@@ -146,8 +146,8 @@ export function useGameLoop({
         drawSinks(ctx, state.sinks, state.stationLayout, movingId);
       }
 
-      // Fritözler
-      if (state.fryers) {
+      // Fritözler — sadece 🍟 unlock edilmişse göster
+      if (state.fryers && state.unlockedDishes.includes('🍟')) {
         for (const fryer of state.fryers) {
           if (movingId === fryer.id) continue;
           const dynX = state.stationLayout?.[fryer.id]?.x ?? fryer.x;
@@ -156,8 +156,8 @@ export function useGameLoop({
         }
       }
 
-      // Buzdolabı
-      if (state.fridges) {
+      // Buzdolabı — sadece 🥤 unlock edilmişse göster
+      if (state.fridges && state.unlockedDishes.includes('🥤')) {
         for (const fridge of state.fridges) {
           if (movingId === fridge.id) continue;
           const dynX = state.stationLayout?.[fridge.id]?.x ?? fridge.x;

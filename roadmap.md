@@ -21,9 +21,9 @@
 Bunlar olmadan oyun sıkıcı hissettiriyor.
 
 ### Zorluk Dengesi
-- [ ] Gün 1 çok kolay, gün 5+ çok zor — eğri düzeltilmeli
-- [ ] Müşteri sabırsızlığı ilk günlerde daha affedici olmalı
-- [ ] Solo oyunda müşteri sayısı çok oyunculuya göre daha az olmalı (şu an var ama ince ayar gerekiyor)
+- [ ] ~~Gün 1 çok kolay, gün 5+ çok zor — eğri düzeltilmeli~~ (şimdilik dokunma)
+- [ ] ~~Müşteri sabırsızlığı ilk günlerde daha affedici olmalı~~ (şimdilik dokunma)
+- [ ] ~~Solo oyunda müşteri sayısı çok oyunculuya göre daha az olmalı~~ (şimdilik dokunma)
 
 ### Oyun Döngüsü Çeşitliliği
 - [ ] Her gün farklı bir "özel olay" — indirim günü, VIP müşteri, acele sipariş
