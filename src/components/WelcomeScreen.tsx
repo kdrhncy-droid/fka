@@ -126,13 +126,14 @@ function MenuBackground() {
 }
 
 // ── Tip tipleri ──────────────────────────────────────────────────────────────
-type Screen = 'main' | 'multiplayer' | 'join';
+type Screen = 'main' | 'multiplayer' | 'join' | 'name';
 
 interface WelcomeScreenProps {
   onPlay: (roomId?: string) => void;
   onQuickStart: (playerName: string, roomId: string) => void;
   onSettings: () => void;
-  // Karakter state'leri
+  playerName: string;
+  setPlayerName: (v: string) => void;
   charType: number; setCharType: (v: number) => void;
   hairColor: string; setHairColor: (v: string) => void;
   clothingColor: string; setClothingColor: (v: string) => void;
@@ -146,14 +147,25 @@ const CLOTHING_COLORS = ['#f5f5f4','#fef3c7','#e0f2fe','#ef4444','#3b82f6','#22c
 
 export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   onPlay, onSettings,
+  playerName, setPlayerName,
   charType, setCharType, hairColor, setHairColor,
   clothingColor, setClothingColor, faceShape, setFaceShape,
   setPlayerColor, setPlayerHat,
 }) => {
   const [screen, setScreen] = useState<Screen>('main');
   const [joinCode, setJoinCode] = useState('');
+  const [pendingRoomId, setPendingRoomId] = useState<string | undefined>(undefined);
   const [showPatchNotes, setShowPatchNotes] = useState(false);
   const [showChar, setShowChar] = useState(false);
+
+  const goPlay = (rid?: string) => {
+    if (!playerName.trim()) {
+      setPendingRoomId(rid);
+      setScreen('name');
+    } else {
+      onPlay(rid);
+    }
+  };
 
   return (
     <div className="relative w-full h-screen overflow-hidden flex items-center justify-center safe-top safe-bottom">
@@ -202,7 +214,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
         {/* Çok oyunculu */}
         {screen === 'multiplayer' && (
           <div className="w-full space-y-2.5">
-            <button onClick={() => onPlay()}
+            <button onClick={() => goPlay()}
               className="w-full py-3.5 rounded-2xl bg-amber-500 hover:bg-amber-400 active:scale-[0.97] text-stone-950 font-black text-sm uppercase tracking-widest shadow-lg transition-all">
               🏠 Oda Kur
             </button>
@@ -228,12 +240,36 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
               className="w-full rounded-2xl border border-white/20 bg-black/30 backdrop-blur px-4 py-3 text-sm font-bold uppercase text-white outline-none placeholder:text-white/40 focus:border-amber-400"
             />
             <button
-              onClick={() => joinCode.trim() && onPlay(joinCode.trim())}
+              onClick={() => joinCode.trim() && goPlay(joinCode.trim())}
               disabled={!joinCode.trim()}
               className="w-full py-3.5 rounded-2xl bg-amber-500 hover:bg-amber-400 active:scale-[0.97] text-stone-950 font-black text-sm uppercase tracking-widest shadow-lg transition-all disabled:bg-white/20 disabled:text-white/40">
               Katıl →
             </button>
             <button onClick={() => setScreen('multiplayer')}
+              className="w-full py-2.5 rounded-2xl bg-white/8 hover:bg-white/15 backdrop-blur border border-white/10 text-white/60 font-bold text-xs uppercase tracking-widest transition-all">
+              ← Geri
+            </button>
+          </div>
+        )}
+
+        {/* İsim sorma */}
+        {screen === 'name' && (
+          <div className="w-full space-y-3">
+            <p className="text-white/80 text-sm text-center">Oyuncu adını gir</p>
+            <input
+              type="text" value={playerName}
+              onChange={e => setPlayerName(e.target.value)}
+              placeholder="Adın"
+              maxLength={12} autoFocus
+              className="w-full rounded-2xl border border-white/20 bg-black/30 backdrop-blur px-4 py-3 text-sm font-bold text-white outline-none placeholder:text-white/40 focus:border-amber-400"
+            />
+            <button
+              onClick={() => { if (playerName.trim()) onPlay(pendingRoomId); }}
+              disabled={!playerName.trim()}
+              className="w-full py-3.5 rounded-2xl bg-amber-500 hover:bg-amber-400 active:scale-[0.97] text-stone-950 font-black text-sm uppercase tracking-widest shadow-lg transition-all disabled:bg-white/20 disabled:text-white/40">
+              Devam →
+            </button>
+            <button onClick={() => setScreen(pendingRoomId ? 'join' : 'multiplayer')}
               className="w-full py-2.5 rounded-2xl bg-white/8 hover:bg-white/15 backdrop-blur border border-white/10 text-white/60 font-bold text-xs uppercase tracking-widest transition-all">
               ← Geri
             </button>

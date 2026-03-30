@@ -19,7 +19,7 @@
 
 ## Performans & Uyumluluk
 - [x] Ping/ms yüksek görünme sorununu çöz
-- [ ] PC / Mobil / iOS uyumsuzluklarını tespit et ve düzelt
+- [x] PC / Mobil / iOS uyumsuzluklarını tespit et ve düzelt
 - [x] Butonların görünümünü modernleştir (çocuksu görünümden kurtar)
 
 ## Oyun Mekaniği

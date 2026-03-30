@@ -131,17 +131,37 @@ export default function App() {
     }, 120);
   };
 
-  const handleStartLobby = (targetRoomId?: string) => {
-    if (targetRoomId) {
-      setRoomId(targetRoomId);
-      setIsJoiningExistingRoom(true);
-      setPlayerName(''); // Katılırken oyuncu adı boş başlasın
-    } else {
-      setRoomId(Math.random().toString(36).substring(2, 6).toUpperCase());
-      setIsJoiningExistingRoom(false);
-      setPlayerName(''); // Yeni oda kurulurken de boş başlasın
-    }
-    setEntryScreen('lobby');
+  // Yeni menüden direkt join — karakter seçim ekranını atla
+  const handleDirectJoin = (targetRoomId?: string) => {
+    if (!socket) return;
+    const rid = targetRoomId
+      ? targetRoomId.trim().toUpperCase()
+      : Math.random().toString(36).substring(2, 6).toUpperCase();
+    setRoomId(rid);
+    setIsJoiningExistingRoom(!!targetRoomId);
+    if (audioCtxRef.current?.state === 'suspended') audioCtxRef.current.resume();
+    setBgmEnabled(settings.bgmOn);
+    startBgm();
+    socket.emit('join', {
+      name: playerName.trim() || 'Oyuncu',
+      color: playerColor,
+      hat: playerHat,
+      charType,
+      hairColor,
+      clothingColor,
+      faceShape,
+      roomId: rid,
+      marketName: targetRoomId ? '' : MARKET_NAME,
+    });
+    isJoinedRef.current = true;
+    setIsLoading(true);
+    setLoadProgress(0);
+    let p = 0;
+    const iv = setInterval(() => {
+      p += Math.random() * 18 + 8;
+      if (p >= 100) { p = 100; clearInterval(iv); setTimeout(() => { setIsLoading(false); setIsJoined(true); }, 300); }
+      setLoadProgress(Math.min(p, 100));
+    }, 120);
   };
 
   if (!appReady) {
@@ -165,9 +185,10 @@ export default function App() {
       <>
         {entryScreen === 'menu' ? (
           <WelcomeScreen
-            onPlay={(rid) => handleStartLobby(rid)}
+            onPlay={(rid) => handleDirectJoin(rid)}
             onQuickStart={handleQuickStart}
             onSettings={() => setShowSettings(true)}
+            playerName={playerName} setPlayerName={setPlayerName}
             charType={charType} setCharType={setCharType}
             hairColor={hairColor} setHairColor={setHairColor}
             clothingColor={clothingColor} setClothingColor={setClothingColor}
