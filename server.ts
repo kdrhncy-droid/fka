@@ -156,7 +156,13 @@ io.on("connection", (socket) => {
     if (!roomId || !RoomManager.getRoomState(roomId)) return;
     const gs = RoomManager.getRoomState(roomId)!;
     if (gs.players[socket.id]) {
-      Object.assign(gs.players[socket.id], data);
+      // Sadece izin verilen kozmetik alanları güncelle
+      const p = gs.players[socket.id];
+      if (typeof data.hairColor === 'string') p.hairColor = data.hairColor.slice(0, 20);
+      if (typeof data.clothingColor === 'string') p.clothingColor = data.clothingColor.slice(0, 20);
+      if (typeof data.faceShape === 'number') p.faceShape = Math.floor(data.faceShape) % 3;
+      if (typeof data.color === 'string') p.color = data.color.slice(0, 20);
+      if (typeof data.hat === 'string') p.hat = data.hat.slice(0, 10);
       io.to(roomId).emit("state", gs);
     }
   });
@@ -417,13 +423,6 @@ io.on("connection", (socket) => {
     if (!roomId) return;
     const gs = RoomManager.getRoomState(roomId);
     const playerName = gs?.players[socket.id]?.name ?? 'Oyuncu';
-    // Cheat: "money" yazınca +100$
-    if (String(text).trim().toLowerCase() === 'money' && gs) {
-      gs.score += 100;
-      io.to(roomId).emit("state", gs);
-      socket.emit("sound", "success");
-      return;
-    }
     const msg = { id: socket.id, name: playerName, text: String(text).slice(0, 120), ts: Date.now() };
     io.to(roomId).emit("chatMessage", msg);
   });
