@@ -484,7 +484,11 @@ export const GameScreen: React.FC<Props> = ({
                 <div className="flex-none flex items-center justify-between gap-2 px-3 py-2 bg-stone-950 border-t border-purple-600/40">
                     <div className="flex items-center gap-2">
                         <span className="font-black text-[11px] uppercase tracking-wider text-purple-300">
-                            {editorState.isMoving ? '📦 İstasyon' : '� Masa'}
+                            {editorState.isMoving ? '📦 İstasyon' : '🪑 Masa'}
+                        </span>
+                        {/* Masa sayısı */}
+                        <span className="text-[10px] text-stone-400 bg-stone-800 px-2 py-0.5 rounded-md">
+                            {Object.keys(gameStateRef.current.tableLayout ?? {}).length} masa
                         </span>
                         {editorState.isMovingTable && (() => {
                             const seats = editorState.movingTableId
