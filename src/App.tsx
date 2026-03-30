@@ -168,6 +168,12 @@ export default function App() {
             onPlay={(rid) => handleStartLobby(rid)}
             onQuickStart={handleQuickStart}
             onSettings={() => setShowSettings(true)}
+            charType={charType} setCharType={setCharType}
+            hairColor={hairColor} setHairColor={setHairColor}
+            clothingColor={clothingColor} setClothingColor={setClothingColor}
+            faceShape={faceShape} setFaceShape={setFaceShape}
+            setPlayerColor={setPlayerColor}
+            setPlayerHat={setPlayerHat}
           />
         ) : (
           <CharacterSelect
