@@ -9,6 +9,7 @@ import { CharacterSelect } from './components/CharacterSelect';
 import { GameScreen } from './components/GameScreen';
 import { SettingsPanel } from './components/SettingsPanel';
 import { startBgm, stopBgm } from './utils/bgm';
+import { LoadingScreen } from './components/LoadingScreen';
 
 export default function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -30,6 +31,8 @@ export default function App() {
   const { settings, update: updateSettings } = useSettings();
 
   const [isJoined, setIsJoined] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadProgress, setLoadProgress] = useState(0);
   const [entryScreen, setEntryScreen] = useState<'menu' | 'lobby'>('menu');
   const [showSettings, setShowSettings] = useState(false);
 
@@ -60,6 +63,16 @@ export default function App() {
     startBgm();
 
     setRoomId(quickRoomId);
+    setIsLoading(true);
+    setLoadProgress(0);
+
+    // Sahte yükleme animasyonu (bağlantı kurulurken)
+    let p = 0;
+    const iv = setInterval(() => {
+      p += Math.random() * 18 + 8;
+      if (p >= 100) { p = 100; clearInterval(iv); setTimeout(() => { setIsLoading(false); setIsJoined(true); }, 300); }
+      setLoadProgress(Math.min(p, 100));
+    }, 120);
     
     // Varsayılan değerlerle hızlı başlama
     const defaultChar = CHARACTER_TYPES[0];
@@ -76,7 +89,7 @@ export default function App() {
     });
 
     isJoinedRef.current = true;
-    setIsJoined(true);
+    // setIsJoined loading bittikten sonra çağrılıyor
   };
 
   const handleJoin = (e: React.FormEvent) => {
@@ -98,7 +111,14 @@ export default function App() {
     });
 
     isJoinedRef.current = true;
-    setIsJoined(true);
+    setIsLoading(true);
+    setLoadProgress(0);
+    let p = 0;
+    const iv = setInterval(() => {
+      p += Math.random() * 18 + 8;
+      if (p >= 100) { p = 100; clearInterval(iv); setTimeout(() => { setIsLoading(false); setIsJoined(true); }, 300); }
+      setLoadProgress(Math.min(p, 100));
+    }, 120);
   };
 
   const handleStartLobby = (targetRoomId?: string) => {
@@ -113,6 +133,14 @@ export default function App() {
     }
     setEntryScreen('lobby');
   };
+
+  if (isLoading) {
+    return (
+      <div className="w-full h-screen bg-[#87ceeb] flex items-center justify-center">
+        <LoadingScreen progress={loadProgress} message="Odaya bağlanılıyor" />
+      </div>
+    );
+  }
 
   if (!isJoined) {
     return (
