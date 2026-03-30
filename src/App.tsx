@@ -8,7 +8,7 @@ import { WelcomeScreen } from './components/WelcomeScreen';
 import { CharacterSelect } from './components/CharacterSelect';
 import { GameScreen } from './components/GameScreen';
 import { SettingsPanel } from './components/SettingsPanel';
-import { startBgm, stopBgm } from './utils/bgm';
+import { startBgm, stopBgm, setBgmEnabled } from './utils/bgm';
 import { LoadingScreen } from './components/LoadingScreen';
 
 export default function App() {
@@ -69,10 +69,10 @@ export default function App() {
   const handleQuickStart = (name: string, quickRoomId: string) => {
     if (!socket) return;
     if (audioCtxRef.current?.state === 'suspended') audioCtxRef.current.resume();
+    setBgmEnabled(settings.bgmOn);
     startBgm();
 
-    setRoomId(quickRoomId);
-    setIsLoading(true);
+    setRoomId(quickRoomId);    setIsLoading(true);
     setLoadProgress(0);
 
     // Sahte yükleme animasyonu (bağlantı kurulurken)
@@ -105,6 +105,7 @@ export default function App() {
     e.preventDefault();
     if (!playerName.trim() || !socket) return;
     if (audioCtxRef.current?.state === 'suspended') audioCtxRef.current.resume();
+    setBgmEnabled(settings.bgmOn);
     startBgm();
 
     socket.emit('join', {

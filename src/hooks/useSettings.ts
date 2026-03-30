@@ -85,7 +85,11 @@ export function useSettings() {
         setBgmVolume(settings.bgmVolume);
     }, [settings.bgmVolume]);
 
+    // bgmOn sadece kullanıcı toggle yaptığında çağrılsın,
+    // ilk mount'ta çağrılmaması için skipFirst pattern
+    const bgmOnMountedRef = React.useRef(false);
     useEffect(() => {
+        if (!bgmOnMountedRef.current) { bgmOnMountedRef.current = true; return; }
         setBgmEnabled(settings.bgmOn);
     }, [settings.bgmOn]);
 

@@ -14,34 +14,27 @@ const PLAYLIST = [
 let audio: HTMLAudioElement | null = null;
 let index = 0;
 let volume = 0.5;
-let enabled = true;
+let enabled = true; // localStorage'dan gelen değer setBgmEnabled ile set edilir
 
 function playIndex(i: number) {
-  // Öncekini temizle
   if (audio) {
     audio.onended = null;
     audio.pause();
     audio.src = '';
   }
-
   index = ((i % PLAYLIST.length) + PLAYLIST.length) % PLAYLIST.length;
   audio = new Audio(PLAYLIST[index]);
   audio.volume = volume;
   audio.onended = () => playIndex(index + 1);
 
-  const promise = audio.play();
-  if (promise !== undefined) {
-    promise.catch((err) => {
-      // Autoplay engellendiyse sessizce geç — kullanıcı etkileşimi zaten oldu
-      console.warn('[BGM] play() engellendi:', err);
-    });
-  }
+  const p = audio.play();
+  if (p !== undefined) p.catch((e) => console.warn('[BGM] play() engellendi:', e));
 }
 
-/** Oyuna girilince çağır — kullanıcı etkileşimi anında çağrılmalı */
+/** Kullanıcı oyuna katılınca çağır (gerçek etkileşim anında) */
 export function startBgm() {
-  if (audio && !audio.paused) return; // Zaten çalıyor
   if (!enabled) return;
+  if (audio && !audio.paused) return; // Zaten çalıyor
   playIndex(index);
 }
 
@@ -51,14 +44,20 @@ export function setBgmVolume(v: number) {
   if (audio) audio.volume = volume;
 }
 
-/** BGM aç/kapat */
+/**
+ * BGM aç/kapat — useSettings'ten çağrılır.
+ * startBgm'den ÖNCE çağrılabilir, o yüzden enabled flag'ini set eder.
+ */
 export function setBgmEnabled(v: boolean) {
   enabled = v;
   if (!v) {
     audio?.pause();
-  } else {
-    startBgm();
+  } else if (audio && audio.paused) {
+    // Durdurulmuş şarkıyı devam ettir
+    const p = audio.play();
+    if (p !== undefined) p.catch(() => {});
   }
+  // enabled=true ama audio=null ise startBgm() zaten handle eder
 }
 
 /** Oda bırakınca çağır */
