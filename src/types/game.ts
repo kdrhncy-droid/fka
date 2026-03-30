@@ -84,6 +84,7 @@ export {
   type StationPosition,
   getTableDims,
   mkGameState,
+  type MapId,
   PLATE_STACK_BASE,
   PLATE_STACK_PER_UPGRADE,
   DISH_UNLOCK_POOL,
