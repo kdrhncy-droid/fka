@@ -18,7 +18,7 @@
 - [ ] Ayarlar ekranını daha detaylı hale getir
 
 ## Performans & Uyumluluk
-- [ ] Ping/ms yüksek görünme sorununu çöz
+- [x] Ping/ms yüksek görünme sorununu çöz
 - [ ] PC / Mobil / iOS uyumsuzluklarını tespit et ve düzelt
 - [x] Butonların görünümünü modernleştir (çocuksu görünümden kurtar)
 

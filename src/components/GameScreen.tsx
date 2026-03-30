@@ -455,30 +455,31 @@ export const GameScreen: React.FC<Props> = ({
 
             </div>
 
-            {/* ── Düzenleme Modu Bar (Canvas Dışı, Mobil Yatay) ── */}
+            {/* ── Düzenleme Modu Bar ── */}
             {dayPhase === 'prep' && (editorState.isMoving || editorState.isMovingTable) && (
-                <div className="flex-none flex items-center justify-between gap-3 px-3 py-1.5 bg-stone-900 border-t border-purple-700/60">
-                    <div className="flex items-center gap-3">
+                <div className="flex-none flex items-center justify-between gap-2 px-3 py-2 bg-stone-950 border-t border-purple-600/40">
+                    <div className="flex items-center gap-2">
                         <span className="font-black text-[11px] uppercase tracking-wider text-purple-300">
-                            {editorState.isMoving ? '📦 İstasyon Taşı' : '🪑 Masa Taşı'}
+                            {editorState.isMoving ? '📦 İstasyon' : '� Masa'}
                         </span>
-                        {editorState.isMovingTable && (
-                            <button
-                                onClick={handleCycleSeats}
-                                className="pointer-events-auto flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white px-2 py-1 rounded text-[10px] font-bold border-b-2 border-blue-800 active:border-b-0 active:translate-y-0.5"
-                            >
-                                🔁 {isTouchDevice ? 'Masa Tipi(Kişi Sayısı)' : 'Masayı Büyüt/Küçült (R)'}
-                            </button>
-                        )}
+                        {editorState.isMovingTable && (() => {
+                            const seats = editorState.movingTableId
+                                ? (gameStateRef.current.tableLayout[editorState.movingTableId]?.seats ?? 4)
+                                : 4;
+                            return (
+                                <button onClick={handleCycleSeats}
+                                    className="flex items-center gap-1 bg-violet-700 hover:bg-violet-600 active:scale-95 text-white px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all">
+                                    🔁 {seats} kişilik → değiştir
+                                </button>
+                            );
+                        })()}
                     </div>
-                    <span className="font-bold text-[10px] text-stone-400">
-                        {isTouchDevice ? 'Yeni konuma git → AL/VER\'e bas' : 'Yeni konuma git → E\'ye bas'}
+                    <span className="text-[10px] text-stone-500 hidden sm:block">
+                        {isTouchDevice ? 'Konuma git → AL/VER' : 'Konuma git → E'}
                     </span>
-                    <button
-                        onClick={handleCancel}
-                        className="px-3 py-1 bg-red-600 hover:bg-red-500 text-white rounded font-black text-[11px] border-b-2 border-red-800 active:border-b-0 active:translate-y-0.5 transition-all flex items-center gap-1 flex-shrink-0"
-                    >
-                        ✕ İPTAL (ESC)
+                    <button onClick={handleCancel}
+                        className="px-3 py-1.5 bg-red-700 hover:bg-red-600 active:scale-95 text-white rounded-lg font-bold text-[11px] transition-all flex-shrink-0">
+                        ✕ İptal
                     </button>
                 </div>
             )}

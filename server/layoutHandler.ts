@@ -177,7 +177,7 @@ export function registerLayoutHandler(
     }
     gs.tableLayout[tableId] = { id: tableId, x: snapped.x, y: snapped.y, seats: t.seats };
     delete gs.lockedTables[tableId];
-    io.to(roomId).emit("tableMoved", { tableId, x: snapped.x, y: snapped.y });
+    io.to(roomId).emit("tableMoved", { tableId, x: snapped.x, y: snapped.y, seats: t.seats });
     io.to(roomId).emit("tableUnlocked", { tableId });
     socket.emit("sound", "success");
   });
