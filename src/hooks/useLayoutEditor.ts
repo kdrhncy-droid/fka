@@ -111,6 +111,7 @@ export function useLayoutEditor({ socket, gameStateRef, localPlayerRef, dayPhase
   }, [socket, gameStateRef]);
 
   // Önizleme pozisyonunu oyuncu hareketiyle güncelle — render loop'tan çağrılır (16ms)
+  // Sadece ref güncellenir, setState çağrılmaz → re-render yok, sıfır gecikme
   const updatePreview = useCallback(() => {
     const state = editorStateRef.current;
     if (!state.isMoving && !state.isMovingTable) return;
@@ -127,9 +128,10 @@ export function useLayoutEditor({ socket, gameStateRef, localPlayerRef, dayPhase
     } else return;
 
     if (state.previewPos?.x !== snapped.x || state.previewPos?.y !== snapped.y || state.isPreviewValid !== valid) {
-      setState({ ...state, previewPos: snapped, isPreviewValid: valid });
+      // Sadece ref güncelle — canvas bunu okur, React re-render tetiklenmez
+      editorStateRef.current = { ...state, previewPos: snapped, isPreviewValid: valid };
     }
-  }, [localPlayerRef, gameStateRef, setState]);
+  }, [localPlayerRef, gameStateRef]);
 
   const handleInteract = useCallback(() => {
     if (dayPhase !== 'prep') return;
