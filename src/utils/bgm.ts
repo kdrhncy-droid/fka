@@ -48,23 +48,19 @@ function clamp(v: number, min: number, max: number) {
 // Crossfade: mevcut müzik yavaşça solar, yeni müzik başlar
 function crossfadeTo(src: string, fadeDuration = 1200 /* ms */) {
   if (_isFading) return;
-  _isFading = true;
 
   const oldAudio = currentAudio;
-
   const newAudio = new Audio(src);
   newAudio.loop = false;
   newAudio.volume = 0;
   newAudio.addEventListener('ended', onTrackEnded);
-
-  if (_bgmEnabled && _unlocked) {
-    newAudio.play().catch(() => {
-      // mobilde autoplay policy hatası → sessizce geç
-      _isFading = false;
-    });
-  }
-
   currentAudio = newAudio;
+
+  // Kullanıcı henüz etkileşimde bulunmadıysa audio hazır beklesin, unlock gelince başlar
+  if (!_bgmEnabled || !_unlocked) return;
+
+  _isFading = true;
+  newAudio.play().catch(() => { _isFading = false; });
 
   const steps = 40;
   const interval = fadeDuration / steps;
@@ -73,18 +69,12 @@ function crossfadeTo(src: string, fadeDuration = 1200 /* ms */) {
   const timer = setInterval(() => {
     step++;
     const progress = step / steps;
-
-    if (oldAudio) {
-      oldAudio.volume = clamp(_bgmVolume * (1 - progress), 0, 1);
-    }
+    if (oldAudio) oldAudio.volume = clamp(_bgmVolume * (1 - progress), 0, 1);
     newAudio.volume = clamp(_bgmVolume * progress, 0, 1);
 
     if (step >= steps) {
       clearInterval(timer);
-      if (oldAudio) {
-        oldAudio.pause();
-        oldAudio.src = '';
-      }
+      if (oldAudio) { oldAudio.pause(); oldAudio.src = ''; }
       _isFading = false;
     }
   }, interval);
@@ -122,11 +112,11 @@ export function setBgmEnabled(enabled: boolean) {
   _bgmEnabled = enabled;
   if (!enabled) {
     currentAudio?.pause();
-  } else if (currentAudio) {
+  } else if (_unlocked && currentAudio) {
     currentAudio.play().catch(() => {});
     currentAudio.volume = _bgmVolume;
   } else if (currentPhase) {
-    // Hiç müzik yokken açıldıysa başlat
+    // Hiç müzik yokken açıldıysa (unlock sonrası gelecek)
     setBgmPhase(currentPhase);
   }
 }
@@ -145,8 +135,18 @@ export function stopBgm() {
 export function unlockBgm() {
   if (_unlocked) return;
   _unlocked = true;
-  // Bekleyen bir phase varsa şimdi başlat
+  // Bekleyen bir phase varsa crossfade ile başlat
   if (_bgmEnabled && currentPhase && currentAudio && currentAudio.paused) {
+    currentAudio.volume = 0;
     currentAudio.play().catch(() => {});
+    // Fade in
+    const steps = 40;
+    const interval = 1200 / steps;
+    let step = 0;
+    const timer = setInterval(() => {
+      step++;
+      if (currentAudio) currentAudio.volume = clamp(_bgmVolume * (step / steps), 0, 1);
+      if (step >= steps) clearInterval(timer);
+    }, interval);
   }
 }
