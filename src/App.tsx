@@ -5,7 +5,6 @@ import { useSocket } from './hooks/useSocket';
 import { useKeyboard } from './hooks/useKeyboard';
 import { useSettings } from './hooks/useSettings';
 import { WelcomeScreen } from './components/WelcomeScreen';
-import { CharacterSelect } from './components/CharacterSelect';
 import { GameScreen } from './components/GameScreen';
 import { SettingsPanel } from './components/SettingsPanel';
 import { startBgm, stopBgm, setBgmEnabled } from './utils/bgm';
@@ -42,11 +41,9 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [loadProgress, setLoadProgress] = useState(0);
   const [appReady, setAppReady] = useState(false);
-  const [entryScreen, setEntryScreen] = useState<'menu' | 'lobby'>('menu');
   const [showSettings, setShowSettings] = useState(false);
 
   const [playerName, setPlayerName] = useState('');
-  const [marketName, setMarketName] = useState(MARKET_NAME);
   const [charType, setCharType] = useState(0);
   const [playerColor, setPlayerColor] = useState(CHARACTER_TYPES[0].bodyColor);
   const [playerHat, setPlayerHat] = useState('');
@@ -54,91 +51,22 @@ export default function App() {
   const [clothingColor, setClothingColor] = useState(CHARACTER_TYPES[0].bodyColor);
   const [faceShape, setFaceShape] = useState(0);
   const [roomId, setRoomId] = useState(() => Math.random().toString(36).substring(2, 6).toUpperCase());
-  const [isJoiningExistingRoom, setIsJoiningExistingRoom] = useState(false);
 
   const handleLeaveGame = () => {
     isJoinedRef.current = false;
     socket?.emit('leave');
     stopBgm();
     setIsJoined(false);
-    setEntryScreen('menu');
     setRoomId(Math.random().toString(36).substring(2, 6).toUpperCase());
-    setIsJoiningExistingRoom(false);
   };
 
-  const handleQuickStart = (name: string, quickRoomId: string) => {
-    if (!socket) return;
-    if (audioCtxRef.current?.state === 'suspended') audioCtxRef.current.resume();
-    setBgmEnabled(settings.bgmOn);
-    startBgm();
-
-    setRoomId(quickRoomId);    setIsLoading(true);
-    setLoadProgress(0);
-
-    // Sahte yükleme animasyonu (bağlantı kurulurken)
-    let p = 0;
-    const iv = setInterval(() => {
-      p += Math.random() * 18 + 8;
-      if (p >= 100) { p = 100; clearInterval(iv); setTimeout(() => { setIsLoading(false); setIsJoined(true); }, 300); }
-      setLoadProgress(Math.min(p, 100));
-    }, 120);
-    
-    // Varsayılan değerlerle hızlı başlama
-    const defaultChar = CHARACTER_TYPES[0];
-    socket.emit('join', {
-      name: name,
-      color: defaultChar.bodyColor,
-      hat: defaultChar.hat,
-      charType: 0,
-      hairColor: '#4b2c20',
-      clothingColor: defaultChar.bodyColor,
-      faceShape: 0,
-      roomId: quickRoomId,
-      marketName: MARKET_NAME,
-    });
-
-    isJoinedRef.current = true;
-    // setIsJoined loading bittikten sonra çağrılıyor
-  };
-
-  const handleJoin = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!playerName.trim() || !socket) return;
-    if (audioCtxRef.current?.state === 'suspended') audioCtxRef.current.resume();
-    setBgmEnabled(settings.bgmOn);
-    startBgm();
-
-    socket.emit('join', {
-      name: playerName.trim(),
-      color: playerColor,
-      hat: playerHat,
-      charType,
-      hairColor,
-      clothingColor,
-      faceShape,
-      roomId: roomId.trim().toUpperCase() || 'TERRAMARKET',
-      marketName: isJoiningExistingRoom ? '' : (marketName.trim() || MARKET_NAME),
-    });
-
-    isJoinedRef.current = true;
-    setIsLoading(true);
-    setLoadProgress(0);
-    let p = 0;
-    const iv = setInterval(() => {
-      p += Math.random() * 18 + 8;
-      if (p >= 100) { p = 100; clearInterval(iv); setTimeout(() => { setIsLoading(false); setIsJoined(true); }, 300); }
-      setLoadProgress(Math.min(p, 100));
-    }, 120);
-  };
-
-  // Yeni menüden direkt join — karakter seçim ekranını atla
+  // Yeni menüden direkt join
   const handleDirectJoin = (targetRoomId?: string) => {
     if (!socket) return;
     const rid = targetRoomId
       ? targetRoomId.trim().toUpperCase()
       : Math.random().toString(36).substring(2, 6).toUpperCase();
     setRoomId(rid);
-    setIsJoiningExistingRoom(!!targetRoomId);
     if (audioCtxRef.current?.state === 'suspended') audioCtxRef.current.resume();
     setBgmEnabled(settings.bgmOn);
     startBgm();
@@ -183,37 +111,17 @@ export default function App() {
   if (!isJoined) {
     return (
       <>
-        {entryScreen === 'menu' ? (
-          <WelcomeScreen
-            onPlay={(rid) => handleDirectJoin(rid)}
-            onSettings={() => setShowSettings(true)}
-            playerName={playerName} setPlayerName={setPlayerName}
-            charType={charType} setCharType={setCharType}
-            hairColor={hairColor} setHairColor={setHairColor}
-            clothingColor={clothingColor} setClothingColor={setClothingColor}
-            faceShape={faceShape} setFaceShape={setFaceShape}
-            setPlayerColor={setPlayerColor}
-            setPlayerHat={setPlayerHat}
-          />
-        ) : (
-          <CharacterSelect
-            isConnected={isConnected}
-            playerName={playerName} setPlayerName={setPlayerName}
-            playerColor={playerColor} setPlayerColor={setPlayerColor}
-            playerHat={playerHat} setPlayerHat={setPlayerHat}
-            hairColor={hairColor} setHairColor={setHairColor}
-            clothingColor={clothingColor} setClothingColor={setClothingColor}
-            faceShape={faceShape} setFaceShape={setFaceShape}
-            charType={charType} setCharType={setCharType}
-            marketName={marketName} setMarketName={setMarketName}
-            roomId={roomId} setRoomId={setRoomId}
-            onJoin={handleJoin}
-            onBack={() => setEntryScreen('menu')}
-            onOpenSettings={() => setShowSettings(true)}
-            isJoiningExistingRoom={isJoiningExistingRoom}
-          />
-        )}
-
+        <WelcomeScreen
+          onPlay={(rid) => handleDirectJoin(rid)}
+          onSettings={() => setShowSettings(true)}
+          playerName={playerName} setPlayerName={setPlayerName}
+          charType={charType} setCharType={setCharType}
+          hairColor={hairColor} setHairColor={setHairColor}
+          clothingColor={clothingColor} setClothingColor={setClothingColor}
+          faceShape={faceShape} setFaceShape={setFaceShape}
+          setPlayerColor={setPlayerColor}
+          setPlayerHat={setPlayerHat}
+        />
         {showSettings && (
           <SettingsPanel
             settings={settings}
