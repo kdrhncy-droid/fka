@@ -186,43 +186,37 @@ export const GameScreen: React.FC<Props> = ({
         <div className="game-screen w-full flex flex-col select-none safe-top safe-bottom" style={{ background: '#545250' }}>
 
             {/* ── Üst Bar ──────────────────────────────────────────────────────── */}
-            <div className="flex-none h-12 px-2 flex items-center justify-between gap-2 bg-stone-900/95 border-b border-stone-700">
+            <div className="flex-none h-11 px-3 flex items-center justify-between gap-2 bg-stone-950/95 border-b border-stone-800">
+                {/* Sol: Market adı + oda kodu */}
                 <div className="flex items-center gap-2 flex-shrink-0">
-                    <div 
-                        className="bg-white/95 px-2 py-0.5 rounded-lg border border-white/40"
-                    >
-                        <h1 className="text-sm font-black text-stone-800 leading-none select-none">
-                            {gameStateRef.current.marketName || MARKET_NAME} 🏪
-                        </h1>
-                    </div>
-                    <button 
+                    <h1 className="text-sm font-black text-white leading-none select-none truncate max-w-[120px]">
+                        {gameStateRef.current.marketName || MARKET_NAME}
+                    </h1>
+                    <button
                         onClick={() => { navigator.clipboard.writeText(roomId); }}
-                        className="bg-stone-800 hover:bg-stone-700 active:bg-green-700 text-stone-300 font-mono text-[10px] font-bold px-2 py-1 rounded transition-colors"
+                        className="bg-stone-800 hover:bg-stone-700 active:bg-emerald-800 text-stone-400 font-mono text-[10px] px-2 py-0.5 rounded-md transition-colors border border-stone-700"
                         title="Oda kodunu kopyala"
                     >
-                        Oda: <span className="text-white">{roomId}</span> 📋
+                        #{roomId}
                     </button>
                 </div>
 
                 <div className="flex-1 max-w-xs flex flex-col items-center gap-0.5">
-                    {/* Taşıma modu aktifken iptal banner'ı göster (Eski yerinden kaldırıldı, aşağıya taşındı) */}
                     {dayPhase !== 'prep' || (!editorState.isMoving && !editorState.isMovingTable) ? (
-                        <span className="text-[10px] font-bold flex items-center gap-2" style={{ color: dayPhase === 'prep' ? '#a78bfa' : dayPhase === 'day' ? '#fbbf24' : '#818cf8' }}>
-                            <span>{dayPhase === 'prep' ? `🔧 Hazırlık — Gün ${day} ` : dayPhase === 'day' ? `☀️ Gün ${day} ` : `🌙 Gece ${day} `}
-                                {queueLen > 0 && dayPhase === 'day' ? ` · ⏳${queueLen} ` : ''}</span>
-                            <span className="flex gap-0.5 text-sm drop-shadow-md">
+                        <span className="text-[10px] font-bold flex items-center gap-1.5" style={{ color: dayPhase === 'prep' ? '#a78bfa' : dayPhase === 'day' ? '#fbbf24' : '#818cf8' }}>
+                            <span>{dayPhase === 'prep' ? `Hazırlık · Gün ${day}` : dayPhase === 'day' ? `Gün ${day}` : `Gece ${day}`}
+                                {queueLen > 0 && dayPhase === 'day' ? ` · ${queueLen} bekliyor` : ''}</span>
+                            <span className="flex gap-0.5">
                                 {Array.from({ length: 3 }).map((_, i) => (
-                                    <span key={i} className="transition-transform duration-300">
-                                        {i < lives ? '❤️' : '🖤'}
-                                    </span>
+                                    <span key={i} className="text-xs">{i < lives ? '❤️' : '🖤'}</span>
                                 ))}
                             </span>
                         </span>
                     ) : (
-                        <span className="text-[10px] font-bold text-purple-400">🔧 Düzenleme Modu</span>
+                        <span className="text-[10px] font-bold text-purple-400">Düzenleme Modu</span>
                     )}
-                    <div className="w-full h-1.5 bg-stone-700 rounded-full overflow-hidden">
-                        <div className="h-full rounded-full transition-all" style={{ width: `${progress * 100}% `, backgroundColor: barColor }} />
+                    <div className="w-full h-1 bg-stone-800 rounded-full overflow-hidden">
+                        <div className="h-full rounded-full transition-all" style={{ width: `${progress * 100}%`, backgroundColor: barColor }} />
                     </div>
                 </div>
 
@@ -230,23 +224,23 @@ export const GameScreen: React.FC<Props> = ({
                     {dayPhase === 'prep' && (
                         <button
                             onClick={() => emit('openShop')}
-                            className="px-3 py-1 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 text-white rounded-lg font-black text-xs border border-green-300 transition-all active:scale-95 animate-pulse whitespace-nowrap"
+                            className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white rounded-lg font-black text-xs transition-all whitespace-nowrap"
                         >
-                            ☀️ Dükkânı Aç
+                            Dükkânı Aç
                         </button>
                     )}
-                    <div className="bg-emerald-600 text-white px-2 py-0.5 rounded-lg text-center">
-                        <div className="text-[8px] font-bold opacity-70 uppercase tracking-widest">Ciro</div>
-                        <div className="text-base font-black leading-none">${score}</div>
+                    <div className="bg-stone-800 border border-stone-700 text-white px-2.5 py-1 rounded-lg text-center min-w-[52px]">
+                        <div className="text-[8px] font-bold text-stone-500 uppercase tracking-widest leading-none">Ciro</div>
+                        <div className="text-sm font-black leading-tight text-emerald-400">${score}</div>
                     </div>
                     <button onClick={() => setShowVoiceSettings(true)}
-                        className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm transition-colors ${voiceActive && !isMuted ? 'bg-green-600 hover:bg-green-500' : 'bg-stone-700 hover:bg-stone-600 text-stone-300'}`}
+                        className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm transition-colors border ${voiceActive && !isMuted ? 'bg-emerald-700 border-emerald-600 text-white' : 'bg-stone-800 border-stone-700 text-stone-400 hover:bg-stone-700'}`}
                     >🎙️</button>
                     <button onClick={() => setShowCosmetics(true)}
-                        className="w-8 h-8 bg-stone-700 hover:bg-sky-700 text-emerald-400 rounded-lg flex items-center justify-center text-sm shadow-[0_0_10px_rgba(52,211,153,0.2)] transition-colors"
+                        className="w-8 h-8 bg-stone-800 hover:bg-stone-700 border border-stone-700 text-stone-300 rounded-lg flex items-center justify-center text-sm transition-colors"
                     >👕</button>
                     <button onClick={() => setShowSettings(true)}
-                        className="w-8 h-8 bg-stone-700 hover:bg-stone-600 text-stone-300 rounded-lg flex items-center justify-center text-sm"
+                        className="w-8 h-8 bg-stone-800 hover:bg-stone-700 border border-stone-700 text-stone-300 rounded-lg flex items-center justify-center text-sm transition-colors"
                     >⚙️</button>
                     {dayPhase === 'night' && dayEndSummary && (
                         <DayEndModal summary={dayEndSummary} onClose={onClearDayEnd} />
@@ -377,14 +371,12 @@ export const GameScreen: React.FC<Props> = ({
                             });
                             if (punchTarget) socket?.emit('punchCustomer', punchTarget.id);
                         }}
-                        style={{
-                            width: punchButtonSize,
-                            height: punchButtonSize,
-                            touchAction: 'none',
-                            background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.9) 0%, rgba(220, 38, 38, 0.9) 100%)',
-                        }}
-                        className="text-white rounded-full shadow-lg font-black text-sm border-2 border-red-400/50 flex items-center justify-center active:scale-95 transition-all duration-150 hover:shadow-xl"
-                    >DÖV<br />👊</button>
+                        style={{ width: punchButtonSize, height: punchButtonSize, touchAction: 'none' }}
+                        className="bg-red-600/85 hover:bg-red-500/90 active:scale-90 text-white rounded-2xl shadow-lg font-black text-xs flex flex-col items-center justify-center gap-0.5 border border-red-400/30 backdrop-blur-sm transition-all"
+                    >
+                        <span className="text-lg leading-none">👊</span>
+                        <span className="text-[9px] uppercase tracking-wider">Döv</span>
+                    </button>
                 </div>
                 )}
                 {/* AL/VER */}
@@ -392,14 +384,12 @@ export const GameScreen: React.FC<Props> = ({
                 <div className="absolute z-10" style={{ left: `${settings.hudLayout.actionBtn.x}%`, top: `${settings.hudLayout.actionBtn.y}%`, transform: `scale(${settings.hudLayout.actionBtn.scale})`, transformOrigin: 'top left' }}>
                     <button
                         onPointerDown={(e) => { e.preventDefault(); if (dayPhase === 'prep') handleInteract(); else emit('interact'); }}
-                        style={{
-                            width: bs,
-                            height: bs,
-                            touchAction: 'none',
-                            background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(37, 99, 235, 0.9) 100%)',
-                        }}
-                        className="text-white rounded-full shadow-lg font-black text-sm border-2 border-blue-400/50 flex items-center justify-center active:scale-95 transition-all duration-150 hover:shadow-xl"
-                    >AL<br />VER</button>
+                        style={{ width: bs, height: bs, touchAction: 'none' }}
+                        className="bg-blue-600/85 hover:bg-blue-500/90 active:scale-90 text-white rounded-2xl shadow-lg font-black text-xs flex flex-col items-center justify-center gap-0.5 border border-blue-400/30 backdrop-blur-sm transition-all"
+                    >
+                        <span className="text-lg leading-none">🤲</span>
+                        <span className="text-[9px] uppercase tracking-wider">Al/Ver</span>
+                    </button>
                 </div>
                 )}
                 {/* DOĞRA */}
@@ -429,29 +419,21 @@ export const GameScreen: React.FC<Props> = ({
                             if (chopTouchIntervalRef.current) { clearInterval(chopTouchIntervalRef.current); chopTouchIntervalRef.current = null; }
                             gameStateRef.current.choppingBoards?.forEach(b => socket?.emit('chop_stop', b.id));
                         }}
-                        style={{
-                            width: Math.round(bs * 0.7),
-                            height: Math.round(bs * 0.7),
-                            touchAction: 'none',
-                            background: 'linear-gradient(135deg, rgba(217, 119, 6, 0.9) 0%, rgba(180, 83, 9, 0.9) 100%)',
-                        }}
-                        className="text-white rounded-full shadow-lg font-black text-xs border-2 border-amber-400/50 flex items-center justify-center active:scale-95 transition-all duration-150 hover:shadow-xl"
-                    >🔪<br />DOĞRA</button>
+                        style={{ width: Math.round(bs * 0.7), height: Math.round(bs * 0.7), touchAction: 'none' }}
+                        className="bg-amber-600/85 hover:bg-amber-500/90 active:scale-90 text-white rounded-2xl shadow-lg font-black text-xs flex flex-col items-center justify-center gap-0.5 border border-amber-400/30 backdrop-blur-sm transition-all"
+                    >
+                        <span className="text-base leading-none">🔪</span>
+                        <span className="text-[9px] uppercase tracking-wider">Doğra</span>
+                    </button>
                 </div>
                 )}
                 {/* Müzik */}
                 {!showHudEditor && (
                 <div className="absolute z-10" style={{ left: `${settings.hudLayout.musicBtn.x}%`, top: `${settings.hudLayout.musicBtn.y}%`, transform: `scale(${settings.hudLayout.musicBtn.scale})`, transformOrigin: 'top left' }}>
                     <button onClick={toggleMusic}
-                        style={{
-                            width: Math.round(bs * 0.55),
-                            height: Math.round(bs * 0.55),
-                            background: musicOn
-                                ? 'linear-gradient(135deg, rgba(168, 85, 247, 0.9) 0%, rgba(147, 51, 234, 0.9) 100%)'
-                                : 'linear-gradient(135deg, rgba(87, 83, 82, 0.7) 0%, rgba(64, 63, 63, 0.7) 100%)',
-                        }}
-                        className={`rounded-full shadow-lg text-base border-2 flex items-center justify-center transition-all duration-150 hover:shadow-xl ${
-                            musicOn ? 'border-purple-400/50 text-white' : 'border-slate-500/50 text-slate-300'
+                        style={{ width: Math.round(bs * 0.55), height: Math.round(bs * 0.55) }}
+                        className={`rounded-xl shadow text-base flex items-center justify-center transition-all border backdrop-blur-sm ${
+                            musicOn ? 'bg-violet-600/80 border-violet-400/30 text-white' : 'bg-stone-700/70 border-stone-600/30 text-stone-400'
                         }`}
                     >{musicOn ? '🎵' : '🔇'}</button>
                 </div>

@@ -1,7 +1,7 @@
 # Yapılacaklar Listesi
 
 ## UI / Ekranlar
-- [ ] Odadan ayrılma ekranı (ayrılmadan önce onay/özet ekranı)
+- [x] Odadan ayrılma ekranı (ayrılmadan önce onay/özet ekranı)
 - [x] Ana menü arka planı — yükleme ekranı gibi animasyonlu
 - [x] Ana menü butonlarını yenile (Tek Oyunculu / Çok Oyunculu → Oda Kur / Odaya Katıl)
 - [x] Ana menüye karakter oluşturma ekranını taşı (oyuna başlamadan önce seçilebilsin)
