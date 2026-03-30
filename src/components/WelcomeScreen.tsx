@@ -279,7 +279,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
               className="w-full py-3.5 rounded-2xl bg-amber-500 hover:bg-amber-400 active:scale-[0.97] text-stone-950 font-black text-sm uppercase tracking-widest shadow-lg transition-all disabled:bg-white/20 disabled:text-white/40">
               Devam →
             </button>
-            <button onClick={() => setScreen(pendingRoomId ? 'join' : 'multiplayer')}
+            <button onClick={() => setScreen(pendingRoomId && pendingRoomId !== 'solo' ? 'join' : pendingRoomId === 'solo' ? 'main' : 'multiplayer')}
               className="w-full py-2.5 rounded-2xl bg-white/8 hover:bg-white/15 backdrop-blur border border-white/10 text-white/60 font-bold text-xs uppercase tracking-widest transition-all">
               ← Geri
             </button>

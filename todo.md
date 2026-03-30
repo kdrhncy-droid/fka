@@ -15,7 +15,7 @@
 - [ ] Kalıcı save sistemi (localStorage yerine sunucu tabanlı)
 
 ## Ayarlar
-- [ ] Ayarlar ekranını daha detaylı hale getir
+- [x] Ayarlar ekranını daha detaylı hale getir
 
 ## Performans & Uyumluluk
 - [x] Ping/ms yüksek görünme sorununu çöz
