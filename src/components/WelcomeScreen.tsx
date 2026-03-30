@@ -130,7 +130,7 @@ function MenuBackground() {
 type Screen = 'main' | 'multiplayer' | 'create' | 'join' | 'name';
 
 interface WelcomeScreenProps {
-  onPlay: (roomId?: string) => void;
+  onPlay: (roomId?: string, mapId?: string) => void;
   onSettings: () => void;
   playerName: string;
   setPlayerName: (v: string) => void;
@@ -156,6 +156,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   const [pendingRoomId, setPendingRoomId] = useState<string | undefined>(undefined);
   const [generatedRoomId, setGeneratedRoomId] = useState('');
   const [copied, setCopied] = useState(false);
+  const [selectedMap, setSelectedMap] = useState<'classic' | 'split'>('classic');
   const [showPatchNotes, setShowPatchNotes] = useState(false);
   const [showStats, setShowStats] = useState(false);
   const [showChar, setShowChar] = useState(false);
@@ -184,7 +185,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
       setPendingRoomId(rid);
       setScreen('name');
     } else {
-      onPlay(actualRid);
+      onPlay(actualRid, 'classic');
     }
   };
 
@@ -272,7 +273,24 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
               </button>
               <p className="text-white/40 text-[10px]">Arkadaşlarına bu kodu gönder</p>
             </div>
-            <button onClick={() => onPlay(generatedRoomId)}
+            {/* Harita seçimi */}
+            <div className="rounded-2xl bg-black/20 backdrop-blur border border-white/10 p-3 space-y-2">
+              <p className="text-white/50 text-[10px] uppercase tracking-widest text-center">Harita Seç</p>
+              <div className="grid grid-cols-2 gap-2">
+                {([
+                  { id: 'classic', icon: '🏪', name: 'Klasik', desc: 'Standart mutfak' },
+                  { id: 'split',   icon: '🚪', name: 'Bölünmüş', desc: 'Mutfak + Bulaşıkhane' },
+                ] as const).map(m => (
+                  <button key={m.id} onClick={() => setSelectedMap(m.id)}
+                    className={`py-2.5 px-3 rounded-xl text-left transition-all border ${selectedMap === m.id ? 'bg-amber-500/20 border-amber-400 text-white' : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'}`}>
+                    <div className="text-lg">{m.icon}</div>
+                    <div className="text-xs font-bold">{m.name}</div>
+                    <div className="text-[10px] text-white/40">{m.desc}</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+            <button onClick={() => onPlay(generatedRoomId, selectedMap)}
               className="w-full py-3.5 rounded-2xl bg-amber-500 hover:bg-amber-400 active:scale-[0.97] text-stone-950 font-black text-sm uppercase tracking-widest shadow-lg transition-all">
               Oyuna Gir →
             </button>
@@ -320,9 +338,9 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
             <button
               onClick={() => {
                 if (playerName.trim()) {
-                  if (pendingRoomId === 'solo') { onPlay(undefined); }
+                  if (pendingRoomId === 'solo') { onPlay(undefined, 'classic'); }
                   else if (pendingRoomId) { setScreen('create'); }
-                  else { onPlay(undefined); }
+                  else { onPlay(undefined, 'classic'); }
                 }
               }}
               disabled={!playerName.trim()}

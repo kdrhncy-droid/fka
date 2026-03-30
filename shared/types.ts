@@ -406,7 +406,14 @@ export function mkCook(id: string, x: number, y: number): CookStation {
   return { input: null, timer: 0, output: null, id, x, y };
 }
 
-export function mkGameState(): GameState {
+export type MapId = 'classic' | 'split';
+
+export function mkGameState(mapId: MapId = 'classic'): GameState {
+  if (mapId === 'split') return mkSplitMapState();
+  return mkClassicMapState();
+}
+
+function mkClassicMapState(): GameState {
   const initialOvens = INITIAL_OVEN_POSITIONS.map((pos, i) =>
     mkCook(`oven${i + 1}`, pos.x, pos.y)
   );
@@ -464,5 +471,53 @@ export function mkGameState(): GameState {
       { id: 'fridge1', x: 200, y: 285, drinks: FRIDGE_BASE_CAPACITY, maxDrinks: FRIDGE_BASE_CAPACITY },
     ],
     serviceWindow: SERVICE_WINDOW_SLOTS.map(s => ({ id: s.id, item: null })),
+  };
+}
+
+// ─── Split Harita: Mutfak sol, Bulaşıkhane sağ, Salon alt ────────────────────
+function mkSplitMapState(): GameState {
+  const base = mkClassicMapState();
+  // Mutfak sol tarafta (x: 0-640), bulaşıkhane sağda (x: 640-1280)
+  // Dikey duvar x=640'ta, kapılar y=170 ve y=285'te
+  return {
+    ...base,
+    stationLayout: {
+      // Mutfak (sol)
+      'ingredient_🍞': { id: 'ingredient_🍞', x: 120, y: 65 },
+      'ingredient_🥩': { id: 'ingredient_🥩', x: 200, y: 65 },
+      'ingredient_🥬': { id: 'ingredient_🥬', x: 280, y: 65 },
+      'ingredient_🥘': { id: 'ingredient_🥘', x: 360, y: 65 },
+      'ingredient_🍢': { id: 'ingredient_🍢', x: 440, y: 65 },
+      'ingredient_🥔': { id: 'ingredient_🥔', x: 520, y: 65 },
+      'oven1':         { id: 'oven1',         x: 160, y: 170 },
+      'fryer1':        { id: 'fryer1',        x: 280, y: 170 },
+      'chop1':         { id: 'chop1',         x: 400, y: 170 },
+      'plate_stack':   { id: 'plate_stack',   x: 520, y: 170 },
+      'tray':          { id: 'tray',          x: 160, y: 285 },
+      'fridge1':       { id: 'fridge1',       x: 280, y: 285 },
+      // Bulaşıkhane (sağ)
+      'sink':          { id: 'sink',          x: 800, y: 170 },
+      'dirty_tray':    { id: 'dirty_tray',    x: 960, y: 170 },
+      'trash':         { id: 'trash',         x: 1120, y: 170 },
+    },
+    tableLayout: {
+      'table0': { id: 'table0', x: 200, y: 570 },
+      'table1': { id: 'table1', x: 400, y: 570 },
+      'table2': { id: 'table2', x: 640, y: 570 },
+      'table3': { id: 'table3', x: 880, y: 570 },
+      'table4': { id: 'table4', x: 1080, y: 570 },
+    },
+    choppingBoards: [
+      { id: 'chop1', x: 400, y: 170, input: null, progress: 0, isChopping: false, choppingPlayerId: null },
+    ],
+    sinks: [
+      { id: 'sink', x: 800, y: 170, input: null, progress: 0, isWashing: false, washingPlayerId: null },
+    ],
+    fryers: [
+      { id: 'fryer1', x: 280, y: 170, input: null, timer: 0, output: null },
+    ],
+    fridges: [
+      { id: 'fridge1', x: 280, y: 285, drinks: FRIDGE_BASE_CAPACITY, maxDrinks: FRIDGE_BASE_CAPACITY },
+    ],
   };
 }

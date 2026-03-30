@@ -61,7 +61,7 @@ export default function App() {
   };
 
   // Yeni menüden direkt join
-  const handleDirectJoin = (targetRoomId?: string) => {
+  const handleDirectJoin = (targetRoomId?: string, mapId?: string) => {
     if (!socket) return;
     const rid = targetRoomId
       ? targetRoomId.trim().toUpperCase()
@@ -80,6 +80,7 @@ export default function App() {
       faceShape,
       roomId: rid,
       marketName: targetRoomId ? '' : MARKET_NAME,
+      mapId: mapId || 'classic',
     });
     isJoinedRef.current = true;
     setIsLoading(true);
@@ -112,7 +113,7 @@ export default function App() {
     return (
       <>
         <WelcomeScreen
-          onPlay={(rid) => handleDirectJoin(rid)}
+          onPlay={(rid, mapId) => handleDirectJoin(rid, mapId)}
           onSettings={() => setShowSettings(true)}
           playerName={playerName} setPlayerName={setPlayerName}
           charType={charType} setCharType={setCharType}

@@ -9,7 +9,7 @@ import {
   INITIAL_OVEN_POSITIONS, ADDITIONAL_OVEN_POSITIONS, OVEN_UPGRADE_COSTS,
   PLATE_STACK_PER_UPGRADE,
   UPGRADE_DEFS,
-  mkGameState, mkCook
+  mkGameState, mkCook, MapId
 } from "./shared/types.js";
 import { gameTick, tryQueueSeat } from "./server/gameLoop.js";
 import { registerInteractHandler } from "./server/interactHandler.js";
@@ -108,7 +108,7 @@ io.on("connection", (socket) => {
     }
   }
 
-  socket.on("join", ({ room, roomId: clientRoomId, name, color, hat, charType, hairColor, clothingColor, faceShape }) => {
+  socket.on("join", ({ room, roomId: clientRoomId, name, color, hat, charType, hairColor, clothingColor, faceShape, mapId }) => {
     // Önceki odadan temizle (aynı socket yeni odaya geçiyorsa)
     removePlayerFromRoom();
 
@@ -117,7 +117,7 @@ io.on("connection", (socket) => {
     socket.join(roomId);
 
     if (!RoomManager.getRoomState(roomId)) {
-      RoomManager.setRoomState(roomId, mkGameState());
+      RoomManager.setRoomState(roomId, mkGameState((mapId as MapId) || 'classic'));
 
       const stableRoomId = roomId;
       const interval = setInterval(() => {
