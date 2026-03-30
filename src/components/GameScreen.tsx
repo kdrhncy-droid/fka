@@ -19,6 +19,7 @@ import { stopBgm } from '../utils/bgm';
 import { ChatPanel } from './ChatPanel';
 import { DayEndModal } from './DayEndModal';
 import { LeaveModal } from './LeaveModal';
+import { saveStats, loadStats } from './StatsModal';
 
 
 
@@ -133,9 +134,14 @@ export const GameScreen: React.FC<Props> = ({
         request();
         const onForeground = () => request();
         window.addEventListener('app-foreground', onForeground);
+        const startTime = Date.now();
         return () => {
             lock?.release().catch(() => {});
             window.removeEventListener('app-foreground', onForeground);
+            // Oyun süresi kaydet
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            const s = loadStats();
+            saveStats({ totalPlayTime: s.totalPlayTime + elapsed, lastPlayed: Date.now(), gamesPlayed: s.gamesPlayed + 1 });
         };
     }, []);
 

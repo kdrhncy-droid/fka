@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { MARKET_NAME } from '../constants';
 import { PatchNotesModal } from './PatchNotesModal';
+import { StatsModal } from './StatsModal';
 import { CharacterPreview } from './CharacterPreview';
 import { CHARACTER_TYPES } from '../types/game';
 import { stk, adjustColor, drawShadowEllipse } from '../renderer/rendererUtils';
@@ -156,20 +157,31 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   const [joinCode, setJoinCode] = useState('');
   const [pendingRoomId, setPendingRoomId] = useState<string | undefined>(undefined);
   const [showPatchNotes, setShowPatchNotes] = useState(false);
+  const [showStats, setShowStats] = useState(false);
   const [showChar, setShowChar] = useState(false);
 
   const goPlay = (rid?: string) => {
+    // 'solo' özel değeri — tek oyunculu, kendi odasında
+    const actualRid = rid === 'solo' ? undefined : rid;
     if (!playerName.trim()) {
       setPendingRoomId(rid);
       setScreen('name');
     } else {
-      onPlay(rid);
+      onPlay(actualRid);
     }
   };
 
   return (
     <div className="relative w-full h-screen overflow-hidden flex items-center justify-center safe-top safe-bottom">
       <MenuBackground />
+
+      {/* ℹ️ Sol alt butonu */}
+      <div className="absolute bottom-6 left-6 z-10">
+        <button onClick={() => setShowPatchNotes(true)}
+          className="w-12 h-12 rounded-2xl bg-white/10 hover:bg-white/20 backdrop-blur border border-white/15 text-white flex items-center justify-center text-xl transition-all active:scale-90">
+          ℹ️
+        </button>
+      </div>
 
       {/* İçerik */}
       <div className="relative z-10 flex flex-col items-center gap-5 px-6 w-full max-w-xs">
@@ -190,7 +202,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
               className="w-full py-3.5 rounded-2xl bg-amber-500 hover:bg-amber-400 active:scale-[0.97] text-stone-950 font-black text-sm uppercase tracking-widest shadow-lg transition-all">
               🎮 Çok Oyunculu
             </button>
-            <button onClick={() => setScreen('multiplayer')}
+            <button onClick={() => goPlay('solo')}
               className="w-full py-3.5 rounded-2xl bg-white/15 hover:bg-white/25 active:scale-[0.97] backdrop-blur border border-white/20 text-white font-black text-sm uppercase tracking-widest shadow transition-all">
               🤖 Tek Oyunculu
             </button>
@@ -203,7 +215,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                 className="py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 backdrop-blur border border-white/15 text-white/80 font-bold text-xs uppercase tracking-widest transition-all">
                 ⚙️ Ayarlar
               </button>
-              <button onClick={() => setShowPatchNotes(true)}
+              <button onClick={() => setShowStats(true)}
                 className="py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 backdrop-blur border border-white/15 text-white/80 font-bold text-xs uppercase tracking-widest transition-all">
                 📊 İstatistik
               </button>
@@ -264,7 +276,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
               className="w-full rounded-2xl border border-white/20 bg-black/30 backdrop-blur px-4 py-3 text-sm font-bold text-white outline-none placeholder:text-white/40 focus:border-amber-400"
             />
             <button
-              onClick={() => { if (playerName.trim()) onPlay(pendingRoomId); }}
+              onClick={() => { if (playerName.trim()) onPlay(pendingRoomId === 'solo' ? undefined : pendingRoomId); }}
               disabled={!playerName.trim()}
               className="w-full py-3.5 rounded-2xl bg-amber-500 hover:bg-amber-400 active:scale-[0.97] text-stone-950 font-black text-sm uppercase tracking-widest shadow-lg transition-all disabled:bg-white/20 disabled:text-white/40">
               Devam →
@@ -324,6 +336,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
       )}
 
       {showPatchNotes && <PatchNotesModal onClose={() => setShowPatchNotes(false)} />}
+      {showStats && <StatsModal onClose={() => setShowStats(false)} />}
     </div>
   );
 };
