@@ -6,7 +6,7 @@
 - [x] Ana menü butonlarını yenile (Tek Oyunculu / Çok Oyunculu → Oda Kur / Odaya Katıl)
 - [x] Ana menüye karakter oluşturma ekranını taşı (oyuna başlamadan önce seçilebilsin)
 - [x] Ana menüye İstatistikler butonu ekle
-- [ ] Ana menüye Öğretici Mod ekle
+- [x] Ana menüye Öğretici Mod ekle
 - [x] Oyun içi gereksiz bilgi/UI kısımlarını temizle
 
 ## Hesap & Kayıt
