@@ -624,6 +624,7 @@ function mkClassicMapState(): GameState {
       'fridge1':       { id: 'fridge1',       x: 200, y: 285 },
       'cakebaker1':    { id: 'cakebaker1',    x: 500, y: 170 },
       'coffee1':       { id: 'coffee1',       x: 100, y: 285 },
+      'spice_rack':    { id: 'spice_rack',    x: 1160, y: 170 },
     },
     lockedStations: {},
     tableLayout: {

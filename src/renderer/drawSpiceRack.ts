@@ -1,7 +1,6 @@
 import { SPICE_RACK_POS } from '../types/game';
 
-export function drawSpiceRack(ctx: CanvasRenderingContext2D) {
-    const { x, y } = SPICE_RACK_POS;
+export function drawSpiceRack(ctx: CanvasRenderingContext2D, x = SPICE_RACK_POS.x, y = SPICE_RACK_POS.y) {
     const W = 70, H = 60;
 
     ctx.save();

@@ -189,7 +189,8 @@ export function useGameLoop({
       }
 
       // Baharat Rafı — acı yemek yapımı için
-      drawSpiceRack(ctx);
+      const spiceRackPos = state.stationLayout?.['spice_rack'];
+      drawSpiceRack(ctx, spiceRackPos?.x, spiceRackPos?.y);
 
       state.customers.forEach((c) => drawCustomer(ctx, c, state.tableLayout, state.hidePatience ?? false));
       // Her ~150 frame'de (~5sn) CRS temizliği

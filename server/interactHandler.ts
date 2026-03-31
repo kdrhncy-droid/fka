@@ -509,7 +509,9 @@ const handleCoffeeMachines: InteractionHandler = ({ gs, p, px, py, snd }) => {
 // ─── BAHARAT RAFI ────────────────────────────────────────────────────────────
 const handleSpiceRack: InteractionHandler = (ctx) => {
   const { gs, p, px, py, snd } = ctx;
-  const { x, y } = SPICE_RACK_POS;
+  const dynPos = gs.stationLayout?.['spice_rack'];
+  const x = dynPos?.x ?? SPICE_RACK_POS.x;
+  const y = dynPos?.y ?? SPICE_RACK_POS.y;
   
   if (Math.hypot(px - x, py - y) > SPICE_RACK_R) return false;
 

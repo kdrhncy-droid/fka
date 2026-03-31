@@ -129,6 +129,8 @@ export function registerLayoutHandler(
     const coffeeMachine = gs.coffeeMachines?.find(c => c.id === stationId);
     if (coffeeMachine) { coffeeMachine.x = snapped.x; coffeeMachine.y = snapped.y; }
 
+    // Baharat rafı — stationLayout güncellenmesi yeterli (ayrı array yok)
+
     delete gs.lockedStations[stationId];
     io.to(roomId).emit("stationMoved", { stationId, x: snapped.x, y: snapped.y });
     io.to(roomId).emit("stationUnlocked", { stationId });
