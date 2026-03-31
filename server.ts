@@ -603,18 +603,19 @@ function runBasicTest(gs: GameState, io: Server, roomId: string, socket: any) {
       gs.customers.push({
         id: 'test-customer-1',
         x: 100, y: 300,
-        targetX: 200, targetY: 300,
-        state: 'walking',
-        personality: 'polite',
+        seatX: 200, seatY: 300, targetY: 300,
         wants: '🍕',
         specialRequest: null,
         patience: 100,
         maxPatience: 100,
-        tableId: null,
-        hasOrdered: false,
+        isSeated: false,
         isEating: false,
         eatTimer: 0,
-        tip: 0
+        tipAmount: 0,
+        personality: 'polite',
+        bodyShape: 1,
+        bodyColor: '#8B4513',
+        phase: 'entering'
       });
       io.to(roomId).emit("state", gs);
       socket.emit("testLog", "✅ Müşteri spawn edildi");
@@ -624,7 +625,7 @@ function runBasicTest(gs: GameState, io: Server, roomId: string, socket: any) {
       console.log('  2. Pizza hazırlanıyor...');
       const customer = gs.customers.find(c => c.id === 'test-customer-1');
       if (customer) {
-        customer.state = 'served';
+        customer.isSeated = true;
         customer.isEating = true;
         customer.eatTimer = 60; // 1 saniye yeme süresi
         gs.score += 15;
@@ -669,18 +670,19 @@ function runComboTest(gs: GameState, io: Server, roomId: string, socket: any) {
         gs.customers.push({
           id: `test-combo-${i}`,
           x: 100 + i * 50, y: 300,
-          targetX: 200 + i * 50, targetY: 300,
-          state: 'walking',
-          personality: 'polite',
+          seatX: 200 + i * 50, seatY: 300, targetY: 300,
           wants: '🍕',
           specialRequest: null,
           patience: 100,
           maxPatience: 100,
-          tableId: null,
-          hasOrdered: false,
+          isSeated: false,
           isEating: false,
           eatTimer: 0,
-          tip: 0
+          tipAmount: 0,
+          personality: 'polite',
+          bodyShape: 1,
+          bodyColor: '#8B4513',
+          phase: 'entering'
         });
       }
       io.to(roomId).emit("state", gs);
@@ -691,7 +693,7 @@ function runComboTest(gs: GameState, io: Server, roomId: string, socket: any) {
       console.log('  2. Hızlı servis yapılıyor...');
       gs.customers.forEach((customer, i) => {
         if (customer.id.startsWith('test-combo-')) {
-          customer.state = 'served';
+          customer.isSeated = true;
           customer.isEating = true;
           customer.eatTimer = 60;
           gs.score += 15;
@@ -742,19 +744,21 @@ function runStressTest(gs: GameState, io: Server, roomId: string, socket: any) {
         id: `stress-test-${i}`,
         x: 50 + (i % 5) * 100, 
         y: 250 + Math.floor(i / 5) * 100,
-        targetX: 200 + (i % 5) * 100, 
+        seatX: 200 + (i % 5) * 100, 
+        seatY: 300 + Math.floor(i / 5) * 100,
         targetY: 300 + Math.floor(i / 5) * 100,
-        state: 'walking',
-        personality: ['polite', 'rude', 'recep', 'thug'][i % 4] as any,
-        wants: ['🍕', '🍜', '🌯', '🍟', '🥤'][i % 5],
+        wants: ['🍕', '🍜', '🌯', '🍟', '🥤'][i % 5] as any,
         specialRequest: i % 3 === 0 ? 'spicy' : null,
         patience: 100,
         maxPatience: 100,
-        tableId: null,
-        hasOrdered: false,
+        isSeated: false,
         isEating: false,
         eatTimer: 0,
-        tip: 0
+        tipAmount: 0,
+        personality: ['polite', 'rude', 'recep', 'thug'][i % 4] as any,
+        bodyShape: (i % 4 + 1) as any,
+        bodyColor: ['#8B4513', '#D2691E', '#CD853F', '#F4A460'][i % 4],
+        phase: 'entering'
       });
       
       socket.emit("testLog", `👥 Müşteri ${i+1}/10 spawn edildi`);
@@ -792,18 +796,19 @@ function runVisualTest(gs: GameState, io: Server, roomId: string, socket: any) {
         gs.customers.push({
           id: `visual-test-${personality}`,
           x: 100 + i * 150, y: 200,
-          targetX: 200 + i * 150, targetY: 300,
-          state: 'walking',
-          personality: personality as any,
+          seatX: 200 + i * 150, seatY: 300, targetY: 300,
           wants: '🍕',
           specialRequest: i === 0 ? 'spicy' : i === 1 ? 'extra' : i === 2 ? 'quick' : null,
           patience: 100 - i * 20,
           maxPatience: 100,
-          tableId: null,
-          hasOrdered: false,
+          isSeated: false,
           isEating: false,
           eatTimer: 0,
-          tip: 0
+          tipAmount: 0,
+          personality: personality as any,
+          bodyShape: (i % 4 + 1) as any,
+          bodyColor: ['#8B4513', '#D2691E', '#CD853F', '#F4A460'][i],
+          phase: 'entering'
         });
       });
       io.to(roomId).emit("state", gs);
