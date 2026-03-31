@@ -99,17 +99,9 @@
 
 ## Bekleyen Görevler
 
-### Floorplan Seçim Sistemi (floorplan.md)
+### Floorplan Seçim Sistemi
 - Run başında 4 farklı restoran şekli seçimi (Klasik, L, U, Dar)
-- `shared/types.ts`'e `FloorplanDef` eklenecek
-- `drawFloor.ts`, `usePlayerMovement.ts` dinamik hale getirilecek
-- `CharacterSelect`'e seçim kartları eklenecek
-- Zorluk: Orta-Zor, ~2 saat
-
-### Dead Code Temizliği
-- `drawHoldingStation` — import edilmiş ama çağrılmıyor
-- `HOLDING_STATION_POSITIONS` — boş array, kullanılmıyor
-- `TABLE_Y_DEFAULT` — dinamik tableLayout'ta kırılgan mantık
+- Detay: backlog.md
 
 ---
 

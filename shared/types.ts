@@ -402,9 +402,6 @@ export const PLATE_STACK_POS = { x: 650, y: 65, radius: 90 };
 export const PLATE_STACK_BASE = 8;   // Başlangıç tabak kapasitesi 4 -> 8 yapıldı
 export const PLATE_STACK_PER_UPGRADE = 4; // Her upgrade başına +4 tabak (eski: 2)
 
-// Geriye uyum için (counter istasyonları hâlâ kullanılıyor)
-export const HOLDING_STATION_POSITIONS: { id: string; x: number; y: number; radius: number; type: 'plate' }[] = [];
-
 // ─── Servis Penceresi ────────────────────────────────────────────────────────
 export const SERVICE_WINDOW_SLOTS = [
   { id: 'sw0', x: 480, y: 360 },
@@ -471,7 +468,6 @@ export const OVEN_UPGRADE_COSTS = [200, 400, 800, 1200, 1600];
 export const TRASH_STATION = { x: 920, y: 285 };
 export const DIRTY_TRAY_POS = { x: 860, y: 90 };
 export const SINK_STATION = { x: 960, y: 90 };
-export const TABLE_Y_DEFAULT = 500;
 export const DISH_ITEMS = ['🍕', '🍔', '🥗', '🍜', '🌯', '🍟', '🥤', '🍰', '☕'] as const;
 
 export const UPGRADE_DEFS: Record<UpgradeKey, { costs: number[]; max: number }> = {

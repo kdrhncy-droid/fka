@@ -19,7 +19,6 @@ import {
 import { drawCustomer, cleanupCRS } from "../renderer/drawCustomer";
 import { drawPlayer } from "../renderer/drawPlayer";
 import { drawCookStation } from "../renderer/drawCookStation";
-import { drawHoldingStation } from "../renderer/drawHoldingStation";
 import { drawCounters } from "../renderer/drawCounter";
 import { movePlayer } from "./usePlayerMovement";
 import { setupGameEffects, renderFloatingTexts, renderPunchParticles } from "./useGameEffects";

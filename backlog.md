@@ -106,9 +106,5 @@ PlateUp'ın kaos hissinin büyük kısmı buradan geliyor.
 
 ## ⚙️ Teknik Borç
 
-- `CharacterSelect.tsx` artık kullanılmıyor — sil
-- `drawHoldingStation` import edilmiş ama çağrılmıyor — sil
-- `HOLDING_STATION_POSITIONS` boş array, kullanılmıyor — sil
-- `TABLE_Y_DEFAULT` dinamik tableLayout'ta kırılgan mantık — temizle
 - `upgrade` event'inde input validation eksik
 - `useGameLoop` dependency array eksik
