@@ -6,8 +6,6 @@ export function drawBasicStations(
   state: GameState,
   movingId?: string | null
 ) {
-  const stock = state.stock ?? { "🍞": 0, "🥩": 0, "🥬": 0 };
-
   // Ingredients
   INGREDIENTS.forEach((ing) => {
     const recipeKey = (ing.key in RECIPE_DEFS) ? ing.key : `CHOPPED_${ing.key}`;
@@ -23,7 +21,7 @@ export function drawBasicStations(
     const dynPos = state.stationLayout?.[`ingredient_${ing.key}`];
     const px = dynPos?.x ?? ing.pos.x;
     const py = dynPos?.y ?? ing.pos.y;
-    drawStation(ctx, px, py, ing.color, ing.key, ing.label, stock[ing.key] ?? 0);
+    drawStation(ctx, px, py, ing.color, ing.key, ing.label);
   });
 
   // Tepsi
