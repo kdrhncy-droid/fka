@@ -1,7 +1,7 @@
 import {
   GameState, INGREDIENTS, TRAY_STATION, TRASH_STATION, PLATE_STACK_POS,
   DIRTY_TRAY_POS, SINK_STATION, SERVICE_WINDOW_SLOTS, SERVICE_WINDOW_R,
-  SPICE_RACK_POS,
+  SPICE_RACK_POS, RECIPE_DEFS,
 } from "../types/game";
 
 const INTERACT_R = 110;
@@ -67,33 +67,41 @@ export function getNearestInteractable(px: number, py: number, gs: GameState) {
     check(spicePos.x, spicePos.y);
   }
 
-  // Fritözler
-  gs.fryers?.forEach(f => {
-    const x = gs.stationLayout?.[f.id]?.x ?? f.x;
-    const y = gs.stationLayout?.[f.id]?.y ?? f.y;
-    check(x, y);
-  });
+  // Fritözler — sadece 🍟 unlock edilmişse
+  if (gs.unlockedDishes?.includes('🍟')) {
+    gs.fryers?.forEach(f => {
+      const x = gs.stationLayout?.[f.id]?.x ?? f.x;
+      const y = gs.stationLayout?.[f.id]?.y ?? f.y;
+      check(x, y);
+    });
+  }
 
-  // Buzdolapları
-  gs.fridges?.forEach(f => {
-    const x = gs.stationLayout?.[f.id]?.x ?? f.x;
-    const y = gs.stationLayout?.[f.id]?.y ?? f.y;
-    check(x, y);
-  });
+  // Buzdolapları — sadece 🥤 unlock edilmişse
+  if (gs.unlockedDishes?.includes('🥤')) {
+    gs.fridges?.forEach(f => {
+      const x = gs.stationLayout?.[f.id]?.x ?? f.x;
+      const y = gs.stationLayout?.[f.id]?.y ?? f.y;
+      check(x, y);
+    });
+  }
 
-  // Pasta fırınları
-  gs.cakeBakers?.forEach(c => {
-    const x = gs.stationLayout?.[c.id]?.x ?? c.x;
-    const y = gs.stationLayout?.[c.id]?.y ?? c.y;
-    check(x, y);
-  });
+  // Pasta fırınları — sadece 🍰 unlock edilmişse
+  if (gs.unlockedDishes?.includes('🍰')) {
+    gs.cakeBakers?.forEach(c => {
+      const x = gs.stationLayout?.[c.id]?.x ?? c.x;
+      const y = gs.stationLayout?.[c.id]?.y ?? c.y;
+      check(x, y);
+    });
+  }
 
-  // Kahve makineleri
-  gs.coffeeMachines?.forEach(c => {
-    const x = gs.stationLayout?.[c.id]?.x ?? c.x;
-    const y = gs.stationLayout?.[c.id]?.y ?? c.y;
-    check(x, y);
-  });
+  // Kahve makineleri — sadece ☕ unlock edilmişse
+  if (gs.unlockedDishes?.includes('☕')) {
+    gs.coffeeMachines?.forEach(c => {
+      const x = gs.stationLayout?.[c.id]?.x ?? c.x;
+      const y = gs.stationLayout?.[c.id]?.y ?? c.y;
+      check(x, y);
+    });
+  }
 
   // Fırınlar
   gs.cookStations?.forEach(s => {
@@ -107,8 +115,15 @@ export function getNearestInteractable(px: number, py: number, gs: GameState) {
     if (c.isSeated && !c.isEating) check(c.seatX, c.seatY, SERVE_R);
   });
 
-  // Malzemeler
+  // Malzemeler — sadece unlock edilmiş yemeklerin malzemeleri
   INGREDIENTS.forEach(ing => {
+    const recipe = RECIPE_DEFS[ing.key as keyof typeof RECIPE_DEFS];
+    // Fırın tarifi varsa o yemek unlock edilmişse göster
+    if (recipe && !gs.unlockedDishes?.includes(recipe.output)) return;
+    // 🥔 patates — 🍟 unlock edilmişse
+    if (ing.key === '🥔' && !gs.unlockedDishes?.includes('🍟')) return;
+    // 🧁 tatlı hamuru — 🍰 unlock edilmişse
+    if (ing.key === '🧁' && !gs.unlockedDishes?.includes('🍰')) return;
     const dynPos = gs.stationLayout?.[`ingredient_${ing.key}`];
     check(dynPos?.x ?? ing.pos.x, dynPos?.y ?? ing.pos.y);
   });
