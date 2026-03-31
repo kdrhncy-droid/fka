@@ -270,7 +270,7 @@ const handleCookStations: InteractionHandler = ({ gs, p, px, py, snd }) => {
           snd("pickup");
         }
       } else if (isRawChoppable && !station.input && !station.output) {
-        snd("fail");
+        return false; // Doğranmamış malzeme — fırına konamaz, zincir devam etsin
       } else if (p.holding === CLEAN_PLATE && station.output && !station.isBurned) {
         p.holding = station.output;
         station.output = null; station.burnTimer = 0; snd("success");
