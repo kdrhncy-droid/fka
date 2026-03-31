@@ -111,7 +111,8 @@ export function useGameLoop({
 
       // ── Etkileşim Halkası Çizimi ──
       const lp = localPlayerRef.current;
-      // Etkileşim halkası kaldırıldı — getNearestInteractable hâlâ kullanılıyor (interact logic için)
+      const nearest = getNearestInteractable(lp.x, lp.y, state);
+      drawInteractionRing(ctx, nearest, isEditing);
 
       const movingId = editorStateRef?.current?.movingStationId;
       drawBasicStations(ctx, state, movingId);
