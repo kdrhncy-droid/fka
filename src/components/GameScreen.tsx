@@ -319,7 +319,11 @@ export const GameScreen: React.FC<Props> = ({
 
             {/* ── Canvas ────────────────────────────────────────────────────────── */}
             <div className="flex-1 min-h-0 relative flex items-center justify-center" style={{ background: '#9a7858' }}>
-                <div className="relative" style={{ aspectRatio: '1280/870', maxWidth: '100vw', maxHeight: '100%', width: '100%' }}>
+                <div className="relative canvas-container" style={{ 
+                    aspectRatio: '1280/870', 
+                    maxHeight: '100%', 
+                    width: '100%' 
+                }}>
 
                 <canvas
                     ref={canvasRef}

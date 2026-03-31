@@ -12,7 +12,7 @@ import {
   EXTRA_SINK_POSITIONS, EXTRA_CHOP_POSITIONS, WASH_TICKS,
   mkGameState, mkCook, MapId
 } from "./shared/types.js";
-import { gameTick, tryQueueSeat } from "./server/gameLoop.js";
+import { gameTick, tryQueueSeat, generateCardChoices } from "./server/gameLoop.js";
 import { registerInteractHandler } from "./server/interactHandler.js";
 import { registerLayoutHandler } from "./server/layoutHandler.js";
 
@@ -292,6 +292,8 @@ io.on("connection", (socket) => {
     if (!roomId || !RoomManager.getRoomState(roomId)) return;
     const gs = RoomManager.getRoomState(roomId)!;
     if (gs.dayPhase !== 'night') return;
+    // Input validation — geçersiz key reddet
+    if (!UPGRADE_DEFS[key]) { socket.emit("sound", "fail"); return; }
     
     const upDef = UPGRADE_DEFS[key];
     const currentLv = gs.upgrades[key];
@@ -500,7 +502,6 @@ io.on("connection", (socket) => {
     if (!roomId || !RoomManager.getRoomState(roomId)) return;
     const gs = RoomManager.getRoomState(roomId)!;
     if (gs.dayPhase !== 'night') return;
-    const { generateCardChoices } = require('./server/gameLoop.js');
     generateCardChoices(gs);
     io.to(roomId).emit("state", gs);
   });

@@ -19,7 +19,12 @@ export const DevPanel: React.FC<Props> = ({ socket, onClose }) => {
             <div className="w-full max-w-lg bg-stone-950 border border-stone-700 rounded-2xl overflow-hidden shadow-2xl">
                 <div className="flex items-center justify-between px-4 py-3 bg-stone-900 border-b border-stone-800">
                     <span className="text-amber-400 font-black text-sm uppercase tracking-widest">🛠️ Dev Panel</span>
-                    <button onClick={onClose} className="text-stone-500 hover:text-white text-lg">✕</button>
+                    <button 
+                        onClick={onClose} 
+                        className="text-stone-400 hover:text-white text-xl font-bold bg-stone-800 hover:bg-stone-700 rounded-lg w-8 h-8 flex items-center justify-center transition-colors active:scale-95"
+                    >
+                        ✕
+                    </button>
                 </div>
 
                 <div className="p-4 grid grid-cols-2 gap-2 max-h-[70vh] overflow-y-auto">

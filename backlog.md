@@ -1,18 +1,10 @@
 # TerraMarket — Backlog
 
-Yapılmamış her şey burada. Öncelik sırasına göre.
+Yapılmamış işler. Öncelik sırasına göre.
 
 ---
 
-## 🔴 Öncelik 1 — Tamamlandı ✅
-
-- `mystery_guests` — sabır barları gizleniyor ✅
-- `kaos_day` — istasyon pozisyonu değişiyor ✅
-- Animasyonlar — ✨ ve ❤️ eklendi ✅
-
----
-
-## 🟠 Öncelik 2 — Oyun Derinliği
+## � Öncelik 1 — Oyun Derinliği
 
 ### Sipariş Özelleştirme (PlateUp'ta yok — özgün)
 Müşteri bazen "acı olsun", "az pişmiş", "ekstra sos" gibi özel istek ekler.
@@ -39,7 +31,7 @@ Tahmini süre: ~2 saat
 
 ---
 
-## 🟡 Öncelik 3 — İçerik (Özgün)
+## � Öncelik 2 — İçerik (Özgün)
 
 ### Yeni Müşteri Tipleri (PlateUp'ta yok)
 - **Esnaf** — mahalleden tanıdık, çok sabırlı ama bahşiş vermez
@@ -58,7 +50,7 @@ Tahmini süre: ~2-3 saat
 
 ---
 
-## 🟢 Öncelik 4 — Görsel & His
+## � Öncelik 3 — Görsel & His
 
 ### Zemin Kirliliği (Mess Sistemi)
 Yemek hazırlarken ve müşteriler yerken zemine pislik düşer.
@@ -74,7 +66,7 @@ Tahmini süre: ~3-4 saat
 
 ---
 
-## 🔵 Öncelik 5 — Sosyal & Platform
+## � Öncelik 4 — Sosyal & Platform
 
 ### Hesap Sistemi
 - Google/Discord ile giriş (Supabase)

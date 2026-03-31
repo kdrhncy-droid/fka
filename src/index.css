@@ -68,3 +68,22 @@ body {
     -webkit-user-select: none;
   }
 }
+
+/* Canvas responsive boyutlandırma */
+.canvas-container {
+  max-width: 100vw;
+}
+
+/* Mobilde canvas daha dar */
+@media (max-width: 768px) {
+  .canvas-container {
+    max-width: 95vw;
+  }
+}
+
+/* Çok küçük ekranlarda daha da dar */
+@media (max-width: 480px) {
+  .canvas-container {
+    max-width: 92vw;
+  }
+}
