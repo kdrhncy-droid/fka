@@ -231,22 +231,17 @@ export const GameScreen: React.FC<Props> = ({
                         {gameStateRef.current.marketName || MARKET_NAME}
                     </h1>
                     <button
-                        onClick={() => { navigator.clipboard.writeText(roomId); }}
+                        onClick={() => {
+                            navigator.clipboard.writeText(roomId);
+                            const next = devTapCount + 1;
+                            setDevTapCount(next);
+                            if (next >= 5) { setShowDevPanel(true); setDevTapCount(0); }
+                        }}
                         className="bg-stone-800 hover:bg-stone-700 active:bg-emerald-800 text-stone-400 font-mono text-[10px] px-2 py-0.5 rounded-md transition-colors border border-stone-700"
                         title="Oda kodunu kopyala"
                     >
                         #{roomId}
                     </button>
-                    {/* Gizli dev panel aktivasyonu — oda koduna 5 kez tıkla */}
-                    <button
-                        onClick={() => {
-                            const next = devTapCount + 1;
-                            setDevTapCount(next);
-                            if (next >= 5) { setShowDevPanel(true); setDevTapCount(0); }
-                        }}
-                        className="w-4 h-4 opacity-0"
-                        aria-hidden="true"
-                    />
                 </div>
 
                 <div className="flex-1 max-w-xs flex flex-col items-center gap-0.5">
