@@ -138,40 +138,40 @@ export function getNearestInteractable(px: number, py: number, gs: GameState, la
   });
 
   // ═══ PROFESYONELLİK SEÇİM ALGORİTMASI ═══
-  
+
   if (candidates.length === 0) return null;
   if (candidates.length === 1) return { x: candidates[0].x, y: candidates[0].y };
 
   // En yakın mesafeyi bul
   const minDistance = Math.min(...candidates.map(c => c.distance));
-  
+
   // Tolerans dahilindeki yakın objeleri filtrele
   const closeOnes = candidates.filter(c => c.distance <= minDistance + DISTANCE_TOLERANCE);
-  
+
   if (closeOnes.length === 1) return { x: closeOnes[0].x, y: closeOnes[0].y };
 
   // Birden fazla yakın obje varsa hareket yönüne göre seç
   if (Math.abs(lastMoveX) > 0.1 || Math.abs(lastMoveY) > 0.1) {
     const playerDirection = Math.atan2(lastMoveY, lastMoveX);
-    
+
     const scored = closeOnes.map(candidate => {
       const objDirection = Math.atan2(candidate.y - py, candidate.x - px);
       let angleDiff = objDirection - playerDirection;
-      
+
       // Açı farkını -π ile π arasına normalize et
       if (angleDiff > Math.PI) angleDiff -= 2 * Math.PI;
       if (angleDiff < -Math.PI) angleDiff += 2 * Math.PI;
-      
+
       // Yön skoru: önde olan objeler daha yüksek skor alır
       const directionScore = Math.cos(angleDiff); // 1 (önde) ile -1 (arkada) arası
       const distanceScore = 1 - (candidate.distance / (minDistance + DISTANCE_TOLERANCE));
-      
+
       // %70 yön, %30 mesafe
       const totalScore = directionScore * 0.7 + distanceScore * 0.3;
-      
+
       return { ...candidate, score: totalScore };
     });
-    
+
     // En yüksek skoru seç
     const best = scored.reduce((a, b) => a.score > b.score ? a : b);
     return { x: best.x, y: best.y };

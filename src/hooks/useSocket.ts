@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
-import { GameState } from '../types/game';
+import { GameState, mkGameState } from '../types/game';
 import { playSound } from '../utils/audio';
 
 export interface DayEndSummary {
@@ -29,41 +29,7 @@ export interface ChatMessage {
     ts: number;
 }
 
-const DEFAULT_STATE: GameState = {
-    players: {},
-    customers: [],
-    waitList: [],
-    holdingStations: [],
-    dirtyTables: [],
-    score: 0,
-    marketName: '',
-    dayPhase: 'prep',
-    dayTimer: 2700,
-    upgrades: { patience: 0, earnings: 0, plateStackMax: 0, safeOven: 0,
-                fryerSpeed: 0, cakeBaker: 0, coffeeMachine: 0, extraSink: 0, extraChopBoard: 0 },
-    day: 1,
-    hasOrderedTonight: false,
-    cookStations: [],
-    dirtyTrayCount: 0,
-    plateStack: { count: 4, maxCount: 4 },
-    lives: 3,
-    isGameOver: false,
-    revengeQueue: [],
-    unlockedDishes: ['🥗', '🍔'],
-    menuChoices: null,
-    activeCards: [],
-    pendingCardChoices: null,
-    hidePatience: false,
-    comboCount: 0,
-    comboTimer: 0,
-    stationLayout: {},
-    lockedStations: {},
-    tableLayout: {},
-    lockedTables: {},
-    choppingBoards: [],
-    sinks: [],
-    serviceWindow: [],
-};
+const DEFAULT_STATE: GameState = mkGameState();
 
 /**
  * Socket.IO bağlantısını ve sunucu event'lerini yönetir.
