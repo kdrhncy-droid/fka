@@ -13,10 +13,13 @@ const MOVE_INTERACT_R = 90;
 
 // Kilitli yemeklere ait istasyonlar — unlock edilmeden taşınamaz
 const LOCKED_DISH_STATIONS: Record<string, string> = {
-  'fryer1':     '🍟',
-  'fridge1':    '🥤',
-  'cakebaker1': '🍰',
-  'coffee1':    '☕',
+  'fryer1':           '🍟',
+  'fridge1':          '🥤',
+  'cakebaker1':       '🍰',
+  'coffee1':          '☕',
+  'ingredient_🥔':    '🍟',  // Patates — 🍟 unlock gerekli
+  'ingredient_🧁':    '🍰',  // Hamur tatlı — 🍰 unlock gerekli
+  'ingredient_🍢':    '🌯',  // Kebap — 🌯 unlock gerekli
 };
 
 interface Params {
