@@ -219,29 +219,29 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
           <div className="w-full space-y-2.5">
             <button onClick={() => setScreen('multiplayer')}
               className="w-full py-3.5 rounded-2xl bg-amber-500 hover:bg-amber-400 active:scale-[0.97] text-stone-950 font-black text-sm uppercase tracking-widest shadow-lg transition-all">
-              🎮 Çok Oyunculu
+              Çok Oyunculu
             </button>
             <button onClick={() => goPlay('solo')}
               className="w-full py-3.5 rounded-2xl bg-white/15 hover:bg-white/25 active:scale-[0.97] backdrop-blur border border-white/20 text-white font-black text-sm uppercase tracking-widest shadow transition-all">
-              🤖 Tek Oyunculu
+              Tek Oyunculu
             </button>
             <button onClick={() => setShowChar(v => !v)}
               className="w-full py-3 rounded-2xl bg-white/10 hover:bg-white/20 active:scale-[0.97] backdrop-blur border border-white/15 text-white/90 font-bold text-sm uppercase tracking-widest transition-all">
-              👤 Karakter
+              Karakter
             </button>
             <div className="grid grid-cols-2 gap-2">
               <button onClick={onSettings}
                 className="py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 backdrop-blur border border-white/15 text-white/80 font-bold text-xs uppercase tracking-widest transition-all">
-                ⚙️ Ayarlar
+                Ayarlar
               </button>
               <button onClick={() => setShowStats(true)}
                 className="py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 backdrop-blur border border-white/15 text-white/80 font-bold text-xs uppercase tracking-widest transition-all">
-                📊 İstatistik
+                İstatistik
               </button>
             </div>
             <button onClick={() => { markTutorialDone(); setShowTutorial(true); }}
               className="w-full py-2.5 rounded-2xl bg-white/8 hover:bg-white/15 backdrop-blur border border-white/10 text-white/60 font-bold text-xs uppercase tracking-widest transition-all">
-              📖 Nasıl Oynanır?
+              Nasıl Oynanır?
             </button>
           </div>
         )}
@@ -251,11 +251,11 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
           <div className="w-full space-y-2.5">
             <button onClick={openCreate}
               className="w-full py-3.5 rounded-2xl bg-amber-500 hover:bg-amber-400 active:scale-[0.97] text-stone-950 font-black text-sm uppercase tracking-widest shadow-lg transition-all">
-              🏠 Oda Kur
+              Oda Kur
             </button>
             <button onClick={() => setScreen('join')}
               className="w-full py-3.5 rounded-2xl bg-white/15 hover:bg-white/25 active:scale-[0.97] backdrop-blur border border-white/20 text-white font-black text-sm uppercase tracking-widest shadow transition-all">
-              🔗 Odaya Katıl
+              Odaya Katıl
             </button>
             <button onClick={() => setScreen('main')}
               className="w-full py-2.5 rounded-2xl bg-white/8 hover:bg-white/15 backdrop-blur border border-white/10 text-white/60 font-bold text-xs uppercase tracking-widest transition-all">

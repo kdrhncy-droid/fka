@@ -458,7 +458,6 @@ export const GameScreen: React.FC<Props> = ({
                         style={{ width: punchButtonSize, height: punchButtonSize, touchAction: 'none' }}
                         className="bg-red-600/85 hover:bg-red-500/90 active:scale-90 text-white rounded-2xl shadow-lg font-black text-xs flex flex-col items-center justify-center gap-0.5 border border-red-400/30 backdrop-blur-sm transition-all"
                     >
-                        <span className="text-lg leading-none">👊</span>
                         <span className="text-[9px] uppercase tracking-wider">Döv</span>
                     </button>
                 </div>
@@ -471,7 +470,6 @@ export const GameScreen: React.FC<Props> = ({
                         style={{ width: bs, height: bs, touchAction: 'none' }}
                         className="bg-blue-600/85 hover:bg-blue-500/90 active:scale-90 text-white rounded-2xl shadow-lg font-black text-xs flex flex-col items-center justify-center gap-0.5 border border-blue-400/30 backdrop-blur-sm transition-all"
                     >
-                        <span className="text-lg leading-none">🤲</span>
                         <span className="text-[9px] uppercase tracking-wider">Al/Ver</span>
                     </button>
                 </div>
@@ -506,7 +504,6 @@ export const GameScreen: React.FC<Props> = ({
                         style={{ width: Math.round(bs * 0.7), height: Math.round(bs * 0.7), touchAction: 'none' }}
                         className="bg-amber-600/85 hover:bg-amber-500/90 active:scale-90 text-white rounded-2xl shadow-lg font-black text-xs flex flex-col items-center justify-center gap-0.5 border border-amber-400/30 backdrop-blur-sm transition-all"
                     >
-                        <span className="text-base leading-none">🔪</span>
                         <span className="text-[9px] uppercase tracking-wider">Doğra</span>
                     </button>
                 </div>
