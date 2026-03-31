@@ -297,15 +297,15 @@ const handleCustomers: InteractionHandler = ({ gs, p, px, py, snd, io, roomId })
     const c = gs.customers[ci];
     if (c.isSeated && !c.isEating && Math.hypot(px - c.seatX, py - c.seatY) < SERVE_R) {
       const specialMult = c.specialRequest ? (SPECIAL_REQUEST_TIP_MULT[c.specialRequest] ?? 1.0) : 1.0;
-      
+
       // Acı istek kontrolü
       const customerWantsSpicy = c.specialRequest === 'spicy';
       const playerHasSpicy = p.holding?.startsWith('SPICY_');
       const baseFood = playerHasSpicy ? p.holding.replace('SPICY_', '') : p.holding;
-      
+
       // Doğru yemek mi?
       const correctFood = !isTray(p.holding) && c.wants === baseFood;
-      
+
       if (correctFood) {
         // Acı istek uyumsuzluğu kontrolü
         if (customerWantsSpicy && !playerHasSpicy) {
@@ -328,17 +328,17 @@ const handleCustomers: InteractionHandler = ({ gs, p, px, py, snd, io, roomId })
           c.isEating = true; c.eatTimer = EAT_TICKS; c.wants = null; p.holding = null;
           if (c.specialRequest) io.to(roomId).emit('specialServed', { x: c.seatX, y: c.seatY, request: c.specialRequest });
           applyCombo(gs, io, roomId, c.seatX, c.seatY, c.tipAmount ?? 0);
-          snd("success"); 
+          snd("success");
           return true;
         }
       } else if (isTray(p.holding)) {
         const items = getTrayItems(p.holding);
-        
+
         for (let i = 0; i < items.length; i++) {
           const item = items[i];
           const itemIsSpicy = item.startsWith('SPICY_');
           const itemBase = itemIsSpicy ? item.replace('SPICY_', '') : item;
-          
+
           if (c.wants === itemBase) {
             // Acı istek uyumsuzluğu kontrolü
             if (customerWantsSpicy && !itemIsSpicy) {
@@ -517,7 +517,7 @@ const handleSpiceRack: InteractionHandler = (ctx) => {
   const dynPos = gs.stationLayout?.['spice_rack'];
   const x = dynPos?.x ?? SPICE_RACK_POS.x;
   const y = dynPos?.y ?? SPICE_RACK_POS.y;
-  
+
   if (Math.hypot(px - x, py - y) > INTERACT_R) return false;
 
   // Elinde pişmiş yemek yoksa bu handler'ı atla — başka istasyon yakalasın
@@ -541,24 +541,125 @@ const handleSpiceRack: InteractionHandler = (ctx) => {
   return false;
 };
 
-const INTERACTION_CHAIN: InteractionHandler[] = [
-  handleServiceWindow,
-  handleSinks,
-  handleTrash,
-  handleTrayStation,
-  handleDirtyTrayBasket,
-  handleDirtyTables,
-  handlePlateStack,
-  handleChoppingBoards,
-  handleSpiceRack,
-  handleFryers,
-  handleFridges,
-  handleCakeBakers,
-  handleCoffeeMachines,
-  handleCookStations,
-  handleCustomers,
-  handleIngredients
-];
+// ─── MESAFE BAZLI DİNAMİK HANDLER SIRALAMA ──────────────────────────────────
+// Eski sabit sıra (INTERACTION_CHAIN) yerine, oyuncuya en yakın istasyondan
+// başlayarak handler'ları dener. Böylece fırın yakınındayken fırın,
+// tepsi yakınındayken tepsi seçilir — chain sırası değil mesafe belirler.
+
+interface HandlerCandidate {
+  handler: InteractionHandler;
+  distance: number;
+}
+
+function buildSortedHandlers(px: number, py: number, gs: GameState): InteractionHandler[] {
+  const candidates: HandlerCandidate[] = [];
+
+  function track(handler: InteractionHandler, x: number, y: number, radius: number) {
+    const d = Math.hypot(px - x, py - y);
+    if (d < radius) {
+      const existing = candidates.find(c => c.handler === handler);
+      if (existing) {
+        if (d < existing.distance) existing.distance = d;
+      } else {
+        candidates.push({ handler, distance: d });
+      }
+    }
+  }
+
+  // Servis penceresi
+  if (gs.serviceWindow?.length) {
+    SERVICE_WINDOW_SLOTS.forEach(s => track(handleServiceWindow, s.x, s.y, SERVICE_WINDOW_R));
+  }
+
+  // Lavabolar
+  gs.sinks?.forEach(s => {
+    const x = gs.stationLayout?.[s.id]?.x ?? s.x;
+    const y = gs.stationLayout?.[s.id]?.y ?? s.y;
+    track(handleSinks, x, y, INTERACT_R);
+  });
+
+  // Çöp kutusu
+  const trashPos = gs.stationLayout['trash'] ?? TRASH_STATION;
+  track(handleTrash, trashPos.x, trashPos.y, INTERACT_R);
+
+  // Tepsi istasyonu
+  const trayPos = gs.stationLayout['tray'] ?? TRAY_STATION;
+  track(handleTrayStation, trayPos.x, trayPos.y, INTERACT_R);
+
+  // Kirli tepsi sepeti
+  const dirtyTrayPos = gs.stationLayout['dirty_tray'] ?? { x: 1050, y: 90 };
+  track(handleDirtyTrayBasket, dirtyTrayPos.x, dirtyTrayPos.y, INTERACT_R);
+
+  // Kirli masalar
+  gs.dirtyTables?.forEach(t => track(handleDirtyTables, t.seatX, t.seatY, SERVE_R));
+
+  // Tabak yığını
+  const platePos = gs.stationLayout?.['plate_stack'] ?? PLATE_STACK_POS;
+  track(handlePlateStack, platePos.x, platePos.y, PLATE_STACK_POS.radius);
+
+  // Kesme tahtaları
+  gs.choppingBoards?.forEach(b => {
+    const x = gs.stationLayout?.[b.id]?.x ?? b.x;
+    const y = gs.stationLayout?.[b.id]?.y ?? b.y;
+    track(handleChoppingBoards, x, y, INTERACT_R);
+  });
+
+  // Baharat rafı (gün 3+)
+  if (gs.day >= 3) {
+    const spicePos = gs.stationLayout?.['spice_rack'] ?? SPICE_RACK_POS;
+    track(handleSpiceRack, spicePos.x, spicePos.y, INTERACT_R);
+  }
+
+  // Fritözler
+  gs.fryers?.forEach(f => {
+    const x = gs.stationLayout?.[f.id]?.x ?? f.x;
+    const y = gs.stationLayout?.[f.id]?.y ?? f.y;
+    track(handleFryers, x, y, INTERACT_R);
+  });
+
+  // Buzdolapları
+  gs.fridges?.forEach(f => {
+    const x = gs.stationLayout?.[f.id]?.x ?? f.x;
+    const y = gs.stationLayout?.[f.id]?.y ?? f.y;
+    track(handleFridges, x, y, INTERACT_R);
+  });
+
+  // Pasta fırınları
+  gs.cakeBakers?.forEach(c => {
+    const x = gs.stationLayout?.[c.id]?.x ?? c.x;
+    const y = gs.stationLayout?.[c.id]?.y ?? c.y;
+    track(handleCakeBakers, x, y, INTERACT_R);
+  });
+
+  // Kahve makineleri
+  gs.coffeeMachines?.forEach(c => {
+    const x = gs.stationLayout?.[c.id]?.x ?? c.x;
+    const y = gs.stationLayout?.[c.id]?.y ?? c.y;
+    track(handleCoffeeMachines, x, y, INTERACT_R);
+  });
+
+  // Fırınlar (COOK_R — daha büyük yarıçap)
+  gs.cookStations?.forEach(s => {
+    const x = gs.stationLayout?.[s.id]?.x ?? s.x;
+    const y = gs.stationLayout?.[s.id]?.y ?? s.y;
+    track(handleCookStations, x, y, COOK_R);
+  });
+
+  // Müşteriler
+  gs.customers?.forEach(c => {
+    if (c.isSeated && !c.isEating) track(handleCustomers, c.seatX, c.seatY, SERVE_R);
+  });
+
+  // Malzemeler
+  INGREDIENTS.forEach(ing => {
+    const dynPos = gs.stationLayout[`ingredient_${ing.key}`];
+    track(handleIngredients, dynPos?.x ?? ing.pos.x, dynPos?.y ?? ing.pos.y, INTERACT_R);
+  });
+
+  // Mesafeye göre sırala (en yakın önce)
+  candidates.sort((a, b) => a.distance - b.distance);
+  return candidates.map(c => c.handler);
+}
 
 // ─── ANA KAYIT FONKSİYONU ────────────────────────────────────────────────────
 
@@ -590,11 +691,10 @@ export function registerInteractHandler(
       }
     };
 
-    // Zincirdeki işleyicileri sırayla dene. Biri başarılı olursa döngüyü kır.
-    for (const handler of INTERACTION_CHAIN) {
-      if (handler(ctx)) {
-        break;
-      }
+    // Mesafe bazlı sıralama: en yakın istasyondan başlayarak dene
+    const sortedHandlers = buildSortedHandlers(ctx.px, ctx.py, ctx.gs);
+    for (const handler of sortedHandlers) {
+      if (handler(ctx)) break;
     }
   });
 }
