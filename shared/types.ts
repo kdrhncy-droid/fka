@@ -488,6 +488,8 @@ export function getComboLabel(count: number): string {
   if (count >= 3) return '🔥';
   return '';
 }
+
+export const UPGRADE_DEFS: Record<UpgradeKey, { costs: number[]; max: number }> = {
     patience:      { costs: [150, 300, 600, 1200], max: 4 },
     earnings:      { costs: [200, 400, 800, 1600], max: 4 },
     plateStackMax: { costs: [100, 200, 400, 800],  max: 4 },
