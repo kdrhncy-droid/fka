@@ -9,7 +9,7 @@ export type { Personality };
 
 export type Item = string | null;
 export type StockKey = '🍞' | '🥩' | '🥬' | '🥘' | '🍢' | '🥔' | '🧁';
-export type UpgradeKey = 'patience' | 'earnings' | 'plateStackMax' | 'safeOven' | 'fryerSpeed' | 'fridgeCapacity' | 'cakeBaker' | 'coffeeMachine';
+export type UpgradeKey = 'patience' | 'earnings' | 'plateStackMax' | 'safeOven' | 'fryerSpeed' | 'fridgeCapacity' | 'cakeBaker' | 'coffeeMachine' | 'extraSink' | 'extraChopBoard';
 export const CLEAN_PLATE = '__clean_plate__';
 export const DIRTY_PLATE = '__dirty_plate__';
 
@@ -70,6 +70,7 @@ export interface Upgrades {
     patience: number; earnings: number; plateStackMax: number; safeOven: number;
     fryerSpeed: number; fridgeCapacity: number;
     cakeBaker: number; coffeeMachine: number;
+    extraSink: number; extraChopBoard: number;
 }
 
 // ─── Kart Sistemi ─────────────────────────────────────────────────────────────
@@ -472,6 +473,14 @@ export const OVEN_UPGRADE_COSTS = [200, 400, 800, 1200, 1600];
 export const TRASH_STATION = { x: 920, y: 285 };
 export const DIRTY_TRAY_POS = { x: 860, y: 90 };
 export const SINK_STATION = { x: 960, y: 90 };
+export const EXTRA_SINK_POSITIONS = [
+  { x: 1060, y: 90 },  // 2. lavabo
+  { x: 1160, y: 90 },  // 3. lavabo
+];
+export const EXTRA_CHOP_POSITIONS = [
+  { x: 860, y: 170 },  // 2. kesme tahtası
+  { x: 960, y: 170 },  // 3. kesme tahtası
+];
 export const DISH_ITEMS = ['🍕', '🍔', '🥗', '🍜', '🌯', '🍟', '🥤', '🍰', '☕'] as const;
 
 // ─── Combo Sistemi ───────────────────────────────────────────────────────────
@@ -498,6 +507,8 @@ export const UPGRADE_DEFS: Record<UpgradeKey, { costs: number[]; max: number }> 
     fridgeCapacity:{ costs: [250, 500],             max: 2 },
     cakeBaker:     { costs: [400],                  max: 1 },
     coffeeMachine: { costs: [350],                  max: 1 },
+    extraSink:     { costs: [300, 600],             max: 2 }, // 2. ve 3. lavabo
+    extraChopBoard:{ costs: [250, 500],             max: 2 }, // 2. ve 3. kesme tahtası
 };
 
 export function mkCook(id: string, x: number, y: number): CookStation {
@@ -521,7 +532,7 @@ function mkClassicMapState(): GameState {
     dirtyTables: [],
     score: 0, stock: { '🍞': 10, '🥩': 10, '🥬': 10, '🥘': 5, '🍢': 5, '🥔': 8, '🧁': 6 },
     marketName: "TerraMarket", dayPhase: 'prep', dayTimer: DAY_TICKS,
-    upgrades: { patience: 0, earnings: 0, plateStackMax: 0, safeOven: 0, fryerSpeed: 0, fridgeCapacity: 0, cakeBaker: 0, coffeeMachine: 0 }, day: 1, hasOrderedTonight: false,
+    upgrades: { patience: 0, earnings: 0, plateStackMax: 0, safeOven: 0, fryerSpeed: 0, fridgeCapacity: 0, cakeBaker: 0, coffeeMachine: 0, extraSink: 0, extraChopBoard: 0 }, day: 1, hasOrderedTonight: false,
     cookStations: initialOvens,
     dirtyTrayCount: 0,
     plateStack: { count: PLATE_STACK_BASE, maxCount: PLATE_STACK_BASE },

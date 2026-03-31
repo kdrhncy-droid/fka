@@ -9,6 +9,7 @@ import {
   INITIAL_OVEN_POSITIONS, ADDITIONAL_OVEN_POSITIONS, OVEN_UPGRADE_COSTS,
   PLATE_STACK_PER_UPGRADE,
   UPGRADE_DEFS,
+  EXTRA_SINK_POSITIONS, EXTRA_CHOP_POSITIONS, WASH_TICKS,
   mkGameState, mkCook, MapId
 } from "./shared/types.js";
 import { gameTick, tryQueueSeat } from "./server/gameLoop.js";
@@ -307,6 +308,26 @@ io.on("connection", (socket) => {
           f.maxDrinks += 3;
           f.drinks = f.maxDrinks;
         });
+      }
+      // Ekstra lavabo ekle
+      if (key === 'extraSink') {
+        const sinkIdx = gs.upgrades.extraSink - 1; // yeni seviye - 1 = index
+        const pos = EXTRA_SINK_POSITIONS[sinkIdx];
+        if (pos) {
+          const sinkId = `sink${sinkIdx + 2}`;
+          gs.sinks.push({ id: sinkId, x: pos.x, y: pos.y, input: null, progress: 0, isWashing: false, washingPlayerId: null });
+          gs.stationLayout[sinkId] = { id: sinkId, x: pos.x, y: pos.y };
+        }
+      }
+      // Ekstra kesme tahtası ekle
+      if (key === 'extraChopBoard') {
+        const chopIdx = gs.upgrades.extraChopBoard - 1;
+        const pos = EXTRA_CHOP_POSITIONS[chopIdx];
+        if (pos) {
+          const chopId = `chop${chopIdx + 2}`;
+          gs.choppingBoards.push({ id: chopId, x: pos.x, y: pos.y, input: null, progress: 0, isChopping: false, choppingPlayerId: null });
+          gs.stationLayout[chopId] = { id: chopId, x: pos.x, y: pos.y };
+        }
       }
       io.to(roomId).emit("state", gs);
       socket.emit("sound", "success");

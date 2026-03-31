@@ -40,7 +40,7 @@ const DEFAULT_STATE: GameState = {
     marketName: '',
     dayPhase: 'prep',
     dayTimer: 2700,
-    upgrades: { patience: 0, earnings: 0, plateStackMax: 0, safeOven: 0 },
+    upgrades: { patience: 0, earnings: 0, plateStackMax: 0, safeOven: 0, extraSink: 0, extraChopBoard: 0 },
     day: 1,
     hasOrderedTonight: false,
     cookStations: [],

@@ -29,7 +29,8 @@ const DEFAULT_UI: GameUIState = {
 
 function upgradesEqual(a: Upgrades, b: Upgrades): boolean {
     return a.patience === b.patience && a.earnings === b.earnings
-        && a.plateStackMax === b.plateStackMax && a.safeOven === b.safeOven;
+        && a.plateStackMax === b.plateStackMax && a.safeOven === b.safeOven
+        && a.extraSink === b.extraSink && a.extraChopBoard === b.extraChopBoard;
 }
 
 function arraysEqual(a: string[] | null, b: string[] | null): boolean {

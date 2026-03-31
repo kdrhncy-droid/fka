@@ -2,14 +2,16 @@ import React from 'react';
 import { Upgrades, UpgradeKey, UPGRADE_DEFS as SHARED_UPGRADES, OVEN_UPGRADE_COSTS, INITIAL_OVEN_POSITIONS, ADDITIONAL_OVEN_POSITIONS } from '../types/game';
 
 const UPGRADE_UI: { id: UpgradeKey; icon: string; name: string; desc: string }[] = [
-    { id: 'patience', icon: '⏳', name: 'Müşteri Sabrı', desc: 'Müşteriler daha uzun bekler' },
-    { id: 'earnings', icon: '💰', name: 'Servis Kazancı', desc: 'Her servisten +5 ekstra puan' },
-    { id: 'plateStackMax', icon: '🍽️', name: 'Tabak Yığını', desc: 'Başlangıçta daha çok tabak' },
-    { id: 'safeOven', icon: '🛡️', name: 'Güvenli Fırın', desc: 'Lv1: yanma 2x yavaş · Lv2: hiç yanmaz' },
-    { id: 'fryerSpeed', icon: '🍟', name: 'Fritöz Hızı', desc: 'Patates daha hızlı kızarır' },
-    { id: 'fridgeCapacity', icon: '🧊', name: 'Buzdolabı Kapasitesi', desc: '+3 içecek kapasitesi' },
-    { id: 'cakeBaker', icon: '🍰', name: 'Pasta Fırını Hızı', desc: 'Pasta daha hızlı pişer' },
-    { id: 'coffeeMachine', icon: '☕', name: 'Kahve Kapasitesi', desc: '+2 kahve kapasitesi' },
+    { id: 'patience',      icon: '⏳', name: 'Müşteri Sabrı',        desc: 'Müşteriler daha uzun bekler' },
+    { id: 'earnings',      icon: '💰', name: 'Servis Kazancı',        desc: 'Her servisten +5 ekstra puan' },
+    { id: 'plateStackMax', icon: '🍽️', name: 'Tabak Yığını',          desc: 'Başlangıçta daha çok tabak' },
+    { id: 'safeOven',      icon: '🛡️', name: 'Güvenli Fırın',         desc: 'Lv1: yanma 2x yavaş · Lv2: hiç yanmaz' },
+    { id: 'fryerSpeed',    icon: '🍟', name: 'Fritöz Hızı',           desc: 'Patates daha hızlı kızarır' },
+    { id: 'fridgeCapacity',icon: '🧊', name: 'Buzdolabı Kapasitesi',  desc: '+3 içecek kapasitesi' },
+    { id: 'cakeBaker',     icon: '🍰', name: 'Pasta Fırını Hızı',     desc: 'Pasta daha hızlı pişer' },
+    { id: 'coffeeMachine', icon: '☕', name: 'Kahve Kapasitesi',       desc: '+2 kahve kapasitesi' },
+    { id: 'extraSink',     icon: '🚿', name: 'Ekstra Lavabo',          desc: 'Yeni lavabo ekler (max 3)' },
+    { id: 'extraChopBoard',icon: '🔪', name: 'Ekstra Kesme Tahtası',   desc: 'Yeni kesme tahtası ekler (max 3)' },
 ];
 
 const DISH_NAMES: Record<string, string> = {
