@@ -66,10 +66,8 @@ export function playSound(_audioCtxRef: any, type: string) {
       break;
     }
     case 'success': {
-      // Üçlü akor — neşeli "başarı" jingle
-      playNote(ctx, 523, now, 0.15, 0.08, 'triangle');       // C5
-      playNote(ctx, 659, now + 0.1, 0.15, 0.08, 'triangle'); // E5
-      playNote(ctx, 784, now + 0.2, 0.2, 0.1, 'sine');       // G5
+      // Kısa, hafif "tık" — rahatsız etmez
+      playNote(ctx, 660, now, 0.06, 0.06, 'sine');
       break;
     }
     case 'fail': {
