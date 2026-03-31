@@ -15,7 +15,7 @@ export function movePlayer(
   lastEmitRef: React.MutableRefObject<number>,
   frameScale: number,
   { socket, gameStateRef, localPlayerRef, keysRef, joystickVectorRef }: Props,
-) {
+): { dx: number; dy: number } {
   let dx = 0, dy = 0;
 
   if (keysRef.current.w || (keysRef.current as any).ArrowUp)    dy -= 1;
@@ -35,7 +35,7 @@ export function movePlayer(
     dy = dy * mul * PLAYER_SPEED * frameScale;
   }
 
-  if (Math.abs(dx) <= 0.1 && Math.abs(dy) <= 0.1) return;
+  if (Math.abs(dx) <= 0.1 && Math.abs(dy) <= 0.1) return { dx: 0, dy: 0 };
 
   const lp = localPlayerRef.current;
   let nx = Math.max(30, Math.min(GAME_WIDTH - 30, lp.x + dx));
@@ -182,4 +182,6 @@ export function movePlayer(
     socket.emit("move", { x: nx, y: ny });
     lastEmitRef.current = time;
   }
+
+  return { dx, dy };
 }

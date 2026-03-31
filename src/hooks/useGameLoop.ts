@@ -84,7 +84,7 @@ export function useGameLoop({
       lastFrameTime = time;
       const frameScale = deltaMs / (1000 / 60);
 
-      movePlayer(time, lastEmitRef, frameScale, { socket, gameStateRef, localPlayerRef, keysRef, joystickVectorRef });
+      const lastMove = movePlayer(time, lastEmitRef, frameScale, { socket, gameStateRef, localPlayerRef, keysRef, joystickVectorRef });
 
       // Editor preview her frame güncellenir — gecikme sıfır
       onPreviewUpdate?.();
@@ -107,7 +107,7 @@ export function useGameLoop({
 
       // ── Etkileşim Halkası Çizimi ──
       const lp = localPlayerRef.current;
-      const nearest = getNearestInteractable(lp.x, lp.y, state);
+      const nearest = getNearestInteractable(lp.x, lp.y, state, lastMove.dx, lastMove.dy);
       drawInteractionRing(ctx, nearest, isEditing);
 
       const movingId = editorStateRef?.current?.movingStationId;
