@@ -413,6 +413,7 @@ export const GameScreen: React.FC<Props> = ({
                 )}
 
                 {/* Gece: Upgrade Shop (menü seçimi yoksa veya bittiyse) */}
+                {/* Gece: Upgrade Shop — kart seçimi varken de göster, sadece buton disabled */}
                 {dayPhase === 'night' && !isGameOver && (!menuChoices || menuChoices.length === 0) && (
                     <UpgradeShop
                         score={score} upgrades={upgrades} day={day}
@@ -427,8 +428,7 @@ export const GameScreen: React.FC<Props> = ({
                         onOrder={() => emit('order')}
                         onNextDay={() => emit('nextDay')}
                     />
-                )}
-                </div> {/* inner aspect-ratio wrapper */}
+                )}                </div> {/* inner aspect-ratio wrapper */}
 
                 {/* ── HUD Butonları — outer wrapper'da, tüm ekrana serbestçe konumlanabilir ── */}
                 {/* Joystick */}
@@ -527,7 +527,7 @@ export const GameScreen: React.FC<Props> = ({
                 {settings.showPerfStats && (
                 <div className="absolute top-2 right-2 z-20 pointer-events-none">
                     <div className="bg-black/60 rounded-lg px-2 py-1 font-mono text-xs leading-tight">
-                        <div style={{ color: ping < 80 ? '#4ade80' : ping < 150 ? '#facc15' : '#f87171' }}>
+                        <div style={{ color: ping < 150 ? '#4ade80' : ping < 300 ? '#facc15' : '#f87171' }}>
                             PING: {ping}ms
                         </div>
                     </div>
