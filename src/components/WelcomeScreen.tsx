@@ -203,7 +203,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
       </div>
 
       {/* İçerik */}
-      <div className="relative z-10 flex flex-col items-center gap-5 px-6 w-full max-w-xs">
+      <div className="relative z-10 flex flex-col items-center gap-5 px-6 py-4 w-full max-w-xs h-full overflow-y-auto no-scrollbar justify-center">
 
         {/* Logo */}
         <div className="text-center drop-shadow-lg">
@@ -347,7 +347,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
       {/* Karakter paneli */}
       {showChar && (
         <div className="absolute inset-0 z-20 flex items-end justify-center pb-6 px-4 bg-black/50 backdrop-blur-sm" onClick={() => setShowChar(false)}>
-          <div className="w-full max-w-sm bg-stone-900/95 rounded-3xl border border-white/10 p-5 space-y-4" onClick={e => e.stopPropagation()}>
+          <div className="w-full max-w-sm max-h-[85vh] overflow-y-auto no-scrollbar bg-stone-900/95 rounded-3xl border border-white/10 p-5 space-y-4" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between">
               <span className="text-sm font-black uppercase tracking-widest text-stone-200">Karakter</span>
               <button onClick={() => setShowChar(false)} className="text-stone-500 hover:text-white text-lg">✕</button>

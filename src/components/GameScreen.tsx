@@ -372,8 +372,8 @@ export const GameScreen: React.FC<Props> = ({
 
                 {/* Gece: Yeni Yemek Seçimi (Plate Up tarzı) ── */}
                 {dayPhase === 'night' && !isGameOver && menuChoices && menuChoices.length > 0 && (
-                    <div className="absolute inset-0 z-30 flex flex-col items-center justify-center gap-6 bg-indigo-950/85 backdrop-blur-sm p-4">
-                        <div className="text-center">
+                    <div className="absolute inset-0 z-30 bg-indigo-950/85 backdrop-blur-sm p-4 overflow-y-auto overflow-x-hidden flex flex-col items-center justify-start sm:justify-center py-8">
+                        <div className="text-center mb-6 flex-shrink-0 mt-4 sm:mt-0">
                             <div className="text-5xl mb-2">⭐</div>
                             <h2 className="text-white font-black text-2xl">Yeni Yemek Seç!</h2>
                             <p className="text-indigo-200 text-sm mt-1">
@@ -387,7 +387,7 @@ export const GameScreen: React.FC<Props> = ({
                             </div>
                         </div>
 
-                        <div className="flex flex-col sm:flex-row gap-4 w-full max-w-lg">
+                        <div className="flex flex-col sm:flex-row gap-4 w-full max-w-lg flex-shrink-0">
                             {menuChoices.map(dish => {
                                 const info = DISH_INFO[dish];
                                 return (

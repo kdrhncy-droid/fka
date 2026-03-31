@@ -10,9 +10,9 @@ interface Props {
 
 export const CardSelectModal: React.FC<Props> = ({ cards, activeCards, day, onSelect }) => {
     return (
-        <div className="absolute inset-0 z-40 flex flex-col items-center justify-center gap-5 bg-indigo-950/90 backdrop-blur-sm p-4">
+        <div className="absolute inset-0 z-40 bg-indigo-950/90 backdrop-blur-sm p-4 overflow-y-auto overflow-x-hidden flex flex-col items-center justify-start sm:justify-center py-8">
             {/* Başlık */}
-            <div className="text-center">
+            <div className="text-center mb-6 flex-shrink-0 mt-4 sm:mt-0">
                 <div className="text-4xl mb-2">⚡</div>
                 <h2 className="text-white font-black text-2xl tracking-wide">Günlük Kart Seç</h2>
                 <p className="text-indigo-300 text-sm mt-1">
@@ -21,7 +21,7 @@ export const CardSelectModal: React.FC<Props> = ({ cards, activeCards, day, onSe
             </div>
 
             {/* Kart seçenekleri */}
-            <div className="flex flex-col sm:flex-row gap-4 w-full max-w-xl">
+            <div className="flex flex-col sm:flex-row gap-4 w-full max-w-xl flex-shrink-0">
                 {cards.map(card => (
                     <button
                         key={card.id}

@@ -29,7 +29,7 @@ export const DayEndModal: React.FC<Props> = ({ summary, onClose }) => {
                     onClick={() => setOpen(false)}
                 >
                     <div
-                        className="bg-stone-900 border border-stone-700 rounded-3xl p-8 flex flex-col items-center gap-5 shadow-2xl"
+                        className="bg-stone-900 border border-stone-700 rounded-3xl p-8 flex flex-col items-center gap-5 shadow-2xl max-h-[90vh] overflow-y-auto w-[90%] sm:w-auto"
                         onClick={e => e.stopPropagation()}
                     >
                         <div className="text-center">

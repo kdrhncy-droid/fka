@@ -169,34 +169,56 @@ export function drawCustomer(ctx: CanvasRenderingContext2D, customer: Customer, 
     }
 
     // ── SABIR ÇUBUĞU ─────────────────────────────────────────────────────────
+    const isAngry = (patience / maxPatience) < 0.3;
+    const angryShake = isAngry ? Math.sin(Date.now() / 40) * 1.5 : 0;
+
     if (isSeated && !isEating && patience < maxPatience && !hidePatience) {
         const barW = 35;
-        const barH = 5;
-        const bx = -barW / 2;
-        const by = headY - hr - 12;
+        const barH = 6; // Biraz daha etli
+        const bx = -barW / 2 + angryShake;
+        const by = headY - hr - 14;
         const pct = patience / maxPatience;
-        ctx.fillStyle = 'rgba(0,0,0,0.4)';
-        ctx.beginPath(); ctx.roundRect(bx, by, barW, barH, 2.5); ctx.fill();
-        ctx.fillStyle = pct > 0.5 ? '#22c55e' : pct > 0.25 ? '#eab308' : '#ef4444';
-        ctx.beginPath(); ctx.roundRect(bx, by, barW * pct, barH, 2.5); ctx.fill();
+        
+        // Arka plan
+        ctx.fillStyle = 'rgba(0,0,0,0.5)';
+        ctx.beginPath(); ctx.roundRect(bx, by, barW, barH, 3); ctx.fill();
+        
+        // Bar rengi (sinirliyken kırmızı beyaz parlar)
+        let barColor = pct > 0.5 ? '#22c55e' : pct > 0.3 ? '#eab308' : '#ef4444';
+        if (isAngry && Math.floor(Date.now() / 150) % 2 === 0) {
+            barColor = '#fca5a5'; // Beyazımsı parlama
+        }
+        
+        ctx.fillStyle = barColor;
+        ctx.beginPath(); ctx.roundRect(bx, by, Math.max(0, barW * pct), barH, 3); ctx.fill();
+        
+        // Çerçeve
+        stk(ctx, '#111', 1.5);
+        ctx.strokeRect(bx, by, barW, barH); // basit kareleştirilmiş dış hat
+
+        // Sinir Emojisi
+        if (isAngry) {
+            ctx.font = '10px Arial';
+            ctx.fillText('💢', bx + barW + 8, by + barH/2);
+        }
     }
 
     if (currentDialog) {
-        drawDialogBubble(ctx, currentDialog, 0, headY - hr - 10, '#fff', bodyColor, '#333');
+        drawDialogBubble(ctx, currentDialog, angryShake, headY - hr - 12, '#fff', isAngry ? '#ef4444' : bodyColor, '#222');
     } else if (wants && isSeated && !isEating) {
-        const bx = 0, by = headY - hr - 22;
+        const bx = angryShake, by = headY - hr - 24 + (angryShake * 0.5); // Balon da hafif titrer
         const specialReq = customer.specialRequest;
         const specialIcon = specialReq === 'spicy' ? '🌶️' : specialReq === 'extra' ? '➕' : specialReq === 'quick' ? '⚡' : null;
         // Özel istek varsa balonu biraz genişlet
-        const bubbleR = specialIcon ? 16 : 12;
-        ctx.fillStyle = specialIcon ? (specialReq === 'quick' ? '#fef3c7' : '#fff0f0') : '#fff';
+        const bubbleR = specialIcon ? 18 : 14; 
+        ctx.fillStyle = specialIcon ? (specialReq === 'quick' ? '#fef3c7' : '#fff0f0') : (isAngry && Math.floor(Date.now()/200)%2===0 ? '#fee2e2' : '#fff');
         ctx.beginPath(); ctx.arc(bx, by, bubbleR, 0, Math.PI * 2); ctx.fill();
-        stk(ctx, specialIcon ? (specialReq === 'quick' ? '#f59e0b' : '#ef4444') : bodyColor, 1.8);
-        ctx.font = '14px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        stk(ctx, specialIcon ? (specialReq === 'quick' ? '#f59e0b' : '#ef4444') : (isAngry ? '#ef4444' : bodyColor), 1.8);
+        ctx.font = '16px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; // Emoji boyutu tık arttı
         ctx.fillText(wants, bx - (specialIcon ? 5 : 0), by);
         if (specialIcon) {
-            ctx.font = '11px Arial';
-            ctx.fillText(specialIcon, bx + bubbleR - 2, by - bubbleR + 2);
+            ctx.font = '12px Arial';
+            ctx.fillText(specialIcon, bx + bubbleR - 3, by - bubbleR + 4);
         }
     }
 
@@ -204,10 +226,10 @@ export function drawCustomer(ctx: CanvasRenderingContext2D, customer: Customer, 
 }
 
 function drawDialogBubble(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, bgColor: string, borderColor: string, textColor: string) {
-    const maxWidth = 130;
-    const padding = 7;
-    const lineHeight = 13;
-    ctx.font = 'bold 9px Arial';
+    const maxWidth = 160;
+    const padding = 10;
+    const lineHeight = 16;
+    ctx.font = 'bold 13px Arial'; // Mobilde okunabilmesi için büyütüldü (9 -> 13)
     const words = text.split(' ');
     const lines: string[] = [];
     let currentLine = '';
@@ -220,13 +242,13 @@ function drawDialogBubble(ctx: CanvasRenderingContext2D, text: string, x: number
     }
     if (currentLine) lines.push(currentLine);
     const bubbleW = Math.max(...lines.map(l => ctx.measureText(l).width)) + padding * 2;
-    const bubbleH = lines.length * lineHeight + padding * 2;
+    const bubbleH = lines.length * lineHeight + padding * 1.5;
     const dbx = x - bubbleW / 2;
     const dby = y - bubbleH;
     ctx.fillStyle = bgColor;
-    ctx.beginPath(); ctx.roundRect(dbx, dby, bubbleW, bubbleH, 7); ctx.fill();
-    ctx.strokeStyle = borderColor; ctx.lineWidth = 1.2; ctx.stroke();
+    ctx.beginPath(); ctx.roundRect(dbx, dby, bubbleW, bubbleH, 8); ctx.fill();
+    ctx.strokeStyle = borderColor; ctx.lineWidth = 1.6; ctx.stroke();
     ctx.fillStyle = textColor;
     ctx.textAlign = 'center'; ctx.textBaseline = 'top';
-    lines.forEach((line, i) => { ctx.fillText(line, x, dby + padding + i * lineHeight); });
+    lines.forEach((line, i) => { ctx.fillText(line, x, dby + padding * 0.75 + i * lineHeight); });
 }
