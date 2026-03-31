@@ -4,13 +4,13 @@ Yapılmamış işler. Öncelik sırasına göre.
 
 ---
 
-## � Öncelik 1 — Oyun Derinliği
+## 🔴 Öncelik 1 — Oyun Derinliği
 
-### Sipariş Özelleştirme (PlateUp'ta yok — özgün)
-Müşteri bazen "acı olsun", "az pişmiş", "ekstra sos" gibi özel istek ekler.
-Doğru yapınca +%50 bahşiş, yanlış yapınca can kaybı.
-Görsel: sipariş balonunda yemek emojisinin yanında küçük bir ikon.
-Tahmini süre: ~2-3 saat
+### Çok Aşamalı Yemek (Combining) — Tasarım hazır (combining-system.md)
+Şu an tüm yemekler tek adım: malzeme → fırın → yemek.
+Combining ile: pişmiş malzeme + başka malzeme = final yemek.
+Etki: Co-op'ta iş bölümü doğuruyor, herkes farklı rol üstleniyor.
+Tahmini süre: ~4-5 saat
 
 ### Mahalle İtibarı (PlateUp'ta yok — Franchise yerine)
 Her gün iyi servis yapınca itibar puanı artar (1-5 yıldız).
@@ -19,19 +19,13 @@ Her gün iyi servis yapınca itibar puanı artar (1-5 yıldız).
 Kalıcı ilerleme verir ama organik hissettiriyor.
 Tahmini süre: ~2-3 saat
 
-### Çok Aşamalı Yemek (Combining)
-Şu an tüm yemekler tek adım: malzeme → fırın → yemek.
-Combining ile: pişmiş malzeme + başka malzeme = final yemek.
-Etki: Co-op'ta iş bölümü doğuruyor, herkes farklı rol üstleniyor.
-Tahmini süre: ~4-5 saat
-
 ### Floorplan Seçim Sistemi
 Run başında 4 farklı restoran şekli: Klasik, L-Şekli, U-Şekli, Dar & Uzun.
 Tahmini süre: ~2 saat
 
 ---
 
-## � Öncelik 2 — İçerik (Özgün)
+## 🟠 Öncelik 2 — İçerik (Özgün)
 
 ### Yeni Müşteri Tipleri (PlateUp'ta yok)
 - **Esnaf** — mahalleden tanıdık, çok sabırlı ama bahşiş vermez
@@ -45,12 +39,11 @@ Tahmini süre: ~30 dakika
 
 ### Yeni İstasyonlar
 - 🥚 Omlet — tava istasyonu
-- Baharat rafı — yemeğe eklenince +%20 bahşiş
 Tahmini süre: ~2-3 saat
 
 ---
 
-## � Öncelik 3 — Görsel & His
+## 🟡 Öncelik 3 — Görsel & His
 
 ### Zemin Kirliliği (Mess Sistemi)
 Yemek hazırlarken ve müşteriler yerken zemine pislik düşer.
@@ -66,7 +59,7 @@ Tahmini süre: ~3-4 saat
 
 ---
 
-## � Öncelik 4 — Sosyal & Platform
+## 🟢 Öncelik 4 — Sosyal & Platform
 
 ### Hesap Sistemi
 - Google/Discord ile giriş (Supabase)
@@ -88,8 +81,18 @@ Tahmini süre: ~3-4 saat
 
 ---
 
-## ⚙️ Teknik Borç
+## ✅ Tamamlananlar (Son Oturum)
 
-- `upgrade` event'inde input validation eksik
-- `useGameLoop` dependency array eksik
-- `drawPerfStats.ts` var ama hiç çağrılmıyor (showPerfStats flag'i var ama bağlantı kopuk)
+- Sipariş özelleştirme — 🌶️ Acı sistemi (baharat rafı, can kaybı mekanigi) ✅
+- Baharat rafı layout editöründe taşınabilir ✅
+- Etkileşim halkası tüm istasyonları kapsıyor ✅
+- Unlock olmamış istasyonlarda halka görünmüyor ✅
+- İçecek stok sistemi kaldırıldı (sınırsız) ✅
+- `fridgeCapacity` upgrade kaldırıldı ✅
+- Upgrade shop'ta unlock olmamış yemek upgrade'leri gizleniyor ✅
+- Gece otomatik geçiş kaldırıldı ✅
+- Ping eşikleri Render için güncellendi ✅
+- Render keep-alive eklendi ✅
+- BGM URL encoding düzeltildi ✅
+- Başarı sesi kısaltıldı ✅
+- Kod kalitesi iyileştirmeleri (code-quality.md) ✅
