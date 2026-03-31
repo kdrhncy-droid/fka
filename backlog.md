@@ -4,67 +4,55 @@ Yapılmamış her şey burada. Öncelik sırasına göre.
 
 ---
 
-## 🔴 Öncelik 1 — Eksik Kart Efektleri (Hızlı Fix)
+## 🔴 Öncelik 1 — Tamamlandı ✅
 
-Kart sistemi var ama bazı kartların efektleri eksik:
-
-- `mystery_guests` — kişilik gizleme flag'i var ama müşteri sabır barı UI'da hâlâ görünüyor
-- `kaos_day` — tanımlı ama istasyon pozisyonu değiştirme mantığı yok
-- `vip_day` — VIP müşteri tipi yok, kart seçilince hiçbir şey olmuyor
+- `mystery_guests` — sabır barları gizleniyor ✅
+- `kaos_day` — istasyon pozisyonu değişiyor ✅
+- Animasyonlar — ✨ ve ❤️ eklendi ✅
 
 ---
 
 ## 🟠 Öncelik 2 — Oyun Derinliği
 
+### Sipariş Özelleştirme (PlateUp'ta yok — özgün)
+Müşteri bazen "acı olsun", "az pişmiş", "ekstra sos" gibi özel istek ekler.
+Doğru yapınca +%50 bahşiş, yanlış yapınca can kaybı.
+Görsel: sipariş balonunda yemek emojisinin yanında küçük bir ikon.
+Tahmini süre: ~2-3 saat
+
+### Mahalle İtibarı (PlateUp'ta yok — Franchise yerine)
+Her gün iyi servis yapınca itibar puanı artar (1-5 yıldız).
+İtibar arttıkça yeni müşteri tipleri açılır, daha fazla müşteri gelir.
+İtibar düşünce müşteri sayısı azalır.
+Kalıcı ilerleme verir ama organik hissettiriyor.
+Tahmini süre: ~2-3 saat
+
 ### Çok Aşamalı Yemek (Combining)
 Şu an tüm yemekler tek adım: malzeme → fırın → yemek.
 Combining ile: pişmiş malzeme + başka malzeme = final yemek.
-Örnek: Burger = Pişmiş Et + Ekmek (birleştirme tezgahında).
 Etki: Co-op'ta iş bölümü doğuruyor, herkes farklı rol üstleniyor.
 Tahmini süre: ~4-5 saat
 
-### Franchise / Kalıcı İlerleme
-Game over olunca her şey sıfırlanıyor, devam etmek için sebep yok.
-Belirli bir güne (örn. gün 15) ulaşınca 1-2 upgrade bir sonraki run'a taşınır.
-Ama bir sonraki run daha zor başlar.
-Tahmini süre: ~2-3 saat
-
 ### Floorplan Seçim Sistemi
 Run başında 4 farklı restoran şekli: Klasik, L-Şekli, U-Şekli, Dar & Uzun.
-Her şekil farklı duvar/kapı/masa/istasyon konfigürasyonu.
-Teknik detay:
-- `shared/types.ts`'e `FloorplanDef` ekle
-- `drawFloor.ts` ve `usePlayerMovement.ts` dinamik hale getir
-- `WelcomeScreen`'e seçim kartları ekle
-- `join` event'ine `floorplanId` parametresi ekle
 Tahmini süre: ~2 saat
 
 ---
 
-## 🟡 Öncelik 3 — İçerik
+## 🟡 Öncelik 3 — İçerik (Özgün)
 
-### VIP Müşteri Tipi
-Çok sabırsız ama 3x bahşiş bırakıyor. Altın rengi, özel görünüm.
-`vip_day` kartı zaten var ama VIP tipi yok.
-Tahmini süre: ~1 saat
-
-### Animasyonlar (Eksik Olanlar)
-Şu an var: floating tip text, punch particles, combo text, duman, ışıklandırma.
-Eksik olanlar:
-- Yemek pişince ✨ efekti (fırın üstünde)
-- Müşteri memnun ayrılınca ❤️ animasyonu
-- Gün/gece geçişinde kısa fade animasyonu
-Tahmini süre: ~1-2 saat
+### Yeni Müşteri Tipleri (PlateUp'ta yok)
+- **Esnaf** — mahalleden tanıdık, çok sabırlı ama bahşiş vermez
+- **Dedektif** — yemeği uzun inceler, çok yavaş yer ama 5x bahşiş bırakır
+- **Grup lideri** — toplu sipariş verir, tek seferde servis edilmeli
 
 ### Upgrade Sistemi Genişletme
-Şu an var: extraSink, extraChopBoard eklendi.
-Hâlâ eksik:
 - Müşteri yeme hızı upgrade'i (masayı daha hızlı boşaltır)
 - Bekleme listesi kapasitesi upgrade'i
 Tahmini süre: ~30 dakika
 
 ### Yeni İstasyonlar
-- 🥚 Omlet — tava istasyonu (yeni istasyon tipi)
+- 🥚 Omlet — tava istasyonu
 - Baharat rafı — yemeğe eklenince +%20 bahşiş
 Tahmini süre: ~2-3 saat
 

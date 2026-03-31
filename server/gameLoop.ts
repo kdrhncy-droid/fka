@@ -12,6 +12,8 @@ import {
   CAKE_TICKS, CAKE_BURN_TICKS, COFFEE_BASE_CAPACITY,
   ALL_CARDS, CARD_DAYS, GameCard,
   COMBO_TIMEOUT_TICKS,
+  SPECIAL_REQUEST_CHANCE, SPECIAL_REQUESTS,
+  QUICK_PATIENCE_DRAIN,
 } from "../shared/types.js";
 import { DIALOGUES } from "../shared/dialogues.js";
 
@@ -125,6 +127,11 @@ export function tryQueueSeat(gs: GameState, io: Server, rid: string) {
     if (idx !== -1) gs.waitList.splice(idx, 1);
 
     const seat = selectedSeats[i];
+    // Özel istek: gün 3'ten sonra, polite/rude müşterilere %30 ihtimalle
+    let specialRequest: 'spicy' | 'extra' | 'quick' | null = null;
+    if (gs.day >= 3 && (guest.personality === 'polite' || guest.personality === 'rude') && Math.random() < SPECIAL_REQUEST_CHANCE) {
+      specialRequest = SPECIAL_REQUESTS[Math.floor(Math.random() * SPECIAL_REQUESTS.length)] as 'spicy' | 'extra' | 'quick';
+    }
     gs.customers.push({
       id: guest.id, seatX: seat.x, seatY: seat.y,
       x: DOOR_X, y: DOOR_ENTRY_Y, targetY: EXTERIOR_Y - 10,
@@ -139,6 +146,7 @@ export function tryQueueSeat(gs: GameState, io: Server, rid: string) {
       punchCount: 0,
       phase: 'entering',
       doorX: DOOR_X,
+      specialRequest,
     });
   }
   io.to(rid).emit("sound", "arrive");
@@ -576,6 +584,8 @@ function customerTick(gs: GameState, io: Server, rid: string) {
         const cm = getCardMultipliers(gs);
         let patienceDrain = 1 + (playerCount - 1) * 0.1;
         if (gs.dayTimer <= DAY_TICKS * 0.25) patienceDrain *= 1.2;
+        // quick istek: sabır 2x hızlı azalır
+        if (c.specialRequest === 'quick') patienceDrain *= QUICK_PATIENCE_DRAIN;
         // patienceMult < 1 = daha sabırsız, > 1 = daha sabırlı
         patienceDrain = patienceDrain / cm.patienceMult;
         const baseDrain = Math.floor(patienceDrain);

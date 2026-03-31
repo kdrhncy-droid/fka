@@ -185,11 +185,19 @@ export function drawCustomer(ctx: CanvasRenderingContext2D, customer: Customer, 
         drawDialogBubble(ctx, currentDialog, 0, headY - hr - 10, '#fff', bodyColor, '#333');
     } else if (wants && isSeated && !isEating) {
         const bx = 0, by = headY - hr - 22;
-        ctx.fillStyle = '#fff';
-        ctx.beginPath(); ctx.arc(bx, by, 12, 0, Math.PI * 2); ctx.fill();
-        stk(ctx, bodyColor, 1.8);
+        const specialReq = customer.specialRequest;
+        const specialIcon = specialReq === 'spicy' ? '🌶️' : specialReq === 'extra' ? '➕' : specialReq === 'quick' ? '⚡' : null;
+        // Özel istek varsa balonu biraz genişlet
+        const bubbleR = specialIcon ? 16 : 12;
+        ctx.fillStyle = specialIcon ? (specialReq === 'quick' ? '#fef3c7' : '#fff0f0') : '#fff';
+        ctx.beginPath(); ctx.arc(bx, by, bubbleR, 0, Math.PI * 2); ctx.fill();
+        stk(ctx, specialIcon ? (specialReq === 'quick' ? '#f59e0b' : '#ef4444') : bodyColor, 1.8);
         ctx.font = '14px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.fillText(wants, bx, by);
+        ctx.fillText(wants, bx - (specialIcon ? 5 : 0), by);
+        if (specialIcon) {
+            ctx.font = '10px Arial';
+            ctx.fillText(specialIcon, bx + 9, by - 8);
+        }
     }
 
     ctx.restore();

@@ -10,20 +10,21 @@ import {
   SERVICE_WINDOW_SLOTS, SERVICE_WINDOW_R,
   FRYER_TICKS, DRINK_ITEM, CAKE_TICKS, COFFEE_ITEM,
   COMBO_TIMEOUT_TICKS, getComboMultiplier, getComboLabel,
+  SPECIAL_REQUEST_TIP_MULT,
 } from "../shared/types.js";
 
 const INTERACT_R = 110;
 const SERVE_R = 125;
 
-function earn(lv: number, maxPatience: number, currentPatience: number) {
+function earn(lv: number, maxPatience: number, currentPatience: number, specialMult = 1.0) {
   const base = 10 + 5 * lv;
   const ratio = Math.max(0, currentPatience / maxPatience);
   let mult = 0.5;
-  if (ratio > 0.8) mult = 2.0;      // Çok hızlı
-  else if (ratio > 0.5) mult = 1.5; // Hızlı
-  else if (ratio > 0.2) mult = 1.0; // Normal
-  else mult = 0.5;                  // Yavaş
-  return Math.floor(base * mult);
+  if (ratio > 0.8) mult = 2.0;
+  else if (ratio > 0.5) mult = 1.5;
+  else if (ratio > 0.2) mult = 1.0;
+  else mult = 0.5;
+  return Math.floor(base * mult * specialMult);
 }
 function isDish(item: Item): item is string { return !!item && DISH_ITEMS.includes(item as any); }
 
@@ -292,9 +293,11 @@ const handleCustomers: InteractionHandler = ({ gs, p, px, py, snd, io, roomId })
   for (let ci = 0; ci < gs.customers.length; ci++) {
     const c = gs.customers[ci];
     if (c.isSeated && !c.isEating && Math.hypot(px - c.seatX, py - c.seatY) < SERVE_R) {
+      const specialMult = c.specialRequest ? (SPECIAL_REQUEST_TIP_MULT[c.specialRequest] ?? 1.0) : 1.0;
       if (!isTray(p.holding) && c.wants === p.holding) {
-        c.tipAmount = earn(gs.upgrades.earnings, c.maxPatience, c.patience);
+        c.tipAmount = earn(gs.upgrades.earnings, c.maxPatience, c.patience, specialMult);
         c.isEating = true; c.eatTimer = EAT_TICKS; c.wants = null; p.holding = null;
+        if (c.specialRequest) io.to(roomId).emit('specialServed', { x: c.seatX, y: c.seatY, request: c.specialRequest });
         applyCombo(gs, io, roomId, c.seatX, c.seatY, c.tipAmount ?? 0);
         snd("success"); return true;
       } else if (isTray(p.holding)) {
@@ -302,8 +305,9 @@ const handleCustomers: InteractionHandler = ({ gs, p, px, py, snd, io, roomId })
         const wIdx = items.indexOf(c.wants as string);
         if (wIdx !== -1) {
           items.splice(wIdx, 1); p.holding = createTray(items);
-          c.tipAmount = earn(gs.upgrades.earnings, c.maxPatience, c.patience);
+          c.tipAmount = earn(gs.upgrades.earnings, c.maxPatience, c.patience, specialMult);
           c.isEating = true; c.eatTimer = EAT_TICKS; c.wants = null;
+          if (c.specialRequest) io.to(roomId).emit('specialServed', { x: c.seatX, y: c.seatY, request: c.specialRequest });
           applyCombo(gs, io, roomId, c.seatX, c.seatY, c.tipAmount ?? 0);
           snd("success"); return true;
         }

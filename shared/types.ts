@@ -53,6 +53,9 @@ export interface Customer {
     // Giriş fazı: 'entering' = kapıya doğru geliyor, 'seating' = koltuğa gidiyor, 'seated' = oturdu
     phase?: 'entering' | 'seating' | 'seated';
     doorX?: number; // Hangi kapıdan girecek
+
+    // Sipariş özelleştirme — özgün mekanik
+    specialRequest?: 'spicy' | 'extra' | 'quick' | null; // Özel istek
 }
 
 export interface WaitingGuest {
@@ -485,7 +488,32 @@ export const EXTRA_CHOP_POSITIONS = [
 ];
 export const DISH_ITEMS = ['🍕', '🍔', '🥗', '🍜', '🌯', '🍟', '🥤', '🍰', '☕'] as const;
 
-// ─── Combo Sistemi ───────────────────────────────────────────────────────────
+// ─── Sipariş Özelleştirme ────────────────────────────────────────────────────
+export const SPECIAL_REQUEST_CHANCE = 0.30; // %30 ihtimalle özel istek
+export const SPECIAL_REQUESTS = ['spicy', 'extra', 'quick'] as const;
+export type SpecialRequest = typeof SPECIAL_REQUESTS[number];
+
+export const SPECIAL_REQUEST_ICONS: Record<SpecialRequest, string> = {
+  spicy: '🌶️',
+  extra: '➕',
+  quick: '⚡',
+};
+
+export const SPECIAL_REQUEST_LABELS: Record<SpecialRequest, string> = {
+  spicy: 'Acı olsun!',
+  extra: 'Bol porsiyon!',
+  quick: 'Acele ediyorum!',
+};
+
+// Özel istek karşılanırsa bahşiş çarpanı
+export const SPECIAL_REQUEST_TIP_MULT: Record<SpecialRequest, number> = {
+  spicy: 1.8,
+  extra: 1.5,
+  quick: 2.0, // quick: sabır hızlı azalır ama karşılanırsa 2x bahşiş
+};
+
+// quick isteği olan müşterinin sabır azalma hızı çarpanı
+export const QUICK_PATIENCE_DRAIN = 2.0;
 export const COMBO_TIMEOUT_TICKS = 180; // ~6 saniye içinde servis yapılmazsa combo sıfırlanır
 export function getComboMultiplier(count: number): number {
   if (count >= 8) return 3.0;
