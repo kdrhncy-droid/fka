@@ -72,6 +72,46 @@ export interface Upgrades {
     cakeBaker: number; coffeeMachine: number;
 }
 
+// ─── Kart Sistemi ─────────────────────────────────────────────────────────────
+export interface GameCard {
+    id: string;
+    icon: string;
+    name: string;
+    penalty: string;   // Kırmızı — ne zorlaşıyor
+    reward: string;    // Yeşil — ne kazanılıyor
+}
+
+export interface ActiveCard {
+    id: string;
+    appliedOnDay: number;
+}
+
+// Kart tetiklenme günleri — her 3 günde bir
+export const CARD_DAYS = [2, 5, 8, 11, 14, 17, 20, 23, 26, 29];
+
+// Tüm kart tanımları
+export const ALL_CARDS: GameCard[] = [
+    // Müşteri kartları
+    { id: 'impatient_crowd',  icon: '😤', name: 'Sabırsız Kalabalık', penalty: 'Müşteri sabrı -%20',           reward: 'Her servisten +3 ekstra para' },
+    { id: 'busy_day',         icon: '👥', name: 'Yoğun Gün',          penalty: 'Müşteri spawn hızı +%30',      reward: 'Gece upgrade fiyatları -%15' },
+    { id: 'rush_customers',   icon: '🏃', name: 'Acele Müşteriler',   penalty: 'Müşteriler %25 daha hızlı yer (sabır da hızlı azalır)', reward: 'Bahşiş +%25' },
+    { id: 'rude_day',         icon: '😡', name: 'Kaba Gün',           penalty: 'Kaba müşteri oranı +%40',      reward: 'Kaba müşteri dövülünce +15 puan' },
+    { id: 'blind_patience',   icon: '👁️', name: 'Kör Sabır',          penalty: 'Müşteri sabır barları gizlenir', reward: 'Tüm müşteriler +%15 daha sabırlı' },
+    { id: 'rainy_day',        icon: '🌧️', name: 'Yağmurlu Gün',       penalty: 'Kapıda sabır -%30 hızlı azalır', reward: 'Gün boyunca +%10 daha fazla müşteri' },
+    // Mutfak kartları
+    { id: 'hot_oven',         icon: '🔥', name: 'Sıcak Fırın',        penalty: 'Yemekler %30 daha hızlı yanar', reward: 'Yemekler %30 daha hızlı pişer' },
+    { id: 'few_plates',       icon: '🍽️', name: 'Az Tabak',           penalty: 'Başlangıç tabak sayısı -2',    reward: 'Her temizlenen tabak +2 puan' },
+    { id: 'chop_pressure',    icon: '⏱️', name: 'Doğrama Baskısı',    penalty: 'Kesme tahtası %25 daha yavaş', reward: 'Doğranmış malzeme fırında %40 daha hızlı pişer' },
+    { id: 'cold_chain',       icon: '🧊', name: 'Soğuk Zincir',       penalty: 'Buzdolabı kapasitesi yarıya düşer', reward: 'İçecek servisi +8 ekstra puan' },
+    // Ekonomi kartları
+    { id: 'expensive_day',    icon: '💸', name: 'Pahalı Gün',         penalty: 'Upgrade fiyatları +%25',       reward: 'Gün sonu +$50 bonus' },
+    { id: 'lucky_day',        icon: '🎰', name: 'Şans Günü',          penalty: 'Spawn tamamen rastgele',        reward: 'Her müşteri 2x bahşiş bırakır' },
+    { id: 'low_season',       icon: '📉', name: 'Düşük Sezon',        penalty: 'Müşteri sayısı -%20',          reward: 'Her müşteri %50 daha sabırlı' },
+    // Özel kartlar (gün 8+)
+    { id: 'turbo_day',        icon: '⚡', name: 'Turbo Gün',          penalty: 'Oyuncu hareket hızı -%15',     reward: 'Tüm pişirme süreleri -%20' },
+    { id: 'mystery_guests',   icon: '🎭', name: 'Gizemli Misafirler', penalty: 'Müşteri kişilikleri gizlenir', reward: 'Tüm bahşişler +%30' },
+];
+
 export interface CookStation {
     input: string | null;
     timer: number;
@@ -253,6 +293,10 @@ export interface GameState {
     // ─── Yemek Kilidi Sistemi (Plate Up tarzı) ─────────────────────────────
     unlockedDishes: string[];       // Müşterilerin sipariş edebileceği yemekler
     menuChoices: string[] | null;   // Gece ekranında seçim için sunulan kilitli yemekler
+
+    // ─── Kart Sistemi ────────────────────────────────────────────────────────
+    activeCards: ActiveCard[];              // Bu run'da seçilmiş aktif kartlar
+    pendingCardChoices: GameCard[] | null;  // Gece ekranında sunulan 2 kart seçeneği
 
     // ─── Station Layout Editor ───────────────────────────────────────────────
     stationLayout: Record<string, StationPosition>;
@@ -471,6 +515,8 @@ function mkClassicMapState(): GameState {
     revengeQueue: [],
     unlockedDishes: ['🥗', '🍔'],
     menuChoices: null,
+    activeCards: [],
+    pendingCardChoices: null,
     stationLayout: {
       'ingredient_🍞': { id: 'ingredient_🍞', x: 360, y: 65 },
       'ingredient_🥩': { id: 'ingredient_🥩', x: 450, y: 65 },

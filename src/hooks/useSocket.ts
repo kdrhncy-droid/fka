@@ -51,6 +51,8 @@ const DEFAULT_STATE: GameState = {
     revengeQueue: [],
     unlockedDishes: ['🥗', '🍔'],
     menuChoices: null,
+    activeCards: [],
+    pendingCardChoices: null,
     stationLayout: {},
     lockedStations: {},
     tableLayout: {},

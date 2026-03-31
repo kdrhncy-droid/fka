@@ -183,6 +183,21 @@ io.on("connection", (socket) => {
     socket.emit("sound", "fail");
   });
 
+  // ─── Kart Seç (Kart Sistemi) ─────────────────────────────────────────────
+  socket.on("selectCard", (cardId: string) => {
+    if (!roomId || !RoomManager.getRoomState(roomId)) return;
+    const gs = RoomManager.getRoomState(roomId)!;
+    if (gs.dayPhase !== 'night') return;
+    if (!gs.pendingCardChoices) return;
+    const card = gs.pendingCardChoices.find(c => c.id === cardId);
+    if (!card) return;
+
+    gs.activeCards.push({ id: card.id, appliedOnDay: gs.day });
+    gs.pendingCardChoices = null;
+    io.to(roomId).emit("state", gs);
+    socket.emit("sound", "success");
+  });
+
   // ─── Yeni Yemek Seç (Plate Up tarzı gece menüsü) ─────────────────────────
   socket.on("selectMenu", (dish: string) => {
     if (!roomId || !RoomManager.getRoomState(roomId)) return;
@@ -239,9 +254,8 @@ io.on("connection", (socket) => {
   socket.on("nextDay", () => {
     if (!roomId || !RoomManager.getRoomState(roomId)) return;
     const gs = RoomManager.getRoomState(roomId)!;
-    // menuChoices hâlâ varsa seçim yapılmadan geçilmesin
-    // dayPhase zaten prep'e geçmişse (gameLoop tetikledi) tekrar artırma
-    if (gs.dayPhase === 'night' && !gs.menuChoices) {
+    // menuChoices veya pendingCardChoices varsa seçim yapılmadan geçilmesin
+    if (gs.dayPhase === 'night' && !gs.menuChoices && !gs.pendingCardChoices) {
       gs.day++; gs.dayPhase = 'prep'; gs.dayTimer = DAY_TICKS;
       gs.dayTimer = 0; // gameLoop'un tekrar tetiklememesi için timer'ı sıfırla
       gs.dayPhase = 'prep'; // gameLoop night kontrolünü geçemez artık
@@ -318,6 +332,8 @@ io.on("connection", (socket) => {
     gs._seatCooldown = 0;
     gs.menuChoices = null;
     gs.hasOrderedTonight = false;
+    gs.activeCards = [];
+    gs.pendingCardChoices = null;
     // Servis penceresini temizle
     gs.serviceWindow?.forEach(s => { s.item = null; });
     // Lavaboları temizle

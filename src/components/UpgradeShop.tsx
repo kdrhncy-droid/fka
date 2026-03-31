@@ -25,6 +25,7 @@ interface Props {
     ovenCount: number;
     unlockedDishes: string[];
     menuChoices: string[] | null;
+    pendingCardChoices?: any[] | null;
     onUpgrade: (id: keyof Upgrades) => void;
     onBuyOven: () => void;
     onBuyLife: () => void;
@@ -33,7 +34,7 @@ interface Props {
 }
 
 export const UpgradeShop: React.FC<Props> = ({
-    score, upgrades, day, lives, ovenCount, unlockedDishes, menuChoices, onUpgrade, onBuyOven, onBuyLife, onOrder, onNextDay,
+    score, upgrades, day, lives, ovenCount, unlockedDishes, menuChoices, pendingCardChoices, onUpgrade, onBuyOven, onBuyLife, onOrder, onNextDay,
 }) => {
     const maxOvens = INITIAL_OVEN_POSITIONS.length + ADDITIONAL_OVEN_POSITIONS.length;
     const canBuyOven = ovenCount < maxOvens;
@@ -154,13 +155,18 @@ export const UpgradeShop: React.FC<Props> = ({
             <div className="flex flex-col sm:flex-row gap-3 w-full max-w-lg">
                 <button
                     onClick={onNextDay}
-                    disabled={!!(menuChoices && menuChoices.length > 0)}
-                    className={`flex-1 py-3 rounded-xl font-black text-base border-2 transition-all active:scale-95 ${menuChoices && menuChoices.length > 0
+                    disabled={!!(menuChoices && menuChoices.length > 0) || !!(pendingCardChoices && pendingCardChoices.length > 0)}
+                    className={`flex-1 py-3 rounded-xl font-black text-base border-2 transition-all active:scale-95 ${
+                        (menuChoices && menuChoices.length > 0) || (pendingCardChoices && pendingCardChoices.length > 0)
                         ? 'bg-stone-700 text-stone-500 border-stone-600 cursor-not-allowed'
                         : 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white border-amber-300'
                     }`}
                 >
-                    {menuChoices && menuChoices.length > 0 ? '⏳ Önce yemek seç...' : '☀️ Yeni Güne Başla →'}
+                    {(menuChoices && menuChoices.length > 0)
+                        ? '⏳ Önce yemek seç...'
+                        : (pendingCardChoices && pendingCardChoices.length > 0)
+                        ? '⚡ Önce kart seç...'
+                        : '☀️ Yeni Güne Başla →'}
                 </button>
             </div>
         </div>

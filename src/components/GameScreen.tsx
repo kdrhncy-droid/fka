@@ -21,6 +21,8 @@ import { DayEndModal } from './DayEndModal';
 import { LeaveModal } from './LeaveModal';
 import { saveStats, loadStats } from './StatsModal';
 import { TutorialOverlay, isTutorialDone } from './TutorialOverlay';
+import { CardSelectModal } from './CardSelectModal';
+import { ALL_CARDS } from '../../shared/types';
 
 
 
@@ -90,7 +92,7 @@ export const GameScreen: React.FC<Props> = ({
     const [globalVoiceVol, setGlobalVoiceVol] = useState(1.0);
     const audioElementsRef = useRef<Record<string, HTMLAudioElement>>({});
 
-    const { score, dayPhase, dayTimer, upgrades, day, ovenCount, queueLen, lives, isGameOver, menuChoices, unlockedDishes } = useGameState(gameStateRef);
+    const { score, dayPhase, dayTimer, upgrades, day, ovenCount, queueLen, lives, isGameOver, menuChoices, unlockedDishes, pendingCardChoices, activeCards } = useGameState(gameStateRef);
 
     const { editorState, editorStateRef, handleInteract, handleCancel, handleCycleSeats, updatePreview } = useLayoutEditor({
         socket,
@@ -266,6 +268,19 @@ export const GameScreen: React.FC<Props> = ({
                         <div className="text-[8px] font-bold text-stone-500 uppercase tracking-widest leading-none">Ciro</div>
                         <div className="text-sm font-black leading-tight text-emerald-400">${score}</div>
                     </div>
+                    {/* Aktif kart ikonları */}
+                    {activeCards.length > 0 && (
+                        <div className="flex items-center gap-0.5">
+                            {activeCards.map(ac => {
+                                const def = ALL_CARDS.find(c => c.id === ac.id);
+                                return (
+                                    <span key={ac.id} className="text-base" title={def?.name ?? ac.id}>
+                                        {def?.icon ?? '⚡'}
+                                    </span>
+                                );
+                            })}
+                        </div>
+                    )}
                     <button onClick={() => setShowVoiceSettings(true)}
                         className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm transition-colors border ${voiceActive && !isMuted ? 'bg-emerald-700 border-emerald-600 text-white' : 'bg-stone-800 border-stone-700 text-stone-400 hover:bg-stone-700'}`}
                     >🎙️</button>
@@ -320,7 +335,17 @@ export const GameScreen: React.FC<Props> = ({
                     </div>
                 )}
 
-                {/* ── Gece: Yeni Yemek Seçimi (Plate Up tarzı) ── */}
+                {/* Gece: Kart Seçimi */}
+                {dayPhase === 'night' && !isGameOver && pendingCardChoices && pendingCardChoices.length > 0 && (
+                    <CardSelectModal
+                        cards={pendingCardChoices}
+                        activeCards={activeCards}
+                        day={day}
+                        onSelect={(cardId) => emit('selectCard', cardId)}
+                    />
+                )}
+
+                {/* Gece: Yeni Yemek Seçimi (Plate Up tarzı) ── */}
                 {dayPhase === 'night' && !isGameOver && menuChoices && menuChoices.length > 0 && (
                     <div className="absolute inset-0 z-30 flex flex-col items-center justify-center gap-6 bg-indigo-950/85 backdrop-blur-sm p-4">
                         <div className="text-center">
@@ -370,6 +395,7 @@ export const GameScreen: React.FC<Props> = ({
                         ovenCount={ovenCount}
                         unlockedDishes={unlockedDishes}
                         menuChoices={menuChoices}
+                        pendingCardChoices={pendingCardChoices}
                         onUpgrade={id => emit('upgrade', id)}
                         onBuyOven={() => emit('buyOven')}
                         onBuyLife={() => emit('buyLife')}

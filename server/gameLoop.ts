@@ -10,6 +10,7 @@ import {
   WASH_TICKS, DIRTY_PLATE, CLEAN_PLATE,
   FRYER_TICKS, FRYER_BURN_TICKS, FRIDGE_BASE_CAPACITY,
   CAKE_TICKS, CAKE_BURN_TICKS, COFFEE_BASE_CAPACITY,
+  ALL_CARDS, CARD_DAYS, GameCard,
 } from "../shared/types.js";
 import { DIALOGUES } from "../shared/dialogues.js";
 
@@ -32,6 +33,44 @@ export function generateMenuChoices(gs: GameState): void {
   if (locked.length === 0) { gs.menuChoices = null; return; }
   const shuffled = locked.sort(() => Math.random() - 0.5);
   gs.menuChoices = shuffled.slice(0, Math.min(2, locked.length));
+}
+
+export function generateCardChoices(gs: GameState): void {
+  const activeIds = new Set(gs.activeCards.map(c => c.id));
+  // Gün 8'den önce özel kartları hariç tut
+  const earlyExclude = new Set(['turbo_day', 'mystery_guests']);
+  const pool = ALL_CARDS.filter(c =>
+    !activeIds.has(c.id) &&
+    (gs.day >= 8 || !earlyExclude.has(c.id))
+  );
+  if (pool.length === 0) { gs.pendingCardChoices = null; return; }
+  const shuffled = [...pool].sort(() => Math.random() - 0.5);
+  gs.pendingCardChoices = shuffled.slice(0, 2);
+}
+
+// Aktif kartlardan kaynaklanan çarpanları hesapla
+export function getCardMultipliers(gs: GameState) {
+  const has = (id: string) => gs.activeCards.some(c => c.id === id);
+  return {
+    patienceMult:    has('impatient_crowd') ? 0.80 : has('low_season') ? 1.50 : has('blind_patience') ? 1.15 : 1.0,
+    spawnMult:       has('busy_day') ? 1.30 : has('low_season') ? 0.80 : has('rainy_day') ? 1.10 : 1.0,
+    burnMult:        has('hot_oven') ? 0.70 : 1.0,
+    cookMult:        has('hot_oven') ? 0.70 : has('turbo_day') ? 0.80 : has('chop_pressure') ? 1.0 : 1.0,
+    chopMult:        has('chop_pressure') ? 1.25 : 1.0,  // daha yavaş = daha fazla tick
+    choppedCookMult: has('chop_pressure') ? 0.60 : 1.0,  // doğranmış daha hızlı pişer
+    tipMult:         has('rush_customers') ? 1.25 : has('lucky_day') ? 2.0 : has('mystery_guests') ? 1.30 : 1.0,
+    earnBonus:       has('impatient_crowd') ? 3 : 0,
+    drinkTipBonus:   has('cold_chain') ? 8 : 0,
+    plateBonusScore: has('few_plates') ? 2 : 0,
+    upgradeCostMult: has('expensive_day') ? 1.25 : has('busy_day') ? 0.85 : 1.0,
+    movementMult:    has('turbo_day') ? 0.85 : 1.0,
+    hidePatience:    has('blind_patience'),
+    hidePersonality: has('mystery_guests'),
+    rudeChanceMult:  has('rude_day') ? 1.40 : 1.0,
+    rudePunchBonus:  has('rude_day') ? 15 : 0,
+    endDayBonus:     has('expensive_day') ? 50 : 0,
+    eatSpeedMult:    has('rush_customers') ? 0.75 : 1.0, // daha hızlı yer = daha az tick
+  };
 }
 
 export function tryQueueSeat(gs: GameState, io: Server, rid: string) {
@@ -76,7 +115,8 @@ export function tryQueueSeat(gs: GameState, io: Server, rid: string) {
   if (!selectedSeats) return;
 
   const playerCount = Object.keys(gs.players).length || 1;
-  const maxP = patLimit(gs.upgrades.patience, gs.day, playerCount);
+  const cm = getCardMultipliers(gs);
+  const maxP = Math.round(patLimit(gs.upgrades.patience, gs.day, playerCount) * cm.patienceMult);
 
   for (let i = 0; i < groupToSeat.length; i++) {
     const guest = groupToSeat[i];
@@ -106,6 +146,8 @@ export function tryQueueSeat(gs: GameState, io: Server, rid: string) {
 }
 
 export function gameTick(gs: GameState, io: Server, rid: string) {
+  const cm = getCardMultipliers(gs);
+
   // Fırınları güncelle
   gs.cookStations.forEach(s => {
     if (s.input && s.timer > 0) {
@@ -114,12 +156,11 @@ export function gameTick(gs: GameState, io: Server, rid: string) {
         const recipe = RECIPE_DEFS[s.input as keyof typeof RECIPE_DEFS];
         s.output = recipe ? recipe.output : s.input;
         s.input = null;
-        // safeOven lv2: hiç yanmaz, lv1: 2x süre, lv0: normal
         const safeOvenLv = gs.upgrades.safeOven ?? 0;
         if (safeOvenLv >= 2) {
-          s.burnTimer = Infinity; // yanmaz
+          s.burnTimer = Infinity;
         } else {
-          s.burnTimer = BURN_TICKS * (safeOvenLv >= 1 ? 2 : 1);
+          s.burnTimer = Math.round(BURN_TICKS * cm.burnMult * (safeOvenLv >= 1 ? 2 : 1));
         }
       }
     } else if (s.output && s.burnTimer !== undefined && s.burnTimer > 0 && s.burnTimer !== Infinity) {
@@ -144,8 +185,10 @@ export function gameTick(gs: GameState, io: Server, rid: string) {
       }
 
       if (board.isChopping && board.input && board.progress < CHOP_TICKS) {
+        // chop_pressure kartı: daha yavaş doğrama (daha fazla tick gerekir)
+        const chopTicksNeeded = Math.round(CHOP_TICKS * cm.chopMult);
         board.progress++;
-        if (board.progress >= CHOP_TICKS) {
+        if (board.progress >= chopTicksNeeded) {
           board.input = CHOP_PREFIX + board.input;
           board.isChopping = false;
           board.choppingPlayerId = null;
@@ -252,13 +295,25 @@ export function gameTick(gs: GameState, io: Server, rid: string) {
       } else {
         gs.menuChoices = null;
       }
+
+      // Kart günlerinde kart seçimi çıkar
+      if (CARD_DAYS.includes(gs.day + 1)) {
+        generateCardChoices(gs);
+      } else {
+        gs.pendingCardChoices = null;
+      }
+
+      // Gün sonu bonus (expensive_day kartı)
+      if (cm.endDayBonus > 0) {
+        gs.score += cm.endDayBonus;
+      }
     }
   }
 
   if (gs.dayPhase === 'night') {
     if (gs.dayTimer > 0) gs.dayTimer--;
-    // Menü seçimi yoksa ve timer bittiyse otomatik sonraki güne geç
-    if (gs.dayTimer <= 0 && !gs.menuChoices) {
+    // Menü seçimi ve kart seçimi yoksa otomatik sonraki güne geç
+    if (gs.dayTimer <= 0 && !gs.menuChoices && !gs.pendingCardChoices) {
       gs.day++; gs.dayPhase = 'prep'; gs.dayTimer = DAY_TICKS;
     }
   }
@@ -299,6 +354,7 @@ export function gameTick(gs: GameState, io: Server, rid: string) {
 }
 
 function spawnTick(gs: GameState, io: Server, rid: string) {
+  const cm = getCardMultipliers(gs);
   // 🥤 buzdolabı boşsa menüden çıkar
   const fridgeEmpty = !gs.fridges || gs.fridges.every(f => f.drinks === 0);
   const availableDishes = (gs.unlockedDishes.length > 0 ? gs.unlockedDishes : [...DISH_ITEMS])
@@ -306,37 +362,34 @@ function spawnTick(gs: GameState, io: Server, rid: string) {
   const playerCount = Object.keys(gs.players).length || 1;
   const isSolo = playerCount === 1;
 
-  // Spawn hızı: Day 1'de günde 5-6 müşteri gelecek şekilde uyarlandı (artık 1 kişi değil)
   const baseRate = 0.0015 + Math.min(gs.day * 0.0003, 0.0060);
   const dayProgress = 1 - gs.dayTimer / DAY_TICKS;
-
-  // Oyuncu sayısına göre ölçekleme
-  const spawnMultiplier = 1 + (playerCount - 1) * 0.3;
-
-  // Kuyruk limiti: 14 kişi ile max kapı kilitlenmesi sınırlandırıldı
+  const spawnMultiplier = (1 + (playerCount - 1) * 0.3) * cm.spawnMult;
   const queueLimit = Math.min(14, (4 + Math.floor(gs.day / 3)) * Math.ceil(spawnMultiplier));
-
   const currentRate = (baseRate + dayProgress * 0.0008) * spawnMultiplier;
 
   if (Math.random() < currentRate && gs.customers.length + gs.waitList.length < queueLimit) {
-    // Grup mu, tekil mi? İlk günlerde sadece %5 şansla, gittikçe artan gruplar
     const groupChance = Math.min(0.05 + gs.day * 0.025, 0.45);
     const isGroup = Math.random() < groupChance;
-    // Grup büyüklüğü max 3 kişi
     const groupSize = isGroup ? 2 + (Math.random() < 0.3 ? 1 : 0) : 1;
-
-    // Kuyruğa sığıyor mu kontrol et
     const available = queueLimit - gs.customers.length - gs.waitList.length;
     const actualSize = Math.min(groupSize, available);
     if (actualSize <= 0) return;
 
-    // Grup üyelerini tanımlamak için ortak groupId (solo: undefined)
     const groupId = actualSize > 1 ? Math.random().toString(36).slice(2, 9) : undefined;
 
     for (let g = 0; g < actualSize; g++) {
-      const personalities: Personality[] = isSolo
-        ? ['polite', 'polite', 'rude']
-        : ['polite', 'rude', 'recep'];
+      // rude_day kartı: kaba müşteri oranı artar
+      let personalities: Personality[];
+      if (isSolo) {
+        personalities = cm.rudeChanceMult > 1
+          ? ['polite', 'rude', 'rude']
+          : ['polite', 'polite', 'rude'];
+      } else {
+        personalities = cm.rudeChanceMult > 1
+          ? ['rude', 'rude', 'recep']
+          : ['polite', 'rude', 'recep'];
+      }
       const pers = personalities[Math.floor(Math.random() * personalities.length)];
       let dialog: string | undefined;
       let timer: number | undefined;
@@ -360,7 +413,7 @@ function spawnTick(gs: GameState, io: Server, rid: string) {
         personality: pers,
         currentDialog: dialog, dialogTimer: timer,
         bodyShape, bodyColor,
-        groupId, // Grup üyelerini birbirine bağlar
+        groupId,
       });
     }
   }
@@ -474,8 +527,11 @@ function customerTick(gs: GameState, io: Server, rid: string) {
       }
       if (gs.dayPhase === 'day') {
         const playerCount = Object.keys(gs.players).length || 1;
+        const cm = getCardMultipliers(gs);
         let patienceDrain = 1 + (playerCount - 1) * 0.1;
         if (gs.dayTimer <= DAY_TICKS * 0.25) patienceDrain *= 1.2;
+        // patienceMult < 1 = daha sabırsız, > 1 = daha sabırlı
+        patienceDrain = patienceDrain / cm.patienceMult;
         const baseDrain = Math.floor(patienceDrain);
         const actualDrain = baseDrain + (Math.random() < (patienceDrain - baseDrain) ? 1 : 0);
 

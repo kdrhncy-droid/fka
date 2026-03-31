@@ -14,6 +14,8 @@ interface GameUIState {
     isGameOver: boolean;
     menuChoices: string[] | null;
     unlockedDishes: string[];
+    pendingCardChoices: import('../../shared/types').GameCard[] | null;
+    activeCards: import('../../shared/types').ActiveCard[];
 }
 
 const DEFAULT_UI: GameUIState = {
@@ -21,6 +23,7 @@ const DEFAULT_UI: GameUIState = {
     upgrades: { patience: 0, earnings: 0, plateStackMax: 0, safeOven: 0 },
     day: 1, ovenCount: 1, queueLen: 0, lives: 3,
     isGameOver: false, menuChoices: null, unlockedDishes: ['🥗', '🍔'],
+    pendingCardChoices: null, activeCards: [],
 };
 
 function upgradesEqual(a: Upgrades, b: Upgrades): boolean {
@@ -56,6 +59,8 @@ export function useGameState(gameStateRef: React.MutableRefObject<GameState>) {
                 isGameOver: s.isGameOver ?? false,
                 menuChoices: s.menuChoices ?? null,
                 unlockedDishes: s.unlockedDishes ?? ['🥗', '🍔'],
+                pendingCardChoices: s.pendingCardChoices ?? null,
+                activeCards: s.activeCards ?? [],
             };
             // Shallow compare — değişmediyse setState çağırma
             if (
@@ -65,7 +70,9 @@ export function useGameState(gameStateRef: React.MutableRefObject<GameState>) {
                 next.lives !== prev.lives || next.isGameOver !== prev.isGameOver ||
                 !upgradesEqual(next.upgrades, prev.upgrades) ||
                 !arraysEqual(next.menuChoices, prev.menuChoices) ||
-                !arraysEqual(next.unlockedDishes, prev.unlockedDishes)
+                !arraysEqual(next.unlockedDishes, prev.unlockedDishes) ||
+                next.pendingCardChoices !== prev.pendingCardChoices ||
+                next.activeCards.length !== prev.activeCards.length
             ) {
                 prevRef.current = next;
                 setUI(next);
