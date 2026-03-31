@@ -102,7 +102,12 @@ export function useKeyboard({ isJoinedRef, socket, audioCtxRef, gameStateRef, lo
                     if (e.repeat) break;
                     const gs2 = gameStateRef.current;
                     const lp2 = localPlayerRef.current;
-                    const board = gs2.choppingBoards?.find(b => Math.hypot(b.x - lp2.x, b.y - lp2.y) < 90);
+                    // stationLayout'tan dinamik pozisyonu oku (taşınmış olabilir)
+                    const board = gs2.choppingBoards?.find(b => {
+                        const dynX = gs2.stationLayout?.[b.id]?.x ?? b.x;
+                        const dynY = gs2.stationLayout?.[b.id]?.y ?? b.y;
+                        return Math.hypot(dynX - lp2.x, dynY - lp2.y) < 90;
+                    });
                     if (board) {
                         socket?.emit('chop_start', board.id);
                         // Doğrama ses efekti — her 300ms'de bir
@@ -127,7 +132,12 @@ export function useKeyboard({ isJoinedRef, socket, audioCtxRef, gameStateRef, lo
                 case 'r': case 'R': {
                     const gs = gameStateRef.current;
                     const lp = localPlayerRef.current;
-                    const board = gs.choppingBoards?.find(b => Math.hypot(b.x - lp.x, b.y - lp.y) < 90);
+                    // stationLayout'tan dinamik pozisyonu oku
+                    const board = gs.choppingBoards?.find(b => {
+                        const dynX = gs.stationLayout?.[b.id]?.x ?? b.x;
+                        const dynY = gs.stationLayout?.[b.id]?.y ?? b.y;
+                        return Math.hypot(dynX - lp.x, dynY - lp.y) < 90;
+                    });
                     if (board) socket?.emit('chop_stop', board.id);
                     // Ses intervalini durdur
                     if (chopIntervalRef.current) {

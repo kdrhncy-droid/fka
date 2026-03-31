@@ -61,7 +61,7 @@ export function getCardMultipliers(gs: GameState) {
     cookMult:        has('hot_oven') ? 0.70 : has('turbo_day') ? 0.80 : has('chop_pressure') ? 1.0 : 1.0,
     chopMult:        has('chop_pressure') ? 1.25 : 1.0,  // daha yavaş = daha fazla tick
     choppedCookMult: has('chop_pressure') ? 0.60 : 1.0,  // doğranmış daha hızlı pişer
-    tipMult:         has('rush_customers') ? 1.25 : has('lucky_day') ? 2.0 : has('mystery_guests') ? 1.30 : 1.0,
+    tipMult:         has('lucky_day') ? 2.0 : has('kaos_day') ? 1.50 : has('mystery_guests') ? 1.30 : has('rush_customers') ? 1.25 : 1.0,
     earnBonus:       has('impatient_crowd') ? 3 : 0,
     drinkTipBonus:   has('cold_chain') ? 10 : 0,
     plateBonusScore: has('few_plates') ? 2 : 0,
@@ -196,9 +196,9 @@ export function gameTick(gs: GameState, io: Server, rid: string) {
         }
       }
 
-      if (board.isChopping && board.input && board.progress < CHOP_TICKS) {
-        // chop_pressure kartı: daha yavaş doğrama (daha fazla tick gerekir)
-        const chopTicksNeeded = Math.round(CHOP_TICKS * cm.chopMult);
+      // chop_pressure kartı: daha yavaş doğrama — eşik dinamik olmalı (CHOP_TICKS değil)
+      const chopTicksNeeded = Math.round(CHOP_TICKS * cm.chopMult);
+      if (board.isChopping && board.input && board.progress < chopTicksNeeded) {
         board.progress++;
         if (board.progress >= chopTicksNeeded) {
           board.input = CHOP_PREFIX + board.input;
@@ -285,40 +285,52 @@ export function gameTick(gs: GameState, io: Server, rid: string) {
   // Gündüz timer
   if (gs.dayPhase === 'day') {
     if (gs.dayTimer > 0) gs.dayTimer--;
-    if (gs.dayTimer <= 0 && gs.customers.filter(c => !c.isLeaving).length === 0 && gs.waitList.length === 0) {
-      // Kapanış saatinde toplanmamış tipleri otomatik ekle — ama kirli tabaklar kalır
+
+    // Gün sonu bekleme koşulu — waitList takılıyorsa (masa yok ama kuyruk var) zorla temizle
+    const activeCustomers = gs.customers.filter(c => !c.isLeaving).length;
+    const isStuck = gs.dayTimer <= 0 && activeCustomers === 0 && gs.waitList.length > 0;
+    if (isStuck) {
+      // Masa bulamayan bekleyenler çıkış yapıyor — sonsuz döngü engeli
+      gs.waitList = [];
+    }
+
+    if (gs.dayTimer <= 0 && activeCustomers === 0 && gs.waitList.length === 0) {
+      // Kapanış saatinde toplanmamış bahşişleri otomatik ekle — ama kirli tabaklar kalır
       gs.dirtyTables.forEach(dt => { if (dt.tip > 0) gs.score += dt.tip; dt.tip = 0; });
 
       // Gün sonu özet event'i — dayPhase'i hemen değiştir, tekrar tetiklenmesin
       gs.dayPhase = 'night';
       gs.dayTimer = NIGHT_TICKS;
-      gs.hasOrderedTonight = true; // gece yenileme bir kez yapılsın
+      gs.hasOrderedTonight = true;
       gs.comboCount = 0;
       gs.comboTimer = 0;
 
-      io.to(rid).emit("dayEnd", {
-        day: gs.day,
-        score: gs.score,
-        lives: gs.lives,
-      });
+      // Game over olduysa dayEnd emit etme — race condition engeli
+      if (!gs.isGameOver) {
+        io.to(rid).emit("dayEnd", {
+          day: gs.day,
+          score: gs.score,
+          lives: gs.lives,
+        });
 
-      // Sadece belirli günlerde yemek seçim ekranı çıkar
-      if (MENU_UNLOCK_DAYS.includes(gs.day + 1)) {
-        generateMenuChoices(gs);
-      } else {
-        gs.menuChoices = null;
-      }
+        // Sadece belirli günlerde yemek seçim ekranı çıkar
+        if (MENU_UNLOCK_DAYS.includes(gs.day + 1)) {
+          generateMenuChoices(gs);
+        } else {
+          gs.menuChoices = null;
+        }
 
-      // Kart günlerinde kart seçimi çıkar
-      if (CARD_DAYS.includes(gs.day + 1)) {
-        generateCardChoices(gs);
-      } else {
-        gs.pendingCardChoices = null;
-      }
+        // Kart günlerinde kart seçimi çıkar
+        if (CARD_DAYS.includes(gs.day + 1)) {
+          generateCardChoices(gs);
+        } else {
+          gs.pendingCardChoices = null;
+        }
 
-      // Gün sonu bonus (expensive_day kartı)
-      if (cm.endDayBonus > 0) {
-        gs.score += cm.endDayBonus;
+        // Gün sonu bonus (expensive_day kartı)
+        if (cm.endDayBonus > 0) {
+          gs.score += cm.endDayBonus;
+        }
       }
     }
   }
@@ -354,11 +366,19 @@ export function gameTick(gs: GameState, io: Server, rid: string) {
         const newY = (Math.floor(Math.random() * Math.min(rows - 2, 8)) + 1) * 40 + 20;
         gs.stationLayout[id].x = newX;
         gs.stationLayout[id].y = newY;
-        // İlgili istasyonun koordinatını da güncelle
-        const oven = gs.cookStations.find(s => s.id === id);
+        // TÜM istasyon tiplerinin koordinatını güncelle (kaos_day taşıma fix)
+        const oven = gs.cookStations?.find(s => s.id === id);
         if (oven) { oven.x = newX; oven.y = newY; }
         const board = gs.choppingBoards?.find(b => b.id === id);
         if (board) { board.x = newX; board.y = newY; }
+        const fryer = gs.fryers?.find(f => f.id === id);
+        if (fryer) { fryer.x = newX; fryer.y = newY; }
+        const cakeBaker = gs.cakeBakers?.find(c => c.id === id);
+        if (cakeBaker) { cakeBaker.x = newX; cakeBaker.y = newY; }
+        const fridge = gs.fridges?.find(f => f.id === id);
+        if (fridge) { fridge.x = newX; fridge.y = newY; }
+        const sink = gs.sinks?.find(s => s.id === id);
+        if (sink) { sink.x = newX; sink.y = newY; }
         io.to(rid).emit('stationMoved', { stationId: id, x: newX, y: newY });
         io.to(rid).emit('sound', 'fail');
       }

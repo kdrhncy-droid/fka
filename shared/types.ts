@@ -114,6 +114,7 @@ export const ALL_CARDS: GameCard[] = [
     // Özel kartlar (gün 8+)
     { id: 'turbo_day',        icon: '⚡', name: 'Turbo Gün',          penalty: 'Oyuncu hareket hızı -%15',     reward: 'Tüm pişirme süreleri -%20' },
     { id: 'mystery_guests',   icon: '🎭', name: 'Gizemli Misafirler', penalty: 'Müşteri kişilikleri gizlenir', reward: 'Tüm bahşişler +%30' },
+    { id: 'kaos_day',         icon: '🌀', name: 'Kaos Günü',          penalty: 'İstasyonlar bazen yer değiştirir', reward: 'Tüm bahşişler +%50' },
 ];
 
 export interface CookStation {
