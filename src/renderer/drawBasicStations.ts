@@ -13,7 +13,11 @@ export function drawBasicStations(
     const recipeKey = (ing.key in RECIPE_DEFS) ? ing.key : `CHOPPED_${ing.key}`;
     const recipe = RECIPE_DEFS[recipeKey as keyof typeof RECIPE_DEFS];
     if (recipe && !state.unlockedDishes.includes(recipe.output)) return;
-    if (movingId === `ingredient_${ing.key}`) return; // taşınıyor, preview çizer
+    // 🥔 patates — fritöz sistemi, RECIPE_DEFS'te yok, 🍟 unlock kontrolü
+    if (ing.key === '🥔' && !state.unlockedDishes.includes('🍟')) return;
+    // 🧁 tatlı hamuru — pasta fırını sistemi, 🍰 unlock kontrolü
+    if (ing.key === '🧁' && !state.unlockedDishes.includes('🍰')) return;
+    if (movingId === `ingredient_${ing.key}`) return;
     
     // stationLayout'tan dinamik koordinat al, yoksa sabit koordinata düş
     const dynPos = state.stationLayout?.[`ingredient_${ing.key}`];
