@@ -9,7 +9,7 @@ import {
   isTablePositionValid,
 } from '../renderer/drawLayoutEditor';
 
-const MOVE_INTERACT_R = 75;
+const MOVE_INTERACT_R = 90;
 
 // Kilitli yemeklere ait istasyonlar — unlock edilmeden taşınamaz
 const LOCKED_DISH_STATIONS: Record<string, string> = {

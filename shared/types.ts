@@ -398,7 +398,7 @@ export const EAT_TICKS = 240;
 export const BURNED_FOOD = '⬛';
 
 // ─── Tabak Yığını İstasyonu (tek nokta, üst üste tabaklar) ─────────────────
-export const PLATE_STACK_POS = { x: 650, y: 65, radius: 55 };
+export const PLATE_STACK_POS = { x: 650, y: 65, radius: 90 };
 export const PLATE_STACK_BASE = 8;   // Başlangıç tabak kapasitesi 4 -> 8 yapıldı
 export const PLATE_STACK_PER_UPGRADE = 4; // Her upgrade başına +4 tabak (eski: 2)
 
@@ -412,7 +412,7 @@ export const SERVICE_WINDOW_SLOTS = [
   { id: 'sw2', x: 640, y: 360 },
   { id: 'sw3', x: 720, y: 360 },
 ] as const;
-export const SERVICE_WINDOW_R = 70;
+export const SERVICE_WINDOW_R = 90;
 
 export interface ServiceWindowSlot {
   id: string;

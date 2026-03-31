@@ -151,7 +151,8 @@ export function gameTick(gs: GameState, io: Server, rid: string) {
   // Fırınları güncelle
   gs.cookStations.forEach(s => {
     if (s.input && s.timer > 0) {
-      s.timer--;
+      // cookMult < 1 = daha hızlı pişer (hot_oven, turbo_day)
+      s.timer -= cm.cookMult <= 1 ? Math.ceil(1 / cm.cookMult) : 1;
       if (s.timer <= 0) {
         const recipe = RECIPE_DEFS[s.input as keyof typeof RECIPE_DEFS];
         s.output = recipe ? recipe.output : s.input;
@@ -252,16 +253,16 @@ export function gameTick(gs: GameState, io: Server, rid: string) {
     });
   }
 
-  // Kahve makinelerini güncelle — gece fazında yenile
-  if (gs.dayPhase === 'night' && gs.coffeeMachines) {
+  // Kahve makinelerini güncelle — sadece gece başında bir kez yenile
+  if (gs.dayPhase === 'night' && !gs.hasOrderedTonight && gs.coffeeMachines) {
     gs.coffeeMachines.forEach(cm => {
       cm.maxCups = COFFEE_BASE_CAPACITY + (gs.upgrades.coffeeMachine ?? 0) * 2;
       cm.cups = cm.maxCups;
     });
   }
 
-  // Buzdolabını güncelle — gece fazında içecekleri yenile
-  if (gs.dayPhase === 'night' && gs.fridges) {
+  // Buzdolabını güncelle — sadece gece başında bir kez yenile
+  if (gs.dayPhase === 'night' && !gs.hasOrderedTonight && gs.fridges) {
     gs.fridges.forEach(fridge => {
       fridge.maxDrinks = FRIDGE_BASE_CAPACITY + (gs.upgrades.fridgeCapacity ?? 0) * 3;
       fridge.drinks = fridge.maxDrinks;
@@ -281,7 +282,7 @@ export function gameTick(gs: GameState, io: Server, rid: string) {
       // Gün sonu özet event'i — dayPhase'i hemen değiştir, tekrar tetiklenmesin
       gs.dayPhase = 'night';
       gs.dayTimer = NIGHT_TICKS;
-      gs.hasOrderedTonight = false;
+      gs.hasOrderedTonight = true; // gece yenileme bir kez yapılsın
 
       io.to(rid).emit("dayEnd", {
         day: gs.day,
@@ -488,7 +489,9 @@ function customerTick(gs: GameState, io: Server, rid: string) {
     }
 
     if (c.isEating) {
-      c.eatTimer--;
+      const eatCm = getCardMultipliers(gs);
+      // eatSpeedMult < 1 = daha hızlı yer (daha az tick)
+      c.eatTimer -= eatCm.eatSpeedMult < 1 ? Math.ceil(1 / eatCm.eatSpeedMult) : 1;
       if (!c.currentDialog && Math.random() < 0.001) {
         const list = DIALOGUES[c.personality].eating;
         c.currentDialog = list[Math.floor(Math.random() * list.length)];

@@ -194,6 +194,16 @@ io.on("connection", (socket) => {
 
     gs.activeCards.push({ id: card.id, appliedOnDay: gs.day });
     gs.pendingCardChoices = null;
+
+    // Anlık etki gerektiren kartlar
+    if (card.id === 'few_plates') {
+      gs.plateStack.maxCount = Math.max(2, gs.plateStack.maxCount - 2);
+      gs.plateStack.count = Math.min(gs.plateStack.count, gs.plateStack.maxCount);
+    }
+    if (card.id === 'cold_chain' && gs.fridges) {
+      gs.fridges.forEach(f => { f.maxDrinks = Math.max(1, Math.floor(f.maxDrinks / 2)); f.drinks = f.maxDrinks; });
+    }
+
     io.to(roomId).emit("state", gs);
     socket.emit("sound", "success");
   });
