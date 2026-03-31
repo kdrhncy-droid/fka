@@ -8,11 +8,24 @@ interface Props {
 
 export const DevPanel: React.FC<Props> = ({ socket, onClose }) => {
     const [log, setLog] = useState<string[]>([]);
+    const [testLog, setTestLog] = useState<string[]>([]);
 
     const emit = (event: string, data?: unknown) => {
         socket?.emit(event, data);
         setLog(prev => [`→ ${event}${data !== undefined ? ' ' + JSON.stringify(data) : ''}`, ...prev.slice(0, 9)]);
     };
+
+    // Test log'larını dinle
+    React.useEffect(() => {
+        if (!socket) return;
+        
+        const handleTestLog = (message: string) => {
+            setTestLog(prev => [message, ...prev.slice(0, 19)]); // Son 20 test log'u tut
+        };
+        
+        socket.on('testLog', handleTestLog);
+        return () => socket.off('testLog', handleTestLog);
+    }, [socket]);
 
     return (
         <div className="fixed inset-0 z-[9000] flex items-center justify-center bg-black/80 p-4">
@@ -68,15 +81,35 @@ export const DevPanel: React.FC<Props> = ({ socket, onClose }) => {
                     <div className="col-span-2 text-[10px] font-black text-stone-500 uppercase tracking-widest mt-2">Can</div>
                     <button onClick={() => emit('dev:setLives', 3)} className="dev-btn bg-rose-700">❤️❤️❤️ Full Can</button>
                     <button onClick={() => emit('dev:setLives', 1)} className="dev-btn bg-rose-900">❤️ 1 Can</button>
+
+                    {/* Test Otomasyonu */}
+                    <div className="col-span-2 text-[10px] font-black text-stone-500 uppercase tracking-widest mt-2">🤖 Test Otomasyonu</div>
+                    <button onClick={() => emit('dev:runTest', 'basic')} className="dev-btn bg-cyan-700">🎯 Temel Test</button>
+                    <button onClick={() => emit('dev:runTest', 'combo')} className="dev-btn bg-cyan-600">🔥 Combo Test</button>
+                    <button onClick={() => emit('dev:runTest', 'stress')} className="dev-btn bg-cyan-800">⚡ Stress Test</button>
+                    <button onClick={() => emit('dev:runTest', 'visual')} className="dev-btn bg-cyan-500">👁️ Görsel Test</button>
+                    <button onClick={() => setTestLog([])} className="dev-btn bg-stone-600 col-span-2">🧹 Test Log Temizle</button>
                 </div>
 
                 {/* Log */}
-                {log.length > 0 && (
+                {(log.length > 0 || testLog.length > 0) && (
                     <div className="px-4 pb-3 border-t border-stone-800 pt-2">
-                        <div className="text-[9px] text-stone-600 uppercase tracking-widest mb-1">Log</div>
-                        {log.map((l, i) => (
-                            <div key={i} className="text-[10px] text-stone-400 font-mono">{l}</div>
-                        ))}
+                        {testLog.length > 0 && (
+                            <>
+                                <div className="text-[9px] text-cyan-400 uppercase tracking-widest mb-1">🤖 Test Log</div>
+                                {testLog.slice(0, 10).map((l, i) => (
+                                    <div key={i} className="text-[10px] text-cyan-300 font-mono mb-0.5">{l}</div>
+                                ))}
+                            </>
+                        )}
+                        {log.length > 0 && (
+                            <>
+                                <div className="text-[9px] text-stone-600 uppercase tracking-widest mb-1 mt-2">Dev Log</div>
+                                {log.map((l, i) => (
+                                    <div key={i} className="text-[10px] text-stone-400 font-mono">{l}</div>
+                                ))}
+                            </>
+                        )}
                     </div>
                 )}
             </div>

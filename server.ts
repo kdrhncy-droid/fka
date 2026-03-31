@@ -520,6 +520,29 @@ io.on("connection", (socket) => {
     io.to(roomId).emit("state", gs);
   });
 
+  // ─── Test Otomasyonu ─────────────────────────────────────────────────────
+  socket.on("dev:runTest", (testType: 'basic' | 'combo' | 'stress' | 'visual') => {
+    if (!roomId || !RoomManager.getRoomState(roomId)) return;
+    const gs = RoomManager.getRoomState(roomId)!;
+    
+    console.log(`🤖 Test başlatılıyor: ${testType}`);
+    
+    switch(testType) {
+      case 'basic':
+        runBasicTest(gs, io, roomId, socket);
+        break;
+      case 'combo':
+        runComboTest(gs, io, roomId, socket);
+        break;
+      case 'stress':
+        runStressTest(gs, io, roomId, socket);
+        break;
+      case 'visual':
+        runVisualTest(gs, io, roomId, socket);
+        break;
+    }
+  });
+
   socket.on("leave", () => {
     removePlayerFromRoom();
   });
@@ -566,3 +589,252 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 app.get('/ping', (_req, res) => res.send('pong'));
+
+// ─── Test Otomasyonu Fonksiyonları ──────────────────────────────────────────
+
+function runBasicTest(gs: GameState, io: Server, roomId: string, socket: any) {
+  console.log('🎯 Temel Test başlatılıyor...');
+  
+  let step = 0;
+  const testSteps = [
+    () => {
+      // 1. Müşteri spawn et
+      console.log('  1. Müşteri spawn ediliyor...');
+      gs.customers.push({
+        id: 'test-customer-1',
+        x: 100, y: 300,
+        targetX: 200, targetY: 300,
+        state: 'walking',
+        personality: 'polite',
+        wants: '🍕',
+        specialRequest: null,
+        patience: 100,
+        maxPatience: 100,
+        tableId: null,
+        hasOrdered: false,
+        isEating: false,
+        eatTimer: 0,
+        tip: 0
+      });
+      io.to(roomId).emit("state", gs);
+      socket.emit("testLog", "✅ Müşteri spawn edildi");
+    },
+    () => {
+      // 2. Müşteriye pizza ver
+      console.log('  2. Pizza hazırlanıyor...');
+      const customer = gs.customers.find(c => c.id === 'test-customer-1');
+      if (customer) {
+        customer.state = 'served';
+        customer.isEating = true;
+        customer.eatTimer = 60; // 1 saniye yeme süresi
+        gs.score += 15;
+        gs.comboCount++;
+        socket.emit("testLog", "✅ Pizza servis edildi");
+      }
+      io.to(roomId).emit("state", gs);
+    },
+    () => {
+      // 3. Müşteriyi gönder
+      console.log('  3. Müşteri gönderiliyor...');
+      gs.customers = gs.customers.filter(c => c.id !== 'test-customer-1');
+      socket.emit("testLog", "✅ Müşteri gönderildi");
+      socket.emit("testLog", `💰 Skor: ${gs.score}, Combo: ${gs.comboCount}`);
+      io.to(roomId).emit("state", gs);
+    }
+  ];
+  
+  const runStep = () => {
+    if (step < testSteps.length) {
+      testSteps[step]();
+      step++;
+      setTimeout(runStep, 2000); // 2 saniye bekle
+    } else {
+      console.log('🎯 Temel Test tamamlandı!');
+      socket.emit("testLog", "🎉 Temel Test tamamlandı!");
+    }
+  };
+  
+  runStep();
+}
+
+function runComboTest(gs: GameState, io: Server, roomId: string, socket: any) {
+  console.log('🔥 Combo Test başlatılıyor...');
+  
+  let step = 0;
+  const testSteps = [
+    () => {
+      // 1. 3 müşteri spawn et
+      console.log('  1. 3 müşteri spawn ediliyor...');
+      for (let i = 0; i < 3; i++) {
+        gs.customers.push({
+          id: `test-combo-${i}`,
+          x: 100 + i * 50, y: 300,
+          targetX: 200 + i * 50, targetY: 300,
+          state: 'walking',
+          personality: 'polite',
+          wants: '🍕',
+          specialRequest: null,
+          patience: 100,
+          maxPatience: 100,
+          tableId: null,
+          hasOrdered: false,
+          isEating: false,
+          eatTimer: 0,
+          tip: 0
+        });
+      }
+      io.to(roomId).emit("state", gs);
+      socket.emit("testLog", "✅ 3 müşteri spawn edildi");
+    },
+    () => {
+      // 2. Hızlıca 3 servis yap (combo için)
+      console.log('  2. Hızlı servis yapılıyor...');
+      gs.customers.forEach((customer, i) => {
+        if (customer.id.startsWith('test-combo-')) {
+          customer.state = 'served';
+          customer.isEating = true;
+          customer.eatTimer = 60;
+          gs.score += 15;
+          gs.comboCount++;
+          setTimeout(() => {
+            socket.emit("testLog", `✅ Müşteri ${i+1} servis edildi`);
+          }, i * 500);
+        }
+      });
+      io.to(roomId).emit("state", gs);
+    },
+    () => {
+      // 3. Combo sonuçlarını kontrol et
+      console.log('  3. Combo sonuçları kontrol ediliyor...');
+      socket.emit("testLog", `🔥 Combo Count: ${gs.comboCount}`);
+      socket.emit("testLog", `💰 Skor: ${gs.score}`);
+      
+      // Müşterileri temizle
+      gs.customers = gs.customers.filter(c => !c.id.startsWith('test-combo-'));
+      io.to(roomId).emit("state", gs);
+      
+      setTimeout(() => {
+        socket.emit("testLog", "🎉 Combo Test tamamlandı!");
+      }, 1000);
+    }
+  ];
+  
+  const runStep = () => {
+    if (step < testSteps.length) {
+      testSteps[step]();
+      step++;
+      setTimeout(runStep, 3000); // 3 saniye bekle
+    }
+  };
+  
+  runStep();
+}
+
+function runStressTest(gs: GameState, io: Server, roomId: string, socket: any) {
+  console.log('⚡ Stress Test başlatılıyor...');
+  
+  socket.emit("testLog", "⚡ Stress Test başlatıldı - 10 müşteri spawn ediliyor...");
+  
+  // 10 müşteri birden spawn et
+  for (let i = 0; i < 10; i++) {
+    setTimeout(() => {
+      gs.customers.push({
+        id: `stress-test-${i}`,
+        x: 50 + (i % 5) * 100, 
+        y: 250 + Math.floor(i / 5) * 100,
+        targetX: 200 + (i % 5) * 100, 
+        targetY: 300 + Math.floor(i / 5) * 100,
+        state: 'walking',
+        personality: ['polite', 'rude', 'recep', 'thug'][i % 4] as any,
+        wants: ['🍕', '🍜', '🌯', '🍟', '🥤'][i % 5],
+        specialRequest: i % 3 === 0 ? 'spicy' : null,
+        patience: 100,
+        maxPatience: 100,
+        tableId: null,
+        hasOrdered: false,
+        isEating: false,
+        eatTimer: 0,
+        tip: 0
+      });
+      
+      socket.emit("testLog", `👥 Müşteri ${i+1}/10 spawn edildi`);
+      io.to(roomId).emit("state", gs);
+    }, i * 200); // 200ms aralıklarla spawn et
+  }
+  
+  // 5 saniye sonra temizle
+  setTimeout(() => {
+    gs.customers = gs.customers.filter(c => !c.id.startsWith('stress-test-'));
+    io.to(roomId).emit("state", gs);
+    socket.emit("testLog", "🧹 Stress Test temizlendi");
+    socket.emit("testLog", "🎉 Stress Test tamamlandı!");
+  }, 8000);
+}
+
+function runVisualTest(gs: GameState, io: Server, roomId: string, socket: any) {
+  console.log('👁️ Görsel Test başlatılıyor...');
+  
+  let step = 0;
+  const testSteps = [
+    () => {
+      socket.emit("testLog", "🎨 Görsel efektler test ediliyor...");
+      // Combo efekti tetikle
+      gs.comboCount = 5;
+      gs.comboTimer = 300; // 5 saniye combo timer
+      io.to(roomId).emit("state", gs);
+      socket.emit("testLog", "🔥 Combo efekti tetiklendi");
+    },
+    () => {
+      // Farklı müşteri tipleri spawn et
+      socket.emit("testLog", "👥 Farklı müşteri tipleri spawn ediliyor...");
+      const personalities = ['polite', 'rude', 'recep', 'thug'];
+      personalities.forEach((personality, i) => {
+        gs.customers.push({
+          id: `visual-test-${personality}`,
+          x: 100 + i * 150, y: 200,
+          targetX: 200 + i * 150, targetY: 300,
+          state: 'walking',
+          personality: personality as any,
+          wants: '🍕',
+          specialRequest: i === 0 ? 'spicy' : i === 1 ? 'extra' : i === 2 ? 'quick' : null,
+          patience: 100 - i * 20,
+          maxPatience: 100,
+          tableId: null,
+          hasOrdered: false,
+          isEating: false,
+          eatTimer: 0,
+          tip: 0
+        });
+      });
+      io.to(roomId).emit("state", gs);
+      socket.emit("testLog", "✅ 4 farklı müşteri tipi spawn edildi");
+    },
+    () => {
+      // Gece moduna geç
+      socket.emit("testLog", "🌙 Gece moduna geçiliyor...");
+      gs.dayPhase = 'night';
+      io.to(roomId).emit("state", gs);
+      socket.emit("testLog", "✅ Gece modu aktif");
+    },
+    () => {
+      // Temizlik
+      socket.emit("testLog", "🧹 Test temizleniyor...");
+      gs.customers = gs.customers.filter(c => !c.id.startsWith('visual-test-'));
+      gs.dayPhase = 'prep';
+      gs.comboCount = 0;
+      gs.comboTimer = 0;
+      io.to(roomId).emit("state", gs);
+      socket.emit("testLog", "🎉 Görsel Test tamamlandı!");
+    }
+  ];
+  
+  const runStep = () => {
+    if (step < testSteps.length) {
+      testSteps[step]();
+      step++;
+      setTimeout(runStep, 3000);
+    }
+  };
+  
+  runStep();
+}
