@@ -189,9 +189,13 @@ export function useGameLoop({
         }
       }
 
-      // Baharat Rafı — acı yemek yapımı için
-      const spiceRackPos = state.stationLayout?.['spice_rack'];
-      drawSpiceRack(ctx, spiceRackPos?.x, spiceRackPos?.y);
+      // Baharat Rafı — gün 3'ten sonra göster (özel istekler gün 3'te başlıyor)
+      if (state.day >= 3) {
+        const spiceRackPos = state.stationLayout?.['spice_rack'];
+        if (movingId !== 'spice_rack') {
+          drawSpiceRack(ctx, spiceRackPos?.x, spiceRackPos?.y);
+        }
+      }
 
       state.customers.forEach((c) => drawCustomer(ctx, c, state.tableLayout, state.hidePatience ?? false));
       // Her ~150 frame'de (~5sn) CRS temizliği

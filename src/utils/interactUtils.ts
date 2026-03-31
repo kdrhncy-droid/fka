@@ -61,9 +61,11 @@ export function getNearestInteractable(px: number, py: number, gs: GameState) {
     check(x, y);
   });
 
-  // Baharat rafı
-  const spicePos = gs.stationLayout?.['spice_rack'] ?? SPICE_RACK_POS;
-  check(spicePos.x, spicePos.y);
+  // Baharat rafı — gün 3'ten sonra
+  if (gs.day >= 3) {
+    const spicePos = gs.stationLayout?.['spice_rack'] ?? SPICE_RACK_POS;
+    check(spicePos.x, spicePos.y);
+  }
 
   // Fritözler
   gs.fryers?.forEach(f => {
