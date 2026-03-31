@@ -559,3 +559,17 @@ io.on("connection", (socket) => {
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+// ─── Render Free Tier Keep-Alive ─────────────────────────────────────────────
+// Render ücretsiz planda 15 dakika hareketsizlikte sunucuyu uyutuyor.
+// Her 10 dakikada bir kendi kendine ping atarak uyanık tutar.
+if (process.env.NODE_ENV === 'production') {
+  const RENDER_URL = process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`;
+  setInterval(async () => {
+    try {
+      await fetch(`${RENDER_URL}/ping`);
+    } catch (_) { /* sessizce geç */ }
+  }, 10 * 60 * 1000); // 10 dakika
+}
+
+app.get('/ping', (_req, res) => res.send('pong'));
