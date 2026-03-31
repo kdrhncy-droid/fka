@@ -11,7 +11,7 @@ import {
   FRYER_TICKS, DRINK_ITEM, CAKE_TICKS, COFFEE_ITEM,
   COMBO_TIMEOUT_TICKS, getComboMultiplier, getComboLabel,
   SPECIAL_REQUEST_TIP_MULT,
-  SPICE_RACK_POS, SPICE_RACK_R, SPICY_CONVERSIONS, SPICEABLE_DISHES,
+  SPICE_RACK_POS, SPICY_CONVERSIONS, SPICEABLE_DISHES,
 } from "../shared/types.js";
 
 const INTERACT_R = 110;
@@ -517,27 +517,18 @@ const handleSpiceRack: InteractionHandler = (ctx) => {
   const x = dynPos?.x ?? SPICE_RACK_POS.x;
   const y = dynPos?.y ?? SPICE_RACK_POS.y;
   
-  if (Math.hypot(px - x, py - y) > SPICE_RACK_R) return false;
+  if (Math.hypot(px - x, py - y) > INTERACT_R) return false;
 
-  // Elinde yemek var mı?
-  if (!p.holding || !isDish(p.holding)) {
-    snd('fail');
-    return true;
+  // Elinde pişmiş yemek yoksa bu handler'ı atla — başka istasyon yakalasın
+  if (!p.holding || !isDish(p.holding) || p.holding.startsWith('SPICY_')) {
+    return false;
   }
 
-  // Bu yemek acı yapılabilir mi?
+  // Acı yapılamayan yemek (örn: 🍟, 🥤) — fail ver ama handler'ı tüket
   if (!SPICEABLE_DISHES.includes(p.holding as any)) {
     snd('fail');
     return true;
   }
-
-  // Zaten acı mı?
-  if (p.holding.startsWith('SPICY_')) {
-    snd('fail');
-    return true;
-  }
-
-  // Acı versiyona dönüştür
   const spicyVersion = SPICY_CONVERSIONS[p.holding];
   if (spicyVersion) {
     p.holding = spicyVersion;
