@@ -11,6 +11,14 @@ import {
 
 const MOVE_INTERACT_R = 75;
 
+// Kilitli yemeklere ait istasyonlar — unlock edilmeden taşınamaz
+const LOCKED_DISH_STATIONS: Record<string, string> = {
+  'fryer1':     '🍟',
+  'fridge1':    '🥤',
+  'cakebaker1': '🍰',
+  'coffee1':    '☕',
+};
+
 interface Params {
   socket: Socket | null;
   gameStateRef: MutableRefObject<GameState>;
@@ -31,6 +39,7 @@ const DEFAULT_STATE: LayoutEditorState = {
 export function useLayoutEditor({ socket, gameStateRef, localPlayerRef, dayPhase }: Params) {
   const [editorState, setEditorState] = useState<LayoutEditorState>(DEFAULT_STATE);
   const editorStateRef = useRef<LayoutEditorState>(DEFAULT_STATE);
+  const lastInteractRef = useRef<number>(0);
 
   const setState = useCallback((next: LayoutEditorState) => {
     editorStateRef.current = next;
@@ -139,6 +148,11 @@ export function useLayoutEditor({ socket, gameStateRef, localPlayerRef, dayPhase
 
   const handleInteract = useCallback(() => {
     if (dayPhase !== 'prep') return;
+
+    // Spam koruması — 300ms debounce
+    const now = Date.now();
+    if (now - lastInteractRef.current < 300) return;
+    lastInteractRef.current = now;
     const gs = gameStateRef.current;
     const player = gs.players[socket?.id ?? ''];
     const lp = localPlayerRef.current;
@@ -214,6 +228,9 @@ export function useLayoutEditor({ socket, gameStateRef, localPlayerRef, dayPhase
       if (id.startsWith('counter')) continue;
       // Kilitli istasyonları atla
       if (gs.lockedStations[id]) continue;
+      // Unlock edilmemiş yemeklere ait istasyonları atla
+      const requiredDish = LOCKED_DISH_STATIONS[id];
+      if (requiredDish && !gs.unlockedDishes.includes(requiredDish)) continue;
       const dist = Math.hypot(lp.x - pos.x, lp.y - pos.y);
       if (dist < MOVE_INTERACT_R && (!closest || dist < closest.dist)) {
         closest = { id, dist };
