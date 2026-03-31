@@ -195,8 +195,8 @@ export function drawCustomer(ctx: CanvasRenderingContext2D, customer: Customer, 
         ctx.font = '14px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
         ctx.fillText(wants, bx - (specialIcon ? 5 : 0), by);
         if (specialIcon) {
-            ctx.font = '10px Arial';
-            ctx.fillText(specialIcon, bx + 9, by - 8);
+            ctx.font = '11px Arial';
+            ctx.fillText(specialIcon, bx + bubbleR - 2, by - bubbleR + 2);
         }
     }
 
