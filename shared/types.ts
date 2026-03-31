@@ -488,14 +488,14 @@ export const EXTRA_CHOP_POSITIONS = [
 ];
 
 // ─── Baharat Rafı İstasyonu ──────────────────────────────────────────────────
-export const SPICE_RACK_POS = { x: 1060, y: 170 };
+export const SPICE_RACK_POS = { x: 1160, y: 170 };
 export const SPICE_RACK_R = 90;
 
 // Acı versiyonları için prefix
 export const SPICY_PREFIX = 'SPICY_';
 
 // Hangi yemekler acı yapılabilir
-export const SPICEABLE_DISHES = ['🍕', '🍔', '🍜', '🌯'] as const;
+export const SPICEABLE_DISHES = ['🍕', '🍔', '🍜', '🌯', '🥗'] as const;
 export type SpiceableDish = typeof SPICEABLE_DISHES[number];
 
 // Acı yemek dönüşümleri
@@ -504,6 +504,7 @@ export const SPICY_CONVERSIONS: Record<string, string> = {
   '🍔': 'SPICY_🍔', 
   '🍜': 'SPICY_🍜',
   '🌯': 'SPICY_🌯',
+  '🥗': 'SPICY_🥗',
 };
 
 // Acı yemek görsel ikonları (orijinal + 🌶️)
@@ -512,8 +513,9 @@ export const SPICY_DISPLAY: Record<string, string> = {
   'SPICY_🍔': '🍔🌶️',
   'SPICY_🍜': '🍜🌶️', 
   'SPICY_🌯': '🌯🌶️',
+  'SPICY_🥗': '🥗🌶️',
 };
-export const DISH_ITEMS = ['🍕', '🍔', '🥗', '🍜', '🌯', '🍟', '🥤', '🍰', '☕', 'SPICY_🍕', 'SPICY_🍔', 'SPICY_🍜', 'SPICY_🌯'] as const;
+export const DISH_ITEMS = ['🍕', '🍔', '🥗', '🍜', '🌯', '🍟', '🥤', '🍰', '☕', 'SPICY_🍕', 'SPICY_🍔', 'SPICY_🍜', 'SPICY_🌯', 'SPICY_🥗'] as const;
 
 // ─── Sipariş Özelleştirme ────────────────────────────────────────────────────
 export const SPECIAL_REQUEST_CHANCE = 0.30; // %30 ihtimalle özel istek

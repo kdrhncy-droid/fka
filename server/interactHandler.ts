@@ -331,7 +331,6 @@ const handleCustomers: InteractionHandler = ({ gs, p, px, py, snd, io, roomId })
         }
       } else if (isTray(p.holding)) {
         const items = getTrayItems(p.holding);
-        let foundMatch = false;
         
         for (let i = 0; i < items.length; i++) {
           const item = items[i];

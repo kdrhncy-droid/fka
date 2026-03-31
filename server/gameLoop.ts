@@ -326,10 +326,8 @@ export function gameTick(gs: GameState, io: Server, rid: string) {
 
   if (gs.dayPhase === 'night') {
     if (gs.dayTimer > 0) gs.dayTimer--;
-    // Menü seçimi ve kart seçimi yoksa otomatik sonraki güne geç
-    if (gs.dayTimer <= 0 && !gs.menuChoices && !gs.pendingCardChoices) {
-      gs.day++; gs.dayPhase = 'prep'; gs.dayTimer = DAY_TICKS;
-    }
+    // Otomatik geçiş yok — oyuncu "Yeni Güne Başla" butonuna basmalı
+    // (menuChoices veya pendingCardChoices varsa zaten buton disabled)
   }
 
   // Combo timer — sıfırlanırsa combo sıfırlanır
