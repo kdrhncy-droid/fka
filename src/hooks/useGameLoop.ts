@@ -42,6 +42,7 @@ import { drawFryer } from '../renderer/drawFryer';
 import { drawFridge } from '../renderer/drawFridge';
 import { drawCakeBaker } from '../renderer/drawCakeBaker';
 import { drawCoffeeMachine } from '../renderer/drawCoffeeMachine';
+import { drawSpiceRack } from '../renderer/drawSpiceRack';
 
 interface UseGameLoopProps {
   canvasRef: React.RefObject<HTMLCanvasElement>;
@@ -186,6 +187,9 @@ export function useGameLoop({
           drawCoffeeMachine(ctx, { ...cm, x: dynX, y: dynY });
         }
       }
+
+      // Baharat Rafı — acı yemek yapımı için
+      drawSpiceRack(ctx);
 
       state.customers.forEach((c) => drawCustomer(ctx, c, state.tableLayout, state.hidePatience ?? false));
       // Her ~150 frame'de (~5sn) CRS temizliği

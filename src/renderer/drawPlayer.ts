@@ -1,4 +1,4 @@
-import { Player, CHARACTER_TYPES, CLEAN_PLATE, DIRTY_PLATE, isTray, getTrayItems, isChopped, getChoppedSource } from '../types/game';
+import { Player, CHARACTER_TYPES, CLEAN_PLATE, DIRTY_PLATE, isTray, getTrayItems, isChopped, getChoppedSource, SPICY_DISPLAY } from '../types/game';
 import { stk, adjustColor, drawShadowEllipse } from './rendererUtils';
 
 const playerRenderState = new Map<string, {
@@ -17,7 +17,13 @@ export function drawPlayer(
     const rawHolding = p.holding;
     const isHolding = !!rawHolding;
     const stripChopped = (item: string) => isChopped(item) ? getChoppedSource(item) : item;
-    const heldItem = rawHolding === CLEAN_PLATE ? '🍽️' : rawHolding === DIRTY_PLATE ? '🧽' : rawHolding ? stripChopped(rawHolding) : rawHolding;
+    const getDisplayItem = (item: string) => {
+        if (item === CLEAN_PLATE) return '🍽️';
+        if (item === DIRTY_PLATE) return '🧽';
+        if (SPICY_DISPLAY[item]) return SPICY_DISPLAY[item];
+        return stripChopped(item);
+    };
+    const heldItem = rawHolding ? getDisplayItem(rawHolding) : rawHolding;
     
     const typeId   = Math.min(p.charType ?? 0, CHARACTER_TYPES.length - 1);
     const charDef  = CHARACTER_TYPES[typeId];

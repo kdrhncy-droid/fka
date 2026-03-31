@@ -48,6 +48,13 @@ export {
   CHARACTER_TYPES,
   TRAY_PREFIX,
   MAX_TRAY_CAPACITY,
+  // Baharat Rafı
+  SPICE_RACK_POS,
+  SPICE_RACK_R,
+  SPICY_PREFIX,
+  SPICEABLE_DISHES,
+  SPICY_CONVERSIONS,
+  SPICY_DISPLAY,
   isTray,
   getTrayItems,
   createTray,

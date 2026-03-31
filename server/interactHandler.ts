@@ -11,6 +11,7 @@ import {
   FRYER_TICKS, DRINK_ITEM, CAKE_TICKS, COFFEE_ITEM,
   COMBO_TIMEOUT_TICKS, getComboMultiplier, getComboLabel,
   SPECIAL_REQUEST_TIP_MULT,
+  SPICE_RACK_POS, SPICE_RACK_R, SPICY_CONVERSIONS, SPICEABLE_DISHES,
 } from "../shared/types.js";
 
 const INTERACT_R = 110;
@@ -294,22 +295,78 @@ const handleCustomers: InteractionHandler = ({ gs, p, px, py, snd, io, roomId })
     const c = gs.customers[ci];
     if (c.isSeated && !c.isEating && Math.hypot(px - c.seatX, py - c.seatY) < SERVE_R) {
       const specialMult = c.specialRequest ? (SPECIAL_REQUEST_TIP_MULT[c.specialRequest] ?? 1.0) : 1.0;
-      if (!isTray(p.holding) && c.wants === p.holding) {
-        c.tipAmount = earn(gs.upgrades.earnings, c.maxPatience, c.patience, specialMult);
-        c.isEating = true; c.eatTimer = EAT_TICKS; c.wants = null; p.holding = null;
-        if (c.specialRequest) io.to(roomId).emit('specialServed', { x: c.seatX, y: c.seatY, request: c.specialRequest });
-        applyCombo(gs, io, roomId, c.seatX, c.seatY, c.tipAmount ?? 0);
-        snd("success"); return true;
-      } else if (isTray(p.holding)) {
-        const items = getTrayItems(p.holding);
-        const wIdx = items.indexOf(c.wants as string);
-        if (wIdx !== -1) {
-          items.splice(wIdx, 1); p.holding = createTray(items);
+      
+      // Acı istek kontrolü
+      const customerWantsSpicy = c.specialRequest === 'spicy';
+      const playerHasSpicy = p.holding?.startsWith('SPICY_');
+      const baseFood = playerHasSpicy ? p.holding.replace('SPICY_', '') : p.holding;
+      
+      // Doğru yemek mi?
+      const correctFood = !isTray(p.holding) && c.wants === baseFood;
+      
+      if (correctFood) {
+        // Acı istek uyumsuzluğu kontrolü
+        if (customerWantsSpicy && !playerHasSpicy) {
+          // Müşteri acı istiyor ama normal yemek verdin - can kaybı
+          gs.lives = Math.max(0, gs.lives - 1);
+          c.isEating = true; c.eatTimer = EAT_TICKS; c.wants = null; p.holding = null;
+          c.tipAmount = 0; // Bahşiş yok
+          snd("fail");
+          return true;
+        } else if (!customerWantsSpicy && playerHasSpicy) {
+          // Müşteri normal istiyor ama acı verdin - can kaybı
+          gs.lives = Math.max(0, gs.lives - 1);
+          c.isEating = true; c.eatTimer = EAT_TICKS; c.wants = null; p.holding = null;
+          c.tipAmount = 0; // Bahşiş yok
+          snd("fail");
+          return true;
+        } else {
+          // Doğru servis - normal akış
           c.tipAmount = earn(gs.upgrades.earnings, c.maxPatience, c.patience, specialMult);
-          c.isEating = true; c.eatTimer = EAT_TICKS; c.wants = null;
+          c.isEating = true; c.eatTimer = EAT_TICKS; c.wants = null; p.holding = null;
           if (c.specialRequest) io.to(roomId).emit('specialServed', { x: c.seatX, y: c.seatY, request: c.specialRequest });
           applyCombo(gs, io, roomId, c.seatX, c.seatY, c.tipAmount ?? 0);
-          snd("success"); return true;
+          snd("success"); 
+          return true;
+        }
+      } else if (isTray(p.holding)) {
+        const items = getTrayItems(p.holding);
+        let foundMatch = false;
+        
+        for (let i = 0; i < items.length; i++) {
+          const item = items[i];
+          const itemIsSpicy = item.startsWith('SPICY_');
+          const itemBase = itemIsSpicy ? item.replace('SPICY_', '') : item;
+          
+          if (c.wants === itemBase) {
+            // Acı istek uyumsuzluğu kontrolü
+            if (customerWantsSpicy && !itemIsSpicy) {
+              // Can kaybı
+              gs.lives = Math.max(0, gs.lives - 1);
+              items.splice(i, 1); p.holding = createTray(items);
+              c.isEating = true; c.eatTimer = EAT_TICKS; c.wants = null;
+              c.tipAmount = 0;
+              snd("fail");
+              return true;
+            } else if (!customerWantsSpicy && itemIsSpicy) {
+              // Can kaybı
+              gs.lives = Math.max(0, gs.lives - 1);
+              items.splice(i, 1); p.holding = createTray(items);
+              c.isEating = true; c.eatTimer = EAT_TICKS; c.wants = null;
+              c.tipAmount = 0;
+              snd("fail");
+              return true;
+            } else {
+              // Doğru servis
+              items.splice(i, 1); p.holding = createTray(items);
+              c.tipAmount = earn(gs.upgrades.earnings, c.maxPatience, c.patience, specialMult);
+              c.isEating = true; c.eatTimer = EAT_TICKS; c.wants = null;
+              if (c.specialRequest) io.to(roomId).emit('specialServed', { x: c.seatX, y: c.seatY, request: c.specialRequest });
+              applyCombo(gs, io, roomId, c.seatX, c.seatY, c.tipAmount ?? 0);
+              snd("success");
+              return true;
+            }
+          }
         }
       }
     }
@@ -449,6 +506,44 @@ const handleCoffeeMachines: InteractionHandler = ({ gs, p, px, py, snd }) => {
   }
   return false;
 };
+
+// ─── BAHARAT RAFI ────────────────────────────────────────────────────────────
+const handleSpiceRack: InteractionHandler = (ctx) => {
+  const { gs, p, px, py, snd } = ctx;
+  const { x, y } = SPICE_RACK_POS;
+  
+  if (Math.hypot(px - x, py - y) > SPICE_RACK_R) return false;
+
+  // Elinde yemek var mı?
+  if (!p.holding || !isDish(p.holding)) {
+    snd('fail');
+    return true;
+  }
+
+  // Bu yemek acı yapılabilir mi?
+  if (!SPICEABLE_DISHES.includes(p.holding as any)) {
+    snd('fail');
+    return true;
+  }
+
+  // Zaten acı mı?
+  if (p.holding.startsWith('SPICY_')) {
+    snd('fail');
+    return true;
+  }
+
+  // Acı versiyona dönüştür
+  const spicyVersion = SPICY_CONVERSIONS[p.holding];
+  if (spicyVersion) {
+    p.holding = spicyVersion;
+    snd('pickup');
+    return true;
+  }
+
+  snd('fail');
+  return false;
+};
+
 const INTERACTION_CHAIN: InteractionHandler[] = [
   handleServiceWindow,
   handleSinks,
@@ -458,6 +553,7 @@ const INTERACTION_CHAIN: InteractionHandler[] = [
   handleDirtyTables,
   handlePlateStack,
   handleChoppingBoards,
+  handleSpiceRack,
   handleFryers,
   handleFridges,
   handleCakeBakers,
