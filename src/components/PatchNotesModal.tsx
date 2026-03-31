@@ -13,8 +13,8 @@ export const PatchNotesModal: React.FC<Props> = ({ onClose }) => {
                 <div>
                     <h2 className="text-3xl font-black text-amber-400 tracking-tight">Oyun Rehberi & Yenilikler 📜</h2>
                     <div className="flex items-center gap-2 mt-1">
-                        <span className="bg-amber-400/10 text-amber-400 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest border border-amber-400/20">v1.4.0</span>
-                        <span className="text-stone-500 text-[10px] font-bold uppercase tracking-widest">Görsel Geri Bildirim & Modern UI</span>
+                        <span className="bg-amber-400/10 text-amber-400 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest border border-amber-400/20">v1.5.0</span>
+                        <span className="text-stone-500 text-[10px] font-bold uppercase tracking-widest">Yatay Ekran & Pro İpuçları</span>
                     </div>
                 </div>
                 <button
@@ -157,26 +157,67 @@ export const PatchNotesModal: React.FC<Props> = ({ onClose }) => {
                     </ul>
                 </section>
 
+                {/* Pro İpuçları */}
+                <section>
+                    <h3 className="text-xs font-black text-stone-500 mb-4 uppercase tracking-[0.3em] flex items-center gap-3">
+                        <span className="h-px flex-1 bg-stone-800"></span>
+                        � Pro İpuçları
+                        <span className="h-px flex-1 bg-stone-800"></span>
+                    </h3>
+                    <div className="grid grid-cols-1 gap-2">
+                        {[
+                            { icon: '⚡', tip: 'Tepsiyi doldur', desc: 'Tek seferde 4 yemek taşıyabilirsin. Önce tüm yemekleri topla, sonra masalara dağıt — çok daha hızlı!' },
+                            { icon: '🔄', tip: 'Paralel pişirme', desc: 'Birden fazla fırın varsa farklı yemekleri aynı anda pişir. Boş fırın bırakma!' },
+                            { icon: '🧹', tip: 'Masaları hemen temizle', desc: 'Müşteri gidince masayı hemen temizle. Kirli masa yeni müşteri almaz, ciro düşer.' },
+                            { icon: '🏃', tip: 'Hazırlık fazını iyi kullan', desc: 'Fırını servis penceresine yakın koy. Mesafeyi kısaltmak servis hızını ciddi artırır.' },
+                            { icon: '💰', tip: 'Upgrade önceliği', desc: 'İlk önce "Müşteri Sabrı" al — can kaybını önler. Sonra ek fırın, sonra servis kazancı.' },
+                            { icon: '👊', tip: 'Kaba müşteriler', desc: 'Kaba (rude) müşterileri dövebilirsin ama Thug gelirse arkadaşlarını da getirir. Dikkatli ol!' },
+                        ].map((t, i) => (
+                            <div key={i} className="flex items-start gap-3 bg-stone-800/30 border border-stone-700/40 px-4 py-3 rounded-xl">
+                                <span className="text-xl mt-0.5 w-7 text-center flex-shrink-0">{t.icon}</span>
+                                <div>
+                                    <span className="text-white font-bold text-sm">{t.tip}: </span>
+                                    <span className="text-stone-400 text-xs leading-relaxed">{t.desc}</span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+
                 {/* Son Güncellemeler */}
                 <section>
                     <h3 className="text-xs font-black text-stone-500 mb-4 uppercase tracking-[0.3em] flex items-center gap-3">
                         <span className="h-px flex-1 bg-stone-800"></span>
-                        🚀 Son Güncellemeler (v1.4.0)
+                        🚀 Son Güncellemeler (v1.5.0)
                         <span className="h-px flex-1 bg-stone-800"></span>
                     </h3>
                     <div className="bg-amber-500/5 border border-amber-500/20 p-6 rounded-[2rem] space-y-4">
                         <div className="flex items-start gap-3">
-                            <span className="text-amber-400 font-bold">🟢</span>
+                            <span className="text-emerald-400 font-bold">🟢</span>
                             <div>
-                                <div className="text-sm font-bold text-stone-200 uppercase tracking-wider">Etkileşim Halkası (UX)</div>
-                                <p className="text-xs text-stone-400 mt-1 leading-relaxed">Yaklaştığın istasyon veya masanın altında artık yumuşak yeşil bir halka belirecek. Neyle etkileşime girdiğini artık çok daha net göreceksin!</p>
+                                <div className="text-sm font-bold text-stone-200 uppercase tracking-wider">Yatay Ekran Zorunluluğu</div>
+                                <p className="text-xs text-stone-400 mt-1 leading-relaxed">Telefon ve tablet kullanıcıları için portrait modda otomatik "Cihazı Yatır" ekranı eklendi. Oyun artık tüm mobil cihazlarda doğru görünüyor.</p>
+                            </div>
+                        </div>
+                        <div className="flex items-start gap-3">
+                            <span className="text-emerald-400 font-bold">💡</span>
+                            <div>
+                                <div className="text-sm font-bold text-stone-200 uppercase tracking-wider">Pro İpuçları Bölümü</div>
+                                <p className="text-xs text-stone-400 mt-1 leading-relaxed">Oyun rehberine 6 yeni pro ipucu eklendi — tepsi stratejisi, upgrade önceliği, paralel pişirme ve daha fazlası.</p>
                             </div>
                         </div>
                         <div className="flex items-start gap-3">
                             <span className="text-amber-400 font-bold">✨</span>
                             <div>
-                                <div className="text-sm font-bold text-stone-200 uppercase tracking-wider">Modern Glassmorphism UI</div>
+                                <div className="text-sm font-bold text-stone-200 uppercase tracking-wider">Modern Glassmorphism UI (v1.4.0)</div>
                                 <p className="text-xs text-stone-400 mt-1 leading-relaxed">Ana menü butonları ve bilgi paneli modern, yarı saydam ve şık bir görünüme kavuşturuldu.</p>
+                            </div>
+                        </div>
+                        <div className="flex items-start gap-3">
+                            <span className="text-amber-400 font-bold">🟢</span>
+                            <div>
+                                <div className="text-sm font-bold text-stone-200 uppercase tracking-wider">Etkileşim Halkası (v1.4.0)</div>
+                                <p className="text-xs text-stone-400 mt-1 leading-relaxed">Yaklaştığın istasyon veya masanın altında yumuşak yeşil bir halka belirir. Neyle etkileşime girdiğini artık çok daha net görebilirsin.</p>
                             </div>
                         </div>
                     </div>

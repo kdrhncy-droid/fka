@@ -342,7 +342,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
           </div>
         )}
 
-        <p className="text-[10px] text-white/30 tracking-widest uppercase">v1.3.0</p>      </div>
+        <p className="text-[10px] text-white/30 tracking-widest uppercase">v1.5.0</p>      </div>
 
       {/* Karakter paneli */}
       {showChar && (
