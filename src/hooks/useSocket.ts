@@ -112,7 +112,6 @@ export function useSocket(
             setIsConnected(true);
             setConnectionStatus('connected');
             reconnectAttemptsRef.current = 0;
-            reconnectDelayRef.current = 1000;
 
             // Ping ölçümü — her 2 saniyede bir, 5 örnekli hareketli ortalama
             const pingInterval = setInterval(() => {
