@@ -41,7 +41,7 @@ function hairColor(id: string): string {
     return HAIR_COLORS[hash % HAIR_COLORS.length];
 }
 
-export function drawCustomer(ctx: CanvasRenderingContext2D, customer: Customer, tableLayout?: Record<string, { id: string; x: number; y: number }>) {
+export function drawCustomer(ctx: CanvasRenderingContext2D, customer: Customer, tableLayout?: Record<string, { id: string; x: number; y: number }>, hidePatience = false) {
     const { id, x, y, seatX, seatY, wants, patience, maxPatience, isSeated, isEating, eatTimer, beatUpTimer, currentDialog } = customer;
     const shape = customer.bodyShape ?? 1;
     const bodyColor = customer.bodyColor ?? '#475569';
@@ -169,7 +169,7 @@ export function drawCustomer(ctx: CanvasRenderingContext2D, customer: Customer, 
     }
 
     // ── SABIR ÇUBUĞU ─────────────────────────────────────────────────────────
-    if (isSeated && !isEating && patience < maxPatience) {
+    if (isSeated && !isEating && patience < maxPatience && !hidePatience) {
         const barW = 35;
         const barH = 5;
         const bx = -barW / 2;

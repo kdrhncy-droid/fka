@@ -204,6 +204,9 @@ io.on("connection", (socket) => {
     if (card.id === 'cold_chain' && gs.fridges) {
       gs.fridges.forEach(f => { f.maxDrinks = Math.max(1, Math.floor(f.maxDrinks / 2)); f.drinks = f.maxDrinks; });
     }
+    if (card.id === 'mystery_guests') {
+      gs.hidePatience = true;
+    }
 
     io.to(roomId).emit("state", gs);
     socket.emit("sound", "success");
@@ -365,6 +368,7 @@ io.on("connection", (socket) => {
     gs.hasOrderedTonight = false;
     gs.activeCards = [];
     gs.pendingCardChoices = null;
+    gs.hidePatience = false;
     // Servis penceresini temizle
     gs.serviceWindow?.forEach(s => { s.item = null; });
     // Lavaboları temizle

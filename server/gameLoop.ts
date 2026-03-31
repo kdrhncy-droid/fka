@@ -164,6 +164,8 @@ export function gameTick(gs: GameState, io: Server, rid: string) {
         } else {
           s.burnTimer = Math.round(BURN_TICKS * cm.burnMult * (safeOvenLv >= 1 ? 2 : 1));
         }
+        // ✨ Yemek pişti animasyonu
+        io.to(rid).emit('cookDone', { x: s.x, y: s.y });
       }
     } else if (s.output && s.burnTimer !== undefined && s.burnTimer > 0 && s.burnTimer !== Infinity) {
       s.burnTimer--;
@@ -328,6 +330,33 @@ export function gameTick(gs: GameState, io: Server, rid: string) {
     if (gs.comboTimer <= 0) {
       gs.comboCount = 0;
       gs.comboTimer = 0;
+    }
+  }
+
+  // kaos_day kartı — her 1800 tick'te rastgele bir istasyon kayar
+  if (gs.activeCards.some(c => c.id === 'kaos_day') && gs.dayPhase === 'day') {
+    gs._kaosTimer = (gs._kaosTimer ?? 1800) - 1;
+    if (gs._kaosTimer <= 0) {
+      gs._kaosTimer = 1800;
+      const movableIds = Object.keys(gs.stationLayout).filter(id =>
+        !id.startsWith('counter') && !id.startsWith('ingredient') && !id.startsWith('sw')
+      );
+      if (movableIds.length > 0) {
+        const id = movableIds[Math.floor(Math.random() * movableIds.length)];
+        const cols = Math.floor(1280 / 40);
+        const rows = Math.floor(870 / 40);
+        const newX = (Math.floor(Math.random() * (cols - 2)) + 1) * 40 + 20;
+        const newY = (Math.floor(Math.random() * Math.min(rows - 2, 8)) + 1) * 40 + 20;
+        gs.stationLayout[id].x = newX;
+        gs.stationLayout[id].y = newY;
+        // İlgili istasyonun koordinatını da güncelle
+        const oven = gs.cookStations.find(s => s.id === id);
+        if (oven) { oven.x = newX; oven.y = newY; }
+        const board = gs.choppingBoards?.find(b => b.id === id);
+        if (board) { board.x = newX; board.y = newY; }
+        io.to(rid).emit('stationMoved', { stationId: id, x: newX, y: newY });
+        io.to(rid).emit('sound', 'fail');
+      }
     }
   }
 
@@ -516,6 +545,8 @@ function customerTick(gs: GameState, io: Server, rid: string) {
           const list = DIALOGUES[c.personality].leaving_happy;
           c.currentDialog = list[Math.floor(Math.random() * list.length)];
           c.dialogTimer = 90;
+          // ❤️ Mutlu ayrılma animasyonu
+          io.to(rid).emit('happyLeave', { x: c.seatX, y: c.seatY });
         }
         tryQueueSeat(gs, io, rid);
       }

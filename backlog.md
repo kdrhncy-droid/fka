@@ -4,12 +4,13 @@ Yapılmamış her şey burada. Öncelik sırasına göre.
 
 ---
 
-## 🔴 Öncelik 1 — Şu An Üzerinde Çalışılan
+## 🔴 Öncelik 1 — Eksik Kart Efektleri (Hızlı Fix)
 
-### Kart Sistemi (card-system.md)
-Her 3 günde bir gece ekranında 2 kart sunulur, biri seçilir.
-Her kart bir şeyi zorlaştırır, karşılığında bir şey verir.
-Detay: `card-system.md`
+Kart sistemi var ama bazı kartların efektleri eksik:
+
+- `mystery_guests` — kişilik gizleme flag'i var ama müşteri sabır barı UI'da hâlâ görünüyor
+- `kaos_day` — tanımlı ama istasyon pozisyonu değiştirme mantığı yok
+- `vip_day` — VIP müşteri tipi yok, kart seçilince hiçbir şey olmuyor
 
 ---
 
@@ -20,11 +21,13 @@ Detay: `card-system.md`
 Combining ile: pişmiş malzeme + başka malzeme = final yemek.
 Örnek: Burger = Pişmiş Et + Ekmek (birleştirme tezgahında).
 Etki: Co-op'ta iş bölümü doğuruyor, herkes farklı rol üstleniyor.
+Tahmini süre: ~4-5 saat
 
 ### Franchise / Kalıcı İlerleme
 Game over olunca her şey sıfırlanıyor, devam etmek için sebep yok.
 Belirli bir güne (örn. gün 15) ulaşınca 1-2 upgrade bir sonraki run'a taşınır.
 Ama bir sonraki run daha zor başlar.
+Tahmini süre: ~2-3 saat
 
 ### Floorplan Seçim Sistemi
 Run başında 4 farklı restoran şekli: Klasik, L-Şekli, U-Şekli, Dar & Uzun.
@@ -40,44 +43,45 @@ Tahmini süre: ~2 saat
 
 ## 🟡 Öncelik 3 — İçerik
 
-### Yeni Müşteri Tipleri
-Şu an 4 tip var (polite, rude, recep, thug).
-Eklenebilecekler:
-- VIP müşteri — çok sabırsız ama 3x bahşiş bırakıyor
-- Grup lideri — "Hepimiz aynı şeyi istiyoruz" diyerek toplu sipariş veriyor
+### VIP Müşteri Tipi
+Çok sabırsız ama 3x bahşiş bırakıyor. Altın rengi, özel görünüm.
+`vip_day` kartı zaten var ama VIP tipi yok.
+Tahmini süre: ~1 saat
 
-### Combo Sistemi
-Arka arkaya hızlı servis yapınca bonus puan.
-3+ hızlı servis = ateş efekti + çarpan artar.
+### Animasyonlar (Eksik Olanlar)
+Şu an var: floating tip text, punch particles, combo text, duman, ışıklandırma.
+Eksik olanlar:
+- Yemek pişince ✨ efekti (fırın üstünde)
+- Müşteri memnun ayrılınca ❤️ animasyonu
+- Gün/gece geçişinde kısa fade animasyonu
+Tahmini süre: ~1-2 saat
 
 ### Upgrade Sistemi Genişletme
-- İkinci kesme tahtası unlock
-- İkinci lavabo unlock
+Şu an var: extraSink, extraChopBoard eklendi.
+Hâlâ eksik:
 - Müşteri yeme hızı upgrade'i (masayı daha hızlı boşaltır)
 - Bekleme listesi kapasitesi upgrade'i
+Tahmini süre: ~30 dakika
 
 ### Yeni İstasyonlar
 - 🥚 Omlet — tava istasyonu (yeni istasyon tipi)
 - Baharat rafı — yemeğe eklenince +%20 bahşiş
+Tahmini süre: ~2-3 saat
 
 ---
 
 ## 🟢 Öncelik 4 — Görsel & His
-
-### Animasyonlar
-- Yemek pişince küçük ✨ efekti
-- Müşteri memnun ayrılınca kalp animasyonu
-- Gün/gece geçişinde kısa animasyon
 
 ### Zemin Kirliliği (Mess Sistemi)
 Yemek hazırlarken ve müşteriler yerken zemine pislik düşer.
 Pislik üzerinden yürüyünce yavaşlarsın.
 Paspas alıp temizlemen gerekir.
 PlateUp'ın kaos hissinin büyük kısmı buradan geliyor.
+Tahmini süre: ~3-4 saat
 
 ### Ses
 - Müşteri gelince farklı ses
-- Combo sesi
+- Combo sesi (şu an sessiz)
 - Müşteri diyalogları için kısa bip sesi
 
 ---
@@ -108,3 +112,4 @@ PlateUp'ın kaos hissinin büyük kısmı buradan geliyor.
 
 - `upgrade` event'inde input validation eksik
 - `useGameLoop` dependency array eksik
+- `drawPerfStats.ts` var ama hiç çağrılmıyor (showPerfStats flag'i var ama bağlantı kopuk)

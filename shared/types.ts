@@ -298,6 +298,7 @@ export interface GameState {
     // ─── Kart Sistemi ────────────────────────────────────────────────────────
     activeCards: ActiveCard[];              // Bu run'da seçilmiş aktif kartlar
     pendingCardChoices: GameCard[] | null;  // Gece ekranında sunulan 2 kart seçeneği
+    hidePatience: boolean;                  // mystery_guests kartı: sabır barları gizlenir
 
     // ─── Combo Sistemi ───────────────────────────────────────────────────────
     comboCount: number;   // Arka arkaya servis sayısı
@@ -335,6 +336,7 @@ export interface GameState {
     // ─── Internal (sunucu tarafı, client'a gönderilir ama kullanılmaz) ────────
     _stateTick?: number;
     _seatCooldown?: number;
+    _kaosTimer?: number;
     mapId?: string;
 }
 
@@ -543,6 +545,7 @@ function mkClassicMapState(): GameState {
     menuChoices: null,
     activeCards: [],
     pendingCardChoices: null,
+    hidePatience: false,
     comboCount: 0,
     comboTimer: 0,
     stationLayout: {

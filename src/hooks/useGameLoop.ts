@@ -21,7 +21,7 @@ import { drawPlayer } from "../renderer/drawPlayer";
 import { drawCookStation } from "../renderer/drawCookStation";
 import { drawCounters } from "../renderer/drawCounter";
 import { movePlayer } from "./usePlayerMovement";
-import { setupGameEffects, renderFloatingTexts, renderPunchParticles } from "./useGameEffects";
+import { setupGameEffects, renderFloatingTexts, renderPunchParticles, renderSparkleParticles } from "./useGameEffects";
 import { updateProximityAudio } from "./useProximityAudio";
 import { drawLayoutPreview, LayoutEditorState } from '../renderer/drawLayoutEditor';
 import { drawDirtyTrayBasket } from '../renderer/drawDirtyTrayBasket';
@@ -73,7 +73,7 @@ export function useGameLoop({
     let frameId = 0;
     let lastFrameTime = 0;
     const lastEmitRef = { current: 0 };
-    const { floatingTexts, punchParticles, cleanup: cleanupEffects } = setupGameEffects(socket);
+    const { floatingTexts, punchParticles, sparkleParticles, cleanup: cleanupEffects } = setupGameEffects(socket);
 
     // Perf stats
     const fpsBuffer: number[] = [];
@@ -187,7 +187,7 @@ export function useGameLoop({
         }
       }
 
-      state.customers.forEach((c) => drawCustomer(ctx, c, state.tableLayout));
+      state.customers.forEach((c) => drawCustomer(ctx, c, state.tableLayout, state.hidePatience ?? false));
       // Her ~150 frame'de (~5sn) CRS temizliği
       if (frameId % 150 === 0) {
         const activeIds = new Set<string>(state.customers.map(c => c.id));
@@ -214,6 +214,7 @@ export function useGameLoop({
 
       renderFloatingTexts(ctx, floatingTexts);
       renderPunchParticles(ctx, punchParticles);
+      renderSparkleParticles(ctx, sparkleParticles);
 
       // ── Işıklandırma Sistemi ──────────────────────────────────────────────
       drawLighting(ctx, state.dayPhase, state.dayTimer);
