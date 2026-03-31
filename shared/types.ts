@@ -298,6 +298,10 @@ export interface GameState {
     activeCards: ActiveCard[];              // Bu run'da seçilmiş aktif kartlar
     pendingCardChoices: GameCard[] | null;  // Gece ekranında sunulan 2 kart seçeneği
 
+    // ─── Combo Sistemi ───────────────────────────────────────────────────────
+    comboCount: number;   // Arka arkaya servis sayısı
+    comboTimer: number;   // Combo süresi (tick). 0'a düşünce combo sıfırlanır
+
     // ─── Station Layout Editor ───────────────────────────────────────────────
     stationLayout: Record<string, StationPosition>;
     lockedStations: Record<string, string>; // stationId → socketId
@@ -470,7 +474,20 @@ export const DIRTY_TRAY_POS = { x: 860, y: 90 };
 export const SINK_STATION = { x: 960, y: 90 };
 export const DISH_ITEMS = ['🍕', '🍔', '🥗', '🍜', '🌯', '🍟', '🥤', '🍰', '☕'] as const;
 
-export const UPGRADE_DEFS: Record<UpgradeKey, { costs: number[]; max: number }> = {
+// ─── Combo Sistemi ───────────────────────────────────────────────────────────
+export const COMBO_TIMEOUT_TICKS = 180; // ~6 saniye içinde servis yapılmazsa combo sıfırlanır
+export function getComboMultiplier(count: number): number {
+  if (count >= 8) return 3.0;
+  if (count >= 5) return 2.0;
+  if (count >= 3) return 1.5;
+  return 1.0;
+}
+export function getComboLabel(count: number): string {
+  if (count >= 8) return '🔥🔥🔥';
+  if (count >= 5) return '🔥🔥';
+  if (count >= 3) return '🔥';
+  return '';
+}
     patience:      { costs: [150, 300, 600, 1200], max: 4 },
     earnings:      { costs: [200, 400, 800, 1600], max: 4 },
     plateStackMax: { costs: [100, 200, 400, 800],  max: 4 },
@@ -513,6 +530,8 @@ function mkClassicMapState(): GameState {
     menuChoices: null,
     activeCards: [],
     pendingCardChoices: null,
+    comboCount: 0,
+    comboTimer: 0,
     stationLayout: {
       'ingredient_🍞': { id: 'ingredient_🍞', x: 360, y: 65 },
       'ingredient_🥩': { id: 'ingredient_🥩', x: 450, y: 65 },

@@ -11,6 +11,7 @@ import {
   FRYER_TICKS, FRYER_BURN_TICKS, FRIDGE_BASE_CAPACITY,
   CAKE_TICKS, CAKE_BURN_TICKS, COFFEE_BASE_CAPACITY,
   ALL_CARDS, CARD_DAYS, GameCard,
+  COMBO_TIMEOUT_TICKS,
 } from "../shared/types.js";
 import { DIALOGUES } from "../shared/dialogues.js";
 
@@ -283,6 +284,8 @@ export function gameTick(gs: GameState, io: Server, rid: string) {
       gs.dayPhase = 'night';
       gs.dayTimer = NIGHT_TICKS;
       gs.hasOrderedTonight = true; // gece yenileme bir kez yapılsın
+      gs.comboCount = 0;
+      gs.comboTimer = 0;
 
       io.to(rid).emit("dayEnd", {
         day: gs.day,
@@ -316,6 +319,15 @@ export function gameTick(gs: GameState, io: Server, rid: string) {
     // Menü seçimi ve kart seçimi yoksa otomatik sonraki güne geç
     if (gs.dayTimer <= 0 && !gs.menuChoices && !gs.pendingCardChoices) {
       gs.day++; gs.dayPhase = 'prep'; gs.dayTimer = DAY_TICKS;
+    }
+  }
+
+  // Combo timer — sıfırlanırsa combo sıfırlanır
+  if ((gs.comboCount ?? 0) > 0) {
+    gs.comboTimer = (gs.comboTimer ?? 0) - 1;
+    if (gs.comboTimer <= 0) {
+      gs.comboCount = 0;
+      gs.comboTimer = 0;
     }
   }
 

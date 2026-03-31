@@ -53,6 +53,8 @@ const DEFAULT_STATE: GameState = {
     menuChoices: null,
     activeCards: [],
     pendingCardChoices: null,
+    comboCount: 0,
+    comboTimer: 0,
     stationLayout: {},
     lockedStations: {},
     tableLayout: {},

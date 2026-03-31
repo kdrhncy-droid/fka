@@ -9,6 +9,7 @@ import {
   CHOPPABLE, CHOP_PREFIX, isChopped,
   SERVICE_WINDOW_SLOTS, SERVICE_WINDOW_R,
   FRYER_TICKS, DRINK_ITEM, CAKE_TICKS, COFFEE_ITEM,
+  COMBO_TIMEOUT_TICKS, getComboMultiplier, getComboLabel,
 } from "../shared/types.js";
 
 const INTERACT_R = 110;
@@ -42,8 +43,25 @@ export interface InteractContext {
   px: number;
   py: number;
   socketId: string;
+  io: Server;
+  roomId: string;
   snd: (type: string) => void;
   emitTip: (x: number, y: number, amount: number) => void;
+}
+
+// ─── Combo uygula ─────────────────────────────────────────────────────────────
+function applyCombo(gs: GameState, io: Server, roomId: string, x: number, y: number, baseTip: number) {
+  gs.comboCount = (gs.comboCount ?? 0) + 1;
+  gs.comboTimer = COMBO_TIMEOUT_TICKS;
+
+  const mult = getComboMultiplier(gs.comboCount);
+  const label = getComboLabel(gs.comboCount);
+
+  if (mult > 1.0) {
+    const bonus = Math.floor(baseTip * (mult - 1.0));
+    gs.score += bonus;
+    io.to(roomId).emit('comboServe', { x, y, count: gs.comboCount, bonus, label });
+  }
 }
 
 type InteractionHandler = (ctx: InteractContext) => boolean;
@@ -269,7 +287,7 @@ const handleCookStations: InteractionHandler = ({ gs, p, px, py, snd }) => {
   return false;
 };
 
-const handleCustomers: InteractionHandler = ({ gs, p, px, py, snd }) => {
+const handleCustomers: InteractionHandler = ({ gs, p, px, py, snd, io, roomId }) => {
   if (!p.holding) return false;
   for (let ci = 0; ci < gs.customers.length; ci++) {
     const c = gs.customers[ci];
@@ -277,6 +295,7 @@ const handleCustomers: InteractionHandler = ({ gs, p, px, py, snd }) => {
       if (!isTray(p.holding) && c.wants === p.holding) {
         c.tipAmount = earn(gs.upgrades.earnings, c.maxPatience, c.patience);
         c.isEating = true; c.eatTimer = EAT_TICKS; c.wants = null; p.holding = null;
+        applyCombo(gs, io, roomId, c.seatX, c.seatY, c.tipAmount ?? 0);
         snd("success"); return true;
       } else if (isTray(p.holding)) {
         const items = getTrayItems(p.holding);
@@ -285,6 +304,7 @@ const handleCustomers: InteractionHandler = ({ gs, p, px, py, snd }) => {
           items.splice(wIdx, 1); p.holding = createTray(items);
           c.tipAmount = earn(gs.upgrades.earnings, c.maxPatience, c.patience);
           c.isEating = true; c.eatTimer = EAT_TICKS; c.wants = null;
+          applyCombo(gs, io, roomId, c.seatX, c.seatY, c.tipAmount ?? 0);
           snd("success"); return true;
         }
       }
@@ -465,6 +485,8 @@ export function registerInteractHandler(
       px: p.x,
       py: p.y,
       socketId: socket.id,
+      io,
+      roomId,
       snd: (type: string) => bcastSound(io, roomId, socket, type),
       emitTip: (x: number, y: number, amount: number) => {
         io.to(roomId).emit("tipCollected", { x, y, amount });

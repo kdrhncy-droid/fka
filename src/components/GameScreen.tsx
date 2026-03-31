@@ -92,7 +92,7 @@ export const GameScreen: React.FC<Props> = ({
     const [globalVoiceVol, setGlobalVoiceVol] = useState(1.0);
     const audioElementsRef = useRef<Record<string, HTMLAudioElement>>({});
 
-    const { score, dayPhase, dayTimer, upgrades, day, ovenCount, queueLen, lives, isGameOver, menuChoices, unlockedDishes, pendingCardChoices, activeCards } = useGameState(gameStateRef);
+    const { score, dayPhase, dayTimer, upgrades, day, ovenCount, queueLen, lives, isGameOver, menuChoices, unlockedDishes, pendingCardChoices, activeCards, comboCount } = useGameState(gameStateRef);
 
     const { editorState, editorStateRef, handleInteract, handleCancel, handleCycleSeats, updatePreview } = useLayoutEditor({
         socket,
@@ -268,6 +268,19 @@ export const GameScreen: React.FC<Props> = ({
                         <div className="text-[8px] font-bold text-stone-500 uppercase tracking-widest leading-none">Ciro</div>
                         <div className="text-sm font-black leading-tight text-emerald-400">${score}</div>
                     </div>
+                    {/* Combo göstergesi */}
+                    {comboCount >= 3 && (
+                        <div className={`px-2 py-1 rounded-lg border text-center animate-pulse ${
+                            comboCount >= 8 ? 'bg-orange-900/50 border-orange-500/50 text-orange-300' :
+                            comboCount >= 5 ? 'bg-yellow-900/50 border-yellow-500/50 text-yellow-300' :
+                            'bg-amber-900/50 border-amber-500/50 text-amber-300'
+                        }`}>
+                            <div className="text-[8px] font-bold uppercase tracking-widest leading-none">Combo</div>
+                            <div className="text-sm font-black leading-tight">
+                                {comboCount >= 8 ? '🔥🔥🔥' : comboCount >= 5 ? '🔥🔥' : '🔥'} x{comboCount}
+                            </div>
+                        </div>
+                    )}
                     {/* Aktif kart ikonları */}
                     {activeCards.length > 0 && (
                         <div className="flex items-center gap-0.5">

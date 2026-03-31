@@ -4,6 +4,8 @@ export interface FloatingText {
   x: number; y: number;
   text: string;
   life: number;
+  color?: string;
+  size?: number;
 }
 
 export interface PunchParticle {
@@ -28,15 +30,29 @@ export function setupGameEffects(socket: Socket | null) {
     }
   };
 
+  const handleCombo = (data: { x: number; y: number; count: number; bonus: number; label: string }) => {
+    // Combo bonus floating text — daha büyük ve farklı renk
+    floatingTexts.push({
+      x: data.x,
+      y: data.y - 40,
+      text: `${data.label} +${data.bonus}`,
+      life: 80,
+      color: data.count >= 8 ? '#f97316' : data.count >= 5 ? '#eab308' : '#f59e0b',
+      size: data.count >= 5 ? 24 : 20,
+    });
+  };
+
   if (socket) {
     socket.on("tipCollected", handleTip);
     socket.on("punchEffect", handlePunch);
+    socket.on("comboServe", handleCombo);
   }
 
   const cleanup = () => {
     if (socket) {
       socket.off("tipCollected", handleTip);
       socket.off("punchEffect", handlePunch);
+      socket.off("comboServe", handleCombo);
     }
   };
 
@@ -46,13 +62,14 @@ export function setupGameEffects(socket: Socket | null) {
 export function renderFloatingTexts(ctx: CanvasRenderingContext2D, texts: FloatingText[]) {
   for (let i = texts.length - 1; i >= 0; i--) {
     const ft = texts[i];
+    const maxLife = ft.size ? 80 : 60; // combo text daha uzun yaşar
     ctx.save();
-    ctx.globalAlpha = ft.life / 60;
-    ctx.translate(ft.x, ft.y - (1 - ft.life / 60) * 30);
-    ctx.fillStyle = "#22c55e";
-    ctx.font = "bold 20px Arial";
+    ctx.globalAlpha = ft.life / maxLife;
+    ctx.translate(ft.x, ft.y - (1 - ft.life / maxLife) * 30);
+    ctx.fillStyle = ft.color ?? "#22c55e";
+    ctx.font = `bold ${ft.size ?? 20}px Arial`;
     ctx.textAlign = "center";
-    ctx.strokeStyle = "white";
+    ctx.strokeStyle = "rgba(0,0,0,0.6)";
     ctx.lineWidth = 3;
     ctx.strokeText(ft.text, 0, 0);
     ctx.fillText(ft.text, 0, 0);
