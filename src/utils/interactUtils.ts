@@ -5,6 +5,7 @@ import {
 } from "../types/game";
 
 const INTERACT_R = 110;
+const COOK_R = 145;
 const SERVE_R = 125;
 const DISTANCE_TOLERANCE = 25; // Yakın objeler için tolerans
 
@@ -115,7 +116,7 @@ export function getNearestInteractable(px: number, py: number, gs: GameState, la
   gs.cookStations?.forEach(s => {
     const x = gs.stationLayout?.[s.id]?.x ?? s.x;
     const y = gs.stationLayout?.[s.id]?.y ?? s.y;
-    addCandidate(x, y, INTERACT_R, 'cookStation', s.id);
+    addCandidate(x, y, COOK_R, 'cookStation', s.id);
   });
 
   // Müşteriler

@@ -2,6 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ChatMessage } from '../hooks/useSocket';
 import { Socket } from 'socket.io-client';
 
+interface ToastMessage extends ChatMessage {
+    toastId: number;
+}
+
 interface Props {
     socket: Socket | null;
     myId: string;
@@ -12,14 +16,31 @@ export const ChatPanel: React.FC<Props> = ({ socket, myId, messages }) => {
     const [open, setOpen] = useState(false);
     const [text, setText] = useState('');
     const [unread, setUnread] = useState(0);
+    const [toasts, setToasts] = useState<ToastMessage[]>([]);
     const bottomRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
     const prevLenRef = useRef(messages.length);
+    const toastIdRef = useRef(0);
 
-    // Yeni mesaj gelince unread say (panel kapalıysa)
+    // Yeni mesaj gelince unread say + toast göster (panel kapalıysa)
     useEffect(() => {
         if (messages.length > prevLenRef.current) {
-            if (!open) setUnread(u => u + (messages.length - prevLenRef.current));
+            const newMsgs = messages.slice(prevLenRef.current);
+            if (!open) {
+                setUnread(u => u + newMsgs.length);
+                // Toast ekle
+                const newToasts: ToastMessage[] = newMsgs.map(m => ({
+                    ...m,
+                    toastId: ++toastIdRef.current,
+                }));
+                setToasts(prev => [...prev, ...newToasts].slice(-4)); // max 4 toast
+                // 3.5 saniye sonra kaldır
+                newToasts.forEach(t => {
+                    setTimeout(() => {
+                        setToasts(prev => prev.filter(x => x.toastId !== t.toastId));
+                    }, 3500);
+                });
+            }
         }
         prevLenRef.current = messages.length;
     }, [messages.length, open]);
@@ -52,6 +73,26 @@ export const ChatPanel: React.FC<Props> = ({ socket, myId, messages }) => {
 
     return (
         <div className="absolute bottom-2 right-2 z-30 flex flex-col items-end gap-1">
+
+            {/* Toast Mesajlar — panel kapalıyken gösterilir */}
+            {!open && toasts.length > 0 && (
+                <div className="flex flex-col gap-1 mb-1 items-end">
+                    {toasts.map(t => (
+                        <div
+                            key={t.toastId}
+                            className="flex items-start gap-2 bg-stone-900/90 border border-stone-700 rounded-xl px-3 py-2 shadow-lg backdrop-blur-sm max-w-[220px] animate-fade-in-up"
+                            style={{ animation: 'fadeInUp 0.2s ease-out' }}
+                        >
+                            <span className="text-[10px] font-black text-amber-400 whitespace-nowrap mt-0.5">
+                                {t.id === myId ? 'Sen' : t.name}
+                            </span>
+                            <span className="text-[11px] text-stone-100 break-words leading-tight">
+                                {t.text}
+                            </span>
+                        </div>
+                    ))}
+                </div>
+            )}
             {/* Panel */}
             {open && (
                 <div className="w-64 sm:w-72 bg-stone-900/95 border border-stone-700 rounded-2xl shadow-2xl flex flex-col overflow-hidden backdrop-blur-sm">
