@@ -22,6 +22,7 @@ import { LeaveModal } from './LeaveModal';
 import { saveStats, loadStats } from './StatsModal';
 import { TutorialOverlay, isTutorialDone } from './TutorialOverlay';
 import { CardSelectModal } from './CardSelectModal';
+import { DevPanel } from './DevPanel';
 import { ALL_CARDS } from '../../shared/types';
 
 
@@ -87,6 +88,8 @@ export const GameScreen: React.FC<Props> = ({
     const [showTutorial, setShowTutorial] = useState(!isTutorialDone());
     const [showCosmetics, setShowCosmetics] = useState(false);
     const [showHudEditor, setShowHudEditor] = useState(false);
+    const [showDevPanel, setShowDevPanel] = useState(false);
+    const [devTapCount, setDevTapCount] = useState(0);
     const [voiceActive, setVoiceActive] = useState(false);
     const [showVoiceSettings, setShowVoiceSettings] = useState(false);
     const [globalVoiceVol, setGlobalVoiceVol] = useState(1.0);
@@ -234,6 +237,16 @@ export const GameScreen: React.FC<Props> = ({
                     >
                         #{roomId}
                     </button>
+                    {/* Gizli dev panel aktivasyonu — oda koduna 5 kez tıkla */}
+                    <button
+                        onClick={() => {
+                            const next = devTapCount + 1;
+                            setDevTapCount(next);
+                            if (next >= 5) { setShowDevPanel(true); setDevTapCount(0); }
+                        }}
+                        className="w-4 h-4 opacity-0"
+                        aria-hidden="true"
+                    />
                 </div>
 
                 <div className="flex-1 max-w-xs flex flex-col items-center gap-0.5">
@@ -629,6 +642,10 @@ export const GameScreen: React.FC<Props> = ({
                     startVoiceChat={() => { setVoiceActive(true); }}
                     isVoiceActive={voiceActive}
                 />
+            )}
+
+            {showDevPanel && (
+                <DevPanel socket={socket} onClose={() => setShowDevPanel(false)} />
             )}
         </div>
     );

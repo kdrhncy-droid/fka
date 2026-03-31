@@ -468,6 +468,64 @@ io.on("connection", (socket) => {
     io.to(roomId!).emit("punchEffect", { x: c.x, y: c.y, count: c.punchCount });
   });
 
+  // ─── Dev Araçları ────────────────────────────────────────────────────────
+  socket.on("dev:makeNight", () => {
+    if (!roomId || !RoomManager.getRoomState(roomId)) return;
+    const gs = RoomManager.getRoomState(roomId)!;
+    gs.customers = []; gs.waitList = []; gs.dirtyTables = [];
+    gs.dayTimer = 1;
+    io.to(roomId).emit("state", gs);
+  });
+
+  socket.on("dev:spawnCustomer", (data: { personality?: string; specialRequest?: string }) => {
+    if (!roomId || !RoomManager.getRoomState(roomId)) return;
+    const gs = RoomManager.getRoomState(roomId)!;
+    if (gs.dayPhase !== 'day') return;
+    const pers = (data?.personality ?? 'polite') as any;
+    const bodyColors: Record<string, string[]> = {
+      polite: ['#3b82f6'], rude: ['#ef4444'], recep: ['#7c3aed'], thug: ['#000000'],
+    };
+    gs.waitList.push({
+      id: Math.random().toString(36).slice(2, 9),
+      wants: gs.unlockedDishes[0] ?? '🥗',
+      personality: pers,
+      bodyShape: 1, bodyColor: (bodyColors[pers] ?? ['#3b82f6'])[0],
+      groupId: undefined,
+    });
+    // specialRequest için müşteri oturduğunda atanacak — waitList'te yok
+    io.to(roomId).emit("state", gs);
+  });
+
+  socket.on("dev:triggerCards", () => {
+    if (!roomId || !RoomManager.getRoomState(roomId)) return;
+    const gs = RoomManager.getRoomState(roomId)!;
+    if (gs.dayPhase !== 'night') return;
+    const { generateCardChoices } = require('./server/gameLoop.js');
+    generateCardChoices(gs);
+    io.to(roomId).emit("state", gs);
+  });
+
+  socket.on("dev:unlockDish", (dish: string) => {
+    if (!roomId || !RoomManager.getRoomState(roomId)) return;
+    const gs = RoomManager.getRoomState(roomId)!;
+    if (!gs.unlockedDishes.includes(dish)) gs.unlockedDishes.push(dish);
+    io.to(roomId).emit("state", gs);
+  });
+
+  socket.on("dev:addScore", (amount: number) => {
+    if (!roomId || !RoomManager.getRoomState(roomId)) return;
+    const gs = RoomManager.getRoomState(roomId)!;
+    gs.score = Math.max(0, gs.score + (amount ?? 0));
+    io.to(roomId).emit("state", gs);
+  });
+
+  socket.on("dev:setLives", (lives: number) => {
+    if (!roomId || !RoomManager.getRoomState(roomId)) return;
+    const gs = RoomManager.getRoomState(roomId)!;
+    gs.lives = Math.max(1, Math.min(3, lives ?? 3));
+    io.to(roomId).emit("state", gs);
+  });
+
   socket.on("leave", () => {
     removePlayerFromRoom();
   });

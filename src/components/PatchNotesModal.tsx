@@ -13,8 +13,8 @@ export const PatchNotesModal: React.FC<Props> = ({ onClose }) => {
                 <div>
                     <h2 className="text-3xl font-black text-amber-400 tracking-tight">Oyun Rehberi & Yenilikler 📜</h2>
                     <div className="flex items-center gap-2 mt-1">
-                        <span className="bg-amber-400/10 text-amber-400 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest border border-amber-400/20">v1.5.0</span>
-                        <span className="text-stone-500 text-[10px] font-bold uppercase tracking-widest">Yatay Ekran & Pro İpuçları</span>
+                        <span className="bg-amber-400/10 text-amber-400 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest border border-amber-400/20">v2.0.0</span>
+                        <span className="text-stone-500 text-[10px] font-bold uppercase tracking-widest">Kart Sistemi, Combo & Özel İstekler</span>
                     </div>
                 </div>
                 <button
@@ -188,36 +188,43 @@ export const PatchNotesModal: React.FC<Props> = ({ onClose }) => {
                 <section>
                     <h3 className="text-xs font-black text-stone-500 mb-4 uppercase tracking-[0.3em] flex items-center gap-3">
                         <span className="h-px flex-1 bg-stone-800"></span>
-                        🚀 Son Güncellemeler (v1.5.0)
+                        🚀 Son Güncellemeler (v2.0.0)
                         <span className="h-px flex-1 bg-stone-800"></span>
                     </h3>
                     <div className="bg-amber-500/5 border border-amber-500/20 p-6 rounded-[2rem] space-y-4">
                         <div className="flex items-start gap-3">
-                            <span className="text-emerald-400 font-bold">🟢</span>
+                            <span className="text-emerald-400 font-bold">⚡</span>
                             <div>
-                                <div className="text-sm font-bold text-stone-200 uppercase tracking-wider">Yatay Ekran Zorunluluğu</div>
-                                <p className="text-xs text-stone-400 mt-1 leading-relaxed">Telefon ve tablet kullanıcıları için portrait modda otomatik "Cihazı Yatır" ekranı eklendi. Oyun artık tüm mobil cihazlarda doğru görünüyor.</p>
+                                <div className="text-sm font-bold text-stone-200 uppercase tracking-wider">Kart Sistemi</div>
+                                <p className="text-xs text-stone-400 mt-1 leading-relaxed">Her 3 günde bir gece ekranında 2 kart sunulur. Her kart bir şeyi zorlaştırır ama karşılığında ödül verir. 15 farklı kart — Sabırsız Kalabalık, Sıcak Fırın, Kaos Günü ve daha fazlası.</p>
                             </div>
                         </div>
                         <div className="flex items-start gap-3">
-                            <span className="text-emerald-400 font-bold">💡</span>
+                            <span className="text-emerald-400 font-bold">🔥</span>
                             <div>
-                                <div className="text-sm font-bold text-stone-200 uppercase tracking-wider">Pro İpuçları Bölümü</div>
-                                <p className="text-xs text-stone-400 mt-1 leading-relaxed">Oyun rehberine 6 yeni pro ipucu eklendi — tepsi stratejisi, upgrade önceliği, paralel pişirme ve daha fazlası.</p>
+                                <div className="text-sm font-bold text-stone-200 uppercase tracking-wider">Combo Sistemi</div>
+                                <p className="text-xs text-stone-400 mt-1 leading-relaxed">Arka arkaya hızlı servis yapınca combo başlar. 3 servis = 🔥 x1.5, 5 servis = 🔥🔥 x2.0, 8+ servis = 🔥🔥🔥 x3.0 bonus puan. Üst barda combo sayacı görünür.</p>
+                            </div>
+                        </div>
+                        <div className="flex items-start gap-3">
+                            <span className="text-emerald-400 font-bold">🌶️</span>
+                            <div>
+                                <div className="text-sm font-bold text-stone-200 uppercase tracking-wider">Özel Sipariş İstekleri</div>
+                                <p className="text-xs text-stone-400 mt-1 leading-relaxed">Müşteriler artık özel istek yapabiliyor. 🌶️ Acı (1.8x bahşiş), ➕ Bol porsiyon (1.5x), ⚡ Acele (2x bahşiş ama 2x sabır azalması). Sipariş balonunda ikon görünür.</p>
+                            </div>
+                        </div>
+                        <div className="flex items-start gap-3">
+                            <span className="text-emerald-400 font-bold">🚿</span>
+                            <div>
+                                <div className="text-sm font-bold text-stone-200 uppercase tracking-wider">Ekstra Lavabo & Kesme Tahtası</div>
+                                <p className="text-xs text-stone-400 mt-1 leading-relaxed">Gece mağazasında artık ekstra lavabo ve kesme tahtası satın alabilirsin. Maksimum 3'e kadar. Satın alınca anında mutfağa eklenir, layout editörde taşınabilir.</p>
                             </div>
                         </div>
                         <div className="flex items-start gap-3">
                             <span className="text-amber-400 font-bold">✨</span>
                             <div>
-                                <div className="text-sm font-bold text-stone-200 uppercase tracking-wider">Modern Glassmorphism UI (v1.4.0)</div>
-                                <p className="text-xs text-stone-400 mt-1 leading-relaxed">Ana menü butonları ve bilgi paneli modern, yarı saydam ve şık bir görünüme kavuşturuldu.</p>
-                            </div>
-                        </div>
-                        <div className="flex items-start gap-3">
-                            <span className="text-amber-400 font-bold">🟢</span>
-                            <div>
-                                <div className="text-sm font-bold text-stone-200 uppercase tracking-wider">Etkileşim Halkası (v1.4.0)</div>
-                                <p className="text-xs text-stone-400 mt-1 leading-relaxed">Yaklaştığın istasyon veya masanın altında yumuşak yeşil bir halka belirir. Neyle etkileşime girdiğini artık çok daha net görebilirsin.</p>
+                                <div className="text-sm font-bold text-stone-200 uppercase tracking-wider">Animasyonlar</div>
+                                <p className="text-xs text-stone-400 mt-1 leading-relaxed">Yemek pişince ✨ sparkle efekti, müşteri mutlu ayrılınca ❤️ animasyonu eklendi.</p>
                             </div>
                         </div>
                     </div>
