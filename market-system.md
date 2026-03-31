@@ -462,6 +462,48 @@ interface UserProfile {
 
 ---
 
+## 🖥️ **ANA MENÜ ENTEGRASYONU**
+
+### Tasarım Kararları
+- Market ve bakiye **sadece ana menüde** görünür, oyun içinde görünmez
+- Ana menü butonlarındaki emojiler kaldırılır (daha temiz, profesyonel görünüm)
+
+### Üst Bar — TC/TG Bakiyesi
+```
+┌─────────────────────────────────┐
+│  1,250 TC 🌍    15 TG 💎        │  ← tıklanabilir, market açılır
+└─────────────────────────────────┘
+```
+- Her zaman görünür, tıklayınca market açılır
+- Oyun başlayınca tamamen kaybolur
+
+### Menü Buton Değişiklikleri
+```
+ÖNCE:                    SONRA:
+🎮 Çok Oyunculu    →    Çok Oyunculu
+🤖 Tek Oyunculu    →    Tek Oyunculu
+👤 Karakter        →    Profil          ← karakter + bakiye + market erişimi
+⚙️ Ayarlar         →    Ayarlar
+📊 İstatistik      →    İstatistik
+📖 Nasıl Oynanır?  →    Nasıl Oynanır?
+```
+
+### Profil Ekranı İçeriği
+```
+┌─────────────────────────────────┐
+│  [Karakter Önizleme]            │
+│  İsim: Oyuncu                   │
+│  Seviye: 12  |  XP: 340/500     │
+│                                 │
+│  🌍 1,250 TC   💎 15 TG         │
+│                                 │
+│  [ Karakteri Düzenle ]          │
+│  [ Markete Git ]                │
+└─────────────────────────────────┘
+```
+
+---
+
 ## 🎯 **SONUÇ**
 
 ### **Neden Bu Sistem Mantıklı?**

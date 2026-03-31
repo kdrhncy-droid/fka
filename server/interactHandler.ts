@@ -15,6 +15,7 @@ import {
 } from "../shared/types.js";
 
 const INTERACT_R = 110;
+const COOK_R = 145;
 const SERVE_R = 125;
 
 function earn(lv: number, maxPatience: number, currentPatience: number, specialMult = 1.0) {
@@ -104,7 +105,8 @@ const handleSinks: InteractionHandler = ({ gs, p, px, py, socketId, snd }) => {
           sink.isWashing = true; sink.washingPlayerId = socketId;
         }
       } else if (p.holding === DIRTY_PLATE && !sink.input) {
-        sink.input = DIRTY_PLATE; sink.progress = 0; sink.isWashing = false; sink.washingPlayerId = null;
+        sink.input = DIRTY_PLATE; sink.progress = 0;
+        sink.isWashing = true; sink.washingPlayerId = socketId; // hemen yıkamaya başla
         p.holding = null;
         snd("success");
       } else {
@@ -254,7 +256,7 @@ const handleCookStations: InteractionHandler = ({ gs, p, px, py, snd }) => {
   for (const station of gs.cookStations) {
     const dynX = gs.stationLayout?.[station.id]?.x ?? station.x;
     const dynY = gs.stationLayout?.[station.id]?.y ?? station.y;
-    if (Math.hypot(px - dynX, py - dynY) < INTERACT_R) {
+    if (Math.hypot(px - dynX, py - dynY) < COOK_R) {
       const holding = p.holding;
       const isRawChoppable = typeof holding === 'string' && CHOPPABLE.includes(holding as any);
       const isChoppedItem = typeof holding === 'string' && holding.startsWith(CHOP_PREFIX);

@@ -6,17 +6,19 @@ Yapılmamış işler. Öncelik sırasına göre.
 
 ## 🔴 Öncelik 1 — Oyun Derinliği
 
-### Çok Aşamalı Yemek (Combining) — Tasarım hazır (combining-system.md)
+### Çok Aşamalı Yemek (Combining)
 Şu an tüm yemekler tek adım: malzeme → fırın → yemek.
 Combining ile: pişmiş malzeme + başka malzeme = final yemek.
 Etki: Co-op'ta iş bölümü doğuruyor, herkes farklı rol üstleniyor.
+Detay: `combining-system.md`
 Tahmini süre: ~4-5 saat
 
-### Mahalle İtibarı (PlateUp'ta yok — Franchise yerine)
+### Mahalle İtibarı
 Her gün iyi servis yapınca itibar puanı artar (1-5 yıldız).
 İtibar arttıkça yeni müşteri tipleri açılır, daha fazla müşteri gelir.
 İtibar düşünce müşteri sayısı azalır.
 Kalıcı ilerleme verir ama organik hissettiriyor.
+Detay: `mahalle-itibari.md`
 Tahmini süre: ~2-3 saat
 
 ### Floorplan Seçim Sistemi
@@ -25,9 +27,9 @@ Tahmini süre: ~2 saat
 
 ---
 
-## 🟠 Öncelik 2 — İçerik (Özgün)
+## 🟠 Öncelik 2 — İçerik
 
-### Yeni Müşteri Tipleri (PlateUp'ta yok)
+### Yeni Müşteri Tipleri
 - **Esnaf** — mahalleden tanıdık, çok sabırlı ama bahşiş vermez
 - **Dedektif** — yemeği uzun inceler, çok yavaş yer ama 5x bahşiş bırakır
 - **Grup lideri** — toplu sipariş verir, tek seferde servis edilmeli
@@ -49,7 +51,6 @@ Tahmini süre: ~2-3 saat
 Yemek hazırlarken ve müşteriler yerken zemine pislik düşer.
 Pislik üzerinden yürüyünce yavaşlarsın.
 Paspas alıp temizlemen gerekir.
-PlateUp'ın kaos hissinin büyük kısmı buradan geliyor.
 Tahmini süre: ~3-4 saat
 
 ### Ses
@@ -57,13 +58,34 @@ Tahmini süre: ~3-4 saat
 - Combo sesi (şu an sessiz)
 - Müşteri diyalogları için kısa bip sesi
 
+### Quick Chat Emote Wheel
+Mobile Legends tarzı — chat butonuna basılı tut, 4 yönde emote seç, bırakınca gönder.
+Detay: `market-system.md` → Quick Chat Emote Sistemi bölümü
+
 ---
 
-## 🟢 Öncelik 4 — Sosyal & Platform
+## 🟢 Öncelik 4 — Market & Kalıcı Para Sistemi
+
+Terra Coin (TC) 🌍 ve Terra Gem (TG) 💎 para birimleriyle kalıcı ilerleme sistemi.
+Detay: `market-system.md`
+
+### Alt Görevler
+- [ ] Database schema (users, user_items, achievements, daily_quests)
+- [ ] User profile sistemi (TC/TG bakiye, seviye, XP)
+- [ ] Kozmetik eşya sistemi (şapka, kıyafet, emote)
+- [ ] Başarım sistemi
+- [ ] Günlük görev sistemi
+- [ ] Market UI
+- [ ] Ana menü üst bar — TC/TG bakiye gösterimi (sadece menüde, oyun içinde yok)
+- [ ] Karakter butonunu Profil'e dönüştür (karakter + bakiye + market erişimi)
+- [ ] Ana menü butonlarındaki emojileri kaldır
+
+---
+
+## 🔵 Öncelik 5 — Sosyal & Platform
 
 ### Hesap Sistemi
 - Google/Discord ile giriş (Supabase)
-- Oyuncu profili — toplam oyun süresi, en yüksek skor
 - Kalıcı karakter özelleştirmesi
 
 ### Skor Tablosu
@@ -81,18 +103,10 @@ Tahmini süre: ~3-4 saat
 
 ---
 
-## ✅ Tamamlananlar (Son Oturum)
+## 🔧 Teknik Borç
 
-- Sipariş özelleştirme — 🌶️ Acı sistemi (baharat rafı, can kaybı mekanigi) ✅
-- Baharat rafı layout editöründe taşınabilir ✅
-- Etkileşim halkası tüm istasyonları kapsıyor ✅
-- Unlock olmamış istasyonlarda halka görünmüyor ✅
-- İçecek stok sistemi kaldırıldı (sınırsız) ✅
-- `fridgeCapacity` upgrade kaldırıldı ✅
-- Upgrade shop'ta unlock olmamış yemek upgrade'leri gizleniyor ✅
-- Gece otomatik geçiş kaldırıldı ✅
-- Ping eşikleri Render için güncellendi ✅
-- Render keep-alive eklendi ✅
-- BGM URL encoding düzeltildi ✅
-- Başarı sesi kısaltıldı ✅
-- Kod kalitesi iyileştirmeleri (code-quality.md) ✅
+- `useGameLoop` refactoring (200+ satır monolith → modüler)
+- Error handling sistemi (try-catch, network hataları)
+- Configuration management (magic number'ları temizle)
+- Testing infrastructure (unit/integration/e2e)
+- Bundle size 455KB → 300KB altına indir (lazy loading)
