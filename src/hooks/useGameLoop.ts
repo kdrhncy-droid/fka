@@ -3,17 +3,8 @@ import { Socket } from "socket.io-client";
 import {
   GameState,
   Player,
-  GAME_WIDTH,
-  GAME_HEIGHT,
   DIRTY_TRAY_POS,
-  TRAY_STATION,
-  INGREDIENTS,
   PLATE_STACK_POS,
-  RECIPE_DEFS,
-  TRASH_STATION,
-  SINK_STATION,
-  DAY_TICKS,
-  NIGHT_TICKS,
 } from "../types/game";
 
 import { drawCustomer, cleanupCRS } from "../renderer/drawCustomer";
@@ -64,6 +55,11 @@ export function useGameLoop({
   canvasRef, isJoined, myId, socket, gameStateRef,
   localPlayerRef, keysRef, joystickVectorRef, audioElementsRef, globalVolume = 1.0, editorStateRef, showPerfStats = false, onPreviewUpdate,
 }: UseGameLoopProps) {
+
+  // Dinamik pozisyon yardımcısı — stationLayout varsa oradan, yoksa fallback
+  function getDynPos(id: string, fallback: { x: number; y: number }, layout?: GameState['stationLayout']) {
+    return { x: layout?.[id]?.x ?? fallback.x, y: layout?.[id]?.y ?? fallback.y };
+  }
   useEffect(() => {
     if (!isJoined) return;
     const canvas = canvasRef.current;
@@ -153,9 +149,8 @@ export function useGameLoop({
       if (state.fryers && state.unlockedDishes.includes('🍟')) {
         for (const fryer of state.fryers) {
           if (movingId === fryer.id) continue;
-          const dynX = state.stationLayout?.[fryer.id]?.x ?? fryer.x;
-          const dynY = state.stationLayout?.[fryer.id]?.y ?? fryer.y;
-          drawFryer(ctx, { ...fryer, x: dynX, y: dynY }, time);
+          const pos = getDynPos(fryer.id, fryer, state.stationLayout);
+          drawFryer(ctx, { ...fryer, ...pos }, time);
         }
       }
 
@@ -163,9 +158,8 @@ export function useGameLoop({
       if (state.fridges && state.unlockedDishes.includes('🥤')) {
         for (const fridge of state.fridges) {
           if (movingId === fridge.id) continue;
-          const dynX = state.stationLayout?.[fridge.id]?.x ?? fridge.x;
-          const dynY = state.stationLayout?.[fridge.id]?.y ?? fridge.y;
-          drawFridge(ctx, { ...fridge, x: dynX, y: dynY });
+          const pos = getDynPos(fridge.id, fridge, state.stationLayout);
+          drawFridge(ctx, { ...fridge, ...pos });
         }
       }
 
@@ -173,9 +167,8 @@ export function useGameLoop({
       if (state.cakeBakers && state.unlockedDishes.includes('🍰')) {
         for (const baker of state.cakeBakers) {
           if (movingId === baker.id) continue;
-          const dynX = state.stationLayout?.[baker.id]?.x ?? baker.x;
-          const dynY = state.stationLayout?.[baker.id]?.y ?? baker.y;
-          drawCakeBaker(ctx, { ...baker, x: dynX, y: dynY }, time);
+          const pos = getDynPos(baker.id, baker, state.stationLayout);
+          drawCakeBaker(ctx, { ...baker, ...pos }, time);
         }
       }
 
@@ -183,9 +176,8 @@ export function useGameLoop({
       if (state.coffeeMachines && state.unlockedDishes.includes('☕')) {
         for (const cm of state.coffeeMachines) {
           if (movingId === cm.id) continue;
-          const dynX = state.stationLayout?.[cm.id]?.x ?? cm.x;
-          const dynY = state.stationLayout?.[cm.id]?.y ?? cm.y;
-          drawCoffeeMachine(ctx, { ...cm, x: dynX, y: dynY });
+          const pos = getDynPos(cm.id, cm, state.stationLayout);
+          drawCoffeeMachine(ctx, { ...cm, ...pos });
         }
       }
 
@@ -197,13 +189,12 @@ export function useGameLoop({
         }
       }
 
-      state.customers.forEach((c) => drawCustomer(ctx, c, state.tableLayout, state.hidePatience ?? false));
-      // Her ~150 frame'de (~5sn) CRS temizliği
+      state.customers.forEach((c: import('../types/game').Customer) => drawCustomer(ctx, c, state.tableLayout, state.hidePatience ?? false));
       if (frameId % 150 === 0) {
-        const activeIds = new Set<string>(state.customers.map(c => c.id));
+        const activeIds = new Set<string>(state.customers.map((c: import('../types/game').Customer) => c.id));
         cleanupCRS(activeIds);
       }
-      (state.dirtyTables ?? []).forEach((t) => drawDirtyTable(ctx, t.seatX, t.seatY, state.tableLayout));
+      (state.dirtyTables ?? []).forEach((t: import('../types/game').DirtyTable) => drawDirtyTable(ctx, t.seatX, t.seatY, state.tableLayout));
       drawWaitList(ctx, state.waitList ?? []);
 
       // Layout editor önizlemesi — oyunculardan ÖNCE çizilir (oyuncu üstte kalır)

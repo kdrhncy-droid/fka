@@ -36,11 +36,11 @@ const DEFAULT_STATE: GameState = {
     holdingStations: [],
     dirtyTables: [],
     score: 0,
-    stock: { '🍞': 10, '🥩': 10, '🥬': 10, '🥘': 10, '🍢': 10 },
     marketName: '',
     dayPhase: 'prep',
     dayTimer: 2700,
-    upgrades: { patience: 0, earnings: 0, plateStackMax: 0, safeOven: 0, extraSink: 0, extraChopBoard: 0 },
+    upgrades: { patience: 0, earnings: 0, plateStackMax: 0, safeOven: 0,
+                fryerSpeed: 0, cakeBaker: 0, coffeeMachine: 0, extraSink: 0, extraChopBoard: 0 },
     day: 1,
     hasOrderedTonight: false,
     cookStations: [],
@@ -87,10 +87,10 @@ export function useSocket(
     const gameStateRef = useRef<GameState>(DEFAULT_STATE);
     const audioCtxRef = useRef<AudioContext | null>(null);
     const roomIdRef = useRef<string>('');
-    const playerDataRef = useRef<any>(null);
+    interface PlayerJoinData { room?: string; roomId?: string; name: string; color: string; hat: string; charType?: number; hairColor?: string; clothingColor?: string; faceShape?: number; mapId?: string; }
+    const playerDataRef = useRef<PlayerJoinData | null>(null);
     const reconnectAttemptsRef = useRef(0);
     const maxReconnectAttempts = 15;
-    const reconnectDelayRef = useRef(1000); // 1 saniye başlangıç
 
     useEffect(() => {
         // Socket.IO konfigürasyonu: mobil uyumluluk için optimize edilmiş
@@ -108,7 +108,7 @@ export function useSocket(
 
         // ─── Bağlantı Event'leri ───────────────────────────────────────────
         newSocket.on('connect', () => {
-            console.log('[Socket] Connected:', newSocket.id);
+            if (process.env.NODE_ENV !== 'production') console.log('[Socket] Connected:', newSocket.id);
             setIsConnected(true);
             setConnectionStatus('connected');
             reconnectAttemptsRef.current = 0;
@@ -124,7 +124,7 @@ export function useSocket(
 
             // Eğer önceden oyuncu verisi varsa, yeniden join et
             if (playerDataRef.current && roomIdRef.current) {
-                console.log('[Socket] Re-joining room after reconnect:', roomIdRef.current);
+                if (process.env.NODE_ENV !== 'production') console.log('[Socket] Re-joining room after reconnect:', roomIdRef.current);
                 newSocket.emit('join', playerDataRef.current);
             }
         });

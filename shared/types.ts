@@ -274,7 +274,6 @@ export interface GameState {
     holdingStations: HoldingStation[];  // Servis tezgahları (counter)
     dirtyTables: DirtyTable[];
     score: number;
-    stock: Record<StockKey, number>;
     marketName: string;
     dayPhase: 'prep' | 'day' | 'night';
     dayTimer: number;
@@ -588,7 +587,7 @@ function mkClassicMapState(): GameState {
     players: {}, customers: [], waitList: [],
     holdingStations: [],
     dirtyTables: [],
-    score: 0, stock: { '🍞': 10, '🥩': 10, '🥬': 10, '🥘': 5, '🍢': 5, '🥔': 8, '🧁': 6 },
+    score: 0,
     marketName: "TerraMarket", dayPhase: 'prep', dayTimer: DAY_TICKS,
     upgrades: { patience: 0, earnings: 0, plateStackMax: 0, safeOven: 0, fryerSpeed: 0, cakeBaker: 0, coffeeMachine: 0, extraSink: 0, extraChopBoard: 0 }, day: 1, hasOrderedTonight: false,
     cookStations: initialOvens,

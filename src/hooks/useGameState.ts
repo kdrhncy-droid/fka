@@ -21,7 +21,8 @@ interface GameUIState {
 
 const DEFAULT_UI: GameUIState = {
     score: 0, dayPhase: 'prep', dayTimer: DAY_TICKS,
-    upgrades: { patience: 0, earnings: 0, plateStackMax: 0, safeOven: 0 },
+    upgrades: { patience: 0, earnings: 0, plateStackMax: 0, safeOven: 0,
+                fryerSpeed: 0, cakeBaker: 0, coffeeMachine: 0, extraSink: 0, extraChopBoard: 0 },
     day: 1, ovenCount: 1, queueLen: 0, lives: 3,
     isGameOver: false, menuChoices: null, unlockedDishes: ['🥗', '🍔'],
     pendingCardChoices: null, activeCards: [], comboCount: 0,
@@ -30,6 +31,8 @@ const DEFAULT_UI: GameUIState = {
 function upgradesEqual(a: Upgrades, b: Upgrades): boolean {
     return a.patience === b.patience && a.earnings === b.earnings
         && a.plateStackMax === b.plateStackMax && a.safeOven === b.safeOven
+        && a.fryerSpeed === b.fryerSpeed && a.cakeBaker === b.cakeBaker
+        && a.coffeeMachine === b.coffeeMachine
         && a.extraSink === b.extraSink && a.extraChopBoard === b.extraChopBoard;
 }
 

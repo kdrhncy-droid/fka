@@ -508,9 +508,8 @@ const handleCoffeeMachines: InteractionHandler = ({ gs, p, px, py, snd }) => {
 
 // ─── BAHARAT RAFI ────────────────────────────────────────────────────────────
 const handleSpiceRack: InteractionHandler = (ctx) => {
-  const { gs, p, px, py, snd } = ctx;
+  const { p, px, py, snd, gs } = ctx;
 
-  // Gün 3'ten önce baharat rafı aktif değil
   if (gs.day < 3) return false;
 
   const dynPos = gs.stationLayout?.['spice_rack'];
