@@ -31,11 +31,11 @@ export function drawFridge(ctx: CanvasRenderingContext2D, fridge: Fridge) {
   ctx.fillStyle = 'rgba(255,255,255,0.25)';
   ctx.beginPath(); ctx.roundRect(x - 14, y - 24, 10, 48, 4); ctx.fill();
 
-  // İçecek sayısı
-  ctx.font = 'bold 11px Arial';
-  ctx.fillStyle = '#1e3a8a';
-  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillText(`🥤${fridge.drinks}`, x, y - 10);
+  // İkon — sınırsız içecek
+  ctx.font = '16px Arial';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('🥤', x, y - 8);
 
   // Etiket
   ctx.font = 'bold 8px Arial';

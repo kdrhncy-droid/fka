@@ -9,7 +9,7 @@ export type { Personality };
 
 export type Item = string | null;
 export type StockKey = '🍞' | '🥩' | '🥬' | '🥘' | '🍢' | '🥔' | '🧁';
-export type UpgradeKey = 'patience' | 'earnings' | 'plateStackMax' | 'safeOven' | 'fryerSpeed' | 'fridgeCapacity' | 'cakeBaker' | 'coffeeMachine' | 'extraSink' | 'extraChopBoard';
+export type UpgradeKey = 'patience' | 'earnings' | 'plateStackMax' | 'safeOven' | 'fryerSpeed' | 'cakeBaker' | 'coffeeMachine' | 'extraSink' | 'extraChopBoard';
 export const CLEAN_PLATE = '__clean_plate__';
 export const DIRTY_PLATE = '__dirty_plate__';
 
@@ -71,7 +71,7 @@ export interface WaitingGuest {
 
 export interface Upgrades {
     patience: number; earnings: number; plateStackMax: number; safeOven: number;
-    fryerSpeed: number; fridgeCapacity: number;
+    fryerSpeed: number;
     cakeBaker: number; coffeeMachine: number;
     extraSink: number; extraChopBoard: number;
 }
@@ -106,7 +106,7 @@ export const ALL_CARDS: GameCard[] = [
     { id: 'hot_oven',         icon: '🔥', name: 'Sıcak Fırın',        penalty: 'Yemekler %30 daha hızlı yanar', reward: 'Yemekler %30 daha hızlı pişer' },
     { id: 'few_plates',       icon: '🍽️', name: 'Az Tabak',           penalty: 'Başlangıç tabak sayısı -2',    reward: 'Her temizlenen tabak +2 puan' },
     { id: 'chop_pressure',    icon: '⏱️', name: 'Doğrama Baskısı',    penalty: 'Kesme tahtası %25 daha yavaş', reward: 'Doğranmış malzeme fırında %40 daha hızlı pişer' },
-    { id: 'cold_chain',       icon: '🧊', name: 'Soğuk Zincir',       penalty: 'Buzdolabı kapasitesi yarıya düşer', reward: 'İçecek servisi +8 ekstra puan' },
+    { id: 'cold_chain',       icon: '🧊', name: 'Soğuk Zincir',       penalty: 'İçecek servisi -2 puan',       reward: 'İçecek servisi +12 ekstra puan' },
     // Ekonomi kartları
     { id: 'expensive_day',    icon: '💸', name: 'Pahalı Gün',         penalty: 'Upgrade fiyatları +%25',       reward: 'Gün sonu +$50 bonus' },
     { id: 'lucky_day',        icon: '🎰', name: 'Şans Günü',          penalty: 'Spawn tamamen rastgele',        reward: 'Her müşteri 2x bahşiş bırakır' },
@@ -204,13 +204,13 @@ export interface Fryer {
 
 // ─── Buzdolabı ────────────────────────────────────────────────────────────────
 export const DRINK_ITEM = '🥤';
-export const FRIDGE_BASE_CAPACITY = 5;
+export const FRIDGE_BASE_CAPACITY = 999; // Sınırsız içecek
 
 export interface Fridge {
   id: string;
   x: number;
   y: number;
-  drinks: number;   // mevcut içecek sayısı
+  drinks: number;   // her zaman dolu (sınırsız)
   maxDrinks: number;
 }
 
@@ -563,7 +563,6 @@ export const UPGRADE_DEFS: Record<UpgradeKey, { costs: number[]; max: number }> 
     plateStackMax: { costs: [100, 200, 400, 800],  max: 4 },
     safeOven:      { costs: [500],                 max: 1 },
     fryerSpeed:    { costs: [300, 600],             max: 2 },
-    fridgeCapacity:{ costs: [250, 500],             max: 2 },
     cakeBaker:     { costs: [400],                  max: 1 },
     coffeeMachine: { costs: [350],                  max: 1 },
     extraSink:     { costs: [300, 600],             max: 2 }, // 2. ve 3. lavabo
@@ -591,7 +590,7 @@ function mkClassicMapState(): GameState {
     dirtyTables: [],
     score: 0, stock: { '🍞': 10, '🥩': 10, '🥬': 10, '🥘': 5, '🍢': 5, '🥔': 8, '🧁': 6 },
     marketName: "TerraMarket", dayPhase: 'prep', dayTimer: DAY_TICKS,
-    upgrades: { patience: 0, earnings: 0, plateStackMax: 0, safeOven: 0, fryerSpeed: 0, fridgeCapacity: 0, cakeBaker: 0, coffeeMachine: 0, extraSink: 0, extraChopBoard: 0 }, day: 1, hasOrderedTonight: false,
+    upgrades: { patience: 0, earnings: 0, plateStackMax: 0, safeOven: 0, fryerSpeed: 0, cakeBaker: 0, coffeeMachine: 0, extraSink: 0, extraChopBoard: 0 }, day: 1, hasOrderedTonight: false,
     cookStations: initialOvens,
     dirtyTrayCount: 0,
     plateStack: { count: PLATE_STACK_BASE, maxCount: PLATE_STACK_BASE },

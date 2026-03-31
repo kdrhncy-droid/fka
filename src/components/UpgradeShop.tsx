@@ -7,7 +7,6 @@ const UPGRADE_UI: { id: UpgradeKey; icon: string; name: string; desc: string; re
     { id: 'plateStackMax', icon: '🍽️', name: 'Tabak Yığını',          desc: 'Başlangıçta daha çok tabak' },
     { id: 'safeOven',      icon: '🛡️', name: 'Güvenli Fırın',         desc: 'Lv1: yanma 2x yavaş · Lv2: hiç yanmaz' },
     { id: 'fryerSpeed',    icon: '🍟', name: 'Fritöz Hızı',           desc: 'Patates daha hızlı kızarır',  requiresDish: '🍟' },
-    { id: 'fridgeCapacity',icon: '🧊', name: 'Buzdolabı Kapasitesi',  desc: '+3 içecek kapasitesi',         requiresDish: '🥤' },
     { id: 'cakeBaker',     icon: '🍰', name: 'Pasta Fırını Hızı',     desc: 'Pasta daha hızlı pişer',       requiresDish: '🍰' },
     { id: 'coffeeMachine', icon: '☕', name: 'Kahve Kapasitesi',       desc: '+2 kahve kapasitesi',           requiresDish: '☕' },
     { id: 'extraSink',     icon: '🚿', name: 'Ekstra Lavabo',          desc: 'Yeni lavabo ekler (max 3)' },

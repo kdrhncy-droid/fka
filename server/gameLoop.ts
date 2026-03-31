@@ -63,7 +63,7 @@ export function getCardMultipliers(gs: GameState) {
     choppedCookMult: has('chop_pressure') ? 0.60 : 1.0,  // doğranmış daha hızlı pişer
     tipMult:         has('rush_customers') ? 1.25 : has('lucky_day') ? 2.0 : has('mystery_guests') ? 1.30 : 1.0,
     earnBonus:       has('impatient_crowd') ? 3 : 0,
-    drinkTipBonus:   has('cold_chain') ? 8 : 0,
+    drinkTipBonus:   has('cold_chain') ? 10 : 0,
     plateBonusScore: has('few_plates') ? 2 : 0,
     upgradeCostMult: has('expensive_day') ? 1.25 : has('busy_day') ? 0.85 : 1.0,
     movementMult:    has('turbo_day') ? 0.85 : 1.0,
@@ -275,8 +275,7 @@ export function gameTick(gs: GameState, io: Server, rid: string) {
   // Buzdolabını güncelle — sadece gece başında bir kez yenile
   if (gs.dayPhase === 'night' && !gs.hasOrderedTonight && gs.fridges) {
     gs.fridges.forEach(fridge => {
-      fridge.maxDrinks = FRIDGE_BASE_CAPACITY + (gs.upgrades.fridgeCapacity ?? 0) * 3;
-      fridge.drinks = fridge.maxDrinks;
+      fridge.drinks = fridge.maxDrinks; // her zaman dolu
     });
   }
 
@@ -403,10 +402,8 @@ export function gameTick(gs: GameState, io: Server, rid: string) {
 
 function spawnTick(gs: GameState, io: Server, rid: string) {
   const cm = getCardMultipliers(gs);
-  // 🥤 buzdolabı boşsa menüden çıkar
-  const fridgeEmpty = !gs.fridges || gs.fridges.every(f => f.drinks === 0);
-  const availableDishes = (gs.unlockedDishes.length > 0 ? gs.unlockedDishes : [...DISH_ITEMS])
-    .filter(d => d !== '🥤' || !fridgeEmpty);
+  // 🥤 buzdolabı her zaman dolu — içecek her zaman menüde
+  const availableDishes = gs.unlockedDishes.length > 0 ? gs.unlockedDishes : [...DISH_ITEMS];
   const playerCount = Object.keys(gs.players).length || 1;
   const isSolo = playerCount === 1;
 

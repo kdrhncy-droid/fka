@@ -201,9 +201,6 @@ io.on("connection", (socket) => {
       gs.plateStack.maxCount = Math.max(2, gs.plateStack.maxCount - 2);
       gs.plateStack.count = Math.min(gs.plateStack.count, gs.plateStack.maxCount);
     }
-    if (card.id === 'cold_chain' && gs.fridges) {
-      gs.fridges.forEach(f => { f.maxDrinks = Math.max(1, Math.floor(f.maxDrinks / 2)); f.drinks = f.maxDrinks; });
-    }
     if (card.id === 'mystery_guests') {
       gs.hidePatience = true;
     }
@@ -270,9 +267,9 @@ io.on("connection", (socket) => {
     const gs = RoomManager.getRoomState(roomId)!;
     // menuChoices veya pendingCardChoices varsa seçim yapılmadan geçilmesin
     if (gs.dayPhase === 'night' && !gs.menuChoices && !gs.pendingCardChoices) {
-      gs.day++; gs.dayPhase = 'prep'; gs.dayTimer = DAY_TICKS;
-      gs.dayTimer = 0; // gameLoop'un tekrar tetiklememesi için timer'ı sıfırla
-      gs.dayPhase = 'prep'; // gameLoop night kontrolünü geçemez artık
+      gs.day++;
+      gs.dayPhase = 'prep';
+      gs.dayTimer = DAY_TICKS;
       io.to(roomId).emit("state", gs);
       socket.emit("sound", "success");
     }
@@ -307,12 +304,6 @@ io.on("connection", (socket) => {
       if (key === 'plateStackMax') {
         gs.plateStack.maxCount += PLATE_STACK_PER_UPGRADE;
         gs.plateStack.count = Math.min(gs.plateStack.count + PLATE_STACK_PER_UPGRADE, gs.plateStack.maxCount);
-      }
-      if (key === 'fridgeCapacity') {
-        gs.fridges?.forEach(f => {
-          f.maxDrinks += 3;
-          f.drinks = f.maxDrinks;
-        });
       }
       // Ekstra lavabo ekle
       if (key === 'extraSink') {
@@ -371,6 +362,8 @@ io.on("connection", (socket) => {
     gs.activeCards = [];
     gs.pendingCardChoices = null;
     gs.hidePatience = false;
+    gs.comboCount = 0;
+    gs.comboTimer = 0;
     // Servis penceresini temizle
     gs.serviceWindow?.forEach(s => { s.item = null; });
     // Lavaboları temizle

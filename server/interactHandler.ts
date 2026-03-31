@@ -442,13 +442,13 @@ const handleFridges: InteractionHandler = ({ gs, p, px, py, snd }) => {
     const dynX = gs.stationLayout?.[fridge.id]?.x ?? fridge.x;
     const dynY = gs.stationLayout?.[fridge.id]?.y ?? fridge.y;
     if (Math.hypot(px - dynX, py - dynY) < INTERACT_R) {
-      if (!p.holding && fridge.drinks > 0) {
-        p.holding = DRINK_ITEM; fridge.drinks--; snd('pickup');
-      } else if (isTray(p.holding) && fridge.drinks > 0) {
+      if (!p.holding) {
+        p.holding = DRINK_ITEM; snd('pickup');
+      } else if (isTray(p.holding)) {
         const items = getTrayItems(p.holding);
         if (items.length < MAX_TRAY_CAPACITY) {
           items.push(DRINK_ITEM); p.holding = createTray(items);
-          fridge.drinks--; snd('pickup');
+          snd('pickup');
         }
       } else { snd('fail'); }
       return true;
