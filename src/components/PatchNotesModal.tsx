@@ -13,7 +13,7 @@ export const PatchNotesModal: React.FC<Props> = ({ onClose }) => {
                 <div>
                     <h2 className="text-3xl font-black text-amber-400 tracking-tight">Oyun Rehberi & Yenilikler 📜</h2>
                     <div className="flex items-center gap-2 mt-1">
-                        <span className="bg-amber-400/10 text-amber-400 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest border border-amber-400/20">v2.0.0</span>
+                        <span className="bg-amber-400/10 text-amber-400 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest border border-amber-400/20">v2.1.0</span>
                         <span className="text-stone-500 text-[10px] font-bold uppercase tracking-widest">Kart Sistemi, Combo & Özel İstekler</span>
                     </div>
                 </div>
@@ -85,6 +85,11 @@ export const PatchNotesModal: React.FC<Props> = ({ onClose }) => {
                             { emoji: '🍕', name: 'Pizza', ing: '🍞 Hamur → fırın', time: '3 sn', note: 'Gece kilit açılır' },
                             { emoji: '🌯', name: 'Dürüm', ing: '🍢 Kebap → doğra → fırın', time: '2 sn', note: 'Gece kilit açılır' },
                             { emoji: '🍜', name: 'Çorba', ing: '🥘 Çorba Malz. → fırın', time: '4 sn', note: 'Gece kilit açılır' },
+                            { emoji: '🍟', name: 'Patates', ing: '🥔 Patates → fritöz', time: '1 sn', note: 'Gece kilit açılır' },
+                            { emoji: '🍰', name: 'Pasta', ing: '🧁 Hamur Tatlı → pasta fırını', time: '4 sn', note: 'Gece kilit açılır' },
+                            { emoji: '☕', name: 'Kahve', ing: 'Aleti satın al', time: 'Anında', note: 'Makineden direkt servis' },
+                            { emoji: '🥤', name: 'İçecek', ing: 'Buzdolabında (Hazır)', time: 'Anında', note: 'Sürekli yenilenir' },
+                            { emoji: '🌶️', name: 'Acı Sos', ing: 'Pişmiş Yemek → Baharat Rafı', time: 'Anında', note: '3. günden sonra raf açılır' },
                         ].map(d => (
                             <div key={d.emoji} className="flex items-center gap-3 bg-stone-800/30 border border-stone-700/40 px-4 py-2.5 rounded-xl">
                                 <span className="text-2xl w-8 text-center">{d.emoji}</span>
@@ -118,6 +123,9 @@ export const PatchNotesModal: React.FC<Props> = ({ onClose }) => {
                             { icon: '💰', name: 'Servis Kazancı', desc: 'Her servisten +5 ekstra puan. 2 seviye.' },
                             { icon: '🍽️', name: 'Tabak Yığını', desc: 'Başlangıç tabak kapasitesi artar (4→6→8→10). 3 seviye.' },
                             { icon: '❤️', name: 'Ekstra Can', desc: 'Maksimum 3 can. Her can $75. Müşteri sabrı bitince can gider.' },
+                            { icon: '⚡', name: 'Fritöz Hızı', desc: 'Patates kızartma süresini kısaltır. 2 seviye.' },
+                            { icon: '🍰', name: 'Pasta Fırını', desc: 'Pastalar için özel makine. 1 seviye.' },
+                            { icon: '☕', name: 'Kahve Makinesi', desc: 'Menüye kahve servisi seçeneği ekler. 1 seviye.' },
                         ].map(u => (
                             <li key={u.name} className="flex items-start gap-3">
                                 <span className="text-xl mt-0.5">{u.icon}</span>
@@ -188,9 +196,21 @@ export const PatchNotesModal: React.FC<Props> = ({ onClose }) => {
                 <section>
                     <h3 className="text-xs font-black text-stone-500 mb-4 uppercase tracking-[0.3em] flex items-center gap-3">
                         <span className="h-px flex-1 bg-stone-800"></span>
-                        🚀 Son Güncellemeler (v2.0.0)
+                        🚀 Son Güncellemeler (v2.1.0 - Modüler Devrim)
                         <span className="h-px flex-1 bg-stone-800"></span>
                     </h3>
+
+                    {/* v2.1.0 Güncellemesi */}
+                    <div className="bg-emerald-500/5 border border-emerald-500/20 p-6 rounded-[2rem] space-y-4 mb-6">
+                        <div className="flex items-start gap-3">
+                            <span className="text-emerald-400 font-bold">🛠️</span>
+                            <div>
+                                <div className="text-sm font-bold text-stone-200 uppercase tracking-wider">Dev Refactoring (Single Responsibility)</div>
+                                <p className="text-xs text-stone-400 mt-1 leading-relaxed">Spagetti Kod tamamen temizlendi! Projenin can damarı olan Veri Sistemleri ve Sunucu İstasyonları (Fırın, Lavabo, Kasa vb.) daha modüler hale getirildi. Oyun artık yeni sistemlere (Örn: Birleştirilebilir Yemekler) %100 hazır ve çok daha kararlı.</p>
+                            </div>
+                        </div>
+                    </div>
+
                     <div className="bg-amber-500/5 border border-amber-500/20 p-6 rounded-[2rem] space-y-4">
                         <div className="flex items-start gap-3">
                             <span className="text-emerald-400 font-bold">⚡</span>
