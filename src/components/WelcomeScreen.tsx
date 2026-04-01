@@ -1,10 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { MARKET_NAME } from '../constants';
 import { PatchNotesModal } from './PatchNotesModal';
-import { StatsModal } from './StatsModal';
 import { TutorialOverlay, markTutorialDone } from './TutorialOverlay';
-import { CharacterPreview } from './CharacterPreview';
-import { CHARACTER_TYPES } from '../types/game';
+import { ProfileModal } from './ProfileModal';
 import { stk, adjustColor, drawShadowEllipse } from '../renderer/rendererUtils';
 
 // ── Arka plan canvas animasyonu (loading screen ile aynı stil) ──────────────
@@ -162,9 +160,8 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   const [generatedRoomId, setGeneratedRoomId] = useState('');
   const [copied, setCopied] = useState(false);
   const [showPatchNotes, setShowPatchNotes] = useState(false);
-  const [showStats, setShowStats] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
-  const [showChar, setShowChar] = useState(false);
 
   const openCreate = () => {
     const rid = Math.random().toString(36).substring(2, 6).toUpperCase();
@@ -234,24 +231,20 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
               className="w-full py-3.5 rounded-2xl bg-white/15 hover:bg-white/25 active:scale-[0.97] backdrop-blur border border-white/20 text-white font-black text-sm uppercase tracking-widest shadow transition-all">
               Tek Oyunculu
             </button>
-            <button onClick={() => setShowChar(v => !v)}
+            <button onClick={() => setShowProfile(true)}
               className="w-full py-3 rounded-2xl bg-white/10 hover:bg-white/20 active:scale-[0.97] backdrop-blur border border-white/15 text-white/90 font-bold text-sm uppercase tracking-widest transition-all">
-              Karakter
+              👤 Profil
             </button>
             <div className="grid grid-cols-2 gap-2">
               <button onClick={onSettings}
                 className="py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 backdrop-blur border border-white/15 text-white/80 font-bold text-xs uppercase tracking-widest transition-all">
                 Ayarlar
               </button>
-              <button onClick={() => setShowStats(true)}
+              <button onClick={() => { markTutorialDone(); setShowTutorial(true); }}
                 className="py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 backdrop-blur border border-white/15 text-white/80 font-bold text-xs uppercase tracking-widest transition-all">
-                İstatistik
+                Nasıl Oynanır?
               </button>
             </div>
-            <button onClick={() => { markTutorialDone(); setShowTutorial(true); }}
-              className="w-full py-2.5 rounded-2xl bg-white/8 hover:bg-white/15 backdrop-blur border border-white/10 text-white/60 font-bold text-xs uppercase tracking-widest transition-all">
-              Nasıl Oynanır?
-            </button>
           </div>
         )}
 
@@ -351,70 +344,22 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
           </div>
         )}
 
-        <p className="text-[10px] text-white/30 tracking-widest uppercase">v2.0.0</p>      </div>
-
-      {/* Karakter paneli */}
-      {showChar && (
-        <div className="absolute inset-0 z-20 flex items-end justify-center pb-6 px-4 bg-black/50 backdrop-blur-sm" onClick={() => setShowChar(false)}>
-          <div className="w-full max-w-sm max-h-[85vh] overflow-y-auto no-scrollbar bg-stone-900/95 rounded-3xl border border-white/10 p-5 space-y-4" onClick={e => e.stopPropagation()}>
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-black uppercase tracking-widest text-stone-200">Karakter</span>
-              <button onClick={() => setShowChar(false)} className="text-stone-500 hover:text-white text-lg">✕</button>
-            </div>
-            {/* Karakter seçimi */}
-            <div className="grid grid-cols-3 gap-2">
-              {CHARACTER_TYPES.map((char, i) => (
-                <button key={i} onClick={() => { setCharType(i); setPlayerHat(''); setPlayerColor(char.bodyColor); }}
-                  className={`rounded-xl p-3 flex flex-col items-center gap-1 transition-all ${charType === i ? 'bg-amber-500/20 border-2 border-amber-500' : 'bg-stone-800 border border-stone-700'}`}>
-                  <CharacterPreview charType={i} size={60} hairColor={charType === i ? hairColor : undefined} clothingColor={charType === i ? clothingColor : undefined} faceShape={charType === i ? faceShape : undefined} />
-                  <span className="text-[9px] font-bold uppercase text-stone-300">{char.name}</span>
-                </button>
-              ))}
-            </div>
-            {/* Saç */}
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-stone-500 mb-2">Saç Rengi</p>
-              <div className="flex flex-wrap gap-2">
-                {HAIR_COLORS.map(c => (
-                  <button key={c} onClick={() => setHairColor(c)}
-                    className={`w-6 h-6 rounded-full border-2 transition-transform ${hairColor === c ? 'border-white scale-110' : 'border-transparent'}`}
-                    style={{ backgroundColor: c }} />
-                ))}
-              </div>
-            </div>
-            {/* Kıyafet */}
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-stone-500 mb-2">Kıyafet</p>
-              <div className="flex flex-wrap gap-2">
-                {CLOTHING_COLORS.map(c => (
-                  <button key={c} onClick={() => { setClothingColor(c); setPlayerColor(c); }}
-                    className={`w-6 h-6 rounded-full border-2 transition-transform ${clothingColor === c ? 'border-white scale-110' : 'border-transparent'}`}
-                    style={{ backgroundColor: c }} />
-                ))}
-              </div>
-            </div>
-            {/* İsim Etiketi Rengi */}
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-stone-500 mb-2">
-                İsim Etiketi &nbsp;
-                <span className="font-black px-2 py-0.5 rounded text-[10px]" style={{ color: nameLabelColor, background: 'rgba(0,0,0,0.5)' }}>
-                  {playerName || 'Oyuncu'}
-                </span>
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {LABEL_COLORS.map(c => (
-                  <button key={c} onClick={() => setNameLabelColor(c)}
-                    className={`w-6 h-6 rounded-full border-2 transition-transform ${nameLabelColor === c ? 'border-white scale-110' : 'border-transparent'}`}
-                    style={{ backgroundColor: c, outline: c === '#ffffff' ? '1px solid #555' : undefined }} />
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+        <p className="text-[10px] text-white/30 tracking-widest uppercase">v2.2.0</p>      </div>
 
       {showPatchNotes && <PatchNotesModal onClose={() => setShowPatchNotes(false)} />}
-      {showStats && <StatsModal onClose={() => setShowStats(false)} />}
+      {showProfile && (
+        <ProfileModal
+          onClose={() => setShowProfile(false)}
+          playerName={playerName} setPlayerName={setPlayerName}
+          charType={charType} setCharType={setCharType}
+          hairColor={hairColor} setHairColor={setHairColor}
+          clothingColor={clothingColor} setClothingColor={setClothingColor}
+          faceShape={faceShape} setFaceShape={setFaceShape}
+          nameLabelColor={nameLabelColor} setNameLabelColor={setNameLabelColor}
+          setPlayerColor={setPlayerColor} setPlayerHat={setPlayerHat}
+          coins={coins}
+        />
+      )}
       {showTutorial && <TutorialOverlay onClose={() => setShowTutorial(false)} />}
     </div>
   );
