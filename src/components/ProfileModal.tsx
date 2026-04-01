@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { CharacterPreview } from './CharacterPreview';
 import { CHARACTER_TYPES } from '../types/game';
-import { loadProfile, saveProfile } from '../utils/profile';
+import { loadProfile, saveProfile, SHOP_ITEMS } from '../utils/profile';
 
 interface Props {
   onClose: () => void;
@@ -220,6 +220,29 @@ export const ProfileModal: React.FC<Props> = ({
                   </div>
                 ))}
               </div>
+
+              {/* Sahip olunan itemlar */}
+              {profile.ownedItems.length > 0 && (
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-stone-500 mb-2">Sahip Olunanlar ({profile.ownedItems.length})</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {profile.ownedItems.map(id => {
+                      const item = SHOP_ITEMS.find(i => i.id === id);
+                      if (!item) return null;
+                      return (
+                        <div key={id} className="flex items-center gap-1 bg-stone-800/60 border border-stone-700 rounded-lg px-2 py-1">
+                          {item.category === 'hat' ? (
+                            <span className="text-sm">{item.icon}</span>
+                          ) : (
+                            <div className="w-3 h-3 rounded-full border border-stone-600" style={{ backgroundColor: item.value }} />
+                          )}
+                          <span className="text-stone-400 text-[9px]">{item.name}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
 
               {/* Sıfırla */}
               {confirmReset ? (

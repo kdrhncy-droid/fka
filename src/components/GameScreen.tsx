@@ -74,12 +74,14 @@ interface Props {
     onClearDayEnd: () => void;
     revengeSceneSummary: import('../hooks/useSocket').DayEndSummary | null;
     onClearRevengeScene: () => void;
+    lastEarnedCoins?: number;
+    onClearEarnedCoins?: () => void;
 }
 
 export const GameScreen: React.FC<Props> = ({
     canvasRef, isJoined, myId, socket,
     gameStateRef, localPlayerRef, keysRef, audioCtxRef, settings, updateSettings, roomId, onLeaveGame,
-    interactOverrideRef, ping = 0, onOpenStats, chatMessages, dayEndSummary, onClearDayEnd, revengeSceneSummary, onClearRevengeScene
+    interactOverrideRef, ping = 0, onOpenStats, chatMessages, dayEndSummary, onClearDayEnd, revengeSceneSummary, onClearRevengeScene, lastEarnedCoins = 0, onClearEarnedCoins
 }) => {
     const joystickVectorRef = useRef({ x: 0, y: 0 });
     const lastPunchTimeRef = useRef<number>(0);
@@ -149,6 +151,14 @@ export const GameScreen: React.FC<Props> = ({
     useEffect(() => {
         return () => stopBgm();
     }, []);
+
+    // Coin toast — 3 saniye sonra temizle
+    useEffect(() => {
+        if (lastEarnedCoins > 0) {
+            const t = setTimeout(() => onClearEarnedCoins?.(), 3000);
+            return () => clearTimeout(t);
+        }
+    }, [lastEarnedCoins]);
 
     // WakeLock — oyun açıkken ekran kapanmasın
     useEffect(() => {
@@ -657,6 +667,19 @@ export const GameScreen: React.FC<Props> = ({
 
             {showDevPanel && (
                 <DevPanel socket={socket} onClose={() => setShowDevPanel(false)} />
+            )}
+
+            {/* Coin Toast */}
+            {lastEarnedCoins > 0 && (
+                <div
+                    className="fixed top-16 left-1/2 -translate-x-1/2 z-[60] pointer-events-none"
+                    style={{ animation: 'coinToastIn 0.3s ease-out, coinToastOut 0.4s ease-in 2.6s forwards' }}
+                >
+                    <div className="flex items-center gap-2 bg-yellow-900/90 border border-yellow-500/60 backdrop-blur-sm rounded-2xl px-4 py-2.5 shadow-xl">
+                        <span className="text-xl">🪙</span>
+                        <span className="text-yellow-300 font-black text-sm">+{lastEarnedCoins} coin kazandın!</span>
+                    </div>
+                </div>
             )}
 
             {/* İntikam Sahnesi */}

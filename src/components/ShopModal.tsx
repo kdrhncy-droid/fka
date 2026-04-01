@@ -27,6 +27,8 @@ const RARITY_STYLE = {
   epic:   { border: 'border-purple-500/50',bg: 'bg-purple-900/20',  badge: 'text-purple-400', label: 'Epik'   },
 };
 
+const NEW_ITEMS = new Set(['hat_chef', 'hair_orange', 'cloth_rainbow', 'label_rainbow']);
+
 export const ShopModal: React.FC<Props> = ({
   onClose, coins, setCoins,
   charType, hairColor, setHairColor,
@@ -170,7 +172,12 @@ export const ShopModal: React.FC<Props> = ({
 
                 return (
                   <div key={item.id}
-                    className={`rounded-xl border-2 p-2.5 flex flex-col gap-1.5 transition-all ${equipped ? 'border-amber-500 bg-amber-900/20' : `${rs.border} ${rs.bg}`}`}>
+                    className={`rounded-xl border-2 p-2.5 flex flex-col gap-1.5 transition-all relative ${equipped ? 'border-amber-500 bg-amber-900/20' : `${rs.border} ${rs.bg}`}`}>
+
+                    {/* Yeni etiketi */}
+                    {NEW_ITEMS.has(item.id) && !isOwned && (
+                      <span className="absolute -top-2 -right-2 bg-emerald-500 text-white text-[8px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-wide z-10">YENİ</span>
+                    )}
 
                     {/* İkon */}
                     <div className="flex items-center gap-1.5">

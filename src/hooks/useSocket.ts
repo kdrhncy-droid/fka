@@ -23,6 +23,8 @@ interface UseSocketReturn {
     clearDayEnd: () => void;
     revengeSceneSummary: DayEndSummary | null;
     clearRevengeScene: () => void;
+    lastEarnedCoins: number;
+    clearEarnedCoins: () => void;
 }
 
 export interface ChatMessage {
@@ -54,6 +56,7 @@ export function useSocket(
     const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
     const [dayEndSummary, setDayEndSummary] = useState<DayEndSummary | null>(null);
     const [revengeSceneSummary, setRevengeSceneSummary] = useState<DayEndSummary | null>(null);
+    const [lastEarnedCoins, setLastEarnedCoins] = useState(0);
     const gameStateRef = useRef<GameState>(DEFAULT_STATE);
     const audioCtxRef = useRef<AudioContext | null>(null);
     const roomIdRef = useRef<string>('');
@@ -192,7 +195,10 @@ export function useSocket(
 
         newSocket.on('dayEnd', (summary: DayEndSummary) => {
             setDayEndSummary(prev => prev ?? summary);
-            if (summary.score > 0) addCoinsFromScore(summary.score);
+            if (summary.score > 0) {
+                const earned = addCoinsFromScore(summary.score);
+                setLastEarnedCoins(earned);
+            }
         });
 
         newSocket.on('revengeScene', (summary: DayEndSummary) => {
@@ -243,6 +249,7 @@ export function useSocket(
 
     const clearDayEnd = () => setDayEndSummary(null);
     const clearRevengeScene = () => setRevengeSceneSummary(null);
+    const clearEarnedCoins = () => setLastEarnedCoins(0);
 
-    return { socket, isConnected, myId, gameStateRef, audioCtxRef, connectionStatus, ping, chatMessages, dayEndSummary, clearDayEnd, revengeSceneSummary, clearRevengeScene };
+    return { socket, isConnected, myId, gameStateRef, audioCtxRef, connectionStatus, ping, chatMessages, dayEndSummary, clearDayEnd, revengeSceneSummary, clearRevengeScene, lastEarnedCoins, clearEarnedCoins };
 }
