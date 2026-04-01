@@ -349,13 +349,18 @@ export function drawCustomer(ctx: CanvasRenderingContext2D, customer: Customer, 
     // UI — ayna efektini önle
     if (!isSeated && !st.faceRight) ctx.scale(-1, 1);
 
-    // ── SABIR ÇUBUĞU ─────────────────────────────────────────────────────────
+    // ── UI KATMANI — sabır çubuğu, dialog, yemek balonu ─────────────────────
+    // Kişiliğe göre kafa üstü boşluk (taç/şapka için ekstra)
+    const headTopExtra = (pers === 'vip') ? 18 : (pers === 'thug') ? 14 : 0;
+    const uiBaseY = headY - hr - 14 - headTopExtra; // sabır çubuğu taban Y
+
     const isAngry = (patience / maxPatience) < 0.3;
     const angryShake = isAngry ? Math.sin(Date.now() / 40) * 1.5 : 0;
 
-    if (isSeated && !isEating && patience < maxPatience && !hidePatience) {
+    // Sabır çubuğu — sadece dialog yoksa göster
+    if (isSeated && !isEating && patience < maxPatience && !hidePatience && !currentDialog) {
         const barW = 35, barH = 6;
-        const bx = -barW / 2 + angryShake, by = headY - hr - 14;
+        const bx = -barW / 2 + angryShake, by = uiBaseY;
         const pct = patience / maxPatience;
         ctx.fillStyle = 'rgba(0,0,0,0.5)';
         ctx.beginPath(); ctx.roundRect(bx, by, barW, barH, 3); ctx.fill();
@@ -367,10 +372,13 @@ export function drawCustomer(ctx: CanvasRenderingContext2D, customer: Customer, 
         if (isAngry) { ctx.font = '10px Arial'; ctx.fillText('💢', bx + barW + 8, by + barH / 2); }
     }
 
+    // Dialog balonu — sabır çubuğunun üstünde
     if (currentDialog) {
-        drawDialogBubble(ctx, currentDialog, angryShake, headY - hr - 12, '#fff', isAngry ? '#ef4444' : bodyColor, '#222');
+        drawDialogBubble(ctx, currentDialog, angryShake, uiBaseY - 4, '#fff', isAngry ? '#ef4444' : bodyColor, '#222');
     } else if (wants && isSeated && !isEating) {
-        const bx = angryShake, by = headY - hr - 24 + angryShake * 0.5;
+        // Yemek balonu — sabır çubuğunun üstünde
+        const bx = angryShake;
+        const by = uiBaseY - 18; // çubuğun üstünde
         const specialReq = customer.specialRequest;
         const specialIcon = specialReq === 'spicy' ? '🌶️' : specialReq === 'extra' ? '➕' : specialReq === 'quick' ? '⚡' : null;
         const bubbleR = specialIcon ? 18 : 14;
