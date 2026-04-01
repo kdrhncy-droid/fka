@@ -18,6 +18,7 @@ export interface HudLayout {
     panelWidth: number;    // % cinsinden (10-25)
     joystickSize: number;  // px (80-160)
     btnSize: number;       // px (44-88)
+    joystickOffset: { x: number; y: number }; // panel içi konum (%)
 }
 
 export const DEFAULT_HUD_LAYOUT: HudLayout = {
@@ -29,6 +30,7 @@ export const DEFAULT_HUD_LAYOUT: HudLayout = {
     panelWidth: 17,
     joystickSize: 128,
     btnSize: 64,
+    joystickOffset: { x: 50, y: 50 }, // panel ortası
 };
 
 export interface Settings {
@@ -74,6 +76,7 @@ function load(): Settings {
         if (parsed.hudLayout.panelWidth === undefined) parsed.hudLayout.panelWidth = DEFAULT_HUD_LAYOUT.panelWidth;
         if (parsed.hudLayout.joystickSize === undefined) parsed.hudLayout.joystickSize = DEFAULT_HUD_LAYOUT.joystickSize;
         if (parsed.hudLayout.btnSize === undefined) parsed.hudLayout.btnSize = DEFAULT_HUD_LAYOUT.btnSize;
+        if (!parsed.hudLayout.joystickOffset) parsed.hudLayout.joystickOffset = DEFAULT_HUD_LAYOUT.joystickOffset;
         if (parsed.graphicsQuality === undefined) parsed.graphicsQuality = DEFAULTS.graphicsQuality;
         if (parsed.vibration === undefined) parsed.vibration = DEFAULTS.vibration;
         return { ...DEFAULTS, ...parsed };

@@ -26,6 +26,88 @@ import { CardSelectModal } from './CardSelectModal';
 import { DevPanel } from './DevPanel';
 import { ALL_CARDS } from '../../shared/types';
 
+// ── Joystick Panel — sürükle-bırak konumlandırma ─────────────────────────────
+interface JoystickPanelProps {
+    panelWidth: number;
+    joystickSize: number;
+    offset: { x: number; y: number };
+    onOffsetChange: (offset: { x: number; y: number }) => void;
+    onMove: (x: number, y: number) => void;
+}
+
+const JoystickPanel: React.FC<JoystickPanelProps> = ({ panelWidth, joystickSize, offset, onOffsetChange, onMove }) => {
+    const panelRef = React.useRef<HTMLDivElement>(null);
+    const longPressRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+    const [isDraggingPos, setIsDraggingPos] = React.useState(false);
+    const isDraggingPosRef = React.useRef(false);
+
+    const startLongPress = (clientX: number, clientY: number) => {
+        longPressRef.current = setTimeout(() => {
+            isDraggingPosRef.current = true;
+            setIsDraggingPos(true);
+        }, 500);
+    };
+
+    const cancelLongPress = () => {
+        if (longPressRef.current) { clearTimeout(longPressRef.current); longPressRef.current = null; }
+    };
+
+    const updatePos = (clientX: number, clientY: number) => {
+        if (!isDraggingPosRef.current || !panelRef.current) return;
+        const rect = panelRef.current.getBoundingClientRect();
+        const x = Math.max(5, Math.min(95, ((clientX - rect.left) / rect.width) * 100));
+        const y = Math.max(5, Math.min(95, ((clientY - rect.top) / rect.height) * 100));
+        onOffsetChange({ x, y });
+    };
+
+    const endDragPos = () => {
+        isDraggingPosRef.current = false;
+        setIsDraggingPos(false);
+        cancelLongPress();
+    };
+
+    return (
+        <div
+            ref={panelRef}
+            className="flex-none relative"
+            style={{ width: `${panelWidth}%`, background: 'rgba(0,0,0,0.15)' }}
+            onPointerMove={(e) => updatePos(e.clientX, e.clientY)}
+            onPointerUp={endDragPos}
+            onPointerLeave={endDragPos}
+        >
+            {/* Taşıma modu göstergesi */}
+            {isDraggingPos && (
+                <div className="absolute inset-0 border-2 border-dashed border-amber-400/50 rounded pointer-events-none z-20" />
+            )}
+            {/* Joystick — konumlandırılabilir */}
+            <div
+                className="absolute touch-none"
+                style={{
+                    left: `${offset.x}%`,
+                    top: `${offset.y}%`,
+                    transform: 'translate(-50%, -50%)',
+                    transition: isDraggingPos ? 'none' : 'left 0.15s, top 0.15s',
+                    zIndex: isDraggingPos ? 30 : 10,
+                    filter: isDraggingPos ? 'drop-shadow(0 0 8px rgba(251,191,36,0.8))' : 'none',
+                }}
+                onPointerDown={(e) => {
+                    if (isDraggingPosRef.current) return;
+                    startLongPress(e.clientX, e.clientY);
+                }}
+                onPointerUp={() => { cancelLongPress(); if (isDraggingPosRef.current) endDragPos(); }}
+            >
+                <Joystick size={joystickSize} onMove={onMove} />
+            </div>
+            {/* Taşıma ipucu */}
+            {!isDraggingPos && (
+                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[8px] text-white/20 font-bold uppercase tracking-wider pointer-events-none">
+                    Uzun bas → taşı
+                </div>
+            )}
+        </div>
+    );
+};
+
 
 
 // Yemek isim haritası
@@ -346,12 +428,15 @@ export const GameScreen: React.FC<Props> = ({
             {/* ── Canvas + Yan Paneller ─────────────────────────────────────────── */}
             <div className="flex-1 min-h-0 flex" style={{ background: '#9a7858' }}>
 
-                {/* ── SOL PANEL — Joystick (sadece touch) ── */}
+                {/* ── SOL PANEL — Joystick (sadece touch, sürükle-bırak konumlandırma) ── */}
                 {isTouchDevice && !showHudEditor && (
-                    <div className="flex-none flex items-center justify-center"
-                        style={{ width: `${panelWidth}%`, background: 'rgba(0,0,0,0.15)' }}>
-                        <Joystick size={joystickSize} onMove={(x, y) => { joystickVectorRef.current = { x, y }; }} />
-                    </div>
+                    <JoystickPanel
+                        panelWidth={panelWidth}
+                        joystickSize={joystickSize}
+                        offset={settings.hudLayout.joystickOffset}
+                        onOffsetChange={(offset) => updateSettings({ hudLayout: { ...settings.hudLayout, joystickOffset: offset } })}
+                        onMove={(x, y) => { joystickVectorRef.current = { x, y }; }}
+                    />
                 )}
 
                 {/* ── CANVAS ── */}
