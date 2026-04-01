@@ -213,3 +213,202 @@ interface Particle {
 - Maksimum 50 aktif partikül
 - Efektler canvas dışına çıkınca otomatik temizlenir
 - Düşük kalite modunda efektler devre dışı
+
+---
+
+## 9. Joystick Sürükle-Bırak Konumlandırma
+
+### Konsept
+Oyun içinde joystick'e uzun basınca "taşıma modu" aktif olur. Parmağı sürükleyerek istediğin yere bırakırsın. Konum localStorage'a kaydedilir.
+
+### Davranış
+```
+Normal: joystick sol panelde sabit
+Uzun bas (500ms): titreşim + "taşıma modu" aktif
+Sürükle: joystick parmağı takip eder
+Bırak: yeni konum kaydedilir
+```
+
+### Teknik
+- `onPointerDown` + 500ms timeout → taşıma modu
+- Taşıma modunda `onPointerMove` ile pozisyon güncellenir
+- Pozisyon `settings.hudLayout.joystickOffset: { x, y }` olarak kaydedilir
+- Sol panel içinde sınırlı kalır (overflow yok)
+- Diğer butonlar da aynı şekilde taşınabilir olabilir
+
+### Görsel
+- Taşıma modunda joystick etrafında noktalı çerçeve
+- Hafif büyüme animasyonu (scale 1.1)
+- Bırakınca "yerleşti" efekti (kısa titreşim)
+
+---
+
+## 10. Şapka Sistemi — Kafaya Tam Uyumlu
+
+### Sorun
+Şu an tüm şapkalar aynı `headY - headR - 2` koordinatına çiziliyor. Her şapkanın farklı oturma noktası var.
+
+### Çözüm: Şapka Tanım Sistemi
+
+```typescript
+interface HatDefinition {
+  id: string;
+  name: string;
+  // Kafaya göre offset (headR = 18.7 baz alınarak)
+  anchorY: number;      // kafanın tepesinden ne kadar yukarıda
+  anchorOffsetX: number; // yatay kaydırma (kep için öne eğik)
+  width: number;        // şapka genişliği (headR'a oranla)
+  height: number;       // şapka yüksekliği
+  drawFn: (ctx, headR, hatY, hatX) => void;
+}
+```
+
+### Her Şapka İçin Özel Çizim
+
+**Aşçı Şapkası (Toque Blanche)**
+```
+    ╭─────╮
+    │     │  ← uzun beyaz silindir
+    │     │
+╭───┴─────┴───╮  ← geniş alt kenar
+```
+- Beyaz, uzun silindir
+- Alt kısımda geniş bant
+- Hafif kıvrık üst
+- `anchorY: headR * 1.8` (kafadan çok yukarı)
+
+**Silindir Şapka**
+```
+  ╭───────╮
+  │       │  ← silindir gövde
+╭─┴───────┴─╮  ← geniş kenarlık
+```
+- Siyah, parlak
+- Kenarlık kafayı sarar
+- `anchorY: headR * 1.2`
+
+**Kep (Baseball)**
+```
+╭─────────╮
+│  ●      │  ← düğme
+╰─────────╯
+  ╰──────╯  ← siper öne uzanır
+```
+- Öne eğik (5-10 derece)
+- Siper kafanın önüne uzanır
+- `anchorOffsetX: headR * 0.1` (hafif öne)
+
+**Taç**
+```
+  ╱╲ ╱╲ ╱╲
+ ╱  ╲╱  ╲╱  ╲
+╰────────────╯  ← kafa çevresine oturur
+```
+- Kafanın tam çevresine oturur
+- Dişler yukarı uzanır
+- `width: headR * 1.4` (kafadan biraz geniş)
+
+**Fiyonk**
+```
+  ╭──╮ ╭──╮
+  │  ╰─╯  │  ← iki kanat
+  ╰───●───╯  ← orta düğüm
+```
+- Kafanın tam tepesinde
+- Simetrik iki kanat
+- `anchorY: headR * 0.9`
+
+---
+
+## 11. Saç Stilleri
+
+### Mevcut Durum
+Sadece renk değişiyor, stil yok. Tüm karakterler aynı saç şekline sahip.
+
+### Yeni Saç Stilleri
+
+| Stil ID | İsim | Görünüm | Teknik |
+|---------|------|---------|--------|
+| `hair_straight` | Düz | Düz, omuzlara inen | Mevcut stil (default) |
+| `hair_short` | Kısa | Kısa, düzgün kesilmiş | Recep saçı gibi |
+| `hair_wavy` | Dalgalı | Dalgalı çizgiler | Bezier eğrileri |
+| `hair_ponytail` | At Kuyruğu | Arkada bağlı | Ek çizim arkada |
+| `hair_afro` | Afro | Büyük yuvarlak | Büyük daire, headR * 1.5 |
+| `hair_spiky` | Dikenli | Yukarı diken | Üçgen çıkıntılar |
+| `hair_bun` | Topuz | Üstte topuz | Küçük daire tepede |
+| `hair_long` | Uzun | Omuzların altına | Daha uzun çizgiler |
+
+### Teknik
+```typescript
+interface HairStyle {
+  id: string;
+  name: string;
+  drawFn: (ctx, headR, headY, hairColor) => void;
+}
+```
+
+`drawPlayer.ts`'de `p.hairStyle` kontrol edilir, ilgili `drawFn` çağrılır.
+
+---
+
+## 12. Kıyafet Stilleri
+
+### Mevcut Durum
+Sadece renk değişiyor. Tüm karakterler aynı yuvarlak gövde şekline sahip.
+
+### Yeni Kıyafet Stilleri
+
+| Stil ID | İsim | Görünüm | Detay |
+|---------|------|---------|-------|
+| `outfit_casual` | Casual | Düz tişört | Mevcut (default) |
+| `outfit_chef` | Aşçı Önlüğü | Beyaz önlük + düğmeler | Üstüne beyaz önlük çizilir |
+| `outfit_waiter` | Garson | Siyah yelek + papyon | Yelek + papyon detayı |
+| `outfit_chef_jacket` | Şef Ceketi | Çift sıra düğmeli | Profesyonel şef görünümü |
+| `outfit_hoodie` | Kapüşonlu | Kapüşon + kanguru cep | Kapüşon başa eklenebilir |
+| `outfit_suit` | Takım Elbise | Kravat + ceket | Resmi görünüm |
+| `outfit_apron` | Mutfak Önlüğü | Renkli önlük | Üstüne önlük çizilir |
+
+### Aşçı Önlüğü Detayı
+```
+╭─────────────╮
+│  ╭───────╮  │  ← önlük
+│  │  ●  ● │  │  ← düğmeler
+│  │       │  │
+│  ╰───────╯  │
+╰─────────────╯
+```
+
+### Teknik
+```typescript
+interface OutfitStyle {
+  id: string;
+  name: string;
+  drawFn: (ctx, bodyW, bodyH, bodyY, color) => void;
+  // Bazı kıyafetler rengi override eder (önlük her zaman beyaz)
+  overrideColor?: string;
+}
+```
+
+---
+
+## 13. Uygulama Önceliği (Güncellendi)
+
+### Aşama 0 — Joystick Sürükle-Bırak (1 gün)
+- Uzun basınca taşıma modu
+- Konum kaydetme
+- Görsel geri bildirim
+
+### Aşama 1 — Şapka Sistemi Düzeltme (1-2 gün)
+- Her şapka için `HatDefinition` tanımı
+- Kafaya tam oturma koordinatları
+- Aşçı şapkası ekleme
+
+### Aşama 2 — Saç Stilleri (2-3 gün)
+- 5-6 temel saç stili
+- Market'te "Saç Stili" kategorisi
+- `drawPlayer.ts` güncelleme
+
+### Aşama 3 — Kıyafet Stilleri (2-3 gün)
+- 4-5 kıyafet stili
+- Market'te "Kıyafet" kategorisi
+- `drawPlayer.ts` güncelleme
