@@ -298,16 +298,15 @@ export function drawPlayer(
     if (fx === 'rainbow') {
         const hue = (now / 20) % 360;
         labelColor = `hsl(${hue}, 100%, 70%)`;
-    } else if (fx === 'pulse') {
-        const brightness = 50 + Math.abs(Math.sin(now / 400)) * 40;
-        const baseColor = p.nameLabelColor || '#ffffff';
-        // Parlaklık efekti için alpha değişimi
+    }
+    ctx.save();
+    if (fx === 'pulse') {
         ctx.globalAlpha = 0.6 + Math.abs(Math.sin(now / 400)) * 0.4;
     }
     ctx.fillStyle = labelColor;
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.fillText(label, 0, labelY + 9);
-    ctx.globalAlpha = 1;
+    ctx.restore();
 
     // Unvan — isim etiketinin altında
     if (p.title) {

@@ -74,7 +74,8 @@ export const ShopModal: React.FC<Props> = ({
     } else if (item.category === 'labelEffect') {
       const next = equippedLabelEffect === item.value ? '' : item.value;
       setEquippedLabelEffect(next); saveProfile({ equippedLabelEffect: next });
-    } else if (item.category === 'colorSet' && item.colorSet) {      setHairColor(item.colorSet.hair);
+    } else if (item.category === 'colorSet' && item.colorSet) {
+      setHairColor(item.colorSet.hair);
       setClothingColor(item.colorSet.clothing);
       setPlayerColor(item.colorSet.clothing);
       setNameLabelColor(item.colorSet.label);
