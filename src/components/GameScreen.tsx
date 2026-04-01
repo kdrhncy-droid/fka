@@ -342,8 +342,19 @@ export const GameScreen: React.FC<Props> = ({
                 </div>
             </div>
 
-            {/* ── Canvas ────────────────────────────────────────────────────────── */}
-            <div className="flex-1 min-h-0 relative flex items-center justify-center" style={{ background: '#9a7858' }}>
+            {/* ── Canvas + Yan Paneller ─────────────────────────────────────────── */}
+            <div className="flex-1 min-h-0 flex" style={{ background: '#9a7858' }}>
+
+                {/* ── SOL PANEL — Joystick (sadece touch) ── */}
+                {isTouchDevice && !showHudEditor && (
+                    <div className="flex-none flex items-center justify-center"
+                        style={{ width: '17%', background: 'rgba(0,0,0,0.15)' }}>
+                        <Joystick size={joystickSize} onMove={(x, y) => { joystickVectorRef.current = { x, y }; }} />
+                    </div>
+                )}
+
+                {/* ── CANVAS ── */}
+                <div className={`relative flex items-center justify-center ${isTouchDevice ? 'flex-1' : 'flex-1'}`}>
                 <div className="relative canvas-container" style={{ 
                     aspectRatio: '1280/870', 
                     maxHeight: '100%', 
@@ -455,15 +466,15 @@ export const GameScreen: React.FC<Props> = ({
                     />
                 )}                </div> {/* inner aspect-ratio wrapper */}
 
-                {/* ── HUD Butonları — outer wrapper'da, tüm ekrana serbestçe konumlanabilir ── */}
-                {/* Joystick */}
-                {!showHudEditor && (
+                {/* PC'de eski HUD butonları (absolute konumlu) */}
+                {/* Joystick — sadece PC'de absolute, touch'ta sol panelde */}
+                {!showHudEditor && !isTouchDevice && (
                 <div className="absolute z-10 touch-none" style={{ left: `${settings.hudLayout.joystick.x}%`, top: `${settings.hudLayout.joystick.y}%`, transform: `scale(${settings.hudLayout.joystick.scale})`, transformOrigin: 'top left' }}>
                     <Joystick size={joystickSize} onMove={(x, y) => { joystickVectorRef.current = { x, y }; }} />
                 </div>
                 )}
-                {/* Döv */}
-                {!showHudEditor && (
+                {/* Döv — PC'de absolute */}
+                {!showHudEditor && !isTouchDevice && (
                 <div className="absolute z-10" style={{ left: `${settings.hudLayout.punchBtn.x}%`, top: `${settings.hudLayout.punchBtn.y}%`, transform: `scale(${settings.hudLayout.punchBtn.scale})`, transformOrigin: 'top left' }}>
                     <button
                         onPointerDown={(e) => {
@@ -487,8 +498,8 @@ export const GameScreen: React.FC<Props> = ({
                     </button>
                 </div>
                 )}
-                {/* AL/VER */}
-                {!showHudEditor && (
+                {/* AL/VER — PC'de absolute */}
+                {!showHudEditor && !isTouchDevice && (
                 <div className="absolute z-10" style={{ left: `${settings.hudLayout.actionBtn.x}%`, top: `${settings.hudLayout.actionBtn.y}%`, transform: `scale(${settings.hudLayout.actionBtn.scale})`, transformOrigin: 'top left' }}>
                     <button
                         onPointerDown={(e) => { e.preventDefault(); if (dayPhase === 'prep') handleInteract(); else emit('interact'); }}
@@ -499,8 +510,8 @@ export const GameScreen: React.FC<Props> = ({
                     </button>
                 </div>
                 )}
-                {/* DOĞRA */}
-                {!showHudEditor && dayPhase === 'day' && (
+                {/* DOĞRA — PC'de absolute */}
+                {!showHudEditor && !isTouchDevice && dayPhase === 'day' && (
                 <div className="absolute z-10" style={{ left: `${settings.hudLayout.chopBtn.x}%`, top: `${settings.hudLayout.chopBtn.y}%`, transform: `scale(${settings.hudLayout.chopBtn.scale})`, transformOrigin: 'top left' }}>
                     <button
                         onPointerDown={(e) => {
@@ -533,8 +544,8 @@ export const GameScreen: React.FC<Props> = ({
                     </button>
                 </div>
                 )}
-                {/* Müzik */}
-                {!showHudEditor && (
+                {/* Müzik — PC'de absolute */}
+                {!showHudEditor && !isTouchDevice && (
                 <div className="absolute z-10" style={{ left: `${settings.hudLayout.musicBtn.x}%`, top: `${settings.hudLayout.musicBtn.y}%`, transform: `scale(${settings.hudLayout.musicBtn.scale})`, transformOrigin: 'top left' }}>
                     <button onClick={toggleMusic}
                         style={{ width: Math.round(bs * 0.55), height: Math.round(bs * 0.55) }}
@@ -559,7 +570,86 @@ export const GameScreen: React.FC<Props> = ({
                 {/* Chat */}
                 <ChatPanel socket={socket} myId={myId} messages={chatMessages} />
 
-            </div>
+                </div> {/* canvas flex wrapper */}
+
+                {/* ── SAĞ PANEL — Aksiyon butonları (sadece touch) ── */}
+                {isTouchDevice && !showHudEditor && (
+                    <div className="flex-none flex flex-col items-center justify-center gap-3"
+                        style={{ width: '17%', background: 'rgba(0,0,0,0.15)' }}>
+                        {/* AL/VER */}
+                        <button
+                            onPointerDown={(e) => { e.preventDefault(); if (dayPhase === 'prep') handleInteract(); else emit('interact'); }}
+                            style={{ width: 64, height: 64, touchAction: 'none' }}
+                            className="bg-blue-600/85 active:scale-90 text-white rounded-2xl shadow-lg font-black text-xs flex flex-col items-center justify-center gap-0.5 border border-blue-400/30 backdrop-blur-sm transition-all"
+                        >
+                            <span className="text-lg">🤲</span>
+                            <span className="text-[8px] uppercase tracking-wider">Al/Ver</span>
+                        </button>
+                        {/* DOĞRA */}
+                        {dayPhase === 'day' && (
+                        <button
+                            onPointerDown={(e) => {
+                                e.preventDefault();
+                                const gs = gameStateRef.current; const lp = localPlayerRef.current;
+                                const board = gs.choppingBoards?.find(b => Math.hypot(b.x - lp.x, b.y - lp.y) < 90);
+                                if (board) {
+                                    socket?.emit('chop_start', board.id);
+                                    playSound(null, 'chop');
+                                    if (chopTouchIntervalRef.current) clearInterval(chopTouchIntervalRef.current);
+                                    chopTouchIntervalRef.current = setInterval(() => playSound(null, 'chop'), 300);
+                                }
+                            }}
+                            onPointerUp={(e) => {
+                                e.preventDefault();
+                                if (chopTouchIntervalRef.current) { clearInterval(chopTouchIntervalRef.current); chopTouchIntervalRef.current = null; }
+                                const gs = gameStateRef.current; const lp = localPlayerRef.current;
+                                const board = gs.choppingBoards?.find(b => Math.hypot(b.x - lp.x, b.y - lp.y) < 90);
+                                if (board) socket?.emit('chop_stop', board.id);
+                            }}
+                            onPointerLeave={(e) => {
+                                e.preventDefault();
+                                if (chopTouchIntervalRef.current) { clearInterval(chopTouchIntervalRef.current); chopTouchIntervalRef.current = null; }
+                                gameStateRef.current.choppingBoards?.forEach(b => socket?.emit('chop_stop', b.id));
+                            }}
+                            style={{ width: 52, height: 52, touchAction: 'none' }}
+                            className="bg-amber-600/85 active:scale-90 text-white rounded-2xl shadow-lg font-black text-xs flex flex-col items-center justify-center gap-0.5 border border-amber-400/30 backdrop-blur-sm transition-all"
+                        >
+                            <span className="text-base">🔪</span>
+                            <span className="text-[8px] uppercase tracking-wider">Doğra</span>
+                        </button>
+                        )}
+                        {/* DÖV */}
+                        <button
+                            onPointerDown={(e) => {
+                                e.preventDefault();
+                                const now = Date.now();
+                                if (now - lastPunchTimeRef.current < 250) return;
+                                lastPunchTimeRef.current = now;
+                                const gs = gameStateRef.current; const lp = localPlayerRef.current;
+                                const punchTarget = gs.customers.find(c => {
+                                    if (c.isLeaving) return false;
+                                    const visualY = c.isSeated ? c.seatY + 20 : c.y;
+                                    return Math.hypot(c.x - lp.x, visualY - lp.y) <= 120 && (c.personality === 'rude' || c.personality === 'recep' || c.personality === 'thug');
+                                });
+                                if (punchTarget) socket?.emit('punchCustomer', punchTarget.id);
+                            }}
+                            style={{ width: 52, height: 52, touchAction: 'none' }}
+                            className="bg-red-600/85 active:scale-90 text-white rounded-2xl shadow-lg font-black text-xs flex flex-col items-center justify-center gap-0.5 border border-red-400/30 backdrop-blur-sm transition-all"
+                        >
+                            <span className="text-base">👊</span>
+                            <span className="text-[8px] uppercase tracking-wider">Döv</span>
+                        </button>
+                        {/* Müzik */}
+                        <button onClick={toggleMusic}
+                            style={{ width: 40, height: 40, touchAction: 'none' }}
+                            className={`rounded-xl shadow text-base flex items-center justify-center transition-all border backdrop-blur-sm ${
+                                musicOn ? 'bg-violet-600/80 border-violet-400/30 text-white' : 'bg-stone-700/70 border-stone-600/30 text-stone-400'
+                            }`}
+                        >{musicOn ? '🎵' : '🔇'}</button>
+                    </div>
+                )}
+
+            </div> {/* flex-row wrapper */}
 
             {/* ── Düzenleme Modu Bar ── */}
             {dayPhase === 'prep' && (editorState.isMoving || editorState.isMovingTable) && (
