@@ -19,6 +19,8 @@ export const RevengeSceneOverlay: React.FC<Props> = ({ onDone, bgmOn }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [canSkip, setCanSkip] = useState(false);
   const skipRef = useRef(false);
+  const onDoneRef = useRef(onDone);
+  useEffect(() => { onDoneRef.current = onDone; }, [onDone]);
 
   useEffect(() => {
     stopBgm();
@@ -651,7 +653,7 @@ export const RevengeSceneOverlay: React.FC<Props> = ({ onDone, bgmOn }) => {
           if (timer > pDur) {
             // Sahne bitti — müziği geri aç ve callback çağır
             if (bgmOn) { setBgmEnabled(true); startBgm(); }
-            onDone();
+            onDoneRef.current();
           }
           break;
       }
@@ -740,11 +742,12 @@ export const RevengeSceneOverlay: React.FC<Props> = ({ onDone, bgmOn }) => {
     };
 
     // ── Main Loop ─────────────────────────────────────────────────────────────
+    let rafId = 0;
     const loop = () => {
       if (skipRef.current) return;
       updateScene();
       render();
-      requestAnimationFrame(loop);
+      rafId = requestAnimationFrame(loop);
     };
 
     // Başlat
@@ -752,10 +755,11 @@ export const RevengeSceneOverlay: React.FC<Props> = ({ onDone, bgmOn }) => {
     loop();
 
     return () => {
-      // Cleanup
+      cancelAnimationFrame(rafId);
+      skipRef.current = true;
       if (bgmOn) { setBgmEnabled(true); startBgm(); }
     };
-  }, [onDone, bgmOn]);
+  }, [bgmOn]);
 
   return (
     <div
@@ -781,7 +785,7 @@ export const RevengeSceneOverlay: React.FC<Props> = ({ onDone, bgmOn }) => {
           onClick={() => {
             skipRef.current = true;
             if (bgmOn) { setBgmEnabled(true); startBgm(); }
-            onDone();
+            onDoneRef.current();
           }}
           className="absolute bottom-8 right-6 px-4 py-2 bg-black/60 border border-white/30 text-white/70 text-sm font-bold rounded-xl backdrop-blur-sm active:scale-95 transition-all"
           style={{ zIndex: 10 }}

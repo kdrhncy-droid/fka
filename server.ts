@@ -363,6 +363,7 @@ io.on("connection", (socket) => {
     gs.score = Math.floor(gs.score * 0.8);
     gs.dirtyTrayCount = 0;
     gs.revengeQueue = [];
+    gs.pendingRevengeScene = false;
     gs.lockedStations = {};
     gs.lockedTables = {};
     gs._seatCooldown = 0;

@@ -194,6 +194,7 @@ export function useSocket(
 
         newSocket.on('revengeScene', (summary: DayEndSummary) => {
             setRevengeSceneSummary(summary);
+            setDayEndSummary(null); // dayEnd ile çakışmasın
         });
 
         // ─── Visibility API: Arka planda/Ön planda Algılama ───────────────
