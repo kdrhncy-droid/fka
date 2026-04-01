@@ -1,305 +1,226 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BaseModal } from './BaseModal';
 
-interface Props {
-    onClose: () => void;
-}
+interface Props { onClose: () => void; }
+
+type Tab = 'nasil' | 'yemek' | 'upgrade' | 'guncelleme';
+
+const TABS: { id: Tab; icon: string; label: string }[] = [
+    { id: 'nasil',     icon: '🎮', label: 'Nasıl Oynanır' },
+    { id: 'yemek',     icon: '🍽️', label: 'Yemekler'      },
+    { id: 'upgrade',   icon: '⬆️', label: 'Upgradeler'    },
+    { id: 'guncelleme',icon: '🚀', label: 'Güncellemeler' },
+];
 
 export const PatchNotesModal: React.FC<Props> = ({ onClose }) => {
+    const [tab, setTab] = useState<Tab>('nasil');
+
     return (
-        <BaseModal onClose={onClose} zIndex="z-[100]" maxWidth="max-w-2xl">
+        <BaseModal onClose={onClose} zIndex="z-[100]" maxWidth="max-w-3xl">
             {/* Header */}
-            <div className="bg-stone-800/50 p-6 flex justify-between items-center border-b border-stone-700/50">
-                <div>
-                    <h2 className="text-3xl font-black text-amber-400 tracking-tight">Oyun Rehberi & Yenilikler 📜</h2>
-                    <div className="flex items-center gap-2 mt-1">
-                        <span className="bg-amber-400/10 text-amber-400 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest border border-amber-400/20">v2.3.0</span>
-                        <span className="text-stone-500 text-[10px] font-bold uppercase tracking-widest">Market, Profil Ekranı, Yeni Müşteri Tasarımları</span>
-                    </div>
+            <div className="flex items-center justify-between px-5 py-3 border-b border-stone-700/50 flex-shrink-0">
+                <div className="flex items-center gap-3">
+                    <span className="text-amber-400 font-black text-base">📜 Oyun Rehberi</span>
+                    <span className="bg-amber-400/10 text-amber-400 text-[10px] font-black px-2 py-0.5 rounded-full border border-amber-400/20">v2.3.0</span>
                 </div>
-                <button
-                    onClick={onClose}
-                    className="w-12 h-12 bg-stone-800 hover:bg-stone-700 text-stone-400 hover:text-white rounded-2xl flex items-center justify-center text-2xl transition-all active:scale-90 border border-stone-700"
-                >
+                <button onClick={onClose}
+                    className="w-9 h-9 bg-stone-800 hover:bg-stone-700 text-stone-400 hover:text-white rounded-xl flex items-center justify-center text-lg transition-all active:scale-90 border border-stone-700">
                     ✕
                 </button>
             </div>
 
-            {/* İçerik */}
-            <div className="p-8 overflow-y-auto space-y-10 no-scrollbar pb-12">
+            {/* Landscape: sol sekme + sağ içerik */}
+            <div className="flex flex-1 min-h-0 overflow-hidden">
 
-                {/* Nasıl Oynanır */}
-                <section>
-                    <h3 className="text-xs font-black text-stone-500 mb-4 uppercase tracking-[0.3em] flex items-center gap-3">
-                        <span className="h-px flex-1 bg-stone-800"></span>
-                        🎮 Nasıl Oynanır
-                        <span className="h-px flex-1 bg-stone-800"></span>
-                    </h3>
-                    <div className="space-y-3">
-                        <div className="bg-stone-800/40 border border-stone-700/50 p-4 rounded-2xl">
-                            <div className="text-xs font-black text-amber-300 uppercase tracking-widest mb-2">🔧 Hazırlık Fazı</div>
-                            <p className="text-sm text-stone-300 leading-relaxed">Gün başlamadan önce mutfağı hazırla. İstasyonları taşı (E tuşu), fırınları konumlandır. Hazır olunca "Dükkanı Aç" butonuna bas.</p>
-                        </div>
-                        <div className="bg-stone-800/40 border border-stone-700/50 p-4 rounded-2xl">
-                            <div className="text-xs font-black text-amber-300 uppercase tracking-widest mb-2">☀️ Servis Fazı</div>
-                            <p className="text-sm text-stone-300 leading-relaxed">Müşteriler gelir, koltuklara oturur ve sipariş verir. Malzemeyi al → fırına koy → pişince tabağa al → müşteriye servis et. Kirli masaları temizle, kirli tabakları lavaboda yıka.</p>
-                        </div>
-                    <div className="bg-stone-800/40 border border-stone-700/50 p-4 rounded-2xl">
+                {/* Sol sekme listesi */}
+                <div className="flex-none w-28 sm:w-36 border-r border-stone-800 flex flex-col py-2 bg-stone-950/40">
+                    {TABS.map(t => (
+                        <button key={t.id} onClick={() => setTab(t.id)}
+                            className={`flex flex-col items-center gap-1 py-3 px-2 text-center transition-colors ${tab === t.id ? 'bg-amber-900/20 text-amber-400 border-r-2 border-amber-400' : 'text-stone-500 hover:text-stone-300'}`}>
+                            <span className="text-xl">{t.icon}</span>
+                            <span className="text-[9px] font-black uppercase tracking-wide leading-tight">{t.label}</span>
+                        </button>
+                    ))}
+                    <div className="flex-1" />
+                    <button onClick={onClose}
+                        className="mx-2 mb-2 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-900 text-[10px] font-black uppercase tracking-wide active:scale-95 transition-all">
+                        Tamam ✓
+                    </button>
+                </div>
+
+                {/* Sağ içerik */}
+                <div className="flex-1 overflow-y-auto p-4 space-y-3" style={{ WebkitOverflowScrolling: 'touch' } as React.CSSProperties}>
+
+                    {/* ── NASIL OYNANIR ── */}
+                    {tab === 'nasil' && <>
+                        {[
+                            { title: '🔧 Hazırlık Fazı', text: 'Gün başlamadan önce mutfağı hazırla. İstasyonları taşı (E tuşu), fırınları konumlandır. Hazır olunca "Dükkanı Aç" butonuna bas.' },
+                            { title: '☀️ Servis Fazı', text: 'Müşteriler gelir, koltuklara oturur ve sipariş verir. Malzemeyi al → fırına koy → pişince tabağa al → müşteriye servis et. Kirli masaları temizle, kirli tabakları lavaboda yıka.' },
+                            { title: '🌙 Gece Fazı', text: 'Tüm müşteriler gidince gece başlar. Kazandığın parayla upgrade satın al, yeni yemek kilidi aç, fırın ekle veya can al.' },
+                        ].map(s => (
+                            <div key={s.title} className="bg-stone-800/40 border border-stone-700/50 p-3 rounded-xl">
+                                <div className="text-xs font-black text-amber-300 uppercase tracking-widest mb-1">{s.title}</div>
+                                <p className="text-xs text-stone-300 leading-relaxed">{s.text}</p>
+                            </div>
+                        ))}
+
+                        <div className="bg-stone-800/40 border border-stone-700/50 p-3 rounded-xl">
                             <div className="text-xs font-black text-amber-300 uppercase tracking-widest mb-2">🎭 Müşteri Tipleri</div>
-                            <div className="space-y-1.5">
+                            <div className="space-y-1">
                                 {[
-                                    { icon: '😊', name: 'Kibar', desc: 'Sabırlı, şikayet etmez. Dövülürse puan kaybı.' },
-                                    { icon: '😤', name: 'Kaba', desc: 'Agresif diyaloglar. Dövülebilir, intikam alabilir.' },
-                                    { icon: '🤪', name: 'Recep', desc: 'Dramatik tepkiler. Dövülürse yüksek intikam şansı (%60).' },
-                                    { icon: '💀', name: 'Thug', desc: 'İntikam grubu. Dövülmüş müşterinin arkadaşları olarak gelir.' },
-                                    { icon: '👑', name: 'VIP', desc: 'Altın taçlı. Çok sabırsız ama yüksek bahşiş bırakır.' },
-                                    { icon: '🍺', name: 'Sarhoş', desc: 'Kırmızı yanaklı. Garip diyaloglar, tahmin edilemez.' },
-                                    { icon: '🔍', name: 'Müfettiş', desc: 'Gözlüklü. Sert değerlendirme, düşük bahşiş.' },
+                                    { icon: '😊', name: 'Kibar', desc: 'Sabırlı. Dövülürse puan kaybı.' },
+                                    { icon: '😤', name: 'Kaba', desc: 'Agresif. Dövülebilir, intikam alabilir.' },
+                                    { icon: '🤪', name: 'Recep', desc: 'Dramatik. %60 intikam şansı.' },
+                                    { icon: '💀', name: 'Thug', desc: 'İntikam grubu olarak gelir.' },
+                                    { icon: '👑', name: 'VIP', desc: 'Sabırsız ama yüksek bahşiş.' },
+                                    { icon: '🍺', name: 'Sarhoş', desc: 'Tutarsız, yanlış yemek kabul eder.' },
+                                    { icon: '🔍', name: 'Müfettiş', desc: 'Sert değerlendirme, düşük bahşiş.' },
                                 ].map(t => (
                                     <div key={t.name} className="flex items-center gap-2 text-xs">
-                                        <span className="text-base w-6 text-center">{t.icon}</span>
-                                        <span className="text-white font-bold w-16">{t.name}</span>
+                                        <span className="text-sm w-5 text-center">{t.icon}</span>
+                                        <span className="text-white font-bold w-14 flex-shrink-0">{t.name}</span>
                                         <span className="text-stone-400">{t.desc}</span>
                                     </div>
                                 ))}
                             </div>
                         </div>
-                        <div className="grid grid-cols-2 gap-3">
-                            <div className="bg-stone-800/40 border border-stone-700/50 p-4 rounded-2xl">
-                                <div className="text-xs font-black text-stone-400 uppercase tracking-widest mb-2">🖥️ PC Kontroller</div>
+
+                        <div className="grid grid-cols-2 gap-2">
+                            <div className="bg-stone-800/40 border border-stone-700/50 p-3 rounded-xl">
+                                <div className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-2">🖥️ PC</div>
                                 <ul className="text-xs text-stone-300 space-y-1">
-                                    <li><span className="text-amber-300 font-bold">WASD / Ok Tuşları</span> — Hareket</li>
-                                    <li><span className="text-amber-300 font-bold">E / Boşluk</span> — Al / Ver / Etkileş</li>
-                                    <li><span className="text-amber-300 font-bold">R (basılı tut)</span> — Doğra</li>
-                                    <li><span className="text-amber-300 font-bold">F</span> — Yumruk (Dövüş)</li>
+                                    <li><span className="text-amber-300 font-bold">WASD</span> — Hareket</li>
+                                    <li><span className="text-amber-300 font-bold">E / Boşluk</span> — Etkileş</li>
+                                    <li><span className="text-amber-300 font-bold">R</span> — Doğra</li>
+                                    <li><span className="text-amber-300 font-bold">F</span> — Döv</li>
                                 </ul>
                             </div>
-                            <div className="bg-stone-800/40 border border-stone-700/50 p-4 rounded-2xl">
-                                <div className="text-xs font-black text-stone-400 uppercase tracking-widest mb-2">📱 Mobil Kontroller</div>
+                            <div className="bg-stone-800/40 border border-stone-700/50 p-3 rounded-xl">
+                                <div className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-2">📱 Mobil</div>
                                 <ul className="text-xs text-stone-300 space-y-1">
-                                    <li><span className="text-amber-300 font-bold">Sol Joystick</span> — Hareket</li>
-                                    <li><span className="text-amber-300 font-bold">AL/VER Butonu</span> — Etkileş</li>
-                                    <li><span className="text-amber-300 font-bold">DOĞRA Butonu</span> — Kesme tahtası</li>
-                                    <li><span className="text-amber-300 font-bold">DÖV Butonu</span> — Yumruk</li>
+                                    <li><span className="text-amber-300 font-bold">Sol Panel</span> — Joystick</li>
+                                    <li><span className="text-amber-300 font-bold">Al/Ver</span> — Etkileş</li>
+                                    <li><span className="text-amber-300 font-bold">Doğra</span> — Kesme tahtası</li>
+                                    <li><span className="text-amber-300 font-bold">Döv</span> — Yumruk</li>
                                 </ul>
                             </div>
                         </div>
-                    </div>
-                </section>
+                    </>}
 
-                {/* Yemek Sistemi */}
-                <section>
-                    <h3 className="text-xs font-black text-stone-500 mb-4 uppercase tracking-[0.3em] flex items-center gap-3">
-                        <span className="h-px flex-1 bg-stone-800"></span>
-                        🍽️ Yemek & Pişirme
-                        <span className="h-px flex-1 bg-stone-800"></span>
-                    </h3>
-                    <div className="grid grid-cols-1 gap-2">
+                    {/* ── YEMEKLER ── */}
+                    {tab === 'yemek' && <>
                         {[
-                            { emoji: '🥗', name: 'Salata', ing: '🥬 Sebze → doğra → fırın', time: '0.5 sn', note: 'En hızlı — başlangıçta açık' },
+                            { emoji: '🥗', name: 'Salata', ing: '🥬 Sebze → doğra → fırın', time: '0.5 sn', note: 'Başlangıçta açık' },
                             { emoji: '🍔', name: 'Burger', ing: '🥩 Et → doğra → fırın', time: '1.2 sn', note: 'Başlangıçta açık' },
                             { emoji: '🍕', name: 'Pizza', ing: '🍞 Hamur → fırın', time: '3 sn', note: 'Gece kilit açılır' },
                             { emoji: '🌯', name: 'Dürüm', ing: '🍢 Kebap → doğra → fırın', time: '2 sn', note: 'Gece kilit açılır' },
                             { emoji: '🍜', name: 'Çorba', ing: '🥘 Çorba Malz. → fırın', time: '4 sn', note: 'Gece kilit açılır' },
                             { emoji: '🍟', name: 'Patates', ing: '🥔 Patates → fritöz', time: '1 sn', note: 'Gece kilit açılır' },
                             { emoji: '🍰', name: 'Pasta', ing: '🧁 Hamur Tatlı → pasta fırını', time: '4 sn', note: 'Gece kilit açılır' },
-                            { emoji: '☕', name: 'Kahve', ing: 'Aleti satın al', time: 'Anında', note: 'Makineden direkt servis' },
-                            { emoji: '🥤', name: 'İçecek', ing: 'Buzdolabında (Hazır)', time: 'Anında', note: 'Sürekli yenilenir' },
-                            { emoji: '🌶️', name: 'Acı Sos', ing: 'Pişmiş Yemek → Baharat Rafı', time: 'Anında', note: '3. günden sonra raf açılır' },
+                            { emoji: '☕', name: 'Kahve', ing: 'Kahve makinesi satın al', time: 'Anında', note: 'Makineden direkt' },
+                            { emoji: '🥤', name: 'İçecek', ing: 'Buzdolabı (hazır)', time: 'Anında', note: 'Sürekli yenilenir' },
+                            { emoji: '🌶️', name: 'Acı Sos', ing: 'Pişmiş yemek → Baharat Rafı', time: 'Anında', note: '3. günden sonra' },
                         ].map(d => (
-                            <div key={d.emoji} className="flex items-center gap-3 bg-stone-800/30 border border-stone-700/40 px-4 py-2.5 rounded-xl">
-                                <span className="text-2xl w-8 text-center">{d.emoji}</span>
-                                <div className="flex-1">
-                                    <span className="text-white font-bold text-sm">{d.name}</span>
-                                    <span className="text-stone-400 text-xs ml-2">{d.ing}</span>
+                            <div key={d.emoji} className="flex items-center gap-2 bg-stone-800/30 border border-stone-700/40 px-3 py-2 rounded-xl">
+                                <span className="text-xl w-7 text-center flex-shrink-0">{d.emoji}</span>
+                                <div className="flex-1 min-w-0">
+                                    <span className="text-white font-bold text-xs">{d.name}</span>
+                                    <span className="text-stone-400 text-[10px] ml-1.5">{d.ing}</span>
                                 </div>
-                                <div className="text-right">
-                                    <div className="text-amber-300 text-xs font-bold">{d.time}</div>
-                                    <div className="text-stone-500 text-[10px]">{d.note}</div>
+                                <div className="text-right flex-shrink-0">
+                                    <div className="text-amber-300 text-[10px] font-bold">{d.time}</div>
+                                    <div className="text-stone-500 text-[9px]">{d.note}</div>
                                 </div>
                             </div>
                         ))}
-                    </div>
-                    <p className="text-xs text-stone-500 mt-3 text-center">🔪 Doğrama gerektiren malzemeleri önce kesme tahtasına bırak, R ile doğra, sonra fırına koy</p>
-                    <p className="text-xs text-stone-500 mt-1 text-center">⚠️ Yemek pişince tabakla al → müşteriye servis et. Almazsan yanar → ⬛ çöpe at</p>
-                </section>
+                        <p className="text-[10px] text-stone-500 text-center">🔪 Doğrama gerektiren malzemeleri önce kesme tahtasına bırak, R ile doğra</p>
+                    </>}
 
-                {/* Upgrade Sistemi */}
-                <section>
-                    <h3 className="text-xs font-black text-stone-500 mb-4 uppercase tracking-[0.3em] flex items-center gap-3">
-                        <span className="h-px flex-1 bg-stone-800"></span>
-                        ⬆️ Upgrade Sistemi
-                        <span className="h-px flex-1 bg-stone-800"></span>
-                    </h3>
-                    <ul className="space-y-3">
+                    {/* ── UPGRADELER ── */}
+                    {tab === 'upgrade' && <>
                         {[
-                            { icon: '🔥', name: 'Ek Fırın', desc: 'Başlangıçta 1 fırın var, toplamda 4\'e kadar alınabilir. Her fırın farklı yemek pişirebilir.' },
-                            { icon: '🛡️', name: 'Güvenli Fırın', desc: 'Lv1: yemek yanma süresi 2 kat uzar. Lv2: yemekler hiç yanmaz. 2 seviye.' },
-                            { icon: '⏳', name: 'Müşteri Sabrı', desc: 'Müşterilerin bekleme süresi uzar. 3 seviye, her biri +300 tick sabır ekler.' },
+                            { icon: '🔥', name: 'Ek Fırın', desc: 'Başlangıçta 1, toplamda 4\'e kadar. Her fırın farklı yemek pişirebilir.' },
+                            { icon: '🛡️', name: 'Güvenli Fırın', desc: 'Lv1: yanma 2x yavaş. Lv2: hiç yanmaz.' },
+                            { icon: '⏳', name: 'Müşteri Sabrı', desc: 'Bekleme süresi uzar. 3 seviye.' },
                             { icon: '💰', name: 'Servis Kazancı', desc: 'Her servisten +5 ekstra puan. 2 seviye.' },
-                            { icon: '🍽️', name: 'Tabak Yığını', desc: 'Başlangıç tabak kapasitesi artar (4→6→8→10). 3 seviye.' },
-                            { icon: '❤️', name: 'Ekstra Can', desc: 'Maksimum 3 can. Her can $75. Müşteri sabrı bitince can gider.' },
-                            { icon: '⚡', name: 'Fritöz Hızı', desc: 'Patates kızartma süresini kısaltır. 2 seviye.' },
-                            { icon: '🍰', name: 'Pasta Fırını', desc: 'Pastalar için özel makine. 1 seviye.' },
-                            { icon: '☕', name: 'Kahve Makinesi', desc: 'Menüye kahve servisi seçeneği ekler. 1 seviye.' },
+                            { icon: '🍽️', name: 'Tabak Yığını', desc: 'Başlangıç tabak kapasitesi artar. 3 seviye.' },
+                            { icon: '❤️', name: 'Ekstra Can', desc: 'Max 3 can. Her can $75.' },
+                            { icon: '⚡', name: 'Fritöz Hızı', desc: 'Patates daha hızlı kızarır. 2 seviye.' },
+                            { icon: '🍰', name: 'Pasta Fırını', desc: 'Pasta için özel makine.' },
+                            { icon: '☕', name: 'Kahve Makinesi', desc: 'Menüye kahve ekler.' },
                         ].map(u => (
-                            <li key={u.name} className="flex items-start gap-3">
-                                <span className="text-xl mt-0.5">{u.icon}</span>
-                                <p className="text-sm text-stone-300 leading-relaxed"><span className="text-white font-bold">{u.name}:</span> {u.desc}</p>
-                            </li>
-                        ))}
-                    </ul>
-                </section>
-
-                {/* Özellikler */}
-                <section>
-                    <h3 className="text-xs font-black text-stone-500 mb-4 uppercase tracking-[0.3em] flex items-center gap-3">
-                        <span className="h-px flex-1 bg-stone-800"></span>
-                        ✨ Özellikler
-                        <span className="h-px flex-1 bg-stone-800"></span>
-                    </h3>
-                    <ul className="space-y-3">
-                        {[
-                            { icon: '🔪', text: 'Kesme tahtası — Et, Sebze ve Kebabı önce doğra (R tuşu), sonra fırına koy. Doğrama ses efekti ile birlikte!' },
-                            { icon: '🧺', text: 'Tepsi sistemi — tek seferde 4 yemeğe kadar taşı, müşterilere sırayla servis et' },
-                            { icon: '🏃', text: 'Çok oyunculu co-op — aynı odada birden fazla oyuncu, her biri bağımsız hareket eder' },
-                            { icon: '😤', text: 'Müşteri kişilikleri — Kibar, Kaba, Recep, Thug, VIP, Sarhoş ve Müfettiş tipleri. Her birinin farklı görünümü ve diyalogları var.' },
-                            { icon: '👊', text: 'Dövüş sistemi — kaba müşterileri dövebilirsin. Yeterince dövülürse intikam için Thug grubu gelir ve gün sonunda sinematik sahne oynar.' },
-                            { icon: '🔧', text: 'İstasyon taşıma — hazırlık fazında E tuşuyla istasyonları grid üzerinde yeniden konumlandır' },
-                            { icon: '📦', text: 'Gizli malzeme istasyonları — kilidi açılmayan yemeklerin malzemeleri mutfakta görünmez' },
-                            { icon: '👥', text: '8 farklı karakter tipi — Aşçı, Chef, Garson, Kasiyer, Temizlikçi, Kasap, Fırıncı, Müdür' },
-                            { icon: '�🌙', text: 'Gece efekti — gece fazında ekran kararır, yıldızlar çıkar' },
-                            { icon: '💀', text: 'Game Over — 3 can bitince oyun biter, %20 ceza ile aynı günden devam seçeneği' },
-                            { icon: '🔊', text: 'Proximity ses — yakındaki oyuncuların sesi daha yüksek duyulur (WebRTC sesli sohbet)' },
-                            { icon: '🎮', text: 'HUD Editörü — tüm mobil butonları (Joystick, AL/VER, DOĞRA, DÖV, Müzik) sürükle-bırak ile konumlandır' },
-                        ].map((f, i) => (
-                            <li key={i} className="flex items-start gap-3">
-                                <span className="text-lg mt-0.5 w-6 text-center">{f.icon}</span>
-                                <p className="text-sm text-stone-300 leading-relaxed">{f.text}</p>
-                            </li>
-                        ))}
-                    </ul>
-                </section>
-
-                {/* Pro İpuçları */}
-                <section>
-                    <h3 className="text-xs font-black text-stone-500 mb-4 uppercase tracking-[0.3em] flex items-center gap-3">
-                        <span className="h-px flex-1 bg-stone-800"></span>
-                        � Pro İpuçları
-                        <span className="h-px flex-1 bg-stone-800"></span>
-                    </h3>
-                    <div className="grid grid-cols-1 gap-2">
-                        {[
-                            { icon: '⚡', tip: 'Tepsiyi doldur', desc: 'Tek seferde 4 yemek taşıyabilirsin. Önce tüm yemekleri topla, sonra masalara dağıt — çok daha hızlı!' },
-                            { icon: '🔄', tip: 'Paralel pişirme', desc: 'Birden fazla fırın varsa farklı yemekleri aynı anda pişir. Boş fırın bırakma!' },
-                            { icon: '🧹', tip: 'Masaları hemen temizle', desc: 'Müşteri gidince masayı hemen temizle. Kirli masa yeni müşteri almaz, ciro düşer.' },
-                            { icon: '🏃', tip: 'Hazırlık fazını iyi kullan', desc: 'Fırını servis penceresine yakın koy. Mesafeyi kısaltmak servis hızını ciddi artırır.' },
-                            { icon: '💰', tip: 'Upgrade önceliği', desc: 'İlk önce "Müşteri Sabrı" al — can kaybını önler. Sonra ek fırın, sonra servis kazancı.' },
-                            { icon: '👊', tip: 'Kaba müşteriler', desc: 'Kaba (rude) müşterileri dövebilirsin ama Thug gelirse arkadaşlarını da getirir. Dikkatli ol!' },
-                        ].map((t, i) => (
-                            <div key={i} className="flex items-start gap-3 bg-stone-800/30 border border-stone-700/40 px-4 py-3 rounded-xl">
-                                <span className="text-xl mt-0.5 w-7 text-center flex-shrink-0">{t.icon}</span>
+                            <div key={u.name} className="flex items-start gap-2 bg-stone-800/30 border border-stone-700/40 px-3 py-2.5 rounded-xl">
+                                <span className="text-lg mt-0.5 flex-shrink-0">{u.icon}</span>
                                 <div>
-                                    <span className="text-white font-bold text-sm">{t.tip}: </span>
-                                    <span className="text-stone-400 text-xs leading-relaxed">{t.desc}</span>
+                                    <span className="text-white font-bold text-xs">{u.name}: </span>
+                                    <span className="text-stone-400 text-xs">{u.desc}</span>
                                 </div>
                             </div>
                         ))}
-                    </div>
-                </section>
+                        <div className="bg-stone-800/30 border border-stone-700/40 px-3 py-2.5 rounded-xl">
+                            <div className="text-[10px] font-black text-amber-300 uppercase tracking-widest mb-1.5">💡 Öneri Sırası</div>
+                            <p className="text-xs text-stone-400">1. Müşteri Sabrı → 2. Ek Fırın → 3. Servis Kazancı → 4. Güvenli Fırın</p>
+                        </div>
+                    </>}
 
-                {/* Son Güncellemeler */}
-                <section>
-                    <h3 className="text-xs font-black text-stone-500 mb-4 uppercase tracking-[0.3em] flex items-center gap-3">
-                        <span className="h-px flex-1 bg-stone-800"></span>
-                        🚀 Son Güncellemeler (v2.3.0)
-                        <span className="h-px flex-1 bg-stone-800"></span>
-                    </h3>
-
-                    <div className="bg-emerald-500/5 border border-emerald-500/20 p-6 rounded-[2rem] space-y-4 mb-4">
-                        {[
-                            { icon: '🛒', title: 'Market Sistemi', desc: 'Coin ile şapka, saç rengi, kıyafet ve isim etiketi rengi satın alabilirsin. Normal, Nadir ve Epik nadirlik seviyeleri.' },
-                            { icon: '👤', title: 'Profil Ekranı', desc: 'Ana menüde tek ekranda karakter özelleştirme + istatistikler. İsim düzenleme, coin göstergesi, sekme sistemi.' },
-                            { icon: '🎭', title: 'Yeni Müşteri Tasarımları', desc: 'Thug şapka+yüz bandı, Recep büyük burun+çizgili gömlek, Drunk X-göz+sarhoş sallanma, VIP taç+monokel, Inspector gözlük+clipboard.' },
-                            { icon: '🔧', title: 'Bug Fix\'ler', desc: 'Dialog/balon/sabır çubuğu çakışması giderildi. VIP tacı ve Thug şapkası için ekstra boşluk eklendi. AudioContext leak kapatıldı.' },
-                        ].map(f => (
-                            <div key={f.title} className="flex items-start gap-3">
-                                <span className="text-emerald-400 font-bold text-lg">{f.icon}</span>
-                                <div>
-                                    <div className="text-sm font-bold text-stone-200 uppercase tracking-wider">{f.title}</div>
-                                    <p className="text-xs text-stone-400 mt-0.5 leading-relaxed">{f.desc}</p>
+                    {/* ── GÜNCELLEMELER ── */}
+                    {tab === 'guncelleme' && <>
+                        <div className="bg-emerald-500/5 border border-emerald-500/20 p-4 rounded-2xl space-y-3">
+                            <div className="text-xs font-black text-emerald-400 uppercase tracking-widest">v2.3.0 — Şu An</div>
+                            {[
+                                { icon: '🛒', title: 'Market', desc: 'Coin ile şapka, saç, kıyafet, etiket rengi. Şapkalar canvas\'ta çiziliyor.' },
+                                { icon: '👤', title: 'Profil Ekranı', desc: 'Karakter + istatistik tek ekranda. İsim düzenleme.' },
+                                { icon: '📱', title: 'Mobil Yan Panel', desc: 'Sol joystick, sağ aksiyon butonları. Canvas ortada.' },
+                                { icon: '🎭', title: 'Müşteri Tasarımları', desc: 'Thug, Recep, Drunk, VIP, Inspector yeni görünümler.' },
+                            ].map(f => (
+                                <div key={f.title} className="flex items-start gap-2">
+                                    <span className="text-emerald-400 text-sm flex-shrink-0">{f.icon}</span>
+                                    <div>
+                                        <span className="text-stone-200 font-bold text-xs">{f.title}: </span>
+                                        <span className="text-stone-400 text-xs">{f.desc}</span>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
-
-                    <div className="bg-stone-800/30 border border-stone-700/30 p-5 rounded-[2rem] space-y-3 mb-4">
-                        <div className="text-xs font-black text-stone-400 uppercase tracking-widest">v2.2.0 — Save Sistemi, Coin, İntikam Sahnesi</div>
-                        {[
-                            { icon: '💾', title: 'Kalıcı Profil', desc: 'Karakter görünümün, ismin ve coin\'lerin oyunlar arası kaydediliyor.' },
-                            { icon: '🪙', title: 'Market Parası', desc: 'Her gün sonunda ciron\'un %10\'u coin olarak birikir.' },
-                            { icon: '🔥', title: 'İntikam Sahnesi', desc: 'Müşteri dövülünce gün sonunda sinematik sahne oynar. Skip butonu var.' },
-                        ].map(f => (
-                            <div key={f.title} className="flex items-start gap-3">
-                                <span className="text-stone-400 font-bold">{f.icon}</span>
-                                <div>
-                                    <span className="text-stone-300 font-bold text-xs">{f.title}: </span>
-                                    <span className="text-stone-500 text-xs">{f.desc}</span>
+                            ))}
+                        </div>
+                        <div className="bg-stone-800/30 border border-stone-700/30 p-4 rounded-2xl space-y-2">
+                            <div className="text-xs font-black text-stone-400 uppercase tracking-widest">v2.2.0</div>
+                            {[
+                                { icon: '💾', t: 'Kalıcı Profil', d: 'Karakter ve coin oyunlar arası kaydediliyor.' },
+                                { icon: '🪙', t: 'Coin Sistemi', d: 'Her gün sonunda ciron\'un %10\'u coin olarak birikir.' },
+                                { icon: '🔥', t: 'İntikam Sahnesi', d: 'Sinematik sahne + skip butonu.' },
+                            ].map(f => (
+                                <div key={f.t} className="flex items-start gap-2 text-xs">
+                                    <span className="flex-shrink-0">{f.icon}</span>
+                                    <span className="text-stone-300 font-bold">{f.t}: </span>
+                                    <span className="text-stone-500">{f.d}</span>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
-
-                    <div className="bg-amber-500/5 border border-amber-500/20 p-6 rounded-[2rem] space-y-4">
-                        <div className="text-xs font-black text-amber-400 uppercase tracking-widest mb-2">v2.1.0 — Kart Sistemi, Combo & Özel İstekler</div>
-                        {[
-                            { icon: '⚡', title: 'Kart Sistemi', desc: 'Her 3 günde bir gece ekranında 2 kart sunulur. 15 farklı kart.' },
-                            { icon: '🔥', title: 'Combo Sistemi', desc: '3 servis = 🔥 x1.5, 5 servis = 🔥🔥 x2.0, 8+ servis = 🔥🔥🔥 x3.0 bonus puan.' },
-                            { icon: '🌶️', title: 'Özel Sipariş İstekleri', desc: '🌶️ Acı (1.8x), ➕ Bol (1.5x), ⚡ Acele (2x bahşiş ama 2x sabır azalması).' },
-                        ].map(f => (
-                            <div key={f.title} className="flex items-start gap-3">
-                                <span className="text-amber-400 font-bold">{f.icon}</span>
-                                <div>
-                                    <span className="text-stone-300 font-bold text-xs">{f.title}: </span>
-                                    <span className="text-stone-500 text-xs">{f.desc}</span>
+                            ))}
+                        </div>
+                        <div className="bg-amber-500/5 border border-amber-500/20 p-4 rounded-2xl space-y-2">
+                            <div className="text-xs font-black text-amber-400 uppercase tracking-widest">v2.1.0</div>
+                            {[
+                                { icon: '⚡', t: 'Kart Sistemi', d: 'Her 3 günde 2 kart. 15 farklı kart.' },
+                                { icon: '🔥', t: 'Combo', d: 'x1.5 / x2.0 / x3.0 bonus puan.' },
+                                { icon: '🌶️', t: 'Özel İstekler', d: 'Acı, Bol, Acele siparişler.' },
+                            ].map(f => (
+                                <div key={f.t} className="flex items-start gap-2 text-xs">
+                                    <span className="flex-shrink-0">{f.icon}</span>
+                                    <span className="text-stone-300 font-bold">{f.t}: </span>
+                                    <span className="text-stone-500">{f.d}</span>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
-                </section>
+                            ))}
+                        </div>
+                        <div className="bg-purple-500/5 border border-purple-500/20 p-4 rounded-2xl">
+                            <div className="text-xs font-black text-purple-400 uppercase tracking-widest mb-2">🔮 Yakında</div>
+                            <ul className="space-y-1.5 text-xs text-purple-200/60">
+                                <li>✦ Unvan/Rozet sistemi</li>
+                                <li>✦ Renk setleri (Altın Şef, Gece Karası...)</li>
+                                <li>✦ Sunucu taraflı hesap</li>
+                            </ul>
+                        </div>
+                    </>}
 
-                {/* Yakında */}
-                <section>
-                    <h3 className="text-xs font-black text-stone-500 mb-4 uppercase tracking-[0.3em] flex items-center gap-3">
-                        <span className="h-px flex-1 bg-stone-800"></span>
-                        🔮 Yakında Gelecekler
-                        <span className="h-px flex-1 bg-stone-800"></span>
-                    </h3>
-                    <div className="bg-purple-500/5 border border-purple-500/20 p-6 rounded-[2rem]">
-                        <ul className="space-y-3">
-                            <li className="text-sm text-purple-200/70 flex items-center gap-3">
-                                <span className="text-purple-400">✦</span> Restoran Düzeni (Layout) Seçimi: Farklı mutfak tipleriyle başla
-                            </li>
-                            <li className="text-sm text-purple-200/70 flex items-center gap-3">
-                                <span className="text-purple-400">✦</span> Dinamik Masa Kapasitesi: 1-4 kişilik farklı masalar
-                            </li>
-                            <li className="text-sm text-purple-200/70 flex items-center gap-3">
-                                <span className="text-purple-400">✦</span> Zor Mod (Hardcore): Tek Hata = Game Over
-                            </li>
-                        </ul>
-                    </div>
-                </section>
-
-            </div>
-
-            {/* Footer */}
-            <div className="p-6 bg-stone-950/50 text-center border-t border-stone-800">
-                <button
-                    onClick={onClose}
-                    className="w-full max-w-xs py-4 bg-amber-500 hover:bg-amber-400 text-stone-950 font-black uppercase tracking-widest rounded-2xl transition-all active:scale-95 shadow-lg shadow-amber-500/20"
-                >
-                    Anladım, Devam Et!
-                </button>
+                </div>
             </div>
         </BaseModal>
     );

@@ -199,7 +199,8 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
       <MenuBackground />
 
       {/* ℹ️ Sol alt butonu */}
-      <div className="absolute bottom-6 left-6 z-10">
+      <div className="absolute bottom-6 left-6 z-10"
+        style={{ bottom: 'max(24px, env(safe-area-inset-bottom))', left: 'max(24px, env(safe-area-inset-left))' }}>
         <button onClick={() => setShowPatchNotes(true)}
           className="w-12 h-12 rounded-2xl bg-white/10 hover:bg-white/20 backdrop-blur border border-white/15 text-white flex items-center justify-center text-xl transition-all active:scale-90">
           ℹ️
