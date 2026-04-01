@@ -14,6 +14,7 @@ interface Props {
   setPlayerColor: (v: string) => void;
   setPlayerHat: (v: string) => void;
   coins: number;
+  setCoins: (v: number) => void;
   equippedHat: string;
 }
 
@@ -41,12 +42,13 @@ export const ProfileModal: React.FC<Props> = ({
   faceShape, setFaceShape,
   nameLabelColor, setNameLabelColor,
   setPlayerColor, setPlayerHat,
-  coins, equippedHat,
+  coins, setCoins, equippedHat,
 }) => {
   const [tab, setTab] = useState<Tab>('karakter');
   const [editingName, setEditingName] = useState(false);
   const [nameInput, setNameInput] = useState(playerName);
   const [confirmReset, setConfirmReset] = useState(false);
+  const [coinTap, setCoinTap] = useState(0);
   const profile = loadProfile();
 
   const stats = [
@@ -104,7 +106,23 @@ export const ProfileModal: React.FC<Props> = ({
               )}
               <div className="flex items-center gap-1 mt-0.5">
                 <span className="text-base">🪙</span>
-                <span className="text-yellow-400 font-black text-sm">{coins.toLocaleString('tr-TR')}</span>
+                <span
+                  className="text-yellow-400 font-black text-sm cursor-default select-none"
+                  onClick={() => {
+                    const next = coinTap + 1;
+                    setCoinTap(next);
+                    if (next >= 5) {
+                      saveProfile({ coins: loadProfile().coins + 500 });
+                      setCoins(loadProfile().coins);
+                      setCoinTap(0);
+                    }
+                  }}
+                >
+                  {coins.toLocaleString('tr-TR')}
+                  {coinTap > 0 && coinTap < 5 && (
+                    <span className="text-stone-600 text-[9px] ml-1">{coinTap}/5</span>
+                  )}
+                </span>
               </div>
             </div>
           </div>

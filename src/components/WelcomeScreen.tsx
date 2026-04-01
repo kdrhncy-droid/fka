@@ -362,6 +362,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
           nameLabelColor={nameLabelColor} setNameLabelColor={setNameLabelColor}
           setPlayerColor={setPlayerColor} setPlayerHat={setPlayerHat}
           coins={coins} equippedHat={equippedHat}
+          setCoins={setCoins}
         />
       )}
       {showShop && (
