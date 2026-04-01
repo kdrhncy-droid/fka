@@ -533,6 +533,13 @@ io.on("connection", (socket) => {
     io.to(roomId).emit("state", gs);
   });
 
+  // İntikam sahnesini anında tetikle (test için)
+  socket.on("dev:triggerRevenge", () => {
+    if (!roomId || !RoomManager.getRoomState(roomId)) return;
+    const gs = RoomManager.getRoomState(roomId)!;
+    io.to(roomId).emit("revengeScene", { day: gs.day, score: gs.score, lives: gs.lives });
+  });
+
   // ─── Test Otomasyonu ─────────────────────────────────────────────────────
   socket.on("dev:runTest", (testType: 'basic' | 'combo' | 'stress' | 'visual') => {
     if (!roomId || !RoomManager.getRoomState(roomId)) return;

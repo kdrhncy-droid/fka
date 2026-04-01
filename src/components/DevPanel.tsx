@@ -82,6 +82,10 @@ export const DevPanel: React.FC<Props> = ({ socket, onClose }) => {
                     <button onClick={() => emit('dev:setLives', 3)} className="dev-btn bg-rose-700">❤️❤️❤️ Full Can</button>
                     <button onClick={() => emit('dev:setLives', 1)} className="dev-btn bg-rose-900">❤️ 1 Can</button>
 
+                    {/* İntikam */}
+                    <div className="col-span-2 text-[10px] font-black text-stone-500 uppercase tracking-widest mt-2">İntikam Sahnesi</div>
+                    <button onClick={() => emit('dev:triggerRevenge')} className="dev-btn bg-red-900 col-span-2">🔥 İntikam Sahnesini Tetikle</button>
+
                     {/* Test Otomasyonu */}
                     <div className="col-span-2 text-[10px] font-black text-stone-500 uppercase tracking-widest mt-2">🤖 Test Otomasyonu</div>
                     <button onClick={() => emit('dev:runTest', 'basic')} className="dev-btn bg-cyan-700">🎯 Temel Test</button>

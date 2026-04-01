@@ -13,8 +13,8 @@ export const PatchNotesModal: React.FC<Props> = ({ onClose }) => {
                 <div>
                     <h2 className="text-3xl font-black text-amber-400 tracking-tight">Oyun Rehberi & Yenilikler 📜</h2>
                     <div className="flex items-center gap-2 mt-1">
-                        <span className="bg-amber-400/10 text-amber-400 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest border border-amber-400/20">v2.1.0</span>
-                        <span className="text-stone-500 text-[10px] font-bold uppercase tracking-widest">Kart Sistemi, Combo & Özel İstekler</span>
+                        <span className="bg-amber-400/10 text-amber-400 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest border border-amber-400/20">v2.2.0</span>
+                        <span className="text-stone-500 text-[10px] font-bold uppercase tracking-widest">Save Sistemi, Coin, İntikam Sahnesi</span>
                     </div>
                 </div>
                 <button
@@ -44,9 +44,25 @@ export const PatchNotesModal: React.FC<Props> = ({ onClose }) => {
                             <div className="text-xs font-black text-amber-300 uppercase tracking-widest mb-2">☀️ Servis Fazı</div>
                             <p className="text-sm text-stone-300 leading-relaxed">Müşteriler gelir, koltuklara oturur ve sipariş verir. Malzemeyi al → fırına koy → pişince tabağa al → müşteriye servis et. Kirli masaları temizle, kirli tabakları lavaboda yıka.</p>
                         </div>
-                        <div className="bg-stone-800/40 border border-stone-700/50 p-4 rounded-2xl">
-                            <div className="text-xs font-black text-amber-300 uppercase tracking-widest mb-2">🌙 Gece Fazı</div>
-                            <p className="text-sm text-stone-300 leading-relaxed">Tüm müşteriler gidince gece başlar. Kazandığın parayla upgrade satın al, yeni yemek kilidi aç, fırın ekle veya can al. Sonra yeni güne başla.</p>
+                    <div className="bg-stone-800/40 border border-stone-700/50 p-4 rounded-2xl">
+                            <div className="text-xs font-black text-amber-300 uppercase tracking-widest mb-2">🎭 Müşteri Tipleri</div>
+                            <div className="space-y-1.5">
+                                {[
+                                    { icon: '😊', name: 'Kibar', desc: 'Sabırlı, şikayet etmez. Dövülürse puan kaybı.' },
+                                    { icon: '😤', name: 'Kaba', desc: 'Agresif diyaloglar. Dövülebilir, intikam alabilir.' },
+                                    { icon: '🤪', name: 'Recep', desc: 'Dramatik tepkiler. Dövülürse yüksek intikam şansı (%60).' },
+                                    { icon: '💀', name: 'Thug', desc: 'İntikam grubu. Dövülmüş müşterinin arkadaşları olarak gelir.' },
+                                    { icon: '👑', name: 'VIP', desc: 'Altın taçlı. Çok sabırsız ama yüksek bahşiş bırakır.' },
+                                    { icon: '🍺', name: 'Sarhoş', desc: 'Kırmızı yanaklı. Garip diyaloglar, tahmin edilemez.' },
+                                    { icon: '🔍', name: 'Müfettiş', desc: 'Gözlüklü. Sert değerlendirme, düşük bahşiş.' },
+                                ].map(t => (
+                                    <div key={t.name} className="flex items-center gap-2 text-xs">
+                                        <span className="text-base w-6 text-center">{t.icon}</span>
+                                        <span className="text-white font-bold w-16">{t.name}</span>
+                                        <span className="text-stone-400">{t.desc}</span>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                         <div className="grid grid-cols-2 gap-3">
                             <div className="bg-stone-800/40 border border-stone-700/50 p-4 rounded-2xl">
@@ -147,8 +163,8 @@ export const PatchNotesModal: React.FC<Props> = ({ onClose }) => {
                             { icon: '🔪', text: 'Kesme tahtası — Et, Sebze ve Kebabı önce doğra (R tuşu), sonra fırına koy. Doğrama ses efekti ile birlikte!' },
                             { icon: '🧺', text: 'Tepsi sistemi — tek seferde 4 yemeğe kadar taşı, müşterilere sırayla servis et' },
                             { icon: '🏃', text: 'Çok oyunculu co-op — aynı odada birden fazla oyuncu, her biri bağımsız hareket eder' },
-                            { icon: '😤', text: 'Müşteri kişilikleri — Kibar, Kaba, Recep ve Thug tipleri, her birinin farklı diyalogları var' },
-                            { icon: '👊', text: 'Dövüş sistemi — kaba müşterileri dövebilirsin, ama intikam için Thug grubu gelir' },
+                            { icon: '😤', text: 'Müşteri kişilikleri — Kibar, Kaba, Recep, Thug, VIP, Sarhoş ve Müfettiş tipleri. Her birinin farklı görünümü ve diyalogları var.' },
+                            { icon: '👊', text: 'Dövüş sistemi — kaba müşterileri dövebilirsin. Yeterince dövülürse intikam için Thug grubu gelir ve gün sonunda sinematik sahne oynar.' },
                             { icon: '🔧', text: 'İstasyon taşıma — hazırlık fazında E tuşuyla istasyonları grid üzerinde yeniden konumlandır' },
                             { icon: '📦', text: 'Gizli malzeme istasyonları — kilidi açılmayan yemeklerin malzemeleri mutfakta görünmez' },
                             { icon: '👥', text: '8 farklı karakter tipi — Aşçı, Chef, Garson, Kasiyer, Temizlikçi, Kasap, Fırıncı, Müdür' },
@@ -196,57 +212,44 @@ export const PatchNotesModal: React.FC<Props> = ({ onClose }) => {
                 <section>
                     <h3 className="text-xs font-black text-stone-500 mb-4 uppercase tracking-[0.3em] flex items-center gap-3">
                         <span className="h-px flex-1 bg-stone-800"></span>
-                        🚀 Son Güncellemeler (v2.1.0 - Modüler Devrim)
+                        🚀 Son Güncellemeler (v2.2.0)
                         <span className="h-px flex-1 bg-stone-800"></span>
                     </h3>
 
-                    {/* v2.1.0 Güncellemesi */}
-                    <div className="bg-emerald-500/5 border border-emerald-500/20 p-6 rounded-[2rem] space-y-4 mb-6">
-                        <div className="flex items-start gap-3">
-                            <span className="text-emerald-400 font-bold">🛠️</span>
-                            <div>
-                                <div className="text-sm font-bold text-stone-200 uppercase tracking-wider">Dev Refactoring (Single Responsibility)</div>
-                                <p className="text-xs text-stone-400 mt-1 leading-relaxed">Spagetti Kod tamamen temizlendi! Projenin can damarı olan Veri Sistemleri ve Sunucu İstasyonları (Fırın, Lavabo, Kasa vb.) daha modüler hale getirildi. Oyun artık yeni sistemlere (Örn: Birleştirilebilir Yemekler) %100 hazır ve çok daha kararlı.</p>
+                    <div className="bg-emerald-500/5 border border-emerald-500/20 p-6 rounded-[2rem] space-y-4 mb-4">
+                        {[
+                            { icon: '💾', title: 'Kalıcı Profil & Save Sistemi', desc: 'Karakter görünümün, ismin ve coin\'lerin oyunlar arası kaydediliyor. Bir daha sıfırdan başlamak yok.' },
+                            { icon: '🪙', title: 'Market Parası (Coin)', desc: 'Her gün sonunda kazandığın ciron\'un %10\'u kalıcı coin olarak birikir. Ana menüde toplam coin görünür.' },
+                            { icon: '🏷️', title: 'İsim Etiketi Rengi', desc: 'Ana menü karakter panelinden isim etiketinin rengini seçebilirsin. 10 farklı renk seçeneği.' },
+                            { icon: '🔥', title: 'İntikam Sahnesi', desc: 'Müşteri dövülünce gün sonunda sinematik intikam sahnesi oynar. Ateş, yağmur, siluetler ve atmosferik ses.' },
+                            { icon: '▶️', title: 'Sahne Skip Butonu', desc: 'İntikam sahnesi başladıktan sonra sağ altta "Atla" butonu çıkar. Mobil ve PC\'de çalışır.' },
+                        ].map(f => (
+                            <div key={f.title} className="flex items-start gap-3">
+                                <span className="text-emerald-400 font-bold text-lg">{f.icon}</span>
+                                <div>
+                                    <div className="text-sm font-bold text-stone-200 uppercase tracking-wider">{f.title}</div>
+                                    <p className="text-xs text-stone-400 mt-0.5 leading-relaxed">{f.desc}</p>
+                                </div>
                             </div>
-                        </div>
+                        ))}
                     </div>
 
                     <div className="bg-amber-500/5 border border-amber-500/20 p-6 rounded-[2rem] space-y-4">
-                        <div className="flex items-start gap-3">
-                            <span className="text-emerald-400 font-bold">⚡</span>
-                            <div>
-                                <div className="text-sm font-bold text-stone-200 uppercase tracking-wider">Kart Sistemi</div>
-                                <p className="text-xs text-stone-400 mt-1 leading-relaxed">Her 3 günde bir gece ekranında 2 kart sunulur. Her kart bir şeyi zorlaştırır ama karşılığında ödül verir. 15 farklı kart — Sabırsız Kalabalık, Sıcak Fırın, Kaos Günü ve daha fazlası.</p>
+                        <div className="text-xs font-black text-amber-400 uppercase tracking-widest mb-2">v2.1.0 — Kart Sistemi, Combo & Özel İstekler</div>
+                        {[
+                            { icon: '⚡', title: 'Kart Sistemi', desc: 'Her 3 günde bir gece ekranında 2 kart sunulur. 15 farklı kart — Sabırsız Kalabalık, Sıcak Fırın, Kaos Günü ve daha fazlası.' },
+                            { icon: '🔥', title: 'Combo Sistemi', desc: 'Arka arkaya hızlı servis yapınca combo başlar. 3 servis = 🔥 x1.5, 5 servis = 🔥🔥 x2.0, 8+ servis = 🔥🔥🔥 x3.0 bonus puan.' },
+                            { icon: '🌶️', title: 'Özel Sipariş İstekleri', desc: '🌶️ Acı (1.8x bahşiş), ➕ Bol porsiyon (1.5x), ⚡ Acele (2x bahşiş ama 2x sabır azalması).' },
+                            { icon: '🚿', title: 'Ekstra Lavabo & Kesme Tahtası', desc: 'Gece mağazasında ekstra lavabo ve kesme tahtası satın alınabilir. Maksimum 3\'e kadar.' },
+                        ].map(f => (
+                            <div key={f.title} className="flex items-start gap-3">
+                                <span className="text-amber-400 font-bold">{f.icon}</span>
+                                <div>
+                                    <div className="text-sm font-bold text-stone-200 uppercase tracking-wider">{f.title}</div>
+                                    <p className="text-xs text-stone-400 mt-0.5 leading-relaxed">{f.desc}</p>
+                                </div>
                             </div>
-                        </div>
-                        <div className="flex items-start gap-3">
-                            <span className="text-emerald-400 font-bold">🔥</span>
-                            <div>
-                                <div className="text-sm font-bold text-stone-200 uppercase tracking-wider">Combo Sistemi</div>
-                                <p className="text-xs text-stone-400 mt-1 leading-relaxed">Arka arkaya hızlı servis yapınca combo başlar. 3 servis = 🔥 x1.5, 5 servis = 🔥🔥 x2.0, 8+ servis = 🔥🔥🔥 x3.0 bonus puan. Üst barda combo sayacı görünür.</p>
-                            </div>
-                        </div>
-                        <div className="flex items-start gap-3">
-                            <span className="text-emerald-400 font-bold">🌶️</span>
-                            <div>
-                                <div className="text-sm font-bold text-stone-200 uppercase tracking-wider">Özel Sipariş İstekleri</div>
-                                <p className="text-xs text-stone-400 mt-1 leading-relaxed">Müşteriler artık özel istek yapabiliyor. 🌶️ Acı (1.8x bahşiş), ➕ Bol porsiyon (1.5x), ⚡ Acele (2x bahşiş ama 2x sabır azalması). Sipariş balonunda ikon görünür.</p>
-                            </div>
-                        </div>
-                        <div className="flex items-start gap-3">
-                            <span className="text-emerald-400 font-bold">🚿</span>
-                            <div>
-                                <div className="text-sm font-bold text-stone-200 uppercase tracking-wider">Ekstra Lavabo & Kesme Tahtası</div>
-                                <p className="text-xs text-stone-400 mt-1 leading-relaxed">Gece mağazasında artık ekstra lavabo ve kesme tahtası satın alabilirsin. Maksimum 3'e kadar. Satın alınca anında mutfağa eklenir, layout editörde taşınabilir.</p>
-                            </div>
-                        </div>
-                        <div className="flex items-start gap-3">
-                            <span className="text-amber-400 font-bold">✨</span>
-                            <div>
-                                <div className="text-sm font-bold text-stone-200 uppercase tracking-wider">Animasyonlar</div>
-                                <p className="text-xs text-stone-400 mt-1 leading-relaxed">Yemek pişince ✨ sparkle efekti, müşteri mutlu ayrılınca ❤️ animasyonu eklendi.</p>
-                            </div>
-                        </div>
+                        ))}
                     </div>
                 </section>
 
