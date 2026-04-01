@@ -45,6 +45,7 @@ export const ProfileModal: React.FC<Props> = ({
   const [tab, setTab] = useState<Tab>('karakter');
   const [editingName, setEditingName] = useState(false);
   const [nameInput, setNameInput] = useState(playerName);
+  const [confirmReset, setConfirmReset] = useState(false);
   const profile = loadProfile();
 
   const stats = [
@@ -63,9 +64,14 @@ export const ProfileModal: React.FC<Props> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4" onClick={onClose}>
+    <div
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/70 backdrop-blur-sm"
+      style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+      onClick={onClose}
+    >
       <div
-        className="w-full max-w-md bg-stone-900 border border-stone-700 rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-[92vh]"
+        className="w-full sm:max-w-md bg-stone-900 border border-stone-700 sm:rounded-3xl rounded-t-3xl overflow-hidden shadow-2xl flex flex-col"
+        style={{ maxHeight: '92dvh' }}
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
@@ -79,12 +85,13 @@ export const ProfileModal: React.FC<Props> = ({
               {editingName ? (
                 <div className="flex items-center gap-1">
                   <input
-                    autoFocus value={nameInput}
+                    value={nameInput}
                     onChange={e => setNameInput(e.target.value)}
                     onBlur={saveName}
                     onKeyDown={e => e.key === 'Enter' && saveName()}
                     maxLength={12}
-                    className="bg-stone-800 border border-amber-500 rounded-lg px-2 py-0.5 text-sm font-bold text-white outline-none w-28"
+                    inputMode="text"
+                    className="bg-stone-800 border border-amber-500 rounded-lg px-2 py-1 text-sm font-bold text-white outline-none w-28"
                   />
                 </div>
               ) : (
@@ -114,7 +121,7 @@ export const ProfileModal: React.FC<Props> = ({
         </div>
 
         {/* İçerik */}
-        <div className="overflow-y-auto no-scrollbar flex-1">
+        <div className="overflow-y-auto flex-1" style={{ WebkitOverflowScrolling: 'touch' } as React.CSSProperties}>
 
           {/* ── KARAKTER TABI ── */}
           {tab === 'karakter' && (
@@ -151,10 +158,10 @@ export const ProfileModal: React.FC<Props> = ({
               {/* Saç */}
               <div>
                 <p className="text-[10px] font-black uppercase tracking-widest text-stone-500 mb-2">Saç Rengi</p>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2.5">
                   {HAIR_COLORS.map(c => (
                     <button key={c} onClick={() => setHairColor(c)}
-                      className={`w-7 h-7 rounded-full border-2 transition-transform active:scale-90 ${hairColor === c ? 'border-white scale-110' : 'border-stone-700'}`}
+                      className={`w-8 h-8 rounded-full border-2 transition-transform active:scale-90 ${hairColor === c ? 'border-white scale-110' : 'border-stone-700'}`}
                       style={{ backgroundColor: c }} />
                   ))}
                 </div>
@@ -163,10 +170,10 @@ export const ProfileModal: React.FC<Props> = ({
               {/* Kıyafet */}
               <div>
                 <p className="text-[10px] font-black uppercase tracking-widest text-stone-500 mb-2">Kıyafet Rengi</p>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2.5">
                   {CLOTHING_COLORS.map(c => (
                     <button key={c} onClick={() => { setClothingColor(c); setPlayerColor(c); }}
-                      className={`w-7 h-7 rounded-full border-2 transition-transform active:scale-90 ${clothingColor === c ? 'border-white scale-110' : 'border-stone-700'}`}
+                      className={`w-8 h-8 rounded-full border-2 transition-transform active:scale-90 ${clothingColor === c ? 'border-white scale-110' : 'border-stone-700'}`}
                       style={{ backgroundColor: c }} />
                   ))}
                 </div>
@@ -175,10 +182,10 @@ export const ProfileModal: React.FC<Props> = ({
               {/* İsim etiketi rengi */}
               <div>
                 <p className="text-[10px] font-black uppercase tracking-widest text-stone-500 mb-2">İsim Etiketi Rengi</p>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2.5">
                   {LABEL_COLORS.map(c => (
                     <button key={c} onClick={() => setNameLabelColor(c)}
-                      className={`w-7 h-7 rounded-full border-2 transition-transform active:scale-90 ${nameLabelColor === c ? 'border-white scale-110' : 'border-stone-700'}`}
+                      className={`w-8 h-8 rounded-full border-2 transition-transform active:scale-90 ${nameLabelColor === c ? 'border-white scale-110' : 'border-stone-700'}`}
                       style={{ backgroundColor: c, outline: c === '#ffffff' ? '1px solid #555' : undefined }} />
                   ))}
                 </div>
@@ -211,17 +218,30 @@ export const ProfileModal: React.FC<Props> = ({
               </div>
 
               {/* Sıfırla */}
-              <button
-                onClick={() => {
-                  if (confirm('Tüm istatistikleri sıfırlamak istediğine emin misin?')) {
-                    saveProfile({ totalPlayTime: 0, totalDays: 0, totalScore: 0, totalServed: 0, gamesPlayed: 0, lastPlayed: 0 });
-                    onClose();
-                  }
-                }}
-                className="w-full py-2 rounded-xl bg-red-900/30 hover:bg-red-800/50 border border-red-700/30 text-red-400 text-xs font-bold uppercase tracking-widest transition-all"
-              >
-                İstatistikleri Sıfırla
-              </button>
+              {confirmReset ? (
+                <div className="rounded-xl bg-red-900/40 border border-red-700/40 p-3 space-y-2">
+                  <p className="text-red-300 text-xs text-center font-bold">Tüm istatistikler silinecek. Emin misin?</p>
+                  <div className="flex gap-2">
+                    <button onClick={() => setConfirmReset(false)}
+                      className="flex-1 py-2 rounded-lg bg-stone-700 text-stone-300 text-xs font-bold">
+                      İptal
+                    </button>
+                    <button onClick={() => {
+                      saveProfile({ totalPlayTime: 0, totalDays: 0, totalScore: 0, totalServed: 0, gamesPlayed: 0, lastPlayed: 0 });
+                      setConfirmReset(false);
+                      onClose();
+                    }}
+                      className="flex-1 py-2 rounded-lg bg-red-700 text-white text-xs font-bold">
+                      Sıfırla
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <button onClick={() => setConfirmReset(true)}
+                  className="w-full py-2.5 rounded-xl bg-red-900/30 border border-red-700/30 text-red-400 text-xs font-bold uppercase tracking-widest active:scale-95 transition-all">
+                  İstatistikleri Sıfırla
+                </button>
+              )}
             </div>
           )}
         </div>
