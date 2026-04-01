@@ -27,6 +27,7 @@ export interface Player {
     faceShape?: number;
     nameLabelColor?: string;
     title?: string;
+    labelEffect?: string;
 }
 
 export interface Customer {

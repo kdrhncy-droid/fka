@@ -55,6 +55,7 @@ export default function App() {
   const [coins, setCoins] = useState(() => loadProfile().coins);
   const [equippedHat, setEquippedHat] = useState(() => loadProfile().equippedHat ?? '');
   const [equippedTitle, setEquippedTitle] = useState(() => loadProfile().equippedTitle ?? '');
+  const [equippedLabelEffect, setEquippedLabelEffect] = useState(() => loadProfile().equippedLabelEffect ?? '');
 
   // Karakter değişince kaydet
   useEffect(() => {
@@ -85,6 +86,7 @@ export default function App() {
       color: playerColor,
       hat: equippedHat || playerHat,
       title: equippedTitle,
+      labelEffect: equippedLabelEffect,
       charType,
       hairColor,
       clothingColor,
@@ -138,6 +140,7 @@ export default function App() {
           coins={coins} setCoins={setCoins}
           equippedHat={equippedHat} setEquippedHat={setEquippedHat}
           equippedTitle={equippedTitle} setEquippedTitle={setEquippedTitle}
+          equippedLabelEffect={equippedLabelEffect} setEquippedLabelEffect={setEquippedLabelEffect}
         />
         {showSettings && (
           <SettingsPanel

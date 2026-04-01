@@ -270,13 +270,44 @@ export function drawPlayer(
     ctx.font = 'bold 11px Arial';
     const lw = ctx.measureText(label).width + 16;
     const labelBg = isMe ? 'rgba(59, 130, 246, 0.9)' : 'rgba(0, 0, 0, 0.7)';
-    // Unvan varsa isim biraz daha yukarı
     const labelY = headY - headR - 30;
+    const fx = p.labelEffect;
+    const now = Date.now();
+
+    // Etiket arka plan + efekt
+    ctx.save();
+    if (fx === 'glow') {
+        const glowColor = p.nameLabelColor || '#fff';
+        ctx.shadowColor = glowColor;
+        ctx.shadowBlur = 12 + Math.sin(now / 300) * 4;
+    } else if (fx === 'gold') {
+        ctx.shadowColor = '#FFD700';
+        ctx.shadowBlur = 8;
+    }
     ctx.fillStyle = labelBg;
     ctx.beginPath(); ctx.roundRect(-lw / 2, labelY, lw, 18, 9); ctx.fill();
-    ctx.fillStyle = p.nameLabelColor || '#fff';
+    if (fx === 'gold') {
+        ctx.strokeStyle = '#FFD700';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.roundRect(-lw / 2, labelY, lw, 18, 9); ctx.stroke();
+    }
+    ctx.restore();
+
+    // Etiket yazısı rengi
+    let labelColor = p.nameLabelColor || '#fff';
+    if (fx === 'rainbow') {
+        const hue = (now / 20) % 360;
+        labelColor = `hsl(${hue}, 100%, 70%)`;
+    } else if (fx === 'pulse') {
+        const brightness = 50 + Math.abs(Math.sin(now / 400)) * 40;
+        const baseColor = p.nameLabelColor || '#ffffff';
+        // Parlaklık efekti için alpha değişimi
+        ctx.globalAlpha = 0.6 + Math.abs(Math.sin(now / 400)) * 0.4;
+    }
+    ctx.fillStyle = labelColor;
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.fillText(label, 0, labelY + 9);
+    ctx.globalAlpha = 1;
 
     // Unvan — isim etiketinin altında
     if (p.title) {

@@ -14,6 +14,7 @@ export interface PlayerProfile {
   ownedItems: string[]; // satın alınan item id'leri
   equippedHat: string;  // aktif şapka
   equippedTitle: string; // aktif unvan
+  equippedLabelEffect: string; // aktif etiket efekti
   totalPlayTime: number;
   totalDays: number;
   totalScore: number;
@@ -33,6 +34,7 @@ const DEFAULT: PlayerProfile = {
   ownedItems: [],
   equippedHat: '',
   equippedTitle: '',
+  equippedLabelEffect: '',
   totalPlayTime: 0,
   totalDays: 0,
   totalScore: 0,
@@ -80,7 +82,7 @@ export function addCoinsFromScore(score: number): number {
 }
 
 // ─── Market Item Tanımları ────────────────────────────────────────────────────
-export type ShopCategory = 'hat' | 'hairColor' | 'clothingColor' | 'labelColor' | 'title' | 'colorSet';
+export type ShopCategory = 'hat' | 'hairColor' | 'clothingColor' | 'labelColor' | 'title' | 'colorSet' | 'labelEffect';
 
 export interface ShopItem {
   id: string;
@@ -136,6 +138,11 @@ export const SHOP_ITEMS: ShopItem[] = [
   { id: 'title_korku',   category: 'title', name: 'KORKU',        icon: '💀', value: '💀 KORKU',        price: 300, rarity: 'epic'   },
   { id: 'title_temiz',   category: 'title', name: 'TEMİZLİKÇİ',  icon: '🧹', value: '🧹 TEMİZLİKÇİ',  price: 50,  rarity: 'common' },
   { id: 'title_yeni',    category: 'title', name: 'YENİ BAŞLAYAN',icon: '🌱', value: '🌱 YENİ BAŞLAYAN',price: 50,  rarity: 'common' },
+  // ── Etiket Efektleri ──────────────────────────────────────────────────────
+  { id: 'fx_glow',      category: 'labelEffect', name: 'Parlayan',      icon: '✨', value: 'glow',     price: 300, rarity: 'rare'   },
+  { id: 'fx_rainbow',   category: 'labelEffect', name: 'Gökkuşağı',     icon: '🌈', value: 'rainbow',  price: 600, rarity: 'epic'   },
+  { id: 'fx_pulse',     category: 'labelEffect', name: 'Yanıp Sönen',   icon: '💫', value: 'pulse',    price: 400, rarity: 'epic'   },
+  { id: 'fx_gold',      category: 'labelEffect', name: 'Altın Çerçeve', icon: '🏅', value: 'gold',     price: 250, rarity: 'rare'   },
 ];
 
 export function buyItem(itemId: string): boolean {
