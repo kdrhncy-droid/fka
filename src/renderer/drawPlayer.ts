@@ -164,13 +164,12 @@ export function drawPlayer(
     // ── ŞAPKA ────────────────────────────────────────────────────────────────
     if (p.hat) {
         ctx.save();
-        ctx.scale(dirMul, 1); // ayna efektini geri al
+        ctx.scale(dirMul, 1); // ayna efektini geri al — şapka her zaman düz görünsün
         ctx.font = `${headR * 1.4}px Arial`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(p.hat, 0, headY - headR - 4);
         ctx.restore();
-        ctx.scale(dirMul, 1); // tekrar uygula (sonraki çizimler için)
     }
 
     // ── TUTULAN EŞYA ─────────────────────────────────────────────────────────

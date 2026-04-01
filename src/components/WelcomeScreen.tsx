@@ -362,7 +362,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
           faceShape={faceShape} setFaceShape={setFaceShape}
           nameLabelColor={nameLabelColor} setNameLabelColor={setNameLabelColor}
           setPlayerColor={setPlayerColor} setPlayerHat={setPlayerHat}
-          coins={coins}
+          coins={coins} equippedHat={equippedHat}
         />
       )}
       {showShop && (

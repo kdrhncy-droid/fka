@@ -14,6 +14,7 @@ interface Props {
   setPlayerColor: (v: string) => void;
   setPlayerHat: (v: string) => void;
   coins: number;
+  equippedHat: string;
 }
 
 const HAIR_COLORS = ['#4b2c20','#24150e','#8d5524','#c68642','#f1c27d','#ffffff','#ef4444','#3b82f6','#a855f7','#22c55e'];
@@ -40,7 +41,7 @@ export const ProfileModal: React.FC<Props> = ({
   faceShape, setFaceShape,
   nameLabelColor, setNameLabelColor,
   setPlayerColor, setPlayerHat,
-  coins,
+  coins, equippedHat,
 }) => {
   const [tab, setTab] = useState<Tab>('karakter');
   const [editingName, setEditingName] = useState(false);
@@ -129,8 +130,11 @@ export const ProfileModal: React.FC<Props> = ({
 
               {/* Büyük önizleme */}
               <div className="flex justify-center">
-                <div className="w-28 h-28 rounded-3xl bg-stone-800 border-2 border-stone-700 overflow-hidden flex items-center justify-center">
+                <div className="relative w-28 h-28 rounded-3xl bg-stone-800 border-2 border-stone-700 overflow-visible flex items-center justify-center">
                   <CharacterPreview charType={charType} size={112} hairColor={hairColor} clothingColor={clothingColor} faceShape={faceShape} />
+                  {equippedHat && (
+                    <span className="absolute -top-4 left-1/2 -translate-x-1/2 text-2xl pointer-events-none">{equippedHat}</span>
+                  )}
                 </div>
               </div>
 
