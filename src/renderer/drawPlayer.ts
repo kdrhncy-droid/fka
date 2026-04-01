@@ -28,7 +28,6 @@ export function drawPlayer(
     const typeId   = Math.min(p.charType ?? 0, CHARACTER_TYPES.length - 1);
     const charDef  = CHARACTER_TYPES[typeId];
     const bodyColor   = p.clothingColor || p.color || charDef.bodyColor;
-    const accentColor = charDef.accent;
     const hairColor   = p.hairColor || '#4b2c20';
     const faceShape   = p.faceShape ?? 0;
 

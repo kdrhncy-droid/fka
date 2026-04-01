@@ -710,7 +710,7 @@ export const GameScreen: React.FC<Props> = ({
                 <SettingsPanel settings={settings} onUpdate={updateSettings} onClose={() => setShowSettings(false)}
                     onLeaveGame={() => { setShowSettings(false); setShowLeave(true); }}
                     isJoined={isJoined}
-                    onOpenHudEditor={() => { setShowSettings(false); setShowHudEditor(true); }}
+                    onOpenHudEditor={() => { setShowSettings(false); setShowHudEditor(true); joystickVectorRef.current = { x: 0, y: 0 }; }}
                 />
             )}
 
