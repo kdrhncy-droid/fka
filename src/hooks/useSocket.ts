@@ -83,6 +83,7 @@ export function useSocket(
             reconnectAttemptsRef.current = 0;
 
             // Ping ölçümü — her 2 saniyede bir, 5 örnekli hareketli ortalama
+            clearInterval((newSocket as any)._pingInterval); // önceki varsa temizle
             const pingInterval = setInterval(() => {
                 if (!newSocket.connected) return;
                 newSocket.emit('ping_check', Date.now());

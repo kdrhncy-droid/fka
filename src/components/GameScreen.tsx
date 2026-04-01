@@ -135,6 +135,16 @@ export const GameScreen: React.FC<Props> = ({
         }
     }, [dayPhase]);
 
+    // Unmount'ta chopTouchInterval temizle
+    useEffect(() => {
+        return () => {
+            if (chopTouchIntervalRef.current) {
+                clearInterval(chopTouchIntervalRef.current);
+                chopTouchIntervalRef.current = null;
+            }
+        };
+    }, []);
+
     // BGM: App.tsx'te join anında başlatılıyor, burada sadece unmount'ta durdur
     useEffect(() => {
         return () => stopBgm();
@@ -261,7 +271,7 @@ export const GameScreen: React.FC<Props> = ({
                     ) : (
                         <span className="text-[10px] font-bold text-purple-400">Düzenleme Modu</span>
                     )}
-                    {dayPhase !== 'night' && (
+                    {dayPhase === 'day' && (
                         <div className="w-full h-1 bg-stone-800 rounded-full overflow-hidden">
                             <div className="h-full rounded-full transition-all" style={{ width: `${progress * 100}%`, backgroundColor: barColor }} />
                         </div>

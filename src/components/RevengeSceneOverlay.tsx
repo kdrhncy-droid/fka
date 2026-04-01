@@ -757,6 +757,7 @@ export const RevengeSceneOverlay: React.FC<Props> = ({ onDone, bgmOn }) => {
     return () => {
       cancelAnimationFrame(rafId);
       skipRef.current = true;
+      try { AC?.close(); } catch {}
       if (bgmOn) { setBgmEnabled(true); startBgm(); }
     };
   }, [bgmOn]);

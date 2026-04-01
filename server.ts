@@ -443,7 +443,7 @@ io.on("connection", (socket) => {
     c.punchCount = (c.punchCount || 0) + 1;
     const MAX_PUNCHES = 4;
 
-    if (c.punchCount >= MAX_PUNCHES) {
+    if (c.punchCount >= MAX_PUNCHES && !c.isLeaving) {
       const revengeChance = c.personality === 'recep' ? 0.6 : 0.3;
       if (Math.random() < revengeChance) {
         gs.revengeQueue.push(5400 + Math.floor(Math.random() * 1800));
