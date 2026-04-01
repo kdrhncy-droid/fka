@@ -179,18 +179,33 @@ export const ShopModal: React.FC<Props> = ({
                       <span className="absolute -top-2 -right-2 bg-emerald-500 text-white text-[8px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-wide z-10">YENİ</span>
                     )}
 
-                    {/* İkon */}
-                    <div className="flex items-center gap-1.5">
-                      {item.category === 'hairColor' || item.category === 'clothingColor' || item.category === 'labelColor' ? (
-                        <div className="w-7 h-7 rounded-full border-2 border-stone-600 flex-shrink-0"
-                          style={{ backgroundColor: item.value, outline: item.value === '#ffffff' ? '1px solid #555' : undefined }} />
-                      ) : (
-                        <span className="text-xl leading-none">{item.icon}</span>
+                    {/* Görsel önizleme */}
+                    <div className="flex justify-center items-center h-10">
+                      {item.category === 'hat' ? (
+                        <span className="text-3xl leading-none">{item.icon}</span>
+                      ) : item.category === 'hairColor' ? (
+                        <div className="flex flex-col items-center gap-1">
+                          <div className="w-8 h-8 rounded-full border-2 border-stone-500 shadow-inner"
+                            style={{ backgroundColor: item.value }} />
+                          <div className="w-5 h-1.5 rounded-full opacity-60" style={{ backgroundColor: item.value }} />
+                        </div>
+                      ) : item.category === 'clothingColor' ? (
+                        <div className="w-8 h-9 rounded-lg border-2 border-stone-500 flex items-center justify-center shadow-inner"
+                          style={{ backgroundColor: item.value }}>
+                          <div className="w-3 h-3 rounded-full bg-white/20" />
+                        </div>
+                      ) : ( // labelColor
+                        <div className="px-2 py-1 rounded-full border-2 text-[9px] font-black"
+                          style={{ borderColor: item.value, color: item.value, backgroundColor: 'rgba(0,0,0,0.5)' }}>
+                          ★ İSİM
+                        </div>
                       )}
-                      <div className="min-w-0 flex-1">
-                        <div className="text-white font-bold text-[10px] leading-tight truncate">{item.name}</div>
-                        <div className={`text-[8px] font-black uppercase ${rs.badge}`}>{rs.label}</div>
-                      </div>
+                    </div>
+
+                    {/* İsim + nadirlik */}
+                    <div className="text-center">
+                      <div className="text-white font-bold text-[10px] leading-tight truncate">{item.name}</div>
+                      <div className={`text-[8px] font-black uppercase ${rs.badge}`}>{rs.label}</div>
                     </div>
 
                     {/* Buton */}

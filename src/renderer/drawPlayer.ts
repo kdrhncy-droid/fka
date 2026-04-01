@@ -161,14 +161,85 @@ export function drawPlayer(
     ctx.strokeStyle = '#844'; ctx.lineWidth = 1.8; ctx.lineCap = 'round';
     ctx.beginPath(); ctx.arc(0, headY + 7, 3.5, 0.2, Math.PI - 0.2); ctx.stroke();
 
-    // ── ŞAPKA ────────────────────────────────────────────────────────────────
+    // ── ŞAPKA — canvas'ta çizilen gerçek şapkalar ───────────────────────────
     if (p.hat) {
         ctx.save();
-        ctx.scale(dirMul, 1); // ayna efektini geri al — şapka her zaman düz görünsün
-        ctx.font = `${headR * 1.4}px Arial`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(p.hat, 0, headY - headR - 4);
+        ctx.scale(dirMul, 1); // ayna efektini geri al
+        const hatY = headY - headR - 2;
+        switch (p.hat) {
+            case '👑': { // Altın taç — canvas ile çiz
+                ctx.fillStyle = '#FFD700';
+                ctx.beginPath();
+                ctx.moveTo(-headR * 0.7, hatY);
+                ctx.lineTo(-headR * 0.5, hatY - 10);
+                ctx.lineTo(-headR * 0.15, hatY - 4);
+                ctx.lineTo(0, hatY - 13);
+                ctx.lineTo(headR * 0.15, hatY - 4);
+                ctx.lineTo(headR * 0.5, hatY - 10);
+                ctx.lineTo(headR * 0.7, hatY);
+                ctx.closePath(); ctx.fill(); stk(ctx, '#b8860b', 1.5);
+                // Taşlar
+                ['#ff4444','#4444ff','#44ff44'].forEach((col, i) => {
+                    ctx.fillStyle = col;
+                    ctx.beginPath(); ctx.arc(-headR * 0.35 + i * headR * 0.35, hatY - 5, 2, 0, Math.PI * 2); ctx.fill();
+                });
+                break;
+            }
+            case '🎩': { // Silindir şapka
+                ctx.fillStyle = '#1a1a1a';
+                ctx.beginPath(); ctx.ellipse(0, hatY, headR * 0.85, 4, 0, 0, Math.PI * 2); ctx.fill(); stk(ctx, '#333', 1);
+                ctx.beginPath(); ctx.roundRect(-headR * 0.55, hatY - 16, headR * 1.1, 16, [3, 3, 0, 0]); ctx.fill(); stk(ctx, '#333', 1);
+                ctx.fillStyle = '#333';
+                ctx.beginPath(); ctx.roundRect(-headR * 0.5, hatY - 5, headR, 2, 1); ctx.fill();
+                break;
+            }
+            case '🧢': { // Şapka (kep)
+                ctx.fillStyle = '#2563eb';
+                ctx.beginPath(); ctx.ellipse(0, hatY, headR * 0.9, 5, 0, Math.PI, 0); ctx.fill(); stk(ctx, '#1d4ed8', 1);
+                ctx.beginPath(); ctx.roundRect(-headR * 0.7, hatY - 12, headR * 1.4, 13, [8, 8, 0, 0]); ctx.fill(); stk(ctx, '#1d4ed8', 1);
+                ctx.fillStyle = '#1d4ed8';
+                ctx.beginPath(); ctx.ellipse(headR * 0.5, hatY - 6, 3, 3, 0, 0, Math.PI * 2); ctx.fill();
+                break;
+            }
+            case '🎀': { // Fiyonk
+                ctx.fillStyle = '#ec4899';
+                // Sol kanat
+                ctx.beginPath(); ctx.ellipse(-8, hatY - 6, 8, 5, -0.4, 0, Math.PI * 2); ctx.fill(); stk(ctx, '#be185d', 1);
+                // Sağ kanat
+                ctx.beginPath(); ctx.ellipse(8, hatY - 6, 8, 5, 0.4, 0, Math.PI * 2); ctx.fill(); stk(ctx, '#be185d', 1);
+                // Orta düğüm
+                ctx.fillStyle = '#f472b6';
+                ctx.beginPath(); ctx.arc(0, hatY - 6, 4, 0, Math.PI * 2); ctx.fill(); stk(ctx, '#be185d', 1);
+                break;
+            }
+            case '🐱': { // Kedi kulakları
+                ctx.fillStyle = '#f5c090';
+                ctx.beginPath(); ctx.moveTo(-headR * 0.5, hatY); ctx.lineTo(-headR * 0.65, hatY - 12); ctx.lineTo(-headR * 0.2, hatY - 4); ctx.closePath(); ctx.fill(); stk(ctx, '#000', 1.5);
+                ctx.beginPath(); ctx.moveTo(headR * 0.5, hatY); ctx.lineTo(headR * 0.65, hatY - 12); ctx.lineTo(headR * 0.2, hatY - 4); ctx.closePath(); ctx.fill(); stk(ctx, '#000', 1.5);
+                ctx.fillStyle = '#ffb6c1';
+                ctx.beginPath(); ctx.moveTo(-headR * 0.5, hatY - 2); ctx.lineTo(-headR * 0.6, hatY - 10); ctx.lineTo(-headR * 0.25, hatY - 4); ctx.closePath(); ctx.fill();
+                ctx.beginPath(); ctx.moveTo(headR * 0.5, hatY - 2); ctx.lineTo(headR * 0.6, hatY - 10); ctx.lineTo(headR * 0.25, hatY - 4); ctx.closePath(); ctx.fill();
+                break;
+            }
+            case '⭐': { // Yıldız
+                ctx.fillStyle = '#FFD700';
+                const starPoints = 5, outerR = 10, innerR = 4;
+                ctx.beginPath();
+                for (let i = 0; i < starPoints * 2; i++) {
+                    const r = i % 2 === 0 ? outerR : innerR;
+                    const angle = (i * Math.PI) / starPoints - Math.PI / 2;
+                    i === 0 ? ctx.moveTo(Math.cos(angle) * r, hatY - 8 + Math.sin(angle) * r)
+                            : ctx.lineTo(Math.cos(angle) * r, hatY - 8 + Math.sin(angle) * r);
+                }
+                ctx.closePath(); ctx.fill(); stk(ctx, '#b8860b', 1);
+                break;
+            }
+            default: { // Diğer emojiler için fallback
+                ctx.font = `${headR * 1.2}px Arial`;
+                ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                ctx.fillText(p.hat, 0, hatY - 8);
+            }
+        }
         ctx.restore();
     }
 
