@@ -239,9 +239,10 @@ export const GameScreen: React.FC<Props> = ({
             ? `hsl(${220 + progress * 20}, 70%, 40%)`
             : '#a78bfa';
 
-    const bs = 80;
-    const joystickSize = 128;
-    const punchButtonSize = 72;
+    const bs = settings.hudLayout.btnSize ?? 80;
+    const joystickSize = settings.hudLayout.joystickSize ?? 128;
+    const punchButtonSize = Math.round(bs * 0.9);
+    const panelWidth = settings.hudLayout.panelWidth ?? 17;
 
     return (
         <div className="game-screen w-full flex flex-col select-none safe-top safe-bottom" style={{ background: '#545250' }}>
@@ -348,7 +349,7 @@ export const GameScreen: React.FC<Props> = ({
                 {/* ── SOL PANEL — Joystick (sadece touch) ── */}
                 {isTouchDevice && !showHudEditor && (
                     <div className="flex-none flex items-center justify-center"
-                        style={{ width: '17%', background: 'rgba(0,0,0,0.15)' }}>
+                        style={{ width: `${panelWidth}%`, background: 'rgba(0,0,0,0.15)' }}>
                         <Joystick size={joystickSize} onMove={(x, y) => { joystickVectorRef.current = { x, y }; }} />
                     </div>
                 )}
@@ -575,11 +576,11 @@ export const GameScreen: React.FC<Props> = ({
                 {/* ── SAĞ PANEL — Aksiyon butonları (sadece touch) ── */}
                 {isTouchDevice && !showHudEditor && (
                     <div className="flex-none flex flex-col items-center justify-center gap-3"
-                        style={{ width: '17%', background: 'rgba(0,0,0,0.15)' }}>
+                        style={{ width: `${panelWidth}%`, background: 'rgba(0,0,0,0.15)' }}>
                         {/* AL/VER */}
                         <button
                             onPointerDown={(e) => { e.preventDefault(); if (dayPhase === 'prep') handleInteract(); else emit('interact'); }}
-                            style={{ width: 64, height: 64, touchAction: 'none' }}
+                            style={{ width: bs, height: bs, touchAction: 'none' }}
                             className="bg-blue-600/85 active:scale-90 text-white rounded-2xl shadow-lg font-black text-xs flex flex-col items-center justify-center gap-0.5 border border-blue-400/30 backdrop-blur-sm transition-all"
                         >
                             <span className="text-lg">🤲</span>
@@ -611,7 +612,7 @@ export const GameScreen: React.FC<Props> = ({
                                 if (chopTouchIntervalRef.current) { clearInterval(chopTouchIntervalRef.current); chopTouchIntervalRef.current = null; }
                                 gameStateRef.current.choppingBoards?.forEach(b => socket?.emit('chop_stop', b.id));
                             }}
-                            style={{ width: 52, height: 52, touchAction: 'none' }}
+                            style={{ width: Math.round(bs * 0.8), height: Math.round(bs * 0.8), touchAction: 'none' }}
                             className="bg-amber-600/85 active:scale-90 text-white rounded-2xl shadow-lg font-black text-xs flex flex-col items-center justify-center gap-0.5 border border-amber-400/30 backdrop-blur-sm transition-all"
                         >
                             <span className="text-base">🔪</span>
@@ -633,7 +634,7 @@ export const GameScreen: React.FC<Props> = ({
                                 });
                                 if (punchTarget) socket?.emit('punchCustomer', punchTarget.id);
                             }}
-                            style={{ width: 52, height: 52, touchAction: 'none' }}
+                            style={{ width: Math.round(bs * 0.8), height: Math.round(bs * 0.8), touchAction: 'none' }}
                             className="bg-red-600/85 active:scale-90 text-white rounded-2xl shadow-lg font-black text-xs flex flex-col items-center justify-center gap-0.5 border border-red-400/30 backdrop-blur-sm transition-all"
                         >
                             <span className="text-base">👊</span>
@@ -641,7 +642,7 @@ export const GameScreen: React.FC<Props> = ({
                         </button>
                         {/* Müzik */}
                         <button onClick={toggleMusic}
-                            style={{ width: 40, height: 40, touchAction: 'none' }}
+                            style={{ width: Math.round(bs * 0.6), height: Math.round(bs * 0.6), touchAction: 'none' }}
                             className={`rounded-xl shadow text-base flex items-center justify-center transition-all border backdrop-blur-sm ${
                                 musicOn ? 'bg-violet-600/80 border-violet-400/30 text-white' : 'bg-stone-700/70 border-stone-600/30 text-stone-400'
                             }`}

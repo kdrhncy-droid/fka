@@ -14,6 +14,10 @@ export interface HudLayout {
     punchBtn: HudElementLayout;
     musicBtn: HudElementLayout;
     chopBtn: HudElementLayout;
+    // Yan panel boyutları (touch cihazlar için)
+    panelWidth: number;    // % cinsinden (10-25)
+    joystickSize: number;  // px (80-160)
+    btnSize: number;       // px (44-88)
 }
 
 export const DEFAULT_HUD_LAYOUT: HudLayout = {
@@ -22,6 +26,9 @@ export const DEFAULT_HUD_LAYOUT: HudLayout = {
     punchBtn:  { x: 82, y: 55, scale: 1.0 },
     musicBtn:  { x: 82, y: 82, scale: 0.7 },
     chopBtn:   { x: 72, y: 68, scale: 1.0 },
+    panelWidth: 17,
+    joystickSize: 128,
+    btnSize: 64,
 };
 
 export interface Settings {
@@ -64,6 +71,9 @@ function load(): Settings {
         if (parsed.sfxVolume === undefined) parsed.sfxVolume = DEFAULTS.sfxVolume;
         if (parsed.bgmOn === undefined) parsed.bgmOn = DEFAULTS.bgmOn;
         if (!parsed.hudLayout.chopBtn) parsed.hudLayout.chopBtn = DEFAULT_HUD_LAYOUT.chopBtn;
+        if (parsed.hudLayout.panelWidth === undefined) parsed.hudLayout.panelWidth = DEFAULT_HUD_LAYOUT.panelWidth;
+        if (parsed.hudLayout.joystickSize === undefined) parsed.hudLayout.joystickSize = DEFAULT_HUD_LAYOUT.joystickSize;
+        if (parsed.hudLayout.btnSize === undefined) parsed.hudLayout.btnSize = DEFAULT_HUD_LAYOUT.btnSize;
         if (parsed.graphicsQuality === undefined) parsed.graphicsQuality = DEFAULTS.graphicsQuality;
         if (parsed.vibration === undefined) parsed.vibration = DEFAULTS.vibration;
         return { ...DEFAULTS, ...parsed };
