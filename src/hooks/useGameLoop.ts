@@ -206,7 +206,12 @@ export function useGameLoop({
       if (sp) {
         Object.values(sp).forEach((p: Player) => {
           const isMe = p.id === myId;
-          drawPlayer(ctx, isMe ? localPlayerRef.current.x : p.x, isMe ? localPlayerRef.current.y : p.y, p, isMe);
+          try {
+            drawPlayer(ctx, isMe ? localPlayerRef.current.x : p.x, isMe ? localPlayerRef.current.y : p.y, p, isMe);
+          } catch (e) {
+            // drawPlayer hatası tüm frame'i bozmasın
+            ctx.restore();
+          }
         });
         if (audioElementsRef?.current) {
           updateProximityAudio(audioElementsRef, localPlayerRef, sp, myId, globalVolume);

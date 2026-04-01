@@ -270,7 +270,8 @@ export function drawPlayer(
     ctx.font = 'bold 11px Arial';
     const lw = ctx.measureText(label).width + 16;
     const labelBg = isMe ? 'rgba(59, 130, 246, 0.9)' : 'rgba(0, 0, 0, 0.7)';
-    const labelY = p.title ? headY - headR - 38 : headY - headR - 30;
+    // Unvan varsa isim biraz daha yukarı
+    const labelY = headY - headR - 30;
     ctx.fillStyle = labelBg;
     ctx.beginPath(); ctx.roundRect(-lw / 2, labelY, lw, 18, 9); ctx.fill();
     ctx.fillStyle = p.nameLabelColor || '#fff';
@@ -282,10 +283,10 @@ export function drawPlayer(
         ctx.font = 'bold 9px Arial';
         const tw = ctx.measureText(p.title).width + 12;
         ctx.fillStyle = 'rgba(0,0,0,0.75)';
-        ctx.beginPath(); ctx.roundRect(-tw / 2, headY - headR - 28, tw, 14, 7); ctx.fill();
+        ctx.beginPath(); ctx.roundRect(-tw / 2, labelY + 20, tw, 14, 7); ctx.fill();
         ctx.fillStyle = '#fbbf24';
         ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.fillText(p.title, 0, headY - headR - 21);
+        ctx.fillText(p.title, 0, labelY + 27);
     }
 
     ctx.restore();
