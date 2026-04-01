@@ -344,9 +344,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
           </div>
         )}
 
-        <p className="text-[10px] text-white/30 tracking-widest uppercase">v2.2.0</p>      </div>
-
-      {showPatchNotes && <PatchNotesModal onClose={() => setShowPatchNotes(false)} />}
+        </div>      {showPatchNotes && <PatchNotesModal onClose={() => setShowPatchNotes(false)} />}
       {showProfile && (
         <ProfileModal
           onClose={() => setShowProfile(false)}
