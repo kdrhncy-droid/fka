@@ -11,14 +11,16 @@ interface Props {
   clothingColor: string; setClothingColor: (v: string) => void;
   nameLabelColor: string; setNameLabelColor: (v: string) => void;
   equippedHat: string; setEquippedHat: (v: string) => void;
+  equippedTitle: string; setEquippedTitle: (v: string) => void;
   setPlayerColor: (v: string) => void;
 }
 
 const CATEGORY_LABELS: Record<ShopCategory, { label: string; icon: string }> = {
-  hat:           { label: 'Şapkalar',    icon: '🎩' },
-  hairColor:     { label: 'Saç',         icon: '💇' },
-  clothingColor: { label: 'Kıyafet',     icon: '👕' },
-  labelColor:    { label: 'Etiket',      icon: '🏷️' },
+  hat:           { label: 'Şapkalar',  icon: '🎩' },
+  hairColor:     { label: 'Saç',       icon: '💇' },
+  clothingColor: { label: 'Kıyafet',   icon: '👕' },
+  labelColor:    { label: 'Etiket',    icon: '🏷️' },
+  title:         { label: 'Unvanlar',  icon: '🏆' },
 };
 
 const RARITY_STYLE = {
@@ -35,6 +37,7 @@ export const ShopModal: React.FC<Props> = ({
   clothingColor, setClothingColor,
   nameLabelColor, setNameLabelColor,
   equippedHat, setEquippedHat,
+  equippedTitle, setEquippedTitle,
   setPlayerColor,
 }) => {
   const [activeCategory, setActiveCategory] = useState<ShopCategory>('hat');
@@ -61,6 +64,9 @@ export const ShopModal: React.FC<Props> = ({
     if (item.category === 'hat') {
       const next = equippedHat === item.value ? '' : item.value;
       setEquippedHat(next); saveProfile({ equippedHat: next });
+    } else if (item.category === 'title') {
+      const next = equippedTitle === item.value ? '' : item.value;
+      setEquippedTitle(next); saveProfile({ equippedTitle: next });
     } else if (item.category === 'hairColor') {
       setHairColor(item.value); saveProfile({ hairColor: item.value });
     } else if (item.category === 'clothingColor') {
@@ -72,6 +78,7 @@ export const ShopModal: React.FC<Props> = ({
 
   const isEquipped = (item: typeof SHOP_ITEMS[0]) => {
     if (item.category === 'hat') return equippedHat === item.value;
+    if (item.category === 'title') return equippedTitle === item.value;
     if (item.category === 'hairColor') return hairColor === item.value;
     if (item.category === 'clothingColor') return clothingColor === item.value;
     if (item.category === 'labelColor') return nameLabelColor === item.value;
@@ -183,6 +190,10 @@ export const ShopModal: React.FC<Props> = ({
                     <div className="flex justify-center items-center h-10">
                       {item.category === 'hat' ? (
                         <span className="text-3xl leading-none">{item.icon}</span>
+                      ) : item.category === 'title' ? (
+                        <div className="px-2 py-1 rounded-lg bg-black/60 border border-yellow-500/40 text-[9px] font-black text-yellow-400 text-center leading-tight">
+                          {item.value}
+                        </div>
                       ) : item.category === 'hairColor' ? (
                         <div className="flex flex-col items-center gap-1">
                           <div className="w-8 h-8 rounded-full border-2 border-stone-500 shadow-inner"

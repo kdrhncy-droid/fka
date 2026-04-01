@@ -142,6 +142,7 @@ interface WelcomeScreenProps {
   nameLabelColor: string; setNameLabelColor: (v: string) => void;
   coins: number; setCoins: (v: number) => void;
   equippedHat: string; setEquippedHat: (v: string) => void;
+  equippedTitle: string; setEquippedTitle: (v: string) => void;
 }
 
 const HAIR_COLORS = ['#4b2c20','#24150e','#8d5524','#c68642','#f1c27d','#ffffff','#ef4444','#3b82f6','#a855f7','#22c55e'];
@@ -154,7 +155,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   clothingColor, setClothingColor, faceShape, setFaceShape,
   setPlayerColor, setPlayerHat,
   nameLabelColor, setNameLabelColor,
-  coins, setCoins, equippedHat, setEquippedHat,
+  coins, setCoins, equippedHat, setEquippedHat, equippedTitle, setEquippedTitle,
 }) => {
   const [screen, setScreen] = useState<Screen>('main');
   const [joinCode, setJoinCode] = useState('');
@@ -375,6 +376,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
           clothingColor={clothingColor} setClothingColor={setClothingColor}
           nameLabelColor={nameLabelColor} setNameLabelColor={setNameLabelColor}
           equippedHat={equippedHat} setEquippedHat={setEquippedHat}
+          equippedTitle={equippedTitle} setEquippedTitle={setEquippedTitle}
           setPlayerColor={setPlayerColor}
         />
       )}

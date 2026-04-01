@@ -13,6 +13,7 @@ export interface PlayerProfile {
   coins: number;
   ownedItems: string[]; // satın alınan item id'leri
   equippedHat: string;  // aktif şapka
+  equippedTitle: string; // aktif unvan
   totalPlayTime: number;
   totalDays: number;
   totalScore: number;
@@ -31,6 +32,7 @@ const DEFAULT: PlayerProfile = {
   coins: 0,
   ownedItems: [],
   equippedHat: '',
+  equippedTitle: '',
   totalPlayTime: 0,
   totalDays: 0,
   totalScore: 0,
@@ -78,7 +80,7 @@ export function addCoinsFromScore(score: number): number {
 }
 
 // ─── Market Item Tanımları ────────────────────────────────────────────────────
-export type ShopCategory = 'hat' | 'hairColor' | 'clothingColor' | 'labelColor';
+export type ShopCategory = 'hat' | 'hairColor' | 'clothingColor' | 'labelColor' | 'title';
 
 export interface ShopItem {
   id: string;
@@ -115,6 +117,15 @@ export const SHOP_ITEMS: ShopItem[] = [
   { id: 'label_rainbow', category: 'labelColor', name: 'Gökkuşağı Etiket', icon: '🌈', value: '#FF69B4', price: 500, rarity: 'epic'   },
   { id: 'label_red',     category: 'labelColor', name: 'Kırmızı Etiket', icon: '❤️', value: '#FF4444', price: 80,  rarity: 'common' },
   { id: 'label_cyan',    category: 'labelColor', name: 'Mavi Etiket',    icon: '💙', value: '#00BFFF', price: 80,  rarity: 'common' },
+  // ── Unvanlar ──────────────────────────────────────────────────────────────
+  { id: 'title_patron',  category: 'title', name: 'PATRON',       icon: '👑', value: '👑 PATRON',       price: 500, rarity: 'epic'   },
+  { id: 'title_efsane',  category: 'title', name: 'EFSANE',       icon: '🔥', value: '🔥 EFSANE',       price: 400, rarity: 'epic'   },
+  { id: 'title_sef',     category: 'title', name: 'ŞEF',          icon: '🍳', value: '🍳 ŞEF',          price: 150, rarity: 'rare'   },
+  { id: 'title_hizli',   category: 'title', name: 'HIZLI',        icon: '⚡', value: '⚡ HIZLI',        price: 200, rarity: 'rare'   },
+  { id: 'title_acimaz',  category: 'title', name: 'ACIMAZ',       icon: '🌶️', value: '🌶️ ACIMAZ',       price: 200, rarity: 'rare'   },
+  { id: 'title_korku',   category: 'title', name: 'KORKU',        icon: '💀', value: '💀 KORKU',        price: 300, rarity: 'epic'   },
+  { id: 'title_temiz',   category: 'title', name: 'TEMİZLİKÇİ',  icon: '🧹', value: '🧹 TEMİZLİKÇİ',  price: 50,  rarity: 'common' },
+  { id: 'title_yeni',    category: 'title', name: 'YENİ BAŞLAYAN',icon: '🌱', value: '🌱 YENİ BAŞLAYAN',price: 50,  rarity: 'common' },
 ];
 
 export function buyItem(itemId: string): boolean {

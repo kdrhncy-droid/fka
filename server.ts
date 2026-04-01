@@ -109,7 +109,7 @@ io.on("connection", (socket) => {
     }
   }
 
-  socket.on("join", ({ room, roomId: clientRoomId, name, color, hat, charType, hairColor, clothingColor, faceShape, nameLabelColor, mapId }) => {
+  socket.on("join", ({ room, roomId: clientRoomId, name, color, hat, charType, hairColor, clothingColor, faceShape, nameLabelColor, title, mapId }) => {
     // Önceki odadan temizle (aynı socket yeni odaya geçiyorsa)
     removePlayerFromRoom();
 
@@ -137,7 +137,7 @@ io.on("connection", (socket) => {
     const gs = RoomManager.getRoomState(roomId)!;
     gs.players[socket.id] = {
       id: socket.id, name, color, hat, charType,
-      hairColor, clothingColor, faceShape, nameLabelColor,
+      hairColor, clothingColor, faceShape, nameLabelColor, title,
       x: 640, y: 350, holding: null
     };
     socket.emit("init", { id: socket.id, state: gs });

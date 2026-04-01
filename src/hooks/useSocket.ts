@@ -60,7 +60,7 @@ export function useSocket(
     const gameStateRef = useRef<GameState>(DEFAULT_STATE);
     const audioCtxRef = useRef<AudioContext | null>(null);
     const roomIdRef = useRef<string>('');
-    interface PlayerJoinData { room?: string; roomId?: string; name: string; color: string; hat: string; charType?: number; hairColor?: string; clothingColor?: string; faceShape?: number; nameLabelColor?: string; mapId?: string; }
+    interface PlayerJoinData { room?: string; roomId?: string; name: string; color: string; hat: string; charType?: number; hairColor?: string; clothingColor?: string; faceShape?: number; nameLabelColor?: string; title?: string; mapId?: string; }
     const playerDataRef = useRef<PlayerJoinData | null>(null);
     const reconnectAttemptsRef = useRef(0);
     const maxReconnectAttempts = 15;

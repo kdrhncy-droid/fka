@@ -26,6 +26,7 @@ export interface Player {
     clothingColor?: string;
     faceShape?: number;
     nameLabelColor?: string;
+    title?: string;
 }
 
 export interface Customer {
