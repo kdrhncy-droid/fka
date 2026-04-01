@@ -161,7 +161,17 @@ export function drawPlayer(
     ctx.strokeStyle = '#844'; ctx.lineWidth = 1.8; ctx.lineCap = 'round';
     ctx.beginPath(); ctx.arc(0, headY + 7, 3.5, 0.2, Math.PI - 0.2); ctx.stroke();
 
-    // ── ŞAPKA (kaldırıldı — emoji artık çizilmiyor) ────────────────────────
+    // ── ŞAPKA ────────────────────────────────────────────────────────────────
+    if (p.hat) {
+        ctx.save();
+        ctx.scale(dirMul, 1); // ayna efektini geri al
+        ctx.font = `${headR * 1.4}px Arial`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(p.hat, 0, headY - headR - 4);
+        ctx.restore();
+        ctx.scale(dirMul, 1); // tekrar uygula (sonraki çizimler için)
+    }
 
     // ── TUTULAN EŞYA ─────────────────────────────────────────────────────────
     if (isHolding) {

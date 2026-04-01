@@ -161,7 +161,7 @@ export const ShopModal: React.FC<Props> = ({
 
           {/* İtem grid */}
           <div className="overflow-y-auto flex-1 p-3" style={{ WebkitOverflowScrolling: 'touch' } as React.CSSProperties}>
-            <div className="grid grid-cols-3 xl:grid-cols-4 gap-2">
+            <div className="grid grid-cols-4 gap-2">
               {items.map(item => {
                 const isOwned = owned.includes(item.id);
                 const equipped = isEquipped(item);
