@@ -8,6 +8,7 @@ interface Props {
   playerName: string; setPlayerName: (v: string) => void;
   charType: number; setCharType: (v: number) => void;
   hairColor: string;
+  hairStyle: string;
   clothingColor: string;
   faceShape: number;
   nameLabelColor: string;
@@ -35,7 +36,7 @@ export const ProfileModal: React.FC<Props> = ({
   onClose,
   playerName, setPlayerName,
   charType, setCharType,
-  hairColor,
+  hairColor, hairStyle,
   clothingColor,
   faceShape,
   nameLabelColor,
@@ -80,7 +81,7 @@ export const ProfileModal: React.FC<Props> = ({
           <div className="flex items-center gap-3">
             {/* Mini karakter önizleme */}
             <div className="w-12 h-12 rounded-2xl bg-stone-800 border border-stone-700 overflow-hidden flex items-center justify-center">
-              <CharacterPreview charType={charType} size={48} hairColor={hairColor} clothingColor={clothingColor} faceShape={faceShape} />
+              <CharacterPreview charType={charType} size={48} hairColor={hairColor} hairStyle={hairStyle} clothingColor={clothingColor} faceShape={faceShape} />
             </div>
             <div>
               {editingName ? (
@@ -147,7 +148,7 @@ export const ProfileModal: React.FC<Props> = ({
               {/* Büyük önizleme */}
               <div className="flex justify-center">
                 <div className="relative w-28 h-28 rounded-3xl bg-stone-800 border-2 border-stone-700 overflow-visible flex items-center justify-center">
-                  <CharacterPreview charType={charType} size={112} hairColor={hairColor} clothingColor={clothingColor} faceShape={faceShape} />
+                  <CharacterPreview charType={charType} size={112} hairColor={hairColor} hairStyle={hairStyle} clothingColor={clothingColor} faceShape={faceShape} />
                   {equippedHat && (
                     <span className="absolute -top-4 left-1/2 -translate-x-1/2 text-2xl pointer-events-none">{equippedHat}</span>
                   )}

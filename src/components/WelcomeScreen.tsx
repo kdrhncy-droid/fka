@@ -362,6 +362,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
           playerName={playerName} setPlayerName={setPlayerName}
           charType={charType} setCharType={setCharType}
           hairColor={hairColor}
+          hairStyle={hairStyle}
           clothingColor={clothingColor}
           faceShape={faceShape}
           nameLabelColor={nameLabelColor}

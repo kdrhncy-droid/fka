@@ -6,11 +6,12 @@ interface CharacterPreviewProps {
     charType: number;
     size?: number;
     hairColor?: string;
+    hairStyle?: string;
     clothingColor?: string;
     faceShape?: number;
 }
 
-export const CharacterPreview: React.FC<CharacterPreviewProps> = ({ charType, size = 120, hairColor, clothingColor, faceShape = 0 }) => {
+export const CharacterPreview: React.FC<CharacterPreviewProps> = ({ charType, size = 120, hairColor, hairStyle = 'default', clothingColor, faceShape = 0 }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const typeId = Math.min(charType, CHARACTER_TYPES.length - 1);
     const charDef = CHARACTER_TYPES[typeId];
@@ -94,17 +95,120 @@ export const CharacterPreview: React.FC<CharacterPreviewProps> = ({ charType, si
 
         // ── SAÇ ──────────────────────────────────────────────────────────────
         ctx.fillStyle = hairCol;
-        ctx.beginPath();
-        ctx.arc(0, headY - 5, headR + 1, Math.PI, 0); // Üst saç
-        ctx.lineTo(headR + 1, headY + 2);
-        ctx.lineTo(headR - 4, headY + 2);
-        ctx.lineTo(headR - 8, headY - 2);
-        ctx.lineTo(-headR + 8, headY - 2);
-        ctx.lineTo(-headR + 4, headY + 2);
-        ctx.lineTo(-headR - 1, headY + 2);
-        ctx.closePath();
-        ctx.fill();
-        stk(ctx, adjustColor(hairCol, -20), 1);
+        ctx.strokeStyle = adjustColor(hairCol, -20);
+        ctx.lineWidth = 1;
+
+        if (hairStyle === 'short') {
+            ctx.beginPath();
+            ctx.arc(0, headY - 3, headR + 1, Math.PI, 0);
+            ctx.lineTo(headR + 1, headY + 1);
+            ctx.lineTo(headR - 5, headY + 1);
+            ctx.lineTo(-headR + 5, headY + 1);
+            ctx.lineTo(-headR - 1, headY + 1);
+            ctx.closePath();
+            ctx.fill(); ctx.stroke();
+        } else if (hairStyle === 'long') {
+            ctx.beginPath();
+            ctx.arc(0, headY - 5, headR + 1, Math.PI, 0);
+            ctx.lineTo(headR + 1, headY + 2);
+            ctx.lineTo(headR + 3, headY + 18);
+            ctx.lineTo(headR - 2, headY + 20);
+            ctx.lineTo(headR - 6, headY + 14);
+            ctx.lineTo(-headR + 6, headY + 14);
+            ctx.lineTo(-headR + 2, headY + 20);
+            ctx.lineTo(-headR - 3, headY + 18);
+            ctx.lineTo(-headR - 1, headY + 2);
+            ctx.closePath();
+            ctx.fill(); ctx.stroke();
+            ctx.strokeStyle = adjustColor(hairCol, -30); ctx.lineWidth = 0.8;
+            ctx.beginPath(); ctx.moveTo(0, headY - headR); ctx.lineTo(0, headY + 14); ctx.stroke();
+        } else if (hairStyle === 'wavy') {
+            ctx.beginPath();
+            ctx.arc(0, headY - 5, headR + 1, Math.PI, 0);
+            ctx.lineTo(headR + 1, headY + 2);
+            ctx.bezierCurveTo(headR + 5, headY + 6, headR + 1, headY + 10, headR + 4, headY + 14);
+            ctx.bezierCurveTo(headR + 6, headY + 18, headR + 1, headY + 20, headR - 2, headY + 22);
+            ctx.lineTo(headR - 6, headY + 14);
+            ctx.lineTo(-headR + 6, headY + 14);
+            ctx.lineTo(-headR + 2, headY + 22);
+            ctx.bezierCurveTo(-headR - 1, headY + 20, -headR - 6, headY + 18, -headR - 4, headY + 14);
+            ctx.bezierCurveTo(-headR - 1, headY + 10, -headR - 5, headY + 6, -headR - 1, headY + 2);
+            ctx.closePath();
+            ctx.fill(); ctx.stroke();
+        } else if (hairStyle === 'afro') {
+            ctx.beginPath();
+            ctx.arc(0, headY - 4, headR + 8, Math.PI * 0.85, Math.PI * 2.15);
+            ctx.arc(0, headY + 2, headR + 1, 0, Math.PI);
+            ctx.closePath();
+            ctx.fill(); ctx.stroke();
+            ctx.fillStyle = adjustColor(hairCol, -15);
+            for (let i = 0; i < 8; i++) {
+                const a = (i / 8) * Math.PI * 2;
+                const r = headR + 4;
+                ctx.beginPath();
+                ctx.arc(Math.cos(a) * r * 0.6, headY - 4 + Math.sin(a) * r * 0.5, 3, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        } else if (hairStyle === 'bun') {
+            ctx.beginPath();
+            ctx.arc(0, headY - 3, headR + 1, Math.PI, 0);
+            ctx.lineTo(headR + 1, headY + 2); ctx.lineTo(headR - 4, headY + 2);
+            ctx.lineTo(-headR + 4, headY + 2); ctx.lineTo(-headR - 1, headY + 2);
+            ctx.closePath(); ctx.fill(); ctx.stroke();
+            ctx.fillStyle = hairCol;
+            ctx.beginPath(); ctx.arc(0, headY - headR - 5, 7, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+            ctx.strokeStyle = adjustColor(hairCol, -25); ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.arc(0, headY - headR - 5, 5, 0.3, Math.PI - 0.3); ctx.stroke();
+        } else if (hairStyle === 'spiky') {
+            ctx.beginPath();
+            ctx.arc(0, headY - 3, headR + 1, Math.PI * 0.75, Math.PI * 0.25);
+            ctx.lineTo(headR + 1, headY + 2); ctx.lineTo(headR - 4, headY + 2);
+            ctx.lineTo(-headR + 4, headY + 2); ctx.lineTo(-headR - 1, headY + 2);
+            ctx.closePath(); ctx.fill(); ctx.stroke();
+            const spikes = [[-12], [-6], [0], [6], [12]];
+            spikes.forEach(([sx]) => {
+                const baseY = headY - headR + 1;
+                ctx.beginPath();
+                ctx.moveTo(sx - 5, baseY + 2);
+                ctx.lineTo(sx, baseY - 10 - Math.abs(sx) * 0.2);
+                ctx.lineTo(sx + 5, baseY + 2);
+                ctx.closePath(); ctx.fill(); ctx.stroke();
+            });
+        } else if (hairStyle === 'ponytail') {
+            ctx.beginPath();
+            ctx.arc(0, headY - 3, headR + 1, Math.PI, 0);
+            ctx.lineTo(headR + 1, headY + 2); ctx.lineTo(headR - 4, headY + 2);
+            ctx.lineTo(-headR + 4, headY + 2); ctx.lineTo(-headR - 1, headY + 2);
+            ctx.closePath(); ctx.fill(); ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(headR - 2, headY - 4);
+            ctx.bezierCurveTo(headR + 10, headY, headR + 12, headY + 10, headR + 6, headY + 22);
+            ctx.bezierCurveTo(headR + 10, headY + 22, headR + 14, headY + 10, headR + 8, headY - 2);
+            ctx.closePath(); ctx.fill(); ctx.stroke();
+            ctx.fillStyle = adjustColor(hairCol, -40);
+            ctx.beginPath(); ctx.arc(headR + 2, headY - 2, 3, 0, Math.PI * 2); ctx.fill();
+        } else if (hairStyle === 'mohawk') {
+            ctx.beginPath();
+            ctx.arc(0, headY - 3, headR + 1, Math.PI, 0);
+            ctx.lineTo(headR + 1, headY + 2); ctx.lineTo(headR - 4, headY + 2);
+            ctx.lineTo(-headR + 4, headY + 2); ctx.lineTo(-headR - 1, headY + 2);
+            ctx.closePath(); ctx.fill(); ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(-5, headY - headR + 2);
+            ctx.lineTo(-7, headY - headR - 18);
+            ctx.lineTo(0, headY - headR - 22);
+            ctx.lineTo(7, headY - headR - 18);
+            ctx.lineTo(5, headY - headR + 2);
+            ctx.closePath(); ctx.fill(); ctx.stroke();
+        } else {
+            // default
+            ctx.beginPath();
+            ctx.arc(0, headY - 5, headR + 1, Math.PI, 0);
+            ctx.lineTo(headR + 1, headY + 2); ctx.lineTo(headR - 4, headY + 2);
+            ctx.lineTo(headR - 8, headY - 2); ctx.lineTo(-headR + 8, headY - 2);
+            ctx.lineTo(-headR + 4, headY + 2); ctx.lineTo(-headR - 1, headY + 2);
+            ctx.closePath(); ctx.fill(); ctx.stroke();
+        }
 
         // Yanaklar
         ctx.fillStyle = 'rgba(255,182,193,0.5)';
@@ -128,7 +232,7 @@ export const CharacterPreview: React.FC<CharacterPreviewProps> = ({ charType, si
         // ── ŞAPKA (kaldırıldı — emoji artık çizilmiyor) ────────────────────────
 
         ctx.restore();
-    }, [charType, hairColor, clothingColor, faceShape]);
+    }, [charType, hairColor, hairStyle, clothingColor, faceShape]);
 
     return (
         <canvas
