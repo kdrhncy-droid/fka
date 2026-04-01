@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { addCoinsFromScore } from '../utils/profile';
 import { io, Socket } from 'socket.io-client';
 import { GameState, mkGameState } from '../types/game';
 import { playSound } from '../utils/audio';
@@ -190,13 +191,8 @@ export function useSocket(
         });
 
         newSocket.on('dayEnd', (summary: DayEndSummary) => {
-            setDayEndSummary(prev => prev ?? summary); // zaten varsa ezme
-            // Kazanılan coinleri profile'a ekle
-            if (summary.score > 0) {
-                import('../utils/profile').then(({ addCoinsFromScore }) => {
-                    addCoinsFromScore(summary.score);
-                });
-            }
+            setDayEndSummary(prev => prev ?? summary);
+            if (summary.score > 0) addCoinsFromScore(summary.score);
         });
 
         newSocket.on('revengeScene', (summary: DayEndSummary) => {
