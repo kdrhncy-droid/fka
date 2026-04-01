@@ -30,6 +30,7 @@ export function drawPlayer(
     const bodyColor   = p.clothingColor || p.color || charDef.bodyColor;
     const hairColor   = p.hairColor || '#4b2c20';
     const faceShape   = p.faceShape ?? 0;
+    const outfitStyle = p.outfitStyle || 'default';
 
     // ── Animasyon state ──────────────────────────────────────────────────────
     if (!playerRenderState.has(p.id)) {
@@ -89,6 +90,81 @@ export function drawPlayer(
     bodyG.addColorStop(0, adjustColor(bodyColor, 20));
     bodyG.addColorStop(1, bodyColor);
     ctx.fillStyle = bodyG; ctx.fill(); stk(ctx, '#000', 2);
+
+    // ── KIYAFet STİLİ DETAYLARI ───────────────────────────────────────────
+    if (outfitStyle === 'chef') {
+        // Beyaz önlük
+        ctx.fillStyle = 'rgba(255,255,255,0.85)';
+        ctx.beginPath(); ctx.roundRect(-bodyW/2 + 4, bodyY + 1, bodyW - 8, bodyH - 2, 8); ctx.fill();
+        stk(ctx, '#ddd', 1);
+        // Düğmeler
+        ctx.fillStyle = '#aaa';
+        for (let i = 0; i < 3; i++) {
+            ctx.beginPath(); ctx.arc(0, bodyY + 5 + i * 5, 1.5, 0, Math.PI * 2); ctx.fill();
+        }
+    } else if (outfitStyle === 'waiter') {
+        // Siyah yelek
+        ctx.fillStyle = 'rgba(20,20,20,0.9)';
+        ctx.beginPath(); ctx.roundRect(-bodyW/2 + 5, bodyY + 1, bodyW - 10, bodyH - 2, 6); ctx.fill();
+        // Beyaz gömlek kenarları
+        ctx.fillStyle = 'rgba(240,240,240,0.9)';
+        ctx.beginPath(); ctx.roundRect(-3, bodyY + 2, 6, bodyH - 4, 3); ctx.fill();
+        // Papyon
+        ctx.fillStyle = '#cc0000';
+        ctx.beginPath(); ctx.ellipse(-4, bodyY + 3, 4, 2.5, -0.3, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(4, bodyY + 3, 4, 2.5, 0.3, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#aa0000';
+        ctx.beginPath(); ctx.arc(0, bodyY + 3, 2.5, 0, Math.PI * 2); ctx.fill();
+    } else if (outfitStyle === 'hoodie') {
+        // Kapüşon gövde çizgisi
+        ctx.fillStyle = adjustColor(bodyColor, -15);
+        ctx.beginPath(); ctx.roundRect(-bodyW/2 + 3, bodyY + 1, bodyW - 6, bodyH - 2, 9); ctx.fill();
+        stk(ctx, adjustColor(bodyColor, -30), 1);
+        // Kanguru cep
+        ctx.fillStyle = adjustColor(bodyColor, -25);
+        ctx.beginPath(); ctx.roundRect(-8, bodyY + 10, 16, 9, 4); ctx.fill();
+        stk(ctx, adjustColor(bodyColor, -40), 0.8);
+        // Kapüşon (kafanın arkasında)
+        ctx.fillStyle = adjustColor(bodyColor, -10);
+        ctx.beginPath(); ctx.arc(0, bodyY - 2, 10, Math.PI * 0.8, Math.PI * 2.2); ctx.fill();
+    } else if (outfitStyle === 'suit') {
+        // Ceket
+        ctx.fillStyle = adjustColor(bodyColor, -30);
+        ctx.beginPath(); ctx.roundRect(-bodyW/2 + 2, bodyY + 1, bodyW - 4, bodyH - 2, 8); ctx.fill();
+        stk(ctx, '#000', 1);
+        // Beyaz gömlek
+        ctx.fillStyle = '#f0f0f0';
+        ctx.beginPath(); ctx.roundRect(-4, bodyY + 2, 8, bodyH - 4, 3); ctx.fill();
+        // Kravat
+        ctx.fillStyle = '#1a3a8f';
+        ctx.beginPath();
+        ctx.moveTo(-2, bodyY + 3); ctx.lineTo(2, bodyY + 3);
+        ctx.lineTo(3, bodyY + 14); ctx.lineTo(0, bodyY + 17); ctx.lineTo(-3, bodyY + 14);
+        ctx.closePath(); ctx.fill();
+        // Ceket yaka
+        ctx.fillStyle = adjustColor(bodyColor, -30);
+        ctx.beginPath(); ctx.moveTo(-bodyW/2 + 2, bodyY + 1); ctx.lineTo(-4, bodyY + 8); ctx.lineTo(0, bodyY + 5); ctx.closePath(); ctx.fill();
+        ctx.beginPath(); ctx.moveTo(bodyW/2 - 2, bodyY + 1); ctx.lineTo(4, bodyY + 8); ctx.lineTo(0, bodyY + 5); ctx.closePath(); ctx.fill();
+    } else if (outfitStyle === 'apron') {
+        // Önlük
+        ctx.fillStyle = adjustColor(bodyColor, 30);
+        ctx.beginPath(); ctx.roundRect(-9, bodyY + 3, 18, bodyH - 4, 4); ctx.fill();
+        stk(ctx, adjustColor(bodyColor, -10), 1);
+        // Önlük askıları
+        ctx.strokeStyle = adjustColor(bodyColor, 30); ctx.lineWidth = 2.5;
+        ctx.beginPath(); ctx.moveTo(-6, bodyY + 3); ctx.lineTo(-8, bodyY); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(6, bodyY + 3); ctx.lineTo(8, bodyY); ctx.stroke();
+        // Cep
+        ctx.fillStyle = adjustColor(bodyColor, 20);
+        ctx.beginPath(); ctx.roundRect(-5, bodyY + 10, 10, 7, 2); ctx.fill();
+        stk(ctx, adjustColor(bodyColor, 0), 0.8);
+    } else {
+        // Default — orijinal yaka detayı
+        ctx.fillStyle = charDef.accent;
+        ctx.globalAlpha = 0.6;
+        ctx.beginPath(); ctx.roundRect(-bodyW/2 + 4, bodyY + 2, bodyW - 8, 6, 4); ctx.fill();
+        ctx.globalAlpha = 1;
+    }
 
     // ── ELLER ────────────────────────────────────────────────────────────────
     const handY = 12;

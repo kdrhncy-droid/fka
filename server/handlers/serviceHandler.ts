@@ -95,6 +95,7 @@ export const handleCustomers: InteractionHandler = ({ gs, p, px, py, snd, io, ro
           c.tipAmount = tip;
           c.isEating = true; c.eatTimer = EAT_TICKS; c.wants = null; p.holding = null;
           if (c.specialRequest) io.to(roomId).emit('specialServed', { x: c.seatX, y: c.seatY, request: c.specialRequest });
+          if (p.serviceEffect) io.to(roomId).emit('serviceEffect', { x: c.seatX, y: c.seatY, effect: p.serviceEffect });
           applyCombo(gs, io, roomId, c.seatX, c.seatY, tip);
           snd("success");
           return true;
@@ -131,6 +132,7 @@ export const handleCustomers: InteractionHandler = ({ gs, p, px, py, snd, io, ro
               c.tipAmount = earn(gs.upgrades.earnings, c.maxPatience, c.patience, specialMult);
               c.isEating = true; c.eatTimer = EAT_TICKS; c.wants = null;
               if (c.specialRequest) io.to(roomId).emit('specialServed', { x: c.seatX, y: c.seatY, request: c.specialRequest });
+              if (p.serviceEffect) io.to(roomId).emit('serviceEffect', { x: c.seatX, y: c.seatY, effect: p.serviceEffect });
               applyCombo(gs, io, roomId, c.seatX, c.seatY, c.tipAmount ?? 0);
               snd("success");
               return true;

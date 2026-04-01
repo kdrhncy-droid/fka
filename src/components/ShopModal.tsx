@@ -101,11 +101,13 @@ interface Props {
   charType: number;
   hairColor: string; setHairColor: (v: string) => void;
   hairStyle: string; setHairStyle: (v: string) => void;
+  outfitStyle: string; setOutfitStyle: (v: string) => void;
   clothingColor: string; setClothingColor: (v: string) => void;
   nameLabelColor: string; setNameLabelColor: (v: string) => void;
   equippedHat: string; setEquippedHat: (v: string) => void;
   equippedTitle: string; setEquippedTitle: (v: string) => void;
   equippedLabelEffect: string; setEquippedLabelEffect: (v: string) => void;
+  equippedServiceEffect: string; setEquippedServiceEffect: (v: string) => void;
   setPlayerColor: (v: string) => void;
 }
 
@@ -113,11 +115,13 @@ const CATEGORY_LABELS: Record<ShopCategory, { label: string; icon: string }> = {
   hat:           { label: 'Şapkalar',   icon: '🎩' },
   hairStyle:     { label: 'Saç Stili',  icon: '✂️' },
   hairColor:     { label: 'Saç Rengi',  icon: '💇' },
-  clothingColor: { label: 'Kıyafet',    icon: '👕' },
+  outfitStyle:   { label: 'Kıyafet',    icon: '👔' },
+  clothingColor: { label: 'Renk',       icon: '🎨' },
   labelColor:    { label: 'Etiket',     icon: '🏷️' },
   title:         { label: 'Unvanlar',   icon: '🏆' },
-  colorSet:      { label: 'Renk Seti',  icon: '🎨' },
+  colorSet:      { label: 'Renk Seti',  icon: '🌈' },
   labelEffect:   { label: 'Efektler',   icon: '✨' },
+  serviceEffect: { label: 'Servis',     icon: '💥' },
 };
 
 const RARITY_STYLE = {
@@ -132,11 +136,13 @@ export const ShopModal: React.FC<Props> = ({
   onClose, coins, setCoins,
   charType, hairColor, setHairColor,
   hairStyle, setHairStyle,
+  outfitStyle, setOutfitStyle,
   clothingColor, setClothingColor,
   nameLabelColor, setNameLabelColor,
   equippedHat, setEquippedHat,
   equippedTitle, setEquippedTitle,
   equippedLabelEffect, setEquippedLabelEffect,
+  equippedServiceEffect, setEquippedServiceEffect,
   setPlayerColor,
 }) => {
   const [activeCategory, setActiveCategory] = useState<ShopCategory>('hat');
@@ -169,6 +175,9 @@ export const ShopModal: React.FC<Props> = ({
     } else if (item.category === 'labelEffect') {
       const next = equippedLabelEffect === item.value ? '' : item.value;
       setEquippedLabelEffect(next); saveProfile({ equippedLabelEffect: next });
+    } else if (item.category === 'serviceEffect') {
+      const next = equippedServiceEffect === item.value ? '' : item.value;
+      setEquippedServiceEffect(next); saveProfile({ equippedServiceEffect: next });
     } else if (item.category === 'colorSet' && item.colorSet) {
       setHairColor(item.colorSet.hair);
       setClothingColor(item.colorSet.clothing);
@@ -177,6 +186,8 @@ export const ShopModal: React.FC<Props> = ({
       saveProfile({ hairColor: item.colorSet.hair, clothingColor: item.colorSet.clothing, nameLabelColor: item.colorSet.label });
     } else if (item.category === 'hairStyle') {
       setHairStyle(item.value); saveProfile({ hairStyle: item.value });
+    } else if (item.category === 'outfitStyle') {
+      setOutfitStyle(item.value); saveProfile({ outfitStyle: item.value });
     } else if (item.category === 'hairColor') {
       setHairColor(item.value); saveProfile({ hairColor: item.value });
     } else if (item.category === 'clothingColor') {
@@ -190,10 +201,12 @@ export const ShopModal: React.FC<Props> = ({
     if (item.category === 'hat') return equippedHat === item.value;
     if (item.category === 'title') return equippedTitle === item.value;
     if (item.category === 'labelEffect') return equippedLabelEffect === item.value;
+    if (item.category === 'serviceEffect') return equippedServiceEffect === item.value;
     if (item.category === 'colorSet') return item.colorSet
       ? hairColor === item.colorSet.hair && clothingColor === item.colorSet.clothing
       : false;
     if (item.category === 'hairStyle') return hairStyle === item.value;
+    if (item.category === 'outfitStyle') return outfitStyle === item.value;
     if (item.category === 'hairColor') return hairColor === item.value;
     if (item.category === 'clothingColor') return clothingColor === item.value;
     if (item.category === 'labelColor') return nameLabelColor === item.value;
@@ -309,6 +322,19 @@ export const ShopModal: React.FC<Props> = ({
                         <div className="flex flex-col items-center gap-1">
                           <div className="text-lg leading-none">{item.icon}</div>
                           <div className="text-[8px] text-stone-400 font-bold">{item.name}</div>
+                        </div>
+                      ) : item.category === 'outfitStyle' ? (
+                        <div className="flex flex-col items-center gap-1">
+                          <div className="text-xl leading-none">{item.icon}</div>
+                          <div className="text-[8px] text-stone-400 font-bold">{item.name}</div>
+                        </div>
+                      ) : item.category === 'serviceEffect' ? (
+                        <div className="flex items-center gap-0.5 flex-wrap justify-center">
+                          {item.value === 'star'    && ['⭐','✨','💫'].map((e,i) => <span key={i} className="text-sm">{e}</span>)}
+                          {item.value === 'heart'   && ['❤️','💕','💖'].map((e,i) => <span key={i} className="text-sm">{e}</span>)}
+                          {item.value === 'fire'    && ['🔥','✨','🔥'].map((e,i) => <span key={i} className="text-sm">{e}</span>)}
+                          {item.value === 'coin'    && ['🪙','💰','🪙'].map((e,i) => <span key={i} className="text-sm">{e}</span>)}
+                          {item.value === 'rainbow' && ['🌈','✨','⭐'].map((e,i) => <span key={i} className="text-sm">{e}</span>)}
                         </div>
                       ) : item.category === 'title' ? (
                         <div className="px-2 py-1 rounded-lg bg-black/60 border border-yellow-500/40 text-[9px] font-black text-yellow-400 text-center leading-tight">

@@ -51,6 +51,8 @@ export default function App() {
   const [playerHat, setPlayerHat] = useState('');
   const [hairColor, setHairColor] = useState(() => loadProfile().hairColor);
   const [hairStyle, setHairStyle] = useState(() => loadProfile().hairStyle ?? 'default');
+  const [outfitStyle, setOutfitStyle] = useState(() => loadProfile().outfitStyle ?? 'default');
+  const [equippedServiceEffect, setEquippedServiceEffect] = useState(() => loadProfile().equippedServiceEffect ?? '');
   const [clothingColor, setClothingColor] = useState(() => loadProfile().clothingColor);
   const [faceShape, setFaceShape] = useState(() => loadProfile().faceShape);
   const [nameLabelColor, setNameLabelColor] = useState(() => loadProfile().nameLabelColor);
@@ -94,9 +96,11 @@ export default function App() {
       hat: equippedHat || playerHat,
       title: equippedTitle,
       labelEffect: equippedLabelEffect,
+      serviceEffect: equippedServiceEffect,
       charType,
       hairColor,
       hairStyle,
+      outfitStyle,
       clothingColor,
       faceShape,
       nameLabelColor,
@@ -147,6 +151,7 @@ export default function App() {
           charType={charType} setCharType={setCharType}
           hairColor={hairColor} setHairColor={setHairColor}
           hairStyle={hairStyle} setHairStyle={setHairStyle}
+          outfitStyle={outfitStyle} setOutfitStyle={setOutfitStyle}
           clothingColor={clothingColor} setClothingColor={setClothingColor}
           faceShape={faceShape} setFaceShape={setFaceShape}
           setPlayerColor={setPlayerColor}
@@ -156,6 +161,7 @@ export default function App() {
           equippedHat={equippedHat} setEquippedHat={setEquippedHat}
           equippedTitle={equippedTitle} setEquippedTitle={setEquippedTitle}
           equippedLabelEffect={equippedLabelEffect} setEquippedLabelEffect={setEquippedLabelEffect}
+          equippedServiceEffect={equippedServiceEffect} setEquippedServiceEffect={setEquippedServiceEffect}
         />
         {showSettings && (
           <SettingsPanel

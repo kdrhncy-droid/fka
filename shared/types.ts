@@ -25,10 +25,12 @@ export interface Player {
     hairColor?: string;
     hairStyle?: string;
     clothingColor?: string;
+    outfitStyle?: string;
     faceShape?: number;
     nameLabelColor?: string;
     title?: string;
     labelEffect?: string;
+    serviceEffect?: string;
 }
 
 export interface Customer {

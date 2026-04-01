@@ -109,7 +109,7 @@ io.on("connection", (socket) => {
     }
   }
 
-  socket.on("join", ({ room, roomId: clientRoomId, name, color, hat, charType, hairColor, hairStyle, clothingColor, faceShape, nameLabelColor, title, labelEffect, mapId }) => {
+  socket.on("join", ({ room, roomId: clientRoomId, name, color, hat, charType, hairColor, hairStyle, outfitStyle, clothingColor, faceShape, nameLabelColor, title, labelEffect, serviceEffect, mapId }) => {
     // Önceki odadan temizle (aynı socket yeni odaya geçiyorsa)
     removePlayerFromRoom();
 
@@ -137,7 +137,7 @@ io.on("connection", (socket) => {
     const gs = RoomManager.getRoomState(roomId)!;
     gs.players[socket.id] = {
       id: socket.id, name, color, hat, charType,
-      hairColor, hairStyle, clothingColor, faceShape, nameLabelColor, title, labelEffect,
+      hairColor, hairStyle, outfitStyle, clothingColor, faceShape, nameLabelColor, title, labelEffect, serviceEffect,
       x: 640, y: 350, holding: null
     };
     socket.emit("init", { id: socket.id, state: gs });
@@ -153,18 +153,20 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("updateAppearance", (data: { hairColor?: string, hairStyle?: string, clothingColor?: string, faceShape?: number, color?: string, hat?: string, nameLabelColor?: string }) => {
+  socket.on("updateAppearance", (data: { hairColor?: string, hairStyle?: string, outfitStyle?: string, clothingColor?: string, faceShape?: number, color?: string, hat?: string, nameLabelColor?: string, serviceEffect?: string }) => {
     if (!roomId || !RoomManager.getRoomState(roomId)) return;
     const gs = RoomManager.getRoomState(roomId)!;
     if (gs.players[socket.id]) {
       const p = gs.players[socket.id];
       if (typeof data.hairColor === 'string') p.hairColor = data.hairColor.slice(0, 20);
       if (typeof data.hairStyle === 'string') p.hairStyle = data.hairStyle.slice(0, 20);
+      if (typeof data.outfitStyle === 'string') p.outfitStyle = data.outfitStyle.slice(0, 20);
       if (typeof data.clothingColor === 'string') p.clothingColor = data.clothingColor.slice(0, 20);
       if (typeof data.faceShape === 'number') p.faceShape = Math.floor(data.faceShape) % 3;
       if (typeof data.color === 'string') p.color = data.color.slice(0, 20);
       if (typeof data.hat === 'string') p.hat = data.hat.slice(0, 10);
       if (typeof data.nameLabelColor === 'string') p.nameLabelColor = data.nameLabelColor.slice(0, 20);
+      if (typeof data.serviceEffect === 'string') p.serviceEffect = data.serviceEffect.slice(0, 20);
       io.to(roomId).emit("state", gs);
     }
   });

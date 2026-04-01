@@ -12,7 +12,7 @@ import { drawPlayer } from "../renderer/drawPlayer";
 import { drawCookStation } from "../renderer/drawCookStation";
 import { drawCounters } from "../renderer/drawCounter";
 import { movePlayer } from "./usePlayerMovement";
-import { setupGameEffects, renderFloatingTexts, renderPunchParticles, renderSparkleParticles } from "./useGameEffects";
+import { setupGameEffects, renderFloatingTexts, renderPunchParticles, renderSparkleParticles, renderServiceParticles } from "./useGameEffects";
 import { updateProximityAudio } from "./useProximityAudio";
 import { drawLayoutPreview, LayoutEditorState } from '../renderer/drawLayoutEditor';
 import { drawDirtyTrayBasket } from '../renderer/drawDirtyTrayBasket';
@@ -70,7 +70,7 @@ export function useGameLoop({
     let frameId = 0;
     let lastFrameTime = 0;
     const lastEmitRef = { current: 0 };
-    const { floatingTexts, punchParticles, sparkleParticles, cleanup: cleanupEffects } = setupGameEffects(socket);
+    const { floatingTexts, punchParticles, sparkleParticles, serviceParticles, cleanup: cleanupEffects } = setupGameEffects(socket);
 
     // Perf stats
     const fpsBuffer: number[] = [];
@@ -221,6 +221,7 @@ export function useGameLoop({
       renderFloatingTexts(ctx, floatingTexts);
       renderPunchParticles(ctx, punchParticles);
       renderSparkleParticles(ctx, sparkleParticles);
+      renderServiceParticles(ctx, serviceParticles);
 
       // ── Işıklandırma Sistemi ──────────────────────────────────────────────
       drawLighting(ctx, state.dayPhase, state.dayTimer);

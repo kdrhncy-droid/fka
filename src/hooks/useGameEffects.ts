@@ -21,10 +21,50 @@ export interface SparkleParticle {
   emoji: string;
 }
 
+export interface ServiceParticle {
+  x: number; y: number;
+  vx: number; vy: number;
+  life: number; maxLife: number;
+  emoji: string;
+  rot: number; rotV: number;
+  scale: number;
+}
+
 export function setupGameEffects(socket: Socket | null) {
   const floatingTexts: FloatingText[] = [];
   const punchParticles: PunchParticle[] = [];
   const sparkleParticles: SparkleParticle[] = [];
+  const serviceParticles: ServiceParticle[] = [];
+
+  const spawnServiceEffect = (x: number, y: number, effect: string) => {
+    const configs: Record<string, { emojis: string[]; count: number; speed: number; life: number }> = {
+      star:    { emojis: ['⭐','✨','💫'], count: 8,  speed: 4, life: 50 },
+      heart:   { emojis: ['❤️','💕','💖'], count: 6,  speed: 2.5, life: 60 },
+      fire:    { emojis: ['🔥','✨'],       count: 7,  speed: 3, life: 45 },
+      coin:    { emojis: ['🪙','💰'],       count: 6,  speed: 3, life: 55 },
+      rainbow: { emojis: ['🌈','✨','⭐','💫'], count: 10, speed: 4.5, life: 55 },
+    };
+    const cfg = configs[effect];
+    if (!cfg) return;
+    for (let i = 0; i < cfg.count; i++) {
+      const angle = (i / cfg.count) * Math.PI * 2 - Math.PI / 2;
+      const speed = cfg.speed * (0.7 + Math.random() * 0.6);
+      serviceParticles.push({
+        x, y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - 1,
+        life: cfg.life, maxLife: cfg.life,
+        emoji: cfg.emojis[i % cfg.emojis.length],
+        rot: Math.random() * Math.PI * 2,
+        rotV: (Math.random() - 0.5) * 0.2,
+        scale: 0.8 + Math.random() * 0.6,
+      });
+    }
+  };
+
+  const handleServiceEffect = (data: { x: number; y: number; effect: string }) => {
+    spawnServiceEffect(data.x, data.y, data.effect);
+  };
 
   const handleTip = (data: { x: number; y: number; amount: number }) => {
     floatingTexts.push({ x: data.x, y: data.y - 20, text: `+${data.amount}`, life: 60 });
@@ -98,6 +138,7 @@ export function setupGameEffects(socket: Socket | null) {
     socket.on("cookDone", handleCookDone);
     socket.on("happyLeave", handleHappyLeave);
     socket.on("specialServed", handleSpecialServed);
+    socket.on("serviceEffect", handleServiceEffect);
   }
 
   const cleanup = () => {
@@ -108,10 +149,11 @@ export function setupGameEffects(socket: Socket | null) {
       socket.off("cookDone", handleCookDone);
       socket.off("happyLeave", handleHappyLeave);
       socket.off("specialServed", handleSpecialServed);
+      socket.off("serviceEffect", handleServiceEffect);
     }
   };
 
-  return { floatingTexts, punchParticles, sparkleParticles, cleanup };
+  return { floatingTexts, punchParticles, sparkleParticles, serviceParticles, cleanup };
 }
 
 export function renderFloatingTexts(ctx: CanvasRenderingContext2D, texts: FloatingText[]) {
@@ -167,6 +209,30 @@ export function renderSparkleParticles(ctx: CanvasRenderingContext2D, particles:
     p.x += p.vx;
     p.y += p.vy;
     p.vy += 0.1;
+    p.life--;
+    if (p.life <= 0) particles.splice(i, 1);
+  }
+}
+
+export function renderServiceParticles(ctx: CanvasRenderingContext2D, particles: ServiceParticle[]) {
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const p = particles[i];
+    const t = p.life / p.maxLife;
+    ctx.save();
+    ctx.globalAlpha = t > 0.7 ? 1 : t / 0.7;
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.rot);
+    ctx.scale(p.scale * (0.5 + t * 0.5), p.scale * (0.5 + t * 0.5));
+    ctx.font = '18px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(p.emoji, 0, 0);
+    ctx.restore();
+    p.x += p.vx;
+    p.y += p.vy;
+    p.vy += 0.12;
+    p.vx *= 0.96;
+    p.rot += p.rotV;
     p.life--;
     if (p.life <= 0) particles.splice(i, 1);
   }

@@ -8,6 +8,7 @@ export interface PlayerProfile {
   charType: number;
   hairColor: string;
   hairStyle: string;
+  outfitStyle: string;
   clothingColor: string;
   faceShape: number;
   nameLabelColor: string;
@@ -16,6 +17,7 @@ export interface PlayerProfile {
   equippedHat: string;
   equippedTitle: string;
   equippedLabelEffect: string;
+  equippedServiceEffect: string;
   totalPlayTime: number;
   totalDays: number;
   totalScore: number;
@@ -29,6 +31,7 @@ const DEFAULT: PlayerProfile = {
   charType: 0,
   hairColor: '#4b2c20',
   hairStyle: 'default',
+  outfitStyle: 'default',
   clothingColor: '#f5f5f4',
   faceShape: 0,
   nameLabelColor: '#ffffff',
@@ -37,6 +40,7 @@ const DEFAULT: PlayerProfile = {
   equippedHat: '',
   equippedTitle: '',
   equippedLabelEffect: '',
+  equippedServiceEffect: '',
   totalPlayTime: 0,
   totalDays: 0,
   totalScore: 0,
@@ -84,7 +88,7 @@ export function addCoinsFromScore(score: number): number {
 }
 
 // ─── Market Item Tanımları ────────────────────────────────────────────────────
-export type ShopCategory = 'hat' | 'hairStyle' | 'hairColor' | 'clothingColor' | 'labelColor' | 'title' | 'colorSet' | 'labelEffect';
+export type ShopCategory = 'hat' | 'hairStyle' | 'hairColor' | 'outfitStyle' | 'clothingColor' | 'labelColor' | 'title' | 'colorSet' | 'labelEffect' | 'serviceEffect';
 
 export interface ShopItem {
   id: string;
@@ -108,6 +112,13 @@ export const SHOP_ITEMS: ShopItem[] = [
   { id: 'hair_spiky',    category: 'hairStyle', name: 'Dikenli',     icon: '⚡', value: 'spiky',    price: 200, rarity: 'rare'   },
   { id: 'hair_ponytail', category: 'hairStyle', name: 'At Kuyruğu',  icon: '🐴', value: 'ponytail', price: 150, rarity: 'common' },
   { id: 'hair_mohawk',   category: 'hairStyle', name: 'Mohawk',      icon: '🔥', value: 'mohawk',   price: 300, rarity: 'epic'   },
+  // ── Kıyafet Stilleri ──────────────────────────────────────────────────────
+  { id: 'outfit_default', category: 'outfitStyle', name: 'Casual',       icon: '👕', value: 'default', price: 0,   rarity: 'common' },
+  { id: 'outfit_chef',    category: 'outfitStyle', name: 'Aşçı Önlüğü', icon: '👨‍🍳', value: 'chef',    price: 150, rarity: 'rare'   },
+  { id: 'outfit_waiter',  category: 'outfitStyle', name: 'Garson',       icon: '🤵', value: 'waiter',  price: 200, rarity: 'rare'   },
+  { id: 'outfit_hoodie',  category: 'outfitStyle', name: 'Kapüşonlu',    icon: '🧥', value: 'hoodie',  price: 120, rarity: 'common' },
+  { id: 'outfit_suit',    category: 'outfitStyle', name: 'Takım Elbise', icon: '💼', value: 'suit',    price: 350, rarity: 'epic'   },
+  { id: 'outfit_apron',   category: 'outfitStyle', name: 'Mutfak Önlüğü',icon: '🍳', value: 'apron',   price: 100, rarity: 'common' },
   // ── Şapkalar ──────────────────────────────────────────────────────────────
   { id: 'hat_crown',   category: 'hat', name: 'Altın Taç',    icon: '👑', value: '👑', price: 300, rarity: 'epic'   },
   { id: 'hat_tophat',  category: 'hat', name: 'Silindir',     icon: '🎩', value: '🎩', price: 150, rarity: 'rare'   },
@@ -153,6 +164,12 @@ export const SHOP_ITEMS: ShopItem[] = [
   { id: 'fx_rainbow',   category: 'labelEffect', name: 'Gökkuşağı',     icon: '🌈', value: 'rainbow',  price: 600, rarity: 'epic'   },
   { id: 'fx_pulse',     category: 'labelEffect', name: 'Yanıp Sönen',   icon: '💫', value: 'pulse',    price: 400, rarity: 'epic'   },
   { id: 'fx_gold',      category: 'labelEffect', name: 'Altın Çerçeve', icon: '🏅', value: 'gold',     price: 250, rarity: 'rare'   },
+  // ── Servis Efektleri ──────────────────────────────────────────────────────
+  { id: 'sfx_star',     category: 'serviceEffect', name: 'Yıldız Patlaması', icon: '✨', value: 'star',     price: 400, rarity: 'epic'   },
+  { id: 'sfx_heart',    category: 'serviceEffect', name: 'Kalp Yağmuru',     icon: '❤️', value: 'heart',    price: 300, rarity: 'rare'   },
+  { id: 'sfx_fire',     category: 'serviceEffect', name: 'Ateş',             icon: '🔥', value: 'fire',     price: 350, rarity: 'rare'   },
+  { id: 'sfx_coin',     category: 'serviceEffect', name: 'Para Yağmuru',     icon: '💰', value: 'coin',     price: 250, rarity: 'rare'   },
+  { id: 'sfx_rainbow',  category: 'serviceEffect', name: 'Gökkuşağı',        icon: '🌈', value: 'rainbow',  price: 600, rarity: 'epic'   },
 ];
 
 export function buyItem(itemId: string): boolean {

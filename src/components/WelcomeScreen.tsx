@@ -136,6 +136,7 @@ interface WelcomeScreenProps {
   charType: number; setCharType: (v: number) => void;
   hairColor: string; setHairColor: (v: string) => void;
   hairStyle: string; setHairStyle: (v: string) => void;
+  outfitStyle: string; setOutfitStyle: (v: string) => void;
   clothingColor: string; setClothingColor: (v: string) => void;
   faceShape: number; setFaceShape: (v: number) => void;
   setPlayerColor: (v: string) => void;
@@ -145,6 +146,7 @@ interface WelcomeScreenProps {
   equippedHat: string; setEquippedHat: (v: string) => void;
   equippedTitle: string; setEquippedTitle: (v: string) => void;
   equippedLabelEffect: string; setEquippedLabelEffect: (v: string) => void;
+  equippedServiceEffect: string; setEquippedServiceEffect: (v: string) => void;
 }
 
 const HAIR_COLORS = ['#4b2c20','#24150e','#8d5524','#c68642','#f1c27d','#ffffff','#ef4444','#3b82f6','#a855f7','#22c55e'];
@@ -155,10 +157,13 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   onPlay, onSettings,
   playerName, setPlayerName, charType, setCharType, hairColor, setHairColor,
   hairStyle, setHairStyle,
+  outfitStyle, setOutfitStyle,
   clothingColor, setClothingColor, faceShape, setFaceShape,
   setPlayerColor, setPlayerHat,
   nameLabelColor, setNameLabelColor,
-  coins, setCoins, equippedHat, setEquippedHat, equippedTitle, setEquippedTitle, equippedLabelEffect, setEquippedLabelEffect,
+  coins, setCoins, equippedHat, setEquippedHat, equippedTitle, setEquippedTitle,
+  equippedLabelEffect, setEquippedLabelEffect,
+  equippedServiceEffect, setEquippedServiceEffect,
 }) => {
   const [screen, setScreen] = useState<Screen>('main');
   const [joinCode, setJoinCode] = useState('');
@@ -378,11 +383,13 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
           charType={charType}
           hairColor={hairColor} setHairColor={setHairColor}
           hairStyle={hairStyle} setHairStyle={setHairStyle}
+          outfitStyle={outfitStyle} setOutfitStyle={setOutfitStyle}
           clothingColor={clothingColor} setClothingColor={setClothingColor}
           nameLabelColor={nameLabelColor} setNameLabelColor={setNameLabelColor}
           equippedHat={equippedHat} setEquippedHat={setEquippedHat}
           equippedTitle={equippedTitle} setEquippedTitle={setEquippedTitle}
           equippedLabelEffect={equippedLabelEffect} setEquippedLabelEffect={setEquippedLabelEffect}
+          equippedServiceEffect={equippedServiceEffect} setEquippedServiceEffect={setEquippedServiceEffect}
           setPlayerColor={setPlayerColor}
         />
       )}
