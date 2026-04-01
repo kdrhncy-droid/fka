@@ -3,6 +3,7 @@ import { MARKET_NAME } from '../constants';
 import { PatchNotesModal } from './PatchNotesModal';
 import { TutorialOverlay, markTutorialDone } from './TutorialOverlay';
 import { ProfileModal } from './ProfileModal';
+import { ShopModal } from './ShopModal';
 import { stk, adjustColor, drawShadowEllipse } from '../renderer/rendererUtils';
 
 // ── Arka plan canvas animasyonu (loading screen ile aynı stil) ──────────────
@@ -131,8 +132,7 @@ type Screen = 'main' | 'multiplayer' | 'create' | 'join' | 'name';
 interface WelcomeScreenProps {
   onPlay: (roomId?: string, mapId?: string) => void;
   onSettings: () => void;
-  playerName: string;
-  setPlayerName: (v: string) => void;
+  playerName: string; setPlayerName: (v: string) => void;
   charType: number; setCharType: (v: number) => void;
   hairColor: string; setHairColor: (v: string) => void;
   clothingColor: string; setClothingColor: (v: string) => void;
@@ -140,7 +140,8 @@ interface WelcomeScreenProps {
   setPlayerColor: (v: string) => void;
   setPlayerHat: (v: string) => void;
   nameLabelColor: string; setNameLabelColor: (v: string) => void;
-  coins: number;
+  coins: number; setCoins: (v: number) => void;
+  equippedHat: string; setEquippedHat: (v: string) => void;
 }
 
 const HAIR_COLORS = ['#4b2c20','#24150e','#8d5524','#c68642','#f1c27d','#ffffff','#ef4444','#3b82f6','#a855f7','#22c55e'];
@@ -149,10 +150,11 @@ const LABEL_COLORS = ['#ffffff','#fbbf24','#34d399','#60a5fa','#f472b6','#a78bfa
 
 export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   onPlay, onSettings,
-  playerName, setPlayerName,  charType, setCharType, hairColor, setHairColor,
+  playerName, setPlayerName, charType, setCharType, hairColor, setHairColor,
   clothingColor, setClothingColor, faceShape, setFaceShape,
   setPlayerColor, setPlayerHat,
-  nameLabelColor, setNameLabelColor, coins,
+  nameLabelColor, setNameLabelColor,
+  coins, setCoins, equippedHat, setEquippedHat,
 }) => {
   const [screen, setScreen] = useState<Screen>('main');
   const [joinCode, setJoinCode] = useState('');
@@ -161,6 +163,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   const [copied, setCopied] = useState(false);
   const [showPatchNotes, setShowPatchNotes] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  const [showShop, setShowShop] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
 
   const openCreate = () => {
@@ -234,6 +237,10 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
             <button onClick={() => setShowProfile(true)}
               className="w-full py-3 rounded-2xl bg-white/10 hover:bg-white/20 active:scale-[0.97] backdrop-blur border border-white/15 text-white/90 font-bold text-sm uppercase tracking-widest transition-all">
               👤 Profil
+            </button>
+            <button onClick={() => setShowShop(true)}
+              className="w-full py-3 rounded-2xl bg-yellow-500/15 hover:bg-yellow-500/25 active:scale-[0.97] backdrop-blur border border-yellow-500/30 text-yellow-300 font-bold text-sm uppercase tracking-widest transition-all">
+              🛒 Market
             </button>
             <div className="grid grid-cols-2 gap-2">
               <button onClick={onSettings}
@@ -356,6 +363,18 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
           nameLabelColor={nameLabelColor} setNameLabelColor={setNameLabelColor}
           setPlayerColor={setPlayerColor} setPlayerHat={setPlayerHat}
           coins={coins}
+        />
+      )}
+      {showShop && (
+        <ShopModal
+          onClose={() => setShowShop(false)}
+          coins={coins} setCoins={setCoins}
+          charType={charType}
+          hairColor={hairColor} setHairColor={setHairColor}
+          clothingColor={clothingColor} setClothingColor={setClothingColor}
+          nameLabelColor={nameLabelColor} setNameLabelColor={setNameLabelColor}
+          equippedHat={equippedHat} setEquippedHat={setEquippedHat}
+          setPlayerColor={setPlayerColor}
         />
       )}
       {showTutorial && <TutorialOverlay onClose={() => setShowTutorial(false)} />}

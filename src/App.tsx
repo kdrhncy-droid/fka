@@ -53,6 +53,7 @@ export default function App() {
   const [faceShape, setFaceShape] = useState(() => loadProfile().faceShape);
   const [nameLabelColor, setNameLabelColor] = useState(() => loadProfile().nameLabelColor);
   const [coins, setCoins] = useState(() => loadProfile().coins);
+  const [equippedHat, setEquippedHat] = useState(() => loadProfile().equippedHat ?? '');
 
   // Karakter değişince kaydet
   useEffect(() => {
@@ -81,7 +82,7 @@ export default function App() {
     socket.emit('join', {
       name: playerName.trim() || 'Oyuncu',
       color: playerColor,
-      hat: playerHat,
+      hat: equippedHat || playerHat,
       charType,
       hairColor,
       clothingColor,
@@ -132,7 +133,8 @@ export default function App() {
           setPlayerColor={setPlayerColor}
           setPlayerHat={setPlayerHat}
           nameLabelColor={nameLabelColor} setNameLabelColor={setNameLabelColor}
-          coins={coins}
+          coins={coins} setCoins={setCoins}
+          equippedHat={equippedHat} setEquippedHat={setEquippedHat}
         />
         {showSettings && (
           <SettingsPanel
