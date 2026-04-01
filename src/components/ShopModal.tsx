@@ -82,15 +82,19 @@ export const ShopModal: React.FC<Props> = ({
       style={{ padding: 'env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)' }}
       onClick={onClose}
     >
-      {/* Landscape: sol panel + sağ panel yan yana */}
+      {/* Sol panel + sağ panel yan yana — PC'de geniş, mobil landscape'de kompakt */}
       <div
         className="bg-stone-900 border border-stone-700 rounded-2xl shadow-2xl overflow-hidden flex"
-        style={{ width: 'min(96vw, 720px)', height: 'min(90dvh, 480px)', maxHeight: '90dvh' }}
+        style={{
+          width: 'min(95vw, 860px)',
+          height: 'min(88dvh, 560px)',
+          maxHeight: '88dvh',
+        }}
         onClick={e => e.stopPropagation()}
       >
 
         {/* ── SOL PANEL — karakter önizleme + coin ── */}
-        <div className="w-44 flex-shrink-0 bg-stone-950/60 border-r border-stone-800 flex flex-col items-center justify-between py-4 px-3">
+        <div className="w-52 flex-shrink-0 bg-stone-950/60 border-r border-stone-800 flex flex-col items-center justify-between py-5 px-4">
           {/* Başlık */}
           <div className="text-center">
             <div className="text-white font-black text-sm">🛒 Market</div>
@@ -157,7 +161,7 @@ export const ShopModal: React.FC<Props> = ({
 
           {/* İtem grid */}
           <div className="overflow-y-auto flex-1 p-3" style={{ WebkitOverflowScrolling: 'touch' } as React.CSSProperties}>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-3 xl:grid-cols-4 gap-2">
               {items.map(item => {
                 const isOwned = owned.includes(item.id);
                 const equipped = isEquipped(item);
