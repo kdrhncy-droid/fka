@@ -1,6 +1,98 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { SHOP_ITEMS, ShopCategory, buyItem, loadProfile, saveProfile } from '../utils/profile';
 import { CharacterPreview } from './CharacterPreview';
+
+// ── Şapka Canvas Önizleme ─────────────────────────────────────────────────────
+const HatPreview: React.FC<{ hatValue: string }> = ({ hatValue }) => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    const canvas = canvasRef.current; if (!canvas) return;
+    const ctx = canvas.getContext('2d')!;
+    ctx.clearRect(0, 0, 56, 40);
+    const headR = 14, cx = 28, cy = 30;
+    // Mini kafa
+    ctx.beginPath(); ctx.arc(cx, cy, headR, 0, Math.PI * 2);
+    ctx.fillStyle = '#f5c090'; ctx.fill();
+    ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5; ctx.stroke();
+    // Saç
+    ctx.fillStyle = '#4b2c20';
+    ctx.beginPath(); ctx.arc(cx, cy, headR, Math.PI, 0); ctx.fill();
+    // Şapka
+    const hatY = cy - headR;
+    switch (hatValue) {
+      case '👑': {
+        ctx.fillStyle = '#FFD700';
+        ctx.beginPath();
+        ctx.moveTo(cx - headR * 0.7, hatY + 1);
+        ctx.lineTo(cx - headR * 0.5, hatY - 7);
+        ctx.lineTo(cx - headR * 0.15, hatY - 3);
+        ctx.lineTo(cx, hatY - 9);
+        ctx.lineTo(cx + headR * 0.15, hatY - 3);
+        ctx.lineTo(cx + headR * 0.5, hatY - 7);
+        ctx.lineTo(cx + headR * 0.7, hatY + 1);
+        ctx.closePath(); ctx.fill(); ctx.strokeStyle = '#b8860b'; ctx.lineWidth = 1; ctx.stroke();
+        break;
+      }
+      case '🎩': {
+        ctx.fillStyle = '#1a1a1a';
+        ctx.beginPath(); ctx.ellipse(cx, hatY + 1, headR * 0.9, 3, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.roundRect(cx - headR * 0.6, hatY - 11, headR * 1.2, 12, [3, 3, 0, 0]); ctx.fill();
+        ctx.strokeStyle = '#333'; ctx.lineWidth = 1; ctx.stroke();
+        break;
+      }
+      case '🧢': {
+        ctx.fillStyle = '#2563eb';
+        ctx.beginPath(); ctx.ellipse(cx + 1, hatY + 1, headR * 0.95, 4, 0, Math.PI, 0); ctx.fill();
+        ctx.beginPath(); ctx.roundRect(cx - headR * 0.75, hatY - 9, headR * 1.5, 10, [6, 6, 0, 0]); ctx.fill();
+        ctx.strokeStyle = '#1d4ed8'; ctx.lineWidth = 1; ctx.stroke();
+        break;
+      }
+      case '🎀': {
+        ctx.fillStyle = '#ec4899';
+        ctx.beginPath(); ctx.ellipse(cx - 7, hatY - 3, 7, 4, -0.4, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(cx + 7, hatY - 3, 7, 4, 0.4, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#f472b6';
+        ctx.beginPath(); ctx.arc(cx, hatY - 3, 3.5, 0, Math.PI * 2); ctx.fill();
+        break;
+      }
+      case '🐱': {
+        ctx.fillStyle = '#f5c090';
+        ctx.beginPath(); ctx.moveTo(cx - headR * 0.55, hatY + 1); ctx.lineTo(cx - headR * 0.7, hatY - 9); ctx.lineTo(cx - headR * 0.25, hatY - 4); ctx.closePath(); ctx.fill();
+        ctx.beginPath(); ctx.moveTo(cx + headR * 0.55, hatY + 1); ctx.lineTo(cx + headR * 0.7, hatY - 9); ctx.lineTo(cx + headR * 0.25, hatY - 4); ctx.closePath(); ctx.fill();
+        ctx.strokeStyle = '#000'; ctx.lineWidth = 1; ctx.stroke();
+        ctx.fillStyle = '#ffb6c1';
+        ctx.beginPath(); ctx.moveTo(cx - headR * 0.55, hatY - 1); ctx.lineTo(cx - headR * 0.65, hatY - 8); ctx.lineTo(cx - headR * 0.3, hatY - 4); ctx.closePath(); ctx.fill();
+        ctx.beginPath(); ctx.moveTo(cx + headR * 0.55, hatY - 1); ctx.lineTo(cx + headR * 0.65, hatY - 8); ctx.lineTo(cx + headR * 0.3, hatY - 4); ctx.closePath(); ctx.fill();
+        break;
+      }
+      case '⭐': {
+        ctx.fillStyle = '#FFD700';
+        const pts = 5, oR = 8, iR = 3.5;
+        ctx.beginPath();
+        for (let i = 0; i < pts * 2; i++) {
+          const r = i % 2 === 0 ? oR : iR;
+          const a = (i * Math.PI) / pts - Math.PI / 2;
+          i === 0 ? ctx.moveTo(cx + Math.cos(a) * r, hatY - 5 + Math.sin(a) * r)
+                  : ctx.lineTo(cx + Math.cos(a) * r, hatY - 5 + Math.sin(a) * r);
+        }
+        ctx.closePath(); ctx.fill(); ctx.strokeStyle = '#b8860b'; ctx.lineWidth = 1; ctx.stroke();
+        break;
+      }
+      case '👨‍🍳': {
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath(); ctx.ellipse(cx, hatY + 1, headR * 0.95, 4, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.roundRect(cx - headR * 0.7, hatY - 17, headR * 1.4, 18, [5, 5, 0, 0]); ctx.fill();
+        ctx.strokeStyle = '#ddd'; ctx.lineWidth = 1; ctx.stroke();
+        break;
+      }
+      default: {
+        ctx.font = '22px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(hatValue, cx, hatY - 6);
+      }
+    }
+  }, [hatValue]);
+  return <canvas ref={canvasRef} width={56} height={40} />;
+};
 
 interface Props {
   onClose: () => void;
@@ -206,7 +298,7 @@ export const ShopModal: React.FC<Props> = ({
                     {/* Görsel önizleme */}
                     <div className="flex justify-center items-center h-10">
                       {item.category === 'hat' ? (
-                        <span className="text-3xl leading-none">{item.icon}</span>
+                        <HatPreview hatValue={item.value} />
                       ) : item.category === 'title' ? (
                         <div className="px-2 py-1 rounded-lg bg-black/60 border border-yellow-500/40 text-[9px] font-black text-yellow-400 text-center leading-tight">
                           {item.value}

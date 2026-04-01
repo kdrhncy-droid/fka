@@ -287,21 +287,20 @@ export function drawPlayer(
         ctx.restore();
     }
 
-    // ── İSİM ETİKETİ + UNVAN ─────────────────────────────────────────────────
+    // ── İSİM ETİKETİ + UNVAN — ayağın altında ───────────────────────────────
     ctx.scale(dirMul, 1);
     const label = isMe ? `★ ${p.name}` : p.name;
     ctx.font = 'bold 11px Arial';
     const lw = ctx.measureText(label).width + 16;
     const labelBg = isMe ? 'rgba(59, 130, 246, 0.9)' : 'rgba(0, 0, 0, 0.7)';
-    const labelY = headY - headR - 30;
+    const labelY = 34; // ayağın altı (footY=22 + ayak r=6 + boşluk)
     const fx = p.labelEffect;
     const now = Date.now();
 
     // Etiket arka plan + efekt
     ctx.save();
     if (fx === 'glow') {
-        const glowColor = p.nameLabelColor || '#fff';
-        ctx.shadowColor = glowColor;
+        ctx.shadowColor = p.nameLabelColor || '#fff';
         ctx.shadowBlur = 12 + Math.sin(now / 300) * 4;
     } else if (fx === 'gold') {
         ctx.shadowColor = '#FFD700';
