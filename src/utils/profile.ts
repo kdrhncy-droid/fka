@@ -104,8 +104,7 @@ export const SHOP_ITEMS: ShopItem[] = [
   { id: 'hat_bow',     category: 'hat', name: 'Fiyonk',       icon: '🎀', value: '🎀', price: 80,  rarity: 'common' },
   { id: 'hat_cat',     category: 'hat', name: 'Kedi Kulak',   icon: '🐱', value: '🐱', price: 120, rarity: 'rare'   },
   { id: 'hat_star',    category: 'hat', name: 'Yıldız',       icon: '⭐', value: '⭐', price: 200, rarity: 'rare'   },
-  { id: 'hat_chef',    category: 'hat', name: 'Aşçı Şapkası', icon: '👨‍🍳', value: '👨‍🍳', price: 250, rarity: 'epic'   },
-  // ── Özel Saç Renkleri ─────────────────────────────────────────────────────
+  { id: 'hat_chef',    category: 'hat', name: 'Aşçı Şapkası', icon: '👨‍🍳', value: '👨‍🍳', price: 250, rarity: 'epic'   },  // ── Özel Saç Renkleri ─────────────────────────────────────────────────────
   { id: 'hair_gold',   category: 'hairColor', name: 'Altın Saç',    icon: '✨', value: '#FFD700', price: 120, rarity: 'rare'   },
   { id: 'hair_silver', category: 'hairColor', name: 'Gümüş Saç',    icon: '🌫️', value: '#C0C0C0', price: 100, rarity: 'rare'   },
   { id: 'hair_pink',   category: 'hairColor', name: 'Pembe Saç',    icon: '🌸', value: '#FF69B4', price: 80,  rarity: 'common' },
