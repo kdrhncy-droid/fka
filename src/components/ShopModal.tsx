@@ -16,11 +16,12 @@ interface Props {
 }
 
 const CATEGORY_LABELS: Record<ShopCategory, { label: string; icon: string }> = {
-  hat:           { label: 'Şapkalar',  icon: '🎩' },
-  hairColor:     { label: 'Saç',       icon: '💇' },
-  clothingColor: { label: 'Kıyafet',   icon: '👕' },
-  labelColor:    { label: 'Etiket',    icon: '🏷️' },
-  title:         { label: 'Unvanlar',  icon: '🏆' },
+  hat:           { label: 'Şapkalar',   icon: '🎩' },
+  hairColor:     { label: 'Saç',        icon: '💇' },
+  clothingColor: { label: 'Kıyafet',    icon: '👕' },
+  labelColor:    { label: 'Etiket',     icon: '🏷️' },
+  title:         { label: 'Unvanlar',   icon: '🏆' },
+  colorSet:      { label: 'Renk Seti',  icon: '🎨' },
 };
 
 const RARITY_STYLE = {
@@ -67,6 +68,12 @@ export const ShopModal: React.FC<Props> = ({
     } else if (item.category === 'title') {
       const next = equippedTitle === item.value ? '' : item.value;
       setEquippedTitle(next); saveProfile({ equippedTitle: next });
+    } else if (item.category === 'colorSet' && item.colorSet) {
+      setHairColor(item.colorSet.hair);
+      setClothingColor(item.colorSet.clothing);
+      setPlayerColor(item.colorSet.clothing);
+      setNameLabelColor(item.colorSet.label);
+      saveProfile({ hairColor: item.colorSet.hair, clothingColor: item.colorSet.clothing, nameLabelColor: item.colorSet.label });
     } else if (item.category === 'hairColor') {
       setHairColor(item.value); saveProfile({ hairColor: item.value });
     } else if (item.category === 'clothingColor') {
@@ -79,6 +86,9 @@ export const ShopModal: React.FC<Props> = ({
   const isEquipped = (item: typeof SHOP_ITEMS[0]) => {
     if (item.category === 'hat') return equippedHat === item.value;
     if (item.category === 'title') return equippedTitle === item.value;
+    if (item.category === 'colorSet') return item.colorSet
+      ? hairColor === item.colorSet.hair && clothingColor === item.colorSet.clothing
+      : false;
     if (item.category === 'hairColor') return hairColor === item.value;
     if (item.category === 'clothingColor') return clothingColor === item.value;
     if (item.category === 'labelColor') return nameLabelColor === item.value;
@@ -194,6 +204,15 @@ export const ShopModal: React.FC<Props> = ({
                         <div className="px-2 py-1 rounded-lg bg-black/60 border border-yellow-500/40 text-[9px] font-black text-yellow-400 text-center leading-tight">
                           {item.value}
                         </div>
+                      ) : item.category === 'colorSet' && item.colorSet ? (
+                        <div className="flex flex-col items-center gap-1">
+                          <div className="flex gap-1">
+                            <div className="w-5 h-5 rounded-full border border-stone-500" style={{ backgroundColor: item.colorSet.hair }} title="Saç" />
+                            <div className="w-5 h-5 rounded-lg border border-stone-500" style={{ backgroundColor: item.colorSet.clothing }} title="Kıyafet" />
+                            <div className="w-5 h-5 rounded-full border border-stone-500" style={{ backgroundColor: item.colorSet.label, outline: item.colorSet.label === '#ffffff' ? '1px solid #555' : undefined }} title="Etiket" />
+                          </div>
+                          <div className="text-[8px] text-stone-400">Saç · Kıyafet · Etiket</div>
+                        </div>
                       ) : item.category === 'hairColor' ? (
                         <div className="flex flex-col items-center gap-1">
                           <div className="w-8 h-8 rounded-full border-2 border-stone-500 shadow-inner"
@@ -223,7 +242,7 @@ export const ShopModal: React.FC<Props> = ({
                     {isOwned ? (
                       <button onClick={() => applyItem(item.id)}
                         className={`w-full py-1 rounded-lg text-[10px] font-black transition-all active:scale-95 ${equipped ? 'bg-amber-500 text-stone-900' : 'bg-stone-700 hover:bg-stone-600 text-stone-200'}`}>
-                        {equipped ? '✓ Giyildi' : 'Giy'}
+                        {item.category === 'colorSet' ? (equipped ? '✓ Aktif' : 'Uygula') : (equipped ? '✓ Giyildi' : 'Giy')}
                       </button>
                     ) : (
                       <button onClick={() => handleBuy(item.id)} disabled={coins < item.price}

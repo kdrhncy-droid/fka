@@ -80,16 +80,18 @@ export function addCoinsFromScore(score: number): number {
 }
 
 // ─── Market Item Tanımları ────────────────────────────────────────────────────
-export type ShopCategory = 'hat' | 'hairColor' | 'clothingColor' | 'labelColor' | 'title';
+export type ShopCategory = 'hat' | 'hairColor' | 'clothingColor' | 'labelColor' | 'title' | 'colorSet';
 
 export interface ShopItem {
   id: string;
   category: ShopCategory;
   name: string;
   icon: string;
-  value: string;       // emoji (şapka) veya hex renk
+  value: string;       // emoji (şapka), hex renk, unvan metni, veya colorSet için primary renk
   price: number;
   rarity: 'common' | 'rare' | 'epic';
+  // Renk seti için ek alanlar
+  colorSet?: { hair: string; clothing: string; label: string };
 }
 
 export const SHOP_ITEMS: ShopItem[] = [
@@ -117,8 +119,16 @@ export const SHOP_ITEMS: ShopItem[] = [
   { id: 'label_rainbow', category: 'labelColor', name: 'Gökkuşağı Etiket', icon: '🌈', value: '#FF69B4', price: 500, rarity: 'epic'   },
   { id: 'label_red',     category: 'labelColor', name: 'Kırmızı Etiket', icon: '❤️', value: '#FF4444', price: 80,  rarity: 'common' },
   { id: 'label_cyan',    category: 'labelColor', name: 'Mavi Etiket',    icon: '💙', value: '#00BFFF', price: 80,  rarity: 'common' },
-  // ── Unvanlar ──────────────────────────────────────────────────────────────
-  { id: 'title_patron',  category: 'title', name: 'PATRON',       icon: '👑', value: '👑 PATRON',       price: 500, rarity: 'epic'   },
+  // ── Renk Setleri ──────────────────────────────────────────────────────────
+  { id: 'set_golden_chef',  category: 'colorSet', name: 'Altın Şef',    icon: '🥇', value: '#DAA520', price: 400, rarity: 'epic',   colorSet: { hair: '#DAA520', clothing: '#B8860B', label: '#FFD700' } },
+  { id: 'set_night_black',  category: 'colorSet', name: 'Gece Karası',  icon: '🌑', value: '#1a1a1a', price: 300, rarity: 'rare',   colorSet: { hair: '#1a1a1a', clothing: '#0a0a0a', label: '#6366f1' } },
+  { id: 'set_neon_pink',    category: 'colorSet', name: 'Neon Pembe',   icon: '💗', value: '#FF69B4', price: 350, rarity: 'rare',   colorSet: { hair: '#FF69B4', clothing: '#FF1493', label: '#FF69B4' } },
+  { id: 'set_ocean',        category: 'colorSet', name: 'Okyanus',      icon: '🌊', value: '#006994', price: 300, rarity: 'rare',   colorSet: { hair: '#00CED1', clothing: '#006994', label: '#00BFFF' } },
+  { id: 'set_forest',       category: 'colorSet', name: 'Orman',        icon: '🌲', value: '#2d5a27', price: 250, rarity: 'rare',   colorSet: { hair: '#228B22', clothing: '#2d5a27', label: '#4ade80' } },
+  { id: 'set_blood_red',    category: 'colorSet', name: 'Kan Kırmızı',  icon: '🩸', value: '#DC143C', price: 350, rarity: 'epic',   colorSet: { hair: '#8B0000', clothing: '#DC143C', label: '#FF4444' } },
+  { id: 'set_ice_blue',     category: 'colorSet', name: 'Buz Mavisi',   icon: '❄️', value: '#4682B4', price: 250, rarity: 'rare',   colorSet: { hair: '#B0E0E6', clothing: '#4682B4', label: '#60a5fa' } },
+  { id: 'set_classic',      category: 'colorSet', name: 'Klasik',       icon: '⚪', value: '#f5f5f4', price: 100, rarity: 'common', colorSet: { hair: '#4b2c20', clothing: '#f5f5f4', label: '#ffffff' } },
+  // ── Unvanlar ──────────────────────────────────────────────────────────────  { id: 'title_patron',  category: 'title', name: 'PATRON',       icon: '👑', value: '👑 PATRON',       price: 500, rarity: 'epic'   },
   { id: 'title_efsane',  category: 'title', name: 'EFSANE',       icon: '🔥', value: '🔥 EFSANE',       price: 400, rarity: 'epic'   },
   { id: 'title_sef',     category: 'title', name: 'ŞEF',          icon: '🍳', value: '🍳 ŞEF',          price: 150, rarity: 'rare'   },
   { id: 'title_hizli',   category: 'title', name: 'HIZLI',        icon: '⚡', value: '⚡ HIZLI',        price: 200, rarity: 'rare'   },
