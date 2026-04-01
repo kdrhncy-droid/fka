@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════════════════
-// BGM Manager — Tüm şarkılar sırayla çalar
+// BGM Manager — Tüm şarkılar sırayla çalar (iOS Safari uyumlu)
 // ═══════════════════════════════════════════════════════════════════════════════
 
 const PLAYLIST = [
@@ -15,8 +15,33 @@ let audio: HTMLAudioElement | null = null;
 let index = 0;
 let volume = 0.5;
 let enabled = true; // localStorage'dan gelen değer setBgmEnabled ile set edilir
+let userHasInteracted = false;
+
+/** iOS Safari AudioContext unlock — ilk dokunuşta çağır */
+function unlockIOSAudio() {
+  if (userHasInteracted) return;
+  userHasInteracted = true;
+
+  // Webkit AudioContext'i uyandır
+  const AC = window.AudioContext || (window as any).webkitAudioContext;
+  if (!AC) return;
+  const ctx = new AC();
+  if (ctx.state === 'suspended') {
+    ctx.resume().catch(() => {});
+  }
+  // Sessiz bir buffer çal — iOS'un audio pipeline'ını aç
+  try {
+    const buf = ctx.createBuffer(1, 1, 22050);
+    const src = ctx.createBufferSource();
+    src.buffer = buf;
+    src.connect(ctx.destination);
+    src.start(0);
+  } catch (_) { /* güvenli fail */ }
+}
 
 function playIndex(i: number) {
+  if (!enabled) return;
+
   if (audio) {
     audio.onended = null;
     audio.pause();
@@ -25,6 +50,8 @@ function playIndex(i: number) {
   index = ((i % PLAYLIST.length) + PLAYLIST.length) % PLAYLIST.length;
   audio = new Audio(PLAYLIST[index]);
   audio.volume = volume;
+  // iOS: preload hint
+  audio.preload = 'auto';
   audio.onended = () => playIndex(index + 1);
 
   const p = audio.play();
@@ -33,6 +60,7 @@ function playIndex(i: number) {
 
 /** Kullanıcı oyuna katılınca çağır (gerçek etkileşim anında) */
 export function startBgm() {
+  unlockIOSAudio();
   if (!enabled) return;
   if (audio && !audio.paused) return; // Zaten çalıyor
   playIndex(index);

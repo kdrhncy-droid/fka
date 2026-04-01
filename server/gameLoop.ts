@@ -190,7 +190,9 @@ export function gameTick(gs: GameState, io: Server, rid: string) {
       // Kesici oyuncu tahtadan uzaklaştıysa otomatik durdur
       if (board.isChopping && board.choppingPlayerId) {
         const cutter = gs.players[board.choppingPlayerId];
-        if (!cutter || Math.hypot(cutter.x - board.x, cutter.y - board.y) > 110) {
+        const bDynX = gs.stationLayout?.[board.id]?.x ?? board.x;
+        const bDynY = gs.stationLayout?.[board.id]?.y ?? board.y;
+        if (!cutter || Math.hypot(cutter.x - bDynX, cutter.y - bDynY) > 110) {
           board.isChopping = false;
           board.choppingPlayerId = null;
         }
@@ -214,7 +216,9 @@ export function gameTick(gs: GameState, io: Server, rid: string) {
       // Yıkayıcı oyuncu uzaklaştıysa otomatik durdur
       if (sink.isWashing && sink.washingPlayerId) {
         const washer = gs.players[sink.washingPlayerId];
-        if (!washer || Math.hypot(washer.x - sink.x, washer.y - sink.y) > 110) {
+        const sDynX = gs.stationLayout?.[sink.id]?.x ?? sink.x;
+        const sDynY = gs.stationLayout?.[sink.id]?.y ?? sink.y;
+        if (!washer || Math.hypot(washer.x - sDynX, washer.y - sDynY) > 110) {
           sink.isWashing = false;
           sink.washingPlayerId = null;
         }

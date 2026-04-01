@@ -41,9 +41,12 @@ function Row({ label, desc, right }: { label: string; desc?: string; right: Reac
 }
 
 function Slider({ value, onChange, accent = 'amber' }: { value: number; onChange: (v: number) => void; accent?: string }) {
+    const handle = (e: React.ChangeEvent<HTMLInputElement>) => onChange(Number(e.target.value));
     return (
         <input type="range" min={0} max={1} step={0.05} value={value}
-            onChange={e => onChange(Number(e.target.value))}
+            onChange={handle}
+            onInput={handle as any}
+            style={{ touchAction: 'none' }}
             className={`w-full h-1.5 rounded-full appearance-none bg-stone-700 accent-${accent}-400`} />
     );
 }
