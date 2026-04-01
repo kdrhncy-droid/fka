@@ -21,7 +21,7 @@ export const PatchNotesModal: React.FC<Props> = ({ onClose }) => {
             <div className="flex items-center justify-between px-5 py-3 border-b border-stone-700/50 flex-shrink-0">
                 <div className="flex items-center gap-3">
                     <span className="text-amber-400 font-black text-base">📜 Oyun Rehberi</span>
-                    <span className="bg-amber-400/10 text-amber-400 text-[10px] font-black px-2 py-0.5 rounded-full border border-amber-400/20">v2.3.0</span>
+                    <span className="bg-amber-400/10 text-amber-400 text-[10px] font-black px-2 py-0.5 rounded-full border border-amber-400/20">v2.4.0</span>
                 </div>
                 <button onClick={onClose}
                     className="w-9 h-9 bg-stone-800 hover:bg-stone-700 text-stone-400 hover:text-white rounded-xl flex items-center justify-center text-lg transition-all active:scale-90 border border-stone-700">
@@ -166,12 +166,14 @@ export const PatchNotesModal: React.FC<Props> = ({ onClose }) => {
                     {/* ── GÜNCELLEMELER ── */}
                     {tab === 'guncelleme' && <>
                         <div className="bg-emerald-500/5 border border-emerald-500/20 p-4 rounded-2xl space-y-3">
-                            <div className="text-xs font-black text-emerald-400 uppercase tracking-widest">v2.3.0 — Şu An</div>
+                            <div className="text-xs font-black text-emerald-400 uppercase tracking-widest">v2.4.0 — Şu An</div>
                             {[
-                                { icon: '🛒', title: 'Market', desc: 'Coin ile şapka, saç, kıyafet, etiket rengi. Şapkalar canvas\'ta çiziliyor.' },
-                                { icon: '👤', title: 'Profil Ekranı', desc: 'Karakter + istatistik tek ekranda. İsim düzenleme.' },
-                                { icon: '📱', title: 'Mobil Yan Panel', desc: 'Sol joystick, sağ aksiyon butonları. Canvas ortada.' },
-                                { icon: '🎭', title: 'Müşteri Tasarımları', desc: 'Thug, Recep, Drunk, VIP, Inspector yeni görünümler.' },
+                                { icon: '🎩', title: 'Şapka Sistemi', desc: 'Her şapka kafaya tam uyumlu canvas çizimi. Aşçı şapkası eklendi. Market kartlarında önizleme.' },
+                                { icon: '🕹️', title: 'Joystick Konumlandırma', desc: 'Uzun basınca taşıma modu. Parmakla istediğin yere sürükle, konum kaydedilir.' },
+                                { icon: '✨', title: 'Etiket Efektleri', desc: 'Parlayan, Gökkuşağı, Yanıp Sönen, Altın Çerçeve. Canvas\'ta animasyonlu.' },
+                                { icon: '🏆', title: 'Unvan Sistemi', desc: '8 unvan (PATRON, EFSANE, ŞEF...). İsim etiketinin altında görünür.' },
+                                { icon: '🎨', title: 'Renk Setleri', desc: '8 set (Altın Şef, Gece Karası...). Tek tıkla saç+kıyafet+etiket değişir.' },
+                                { icon: '🏷️', title: 'Etiket Konumu', desc: 'İsim ve unvan artık ayağın altında — şapkalar kafada rahatça duruyor.' },
                             ].map(f => (
                                 <div key={f.title} className="flex items-start gap-2">
                                     <span className="text-emerald-400 text-sm flex-shrink-0">{f.icon}</span>
@@ -179,6 +181,19 @@ export const PatchNotesModal: React.FC<Props> = ({ onClose }) => {
                                         <span className="text-stone-200 font-bold text-xs">{f.title}: </span>
                                         <span className="text-stone-400 text-xs">{f.desc}</span>
                                     </div>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="bg-stone-800/30 border border-stone-700/30 p-4 rounded-2xl space-y-2">
+                            <div className="text-xs font-black text-stone-400 uppercase tracking-widest">v2.3.0</div>
+                            {[
+                                { icon: '🛒', t: 'Market', d: 'Coin ile kozmetik. Profil ekranı. Mobil yan panel.' },
+                                { icon: '🎭', t: 'Müşteri Tasarımları', d: 'Thug, Recep, Drunk, VIP, Inspector yeni görünümler.' },
+                            ].map(f => (
+                                <div key={f.t} className="flex items-start gap-2 text-xs">
+                                    <span className="flex-shrink-0">{f.icon}</span>
+                                    <span className="text-stone-300 font-bold">{f.t}: </span>
+                                    <span className="text-stone-500">{f.d}</span>
                                 </div>
                             ))}
                         </div>
@@ -213,8 +228,9 @@ export const PatchNotesModal: React.FC<Props> = ({ onClose }) => {
                         <div className="bg-purple-500/5 border border-purple-500/20 p-4 rounded-2xl">
                             <div className="text-xs font-black text-purple-400 uppercase tracking-widest mb-2">🔮 Yakında</div>
                             <ul className="space-y-1.5 text-xs text-purple-200/60">
-                                <li>✦ Unvan/Rozet sistemi</li>
-                                <li>✦ Renk setleri (Altın Şef, Gece Karası...)</li>
+                                <li>✦ Saç stilleri (dalgalı, afro, at kuyruğu...)</li>
+                                <li>✦ Kıyafet stilleri (aşçı önlüğü, garson, şef ceketi)</li>
+                                <li>✦ Servis efektleri (yıldız, kalp, ateş partikülleri)</li>
                                 <li>✦ Sunucu taraflı hesap</li>
                             </ul>
                         </div>
