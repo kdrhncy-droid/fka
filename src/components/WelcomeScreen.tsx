@@ -216,11 +216,6 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
             {MARKET_NAME}
           </h1>
           <p className="text-xs text-white/70 tracking-widest uppercase mt-1">Multiplayer Mutfak Oyunu</p>
-          {/* Coin göstergesi */}
-          <div className="mt-2 inline-flex items-center gap-1.5 bg-black/30 backdrop-blur border border-yellow-500/30 rounded-full px-3 py-1">
-            <span className="text-base">🪙</span>
-            <span className="text-yellow-400 font-black text-sm">{coins.toLocaleString('tr-TR')}</span>
-          </div>
         </div>
 
         {/* Ana ekran */}
@@ -238,9 +233,13 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
               className="w-full py-3 rounded-2xl bg-white/10 hover:bg-white/20 active:scale-[0.97] backdrop-blur border border-white/15 text-white/90 font-bold text-sm uppercase tracking-widest transition-all">
               👤 Profil
             </button>
+            {/* Market butonu — coin göstergesi entegre */}
             <button onClick={() => setShowShop(true)}
-              className="w-full py-3 rounded-2xl bg-yellow-500/15 hover:bg-yellow-500/25 active:scale-[0.97] backdrop-blur border border-yellow-500/30 text-yellow-300 font-bold text-sm uppercase tracking-widest transition-all">
-              🛒 Market
+              className="w-full py-3 rounded-2xl bg-yellow-500/15 hover:bg-yellow-500/25 active:scale-[0.97] backdrop-blur border border-yellow-500/30 text-yellow-300 font-bold text-sm uppercase tracking-widest transition-all flex items-center justify-center gap-2">
+              <span>🛒 Market</span>
+              <span className="flex items-center gap-1 bg-black/30 rounded-full px-2 py-0.5 text-xs font-black text-yellow-400">
+                🪙 {coins.toLocaleString('tr-TR')}
+              </span>
             </button>
             <div className="grid grid-cols-2 gap-2">
               <button onClick={onSettings}
