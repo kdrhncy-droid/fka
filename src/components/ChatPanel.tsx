@@ -17,10 +17,27 @@ export const ChatPanel: React.FC<Props> = ({ socket, myId, messages }) => {
     const [text, setText] = useState('');
     const [unread, setUnread] = useState(0);
     const [toasts, setToasts] = useState<ToastMessage[]>([]);
+    const [keyboardOffset, setKeyboardOffset] = useState(0);
     const bottomRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
     const prevLenRef = useRef(messages.length);
     const toastIdRef = useRef(0);
+
+    // Android/iOS klavye açılınca viewport küçülür — panel yukarı kayar
+    useEffect(() => {
+        const vv = (window as any).visualViewport;
+        if (!vv) return;
+        const onResize = () => {
+            const offset = window.innerHeight - vv.height - vv.offsetTop;
+            setKeyboardOffset(Math.max(0, offset));
+        };
+        vv.addEventListener('resize', onResize);
+        vv.addEventListener('scroll', onResize);
+        return () => {
+            vv.removeEventListener('resize', onResize);
+            vv.removeEventListener('scroll', onResize);
+        };
+    }, []);
 
     // Yeni mesaj gelince unread say + toast göster (panel kapalıysa)
     useEffect(() => {
@@ -72,7 +89,10 @@ export const ChatPanel: React.FC<Props> = ({ socket, myId, messages }) => {
     };
 
     return (
-        <div className="absolute bottom-2 right-2 z-30 flex flex-col items-end gap-1">
+        <div
+            className="absolute bottom-2 right-2 z-30 flex flex-col items-end gap-1"
+            style={{ bottom: `${8 + keyboardOffset}px` }}
+        >
 
             {/* Toast Mesajlar — panel kapalıyken gösterilir */}
             {!open && toasts.length > 0 && (

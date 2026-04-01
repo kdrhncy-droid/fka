@@ -149,10 +149,6 @@ interface WelcomeScreenProps {
   equippedServiceEffect: string; setEquippedServiceEffect: (v: string) => void;
 }
 
-const HAIR_COLORS = ['#4b2c20','#24150e','#8d5524','#c68642','#f1c27d','#ffffff','#ef4444','#3b82f6','#a855f7','#22c55e'];
-const CLOTHING_COLORS = ['#f5f5f4','#fef3c7','#e0f2fe','#ef4444','#3b82f6','#22c55e','#a855f7','#f97316','#ec4899','#1c1917'];
-const LABEL_COLORS = ['#ffffff','#fbbf24','#34d399','#60a5fa','#f472b6','#a78bfa','#fb923c','#f87171','#4ade80','#000000'];
-
 export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   onPlay, onSettings,
   playerName, setPlayerName, charType, setCharType, hairColor, setHairColor,

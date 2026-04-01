@@ -7,11 +7,12 @@ interface CharacterPreviewProps {
     size?: number;
     hairColor?: string;
     hairStyle?: string;
+    outfitStyle?: string;
     clothingColor?: string;
     faceShape?: number;
 }
 
-export const CharacterPreview: React.FC<CharacterPreviewProps> = ({ charType, size = 120, hairColor, hairStyle = 'default', clothingColor, faceShape = 0 }) => {
+export const CharacterPreview: React.FC<CharacterPreviewProps> = ({ charType, size = 120, hairColor, hairStyle = 'default', outfitStyle = 'default', clothingColor, faceShape = 0 }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const typeId = Math.min(charType, CHARACTER_TYPES.length - 1);
     const charDef = CHARACTER_TYPES[typeId];
@@ -56,11 +57,53 @@ export const CharacterPreview: React.FC<CharacterPreviewProps> = ({ charType, si
         bodyG.addColorStop(1, bodyColor);
         ctx.fillStyle = bodyG; ctx.fill(); stk(ctx, '#000', 2);
 
-        // Kıyafet detayı (Yaka/Önlük)
-        ctx.fillStyle = accentColor;
-        ctx.globalAlpha = 0.6;
-        ctx.beginPath(); ctx.roundRect(-bodyW/2 + 4, bodyY + 2, bodyW - 8, 6, 4); ctx.fill();
-        ctx.globalAlpha = 1;
+        // Kıyafet detayı
+        if (outfitStyle === 'chef') {
+            ctx.fillStyle = 'rgba(255,255,255,0.85)';
+            ctx.beginPath(); ctx.roundRect(-bodyW/2 + 4, bodyY + 1, bodyW - 8, bodyH - 2, 8); ctx.fill();
+            ctx.strokeStyle = '#ddd'; ctx.lineWidth = 1; ctx.stroke();
+            ctx.fillStyle = '#aaa';
+            for (let i = 0; i < 3; i++) { ctx.beginPath(); ctx.arc(0, bodyY + 5 + i * 5, 1.5, 0, Math.PI * 2); ctx.fill(); }
+        } else if (outfitStyle === 'waiter') {
+            ctx.fillStyle = 'rgba(20,20,20,0.9)';
+            ctx.beginPath(); ctx.roundRect(-bodyW/2 + 5, bodyY + 1, bodyW - 10, bodyH - 2, 6); ctx.fill();
+            ctx.fillStyle = 'rgba(240,240,240,0.9)';
+            ctx.beginPath(); ctx.roundRect(-3, bodyY + 2, 6, bodyH - 4, 3); ctx.fill();
+            ctx.fillStyle = '#cc0000';
+            ctx.beginPath(); ctx.ellipse(-4, bodyY + 3, 4, 2.5, -0.3, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.ellipse(4, bodyY + 3, 4, 2.5, 0.3, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = '#aa0000';
+            ctx.beginPath(); ctx.arc(0, bodyY + 3, 2.5, 0, Math.PI * 2); ctx.fill();
+        } else if (outfitStyle === 'hoodie') {
+            ctx.fillStyle = adjustColor(bodyColor, -15);
+            ctx.beginPath(); ctx.roundRect(-bodyW/2 + 3, bodyY + 1, bodyW - 6, bodyH - 2, 9); ctx.fill();
+            stk(ctx, adjustColor(bodyColor, -30), 1);
+            ctx.fillStyle = adjustColor(bodyColor, -25);
+            ctx.beginPath(); ctx.roundRect(-8, bodyY + 10, 16, 9, 4); ctx.fill();
+        } else if (outfitStyle === 'suit') {
+            ctx.fillStyle = adjustColor(bodyColor, -30);
+            ctx.beginPath(); ctx.roundRect(-bodyW/2 + 2, bodyY + 1, bodyW - 4, bodyH - 2, 8); ctx.fill();
+            stk(ctx, '#000', 1);
+            ctx.fillStyle = '#f0f0f0';
+            ctx.beginPath(); ctx.roundRect(-4, bodyY + 2, 8, bodyH - 4, 3); ctx.fill();
+            ctx.fillStyle = '#1a3a8f';
+            ctx.beginPath();
+            ctx.moveTo(-2, bodyY + 3); ctx.lineTo(2, bodyY + 3);
+            ctx.lineTo(3, bodyY + 14); ctx.lineTo(0, bodyY + 17); ctx.lineTo(-3, bodyY + 14);
+            ctx.closePath(); ctx.fill();
+        } else if (outfitStyle === 'apron') {
+            ctx.fillStyle = adjustColor(bodyColor, 30);
+            ctx.beginPath(); ctx.roundRect(-9, bodyY + 3, 18, bodyH - 4, 4); ctx.fill();
+            stk(ctx, adjustColor(bodyColor, -10), 1);
+            ctx.strokeStyle = adjustColor(bodyColor, 30); ctx.lineWidth = 2.5;
+            ctx.beginPath(); ctx.moveTo(-6, bodyY + 3); ctx.lineTo(-8, bodyY); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(6, bodyY + 3); ctx.lineTo(8, bodyY); ctx.stroke();
+        } else {
+            ctx.fillStyle = accentColor;
+            ctx.globalAlpha = 0.6;
+            ctx.beginPath(); ctx.roundRect(-bodyW/2 + 4, bodyY + 2, bodyW - 8, 6, 4); ctx.fill();
+            ctx.globalAlpha = 1;
+        }
 
         // ── ELLER ────────────────────────────────────────────────────────────
         const handY = 12;
@@ -232,7 +275,7 @@ export const CharacterPreview: React.FC<CharacterPreviewProps> = ({ charType, si
         // ── ŞAPKA (kaldırıldı — emoji artık çizilmiyor) ────────────────────────
 
         ctx.restore();
-    }, [charType, hairColor, hairStyle, clothingColor, faceShape]);
+    }, [charType, hairColor, hairStyle, outfitStyle, clothingColor, faceShape]);
 
     return (
         <canvas

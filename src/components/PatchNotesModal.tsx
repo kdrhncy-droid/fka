@@ -166,17 +166,35 @@ export const PatchNotesModal: React.FC<Props> = ({ onClose }) => {
                     {/* ── GÜNCELLEMELER ── */}
                     {tab === 'guncelleme' && <>
                         <div className="bg-emerald-500/5 border border-emerald-500/20 p-4 rounded-2xl space-y-3">
-                            <div className="text-xs font-black text-emerald-400 uppercase tracking-widest">v2.4.0 — Şu An</div>
+                            <div className="text-xs font-black text-emerald-400 uppercase tracking-widest">v2.5.0 — Şu An</div>
                             {[
-                                { icon: '🎩', title: 'Şapka Sistemi', desc: 'Her şapka kafaya tam uyumlu canvas çizimi. Aşçı şapkası eklendi. Market kartlarında önizleme.' },
-                                { icon: '🕹️', title: 'Joystick Konumlandırma', desc: 'Uzun basınca taşıma modu. Parmakla istediğin yere sürükle, konum kaydedilir.' },
-                                { icon: '✨', title: 'Etiket Efektleri', desc: 'Parlayan, Gökkuşağı, Yanıp Sönen, Altın Çerçeve. Canvas\'ta animasyonlu.' },
-                                { icon: '🏆', title: 'Unvan Sistemi', desc: '8 unvan (PATRON, EFSANE, ŞEF...). İsim etiketinin altında görünür.' },
-                                { icon: '🎨', title: 'Renk Setleri', desc: '8 set (Altın Şef, Gece Karası...). Tek tıkla saç+kıyafet+etiket değişir.' },
-                                { icon: '🏷️', title: 'Etiket Konumu', desc: 'İsim ve unvan artık ayağın altında — şapkalar kafada rahatça duruyor.' },
+                                { icon: '✂️', title: 'Saç Stilleri', desc: '8 farklı saç stili: kısa, uzun, dalgalı, afro, topuz, dikenli, at kuyruğu, mohawk. Market\'ten satın al.' },
+                                { icon: '👔', title: 'Kıyafet Stilleri', desc: '6 kıyafet: casual, aşçı önlüğü, garson, kapüşonlu, takım elbise, mutfak önlüğü.' },
+                                { icon: '💥', title: 'Servis Efektleri', desc: 'Müşteriye yemek verince partikül patlaması: yıldız, kalp, ateş, para, gökkuşağı.' },
+                                { icon: '🛒', title: 'Market Önizleme', desc: 'Sol panelde anlık karakter önizlemesi. Her değişiklik anında yansıyor.' },
+                                { icon: '🔒', title: 'Profil Readonly', desc: 'Renk değişiklikleri artık sadece market üzerinden. Profil sadece görüntüleme.' },
+                                { icon: '🐛', title: 'Bug Düzeltmeleri', desc: 'DayEndModal onClose fix, interval leak fix, activeCards karşılaştırma fix.' },
                             ].map(f => (
                                 <div key={f.title} className="flex items-start gap-2">
                                     <span className="text-emerald-400 text-sm flex-shrink-0">{f.icon}</span>
+                                    <div>
+                                        <span className="text-stone-200 font-bold text-xs">{f.title}: </span>
+                                        <span className="text-stone-400 text-xs">{f.desc}</span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="bg-stone-800/30 border border-stone-700/30 p-4 rounded-2xl space-y-3">
+                            <div className="text-xs font-black text-stone-400 uppercase tracking-widest">v2.4.0</div>
+                            {[
+                                { icon: '🎩', title: 'Şapka Sistemi', desc: 'Her şapka kafaya tam uyumlu canvas çizimi. Aşçı şapkası eklendi.' },
+                                { icon: '🕹️', title: 'Joystick Konumlandırma', desc: 'Uzun basınca taşıma modu. Parmakla istediğin yere sürükle.' },
+                                { icon: '✨', title: 'Etiket Efektleri', desc: 'Parlayan, Gökkuşağı, Yanıp Sönen, Altın Çerçeve.' },
+                                { icon: '🏆', title: 'Unvan Sistemi', desc: '8 unvan. İsim etiketinin altında görünür.' },
+                                { icon: '🎨', title: 'Renk Setleri', desc: '8 set. Tek tıkla saç+kıyafet+etiket değişir.' },
+                            ].map(f => (
+                                <div key={f.title} className="flex items-start gap-2">
+                                    <span className="text-sm flex-shrink-0">{f.icon}</span>
                                     <div>
                                         <span className="text-stone-200 font-bold text-xs">{f.title}: </span>
                                         <span className="text-stone-400 text-xs">{f.desc}</span>
@@ -228,9 +246,10 @@ export const PatchNotesModal: React.FC<Props> = ({ onClose }) => {
                         <div className="bg-purple-500/5 border border-purple-500/20 p-4 rounded-2xl">
                             <div className="text-xs font-black text-purple-400 uppercase tracking-widest mb-2">🔮 Yakında</div>
                             <ul className="space-y-1.5 text-xs text-purple-200/60">
-                                <li>✦ Saç stilleri (dalgalı, afro, at kuyruğu...)</li>
-                                <li>✦ Kıyafet stilleri (aşçı önlüğü, garson, şef ceketi)</li>
-                                <li>✦ Servis efektleri (yıldız, kalp, ateş partikülleri)</li>
+                                <li>✦ Can kaybı ekran flash efekti</li>
+                                <li>✦ Müşteri kaçınca 💔 animasyonu</li>
+                                <li>✦ Combo x5+ ekran kenarı efekti</li>
+                                <li>✦ Başarım sistemi (milestone'lar)</li>
                                 <li>✦ Sunucu taraflı hesap</li>
                             </ul>
                         </div>

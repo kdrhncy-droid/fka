@@ -242,7 +242,7 @@ export const ShopModal: React.FC<Props> = ({
           <div className="flex flex-col items-center gap-2">
             <div className="relative">
               <div className="w-20 h-20 rounded-2xl bg-stone-800 border-2 border-stone-700 overflow-hidden flex items-center justify-center">
-                <CharacterPreview charType={charType} size={80} hairColor={hairColor} hairStyle={hairStyle} clothingColor={clothingColor} />
+                <CharacterPreview charType={charType} size={80} hairColor={hairColor} hairStyle={hairStyle} outfitStyle={outfitStyle} clothingColor={clothingColor} />
               </div>
               {equippedHat && (
                 <span className="absolute -top-3 left-1/2 -translate-x-1/2 text-xl">{equippedHat}</span>

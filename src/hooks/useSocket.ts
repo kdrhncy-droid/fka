@@ -50,6 +50,7 @@ export function useSocket(
     const [socket, setSocket] = useState<Socket | null>(null);
     const [isConnected, setIsConnected] = useState(false);
     const [myId, setMyId] = useState('');
+    const myIdRef = useRef('');
     const [connectionStatus, setConnectionStatus] = useState<'connected' | 'disconnected' | 'reconnecting'>('disconnected');
     const [ping, setPing] = useState<number>(0);
     const pingBufferRef = useRef<number[]>([]);
@@ -136,6 +137,7 @@ export function useSocket(
         newSocket.on('init', (data: { id: string; state: GameState }) => {
             console.log('[Socket] init:', data.id);
             setMyId(data.id);
+            myIdRef.current = data.id;
             gameStateRef.current = data.state;
             
             // Spawn pozisyonunu local ref'e yaz
@@ -215,7 +217,7 @@ export function useSocket(
             } else {
                 console.log('[Socket] Page is now visible (foreground)');
                 // Ön plana geri geldi: state senkronizasyonu iste
-                if (newSocket.connected && myId) {
+                if (newSocket.connected && myIdRef.current) {
                     console.log('[Socket] Requesting state sync...');
                     newSocket.emit('requestSync');
                 }
