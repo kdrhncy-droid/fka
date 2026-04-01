@@ -100,6 +100,7 @@ interface Props {
   setCoins: (v: number) => void;
   charType: number;
   hairColor: string; setHairColor: (v: string) => void;
+  hairStyle: string; setHairStyle: (v: string) => void;
   clothingColor: string; setClothingColor: (v: string) => void;
   nameLabelColor: string; setNameLabelColor: (v: string) => void;
   equippedHat: string; setEquippedHat: (v: string) => void;
@@ -110,7 +111,8 @@ interface Props {
 
 const CATEGORY_LABELS: Record<ShopCategory, { label: string; icon: string }> = {
   hat:           { label: 'Şapkalar',   icon: '🎩' },
-  hairColor:     { label: 'Saç',        icon: '💇' },
+  hairStyle:     { label: 'Saç Stili',  icon: '✂️' },
+  hairColor:     { label: 'Saç Rengi',  icon: '💇' },
   clothingColor: { label: 'Kıyafet',    icon: '👕' },
   labelColor:    { label: 'Etiket',     icon: '🏷️' },
   title:         { label: 'Unvanlar',   icon: '🏆' },
@@ -129,6 +131,7 @@ const NEW_ITEMS = new Set(['hat_chef', 'hair_orange', 'cloth_rainbow', 'label_ra
 export const ShopModal: React.FC<Props> = ({
   onClose, coins, setCoins,
   charType, hairColor, setHairColor,
+  hairStyle, setHairStyle,
   clothingColor, setClothingColor,
   nameLabelColor, setNameLabelColor,
   equippedHat, setEquippedHat,
@@ -172,6 +175,8 @@ export const ShopModal: React.FC<Props> = ({
       setPlayerColor(item.colorSet.clothing);
       setNameLabelColor(item.colorSet.label);
       saveProfile({ hairColor: item.colorSet.hair, clothingColor: item.colorSet.clothing, nameLabelColor: item.colorSet.label });
+    } else if (item.category === 'hairStyle') {
+      setHairStyle(item.value); saveProfile({ hairStyle: item.value });
     } else if (item.category === 'hairColor') {
       setHairColor(item.value); saveProfile({ hairColor: item.value });
     } else if (item.category === 'clothingColor') {
@@ -188,6 +193,7 @@ export const ShopModal: React.FC<Props> = ({
     if (item.category === 'colorSet') return item.colorSet
       ? hairColor === item.colorSet.hair && clothingColor === item.colorSet.clothing
       : false;
+    if (item.category === 'hairStyle') return hairStyle === item.value;
     if (item.category === 'hairColor') return hairColor === item.value;
     if (item.category === 'clothingColor') return clothingColor === item.value;
     if (item.category === 'labelColor') return nameLabelColor === item.value;
@@ -281,7 +287,7 @@ export const ShopModal: React.FC<Props> = ({
           <div className="overflow-y-auto flex-1 p-3" style={{ WebkitOverflowScrolling: 'touch' } as React.CSSProperties}>
             <div className="grid grid-cols-4 gap-2">
               {items.map(item => {
-                const isOwned = owned.includes(item.id);
+                const isOwned = owned.includes(item.id) || item.price === 0;
                 const equipped = isEquipped(item);
                 const fb = feedback?.id === item.id;
                 const rs = RARITY_STYLE[item.rarity];
@@ -299,6 +305,11 @@ export const ShopModal: React.FC<Props> = ({
                     <div className="flex justify-center items-center h-10">
                       {item.category === 'hat' ? (
                         <HatPreview hatValue={item.value} />
+                      ) : item.category === 'hairStyle' ? (
+                        <div className="flex flex-col items-center gap-1">
+                          <div className="text-lg leading-none">{item.icon}</div>
+                          <div className="text-[8px] text-stone-400 font-bold">{item.name}</div>
+                        </div>
                       ) : item.category === 'title' ? (
                         <div className="px-2 py-1 rounded-lg bg-black/60 border border-yellow-500/40 text-[9px] font-black text-yellow-400 text-center leading-tight">
                           {item.value}

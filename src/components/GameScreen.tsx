@@ -71,7 +71,6 @@ const JoystickPanel: React.FC<JoystickPanelProps> = ({ panelWidth, joystickSize,
             ref={panelRef}
             className="flex-none relative"
             style={{ width: `${panelWidth}%`, background: 'rgba(0,0,0,0.15)' }}
-            onPointerMove={(e) => updatePos(e.clientX, e.clientY)}
             onPointerUp={endDragPos}
             onPointerLeave={endDragPos}
         >
@@ -93,6 +92,11 @@ const JoystickPanel: React.FC<JoystickPanelProps> = ({ panelWidth, joystickSize,
                 onPointerDown={(e) => {
                     if (isDraggingPosRef.current) return;
                     startLongPress(e.clientX, e.clientY);
+                }}
+                onPointerMove={(e) => {
+                    // Parmak hareket ederse long press iptal — joystick normal çalışsın
+                    if (!isDraggingPosRef.current) cancelLongPress();
+                    else updatePos(e.clientX, e.clientY);
                 }}
                 onPointerUp={() => { cancelLongPress(); if (isDraggingPosRef.current) endDragPos(); }}
             >

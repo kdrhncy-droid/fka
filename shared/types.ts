@@ -23,6 +23,7 @@ export interface Player {
     charType?: number;
     peerId?: string;
     hairColor?: string;
+    hairStyle?: string;
     clothingColor?: string;
     faceShape?: number;
     nameLabelColor?: string;

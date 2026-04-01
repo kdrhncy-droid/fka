@@ -135,6 +135,7 @@ interface WelcomeScreenProps {
   playerName: string; setPlayerName: (v: string) => void;
   charType: number; setCharType: (v: number) => void;
   hairColor: string; setHairColor: (v: string) => void;
+  hairStyle: string; setHairStyle: (v: string) => void;
   clothingColor: string; setClothingColor: (v: string) => void;
   faceShape: number; setFaceShape: (v: number) => void;
   setPlayerColor: (v: string) => void;
@@ -153,6 +154,7 @@ const LABEL_COLORS = ['#ffffff','#fbbf24','#34d399','#60a5fa','#f472b6','#a78bfa
 export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   onPlay, onSettings,
   playerName, setPlayerName, charType, setCharType, hairColor, setHairColor,
+  hairStyle, setHairStyle,
   clothingColor, setClothingColor, faceShape, setFaceShape,
   setPlayerColor, setPlayerHat,
   nameLabelColor, setNameLabelColor,
@@ -359,10 +361,10 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
           onClose={() => setShowProfile(false)}
           playerName={playerName} setPlayerName={setPlayerName}
           charType={charType} setCharType={setCharType}
-          hairColor={hairColor} setHairColor={setHairColor}
-          clothingColor={clothingColor} setClothingColor={setClothingColor}
-          faceShape={faceShape} setFaceShape={setFaceShape}
-          nameLabelColor={nameLabelColor} setNameLabelColor={setNameLabelColor}
+          hairColor={hairColor}
+          clothingColor={clothingColor}
+          faceShape={faceShape}
+          nameLabelColor={nameLabelColor}
           setPlayerColor={setPlayerColor} setPlayerHat={setPlayerHat}
           coins={coins} equippedHat={equippedHat}
           setCoins={setCoins}
@@ -374,6 +376,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
           coins={coins} setCoins={setCoins}
           charType={charType}
           hairColor={hairColor} setHairColor={setHairColor}
+          hairStyle={hairStyle} setHairStyle={setHairStyle}
           clothingColor={clothingColor} setClothingColor={setClothingColor}
           nameLabelColor={nameLabelColor} setNameLabelColor={setNameLabelColor}
           equippedHat={equippedHat} setEquippedHat={setEquippedHat}

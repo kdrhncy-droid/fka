@@ -7,14 +7,15 @@ export interface PlayerProfile {
   name: string;
   charType: number;
   hairColor: string;
+  hairStyle: string;
   clothingColor: string;
   faceShape: number;
   nameLabelColor: string;
   coins: number;
-  ownedItems: string[]; // satın alınan item id'leri
-  equippedHat: string;  // aktif şapka
-  equippedTitle: string; // aktif unvan
-  equippedLabelEffect: string; // aktif etiket efekti
+  ownedItems: string[];
+  equippedHat: string;
+  equippedTitle: string;
+  equippedLabelEffect: string;
   totalPlayTime: number;
   totalDays: number;
   totalScore: number;
@@ -27,6 +28,7 @@ const DEFAULT: PlayerProfile = {
   name: '',
   charType: 0,
   hairColor: '#4b2c20',
+  hairStyle: 'default',
   clothingColor: '#f5f5f4',
   faceShape: 0,
   nameLabelColor: '#ffffff',
@@ -82,7 +84,7 @@ export function addCoinsFromScore(score: number): number {
 }
 
 // ─── Market Item Tanımları ────────────────────────────────────────────────────
-export type ShopCategory = 'hat' | 'hairColor' | 'clothingColor' | 'labelColor' | 'title' | 'colorSet' | 'labelEffect';
+export type ShopCategory = 'hat' | 'hairStyle' | 'hairColor' | 'clothingColor' | 'labelColor' | 'title' | 'colorSet' | 'labelEffect';
 
 export interface ShopItem {
   id: string;
@@ -97,6 +99,15 @@ export interface ShopItem {
 }
 
 export const SHOP_ITEMS: ShopItem[] = [
+  // ── Saç Stilleri ──────────────────────────────────────────────────────────
+  { id: 'hair_short',    category: 'hairStyle', name: 'Kısa Saç',    icon: '✂️', value: 'short',    price: 0,   rarity: 'common' },
+  { id: 'hair_long',     category: 'hairStyle', name: 'Uzun Saç',    icon: '💇', value: 'long',     price: 100, rarity: 'common' },
+  { id: 'hair_wavy',     category: 'hairStyle', name: 'Dalgalı',     icon: '🌊', value: 'wavy',     price: 150, rarity: 'common' },
+  { id: 'hair_afro',     category: 'hairStyle', name: 'Afro',        icon: '✨', value: 'afro',     price: 200, rarity: 'rare'   },
+  { id: 'hair_bun',      category: 'hairStyle', name: 'Topuz',       icon: '🎀', value: 'bun',      price: 150, rarity: 'common' },
+  { id: 'hair_spiky',    category: 'hairStyle', name: 'Dikenli',     icon: '⚡', value: 'spiky',    price: 200, rarity: 'rare'   },
+  { id: 'hair_ponytail', category: 'hairStyle', name: 'At Kuyruğu',  icon: '🐴', value: 'ponytail', price: 150, rarity: 'common' },
+  { id: 'hair_mohawk',   category: 'hairStyle', name: 'Mohawk',      icon: '🔥', value: 'mohawk',   price: 300, rarity: 'epic'   },
   // ── Şapkalar ──────────────────────────────────────────────────────────────
   { id: 'hat_crown',   category: 'hat', name: 'Altın Taç',    icon: '👑', value: '👑', price: 300, rarity: 'epic'   },
   { id: 'hat_tophat',  category: 'hat', name: 'Silindir',     icon: '🎩', value: '🎩', price: 150, rarity: 'rare'   },

@@ -638,7 +638,7 @@ export const RevengeSceneOverlay: React.FC<Props> = ({ onDone, bgmOn }) => {
         case 'TEXT':
           textAlpha = Math.min(1, (timer - 20) / 40);
           typeTimer++;
-          if (typeTimer % 5 === 0 && typeIdx < typeFull.length) {
+          if (typeTimer % 2 === 0 && typeIdx < typeFull.length) {
             typeText += typeFull[typeIdx]; typeIdx++;
           }
           FIRES.forEach(f => { f.intensity = Math.max(0, f.intensity - 0.0008); });

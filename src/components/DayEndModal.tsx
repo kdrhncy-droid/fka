@@ -11,6 +11,11 @@ export const DayEndModal: React.FC<Props> = ({ summary, onClose }) => {
 
     const hearts = Array.from({ length: 3 }, (_, i) => i < summary.lives ? '❤️' : '🖤');
 
+    const handleClose = () => {
+        setOpen(false);
+        onClose();
+    };
+
     return (
         <>
             {/* Üst barda küçük buton */}
@@ -26,7 +31,7 @@ export const DayEndModal: React.FC<Props> = ({ summary, onClose }) => {
                 <div
                     className="fixed inset-0 z-50 flex items-center justify-center"
                     style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}
-                    onClick={() => setOpen(false)}
+                    onClick={handleClose}
                 >
                     <div
                         className="bg-stone-900 border border-stone-700 rounded-3xl p-8 flex flex-col items-center gap-5 shadow-2xl max-h-[90vh] overflow-y-auto w-[90%] sm:w-auto"
@@ -51,7 +56,7 @@ export const DayEndModal: React.FC<Props> = ({ summary, onClose }) => {
                         </div>
 
                         <button
-                            onClick={() => setOpen(false)}
+                            onClick={handleClose}
                             className="w-full rounded-xl bg-amber-500 hover:bg-amber-400 px-6 py-3 text-sm font-black uppercase tracking-widest text-stone-950 active:scale-95 transition-all"
                         >
                             Kapat ✕

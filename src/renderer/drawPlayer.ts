@@ -128,18 +128,179 @@ export function drawPlayer(
     ctx.fillStyle = headG; ctx.fill(); stk(ctx, '#000', 2);
 
     // ── SAÇ ──────────────────────────────────────────────────────────────────
+    const hairStyle = p.hairStyle || 'default';
     ctx.fillStyle = hairColor;
-    ctx.beginPath();
-    ctx.arc(0, headY - 5, headR + 1, Math.PI, 0); // Üst saç
-    ctx.lineTo(headR + 1, headY + 2);
-    ctx.lineTo(headR - 4, headY + 2);
-    ctx.lineTo(headR - 8, headY - 2);
-    ctx.lineTo(-headR + 8, headY - 2);
-    ctx.lineTo(-headR + 4, headY + 2);
-    ctx.lineTo(-headR - 1, headY + 2);
-    ctx.closePath();
-    ctx.fill();
-    stk(ctx, adjustColor(hairColor, -20), 1);
+    ctx.strokeStyle = adjustColor(hairColor, -20);
+    ctx.lineWidth = 1;
+
+    if (hairStyle === 'short') {
+        // Kısa saç — sadece üst kısım, yanlarda kısa
+        ctx.beginPath();
+        ctx.arc(0, headY - 3, headR + 1, Math.PI, 0);
+        ctx.lineTo(headR + 1, headY + 1);
+        ctx.lineTo(headR - 5, headY + 1);
+        ctx.lineTo(-headR + 5, headY + 1);
+        ctx.lineTo(-headR - 1, headY + 1);
+        ctx.closePath();
+        ctx.fill(); ctx.stroke();
+
+    } else if (hairStyle === 'long') {
+        // Uzun saç — yanlarda aşağı inen uzun saç
+        ctx.beginPath();
+        ctx.arc(0, headY - 5, headR + 1, Math.PI, 0);
+        ctx.lineTo(headR + 1, headY + 2);
+        ctx.lineTo(headR + 3, headY + 18); // sağ uzun
+        ctx.lineTo(headR - 2, headY + 20);
+        ctx.lineTo(headR - 6, headY + 14);
+        ctx.lineTo(-headR + 6, headY + 14);
+        ctx.lineTo(-headR + 2, headY + 20);
+        ctx.lineTo(-headR - 3, headY + 18); // sol uzun
+        ctx.lineTo(-headR - 1, headY + 2);
+        ctx.closePath();
+        ctx.fill(); ctx.stroke();
+        // Orta çizgi
+        ctx.strokeStyle = adjustColor(hairColor, -30);
+        ctx.lineWidth = 0.8;
+        ctx.beginPath(); ctx.moveTo(0, headY - headR); ctx.lineTo(0, headY + 14); ctx.stroke();
+
+    } else if (hairStyle === 'wavy') {
+        // Dalgalı saç — yanlarda dalgalı uzun
+        ctx.beginPath();
+        ctx.arc(0, headY - 5, headR + 1, Math.PI, 0);
+        ctx.lineTo(headR + 1, headY + 2);
+        // Sağ dalga
+        ctx.bezierCurveTo(headR + 5, headY + 6, headR + 1, headY + 10, headR + 4, headY + 14);
+        ctx.bezierCurveTo(headR + 6, headY + 18, headR + 1, headY + 20, headR - 2, headY + 22);
+        ctx.lineTo(headR - 6, headY + 14);
+        ctx.lineTo(-headR + 6, headY + 14);
+        // Sol dalga
+        ctx.lineTo(-headR + 2, headY + 22);
+        ctx.bezierCurveTo(-headR - 1, headY + 20, -headR - 6, headY + 18, -headR - 4, headY + 14);
+        ctx.bezierCurveTo(-headR - 1, headY + 10, -headR - 5, headY + 6, -headR - 1, headY + 2);
+        ctx.closePath();
+        ctx.fill(); ctx.stroke();
+
+    } else if (hairStyle === 'afro') {
+        // Afro — kafanın etrafında büyük yuvarlak
+        ctx.beginPath();
+        ctx.arc(0, headY - 2, headR + 9, Math.PI * 1.1, Math.PI * 1.9);
+        ctx.arc(0, headY - 2, headR + 9, -Math.PI * 0.1, Math.PI * 0.1);
+        ctx.arc(0, headY, headR + 1, 0, Math.PI);
+        ctx.closePath();
+        // Büyük daire
+        ctx.beginPath();
+        ctx.arc(0, headY - 4, headR + 8, Math.PI * 0.85, Math.PI * 2.15);
+        ctx.arc(0, headY + 2, headR + 1, 0, Math.PI);
+        ctx.closePath();
+        ctx.fill(); ctx.stroke();
+        // Doku için küçük daireler
+        ctx.fillStyle = adjustColor(hairColor, -15);
+        for (let i = 0; i < 8; i++) {
+            const a = (i / 8) * Math.PI * 2;
+            const r = headR + 4;
+            ctx.beginPath();
+            ctx.arc(Math.cos(a) * r * 0.6, headY - 4 + Math.sin(a) * r * 0.5, 3, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+    } else if (hairStyle === 'bun') {
+        // Topuz — üstte küçük topuz
+        ctx.beginPath();
+        ctx.arc(0, headY - 3, headR + 1, Math.PI, 0);
+        ctx.lineTo(headR + 1, headY + 2);
+        ctx.lineTo(headR - 4, headY + 2);
+        ctx.lineTo(-headR + 4, headY + 2);
+        ctx.lineTo(-headR - 1, headY + 2);
+        ctx.closePath();
+        ctx.fill(); ctx.stroke();
+        // Topuz
+        ctx.beginPath();
+        ctx.arc(0, headY - headR - 5, 7, 0, Math.PI * 2);
+        ctx.fill(); ctx.stroke();
+        // Topuz çizgisi
+        ctx.strokeStyle = adjustColor(hairColor, -25);
+        ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.arc(0, headY - headR - 5, 5, 0.3, Math.PI - 0.3); ctx.stroke();
+
+    } else if (hairStyle === 'spiky') {
+        // Dikenli saç — yukarı diken diken
+        ctx.beginPath();
+        ctx.arc(0, headY - 3, headR + 1, Math.PI * 0.75, Math.PI * 0.25);
+        ctx.lineTo(headR + 1, headY + 2);
+        ctx.lineTo(headR - 4, headY + 2);
+        ctx.lineTo(-headR + 4, headY + 2);
+        ctx.lineTo(-headR - 1, headY + 2);
+        ctx.closePath();
+        ctx.fill(); ctx.stroke();
+        // Dikenler
+        const spikes = [[-12, -1], [-6, -1], [0, -1], [6, -1], [12, -1]];
+        spikes.forEach(([sx, _]) => {
+            const baseY = headY - headR + 1;
+            ctx.beginPath();
+            ctx.moveTo(sx - 5, baseY + 2);
+            ctx.lineTo(sx, baseY - 10 - Math.abs(sx) * 0.2);
+            ctx.lineTo(sx + 5, baseY + 2);
+            ctx.closePath();
+            ctx.fill(); ctx.stroke();
+        });
+
+    } else if (hairStyle === 'ponytail') {
+        // At kuyruğu — arkada uzun kuyruk (yön bağımsız)
+        ctx.beginPath();
+        ctx.arc(0, headY - 3, headR + 1, Math.PI, 0);
+        ctx.lineTo(headR + 1, headY + 2);
+        ctx.lineTo(headR - 4, headY + 2);
+        ctx.lineTo(-headR + 4, headY + 2);
+        ctx.lineTo(-headR - 1, headY + 2);
+        ctx.closePath();
+        ctx.fill(); ctx.stroke();
+        // Kuyruk (sağ tarafa)
+        ctx.beginPath();
+        ctx.moveTo(headR - 2, headY - 4);
+        ctx.bezierCurveTo(headR + 10, headY, headR + 12, headY + 10, headR + 6, headY + 22);
+        ctx.bezierCurveTo(headR + 10, headY + 22, headR + 14, headY + 10, headR + 8, headY - 2);
+        ctx.closePath();
+        ctx.fill(); ctx.stroke();
+        // Lastik
+        ctx.fillStyle = adjustColor(hairColor, -40);
+        ctx.beginPath(); ctx.arc(headR + 2, headY - 2, 3, 0, Math.PI * 2); ctx.fill();
+
+    } else if (hairStyle === 'mohawk') {
+        // Mohawk — ortada dik şerit
+        ctx.beginPath();
+        ctx.arc(0, headY - 3, headR + 1, Math.PI, 0);
+        ctx.lineTo(headR + 1, headY + 2);
+        ctx.lineTo(headR - 4, headY + 2);
+        ctx.lineTo(-headR + 4, headY + 2);
+        ctx.lineTo(-headR - 1, headY + 2);
+        ctx.closePath();
+        ctx.fill(); ctx.stroke();
+        // Mohawk şeridi
+        ctx.beginPath();
+        ctx.moveTo(-5, headY - headR + 2);
+        ctx.lineTo(-7, headY - headR - 18);
+        ctx.lineTo(0, headY - headR - 22);
+        ctx.lineTo(7, headY - headR - 18);
+        ctx.lineTo(5, headY - headR + 2);
+        ctx.closePath();
+        ctx.fill(); ctx.stroke();
+
+    } else {
+        // Default — orijinal saç stili
+        ctx.beginPath();
+        ctx.arc(0, headY - 5, headR + 1, Math.PI, 0);
+        ctx.lineTo(headR + 1, headY + 2);
+        ctx.lineTo(headR - 4, headY + 2);
+        ctx.lineTo(headR - 8, headY - 2);
+        ctx.lineTo(-headR + 8, headY - 2);
+        ctx.lineTo(-headR + 4, headY + 2);
+        ctx.lineTo(-headR - 1, headY + 2);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = adjustColor(hairColor, -20);
+        ctx.lineWidth = 1;
+        ctx.stroke();
+    }
 
     // Yanaklar
     ctx.fillStyle = 'rgba(255,182,193,0.5)';

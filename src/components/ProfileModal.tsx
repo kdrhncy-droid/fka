@@ -7,10 +7,10 @@ interface Props {
   onClose: () => void;
   playerName: string; setPlayerName: (v: string) => void;
   charType: number; setCharType: (v: number) => void;
-  hairColor: string; setHairColor: (v: string) => void;
-  clothingColor: string; setClothingColor: (v: string) => void;
-  faceShape: number; setFaceShape: (v: number) => void;
-  nameLabelColor: string; setNameLabelColor: (v: string) => void;
+  hairColor: string;
+  clothingColor: string;
+  faceShape: number;
+  nameLabelColor: string;
   setPlayerColor: (v: string) => void;
   setPlayerHat: (v: string) => void;
   coins: number;
@@ -18,9 +18,7 @@ interface Props {
   equippedHat: string;
 }
 
-const HAIR_COLORS = ['#4b2c20','#24150e','#8d5524','#c68642','#f1c27d','#ffffff','#ef4444','#3b82f6','#a855f7','#22c55e'];
-const CLOTHING_COLORS = ['#f5f5f4','#fef3c7','#e0f2fe','#ef4444','#3b82f6','#22c55e','#a855f7','#f97316','#ec4899','#1c1917'];
-const LABEL_COLORS = ['#ffffff','#fbbf24','#34d399','#60a5fa','#f472b6','#a78bfa','#fb923c','#f87171','#4ade80','#000000'];
+
 
 function fmt(s: number) {
   const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60);
@@ -37,10 +35,10 @@ export const ProfileModal: React.FC<Props> = ({
   onClose,
   playerName, setPlayerName,
   charType, setCharType,
-  hairColor, setHairColor,
-  clothingColor, setClothingColor,
-  faceShape, setFaceShape,
-  nameLabelColor, setNameLabelColor,
+  hairColor,
+  clothingColor,
+  faceShape,
+  nameLabelColor,
   setPlayerColor, setPlayerHat,
   coins, setCoins, equippedHat,
 }) => {
@@ -177,39 +175,23 @@ export const ProfileModal: React.FC<Props> = ({
                 </div>
               </div>
 
-              {/* Saç */}
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-stone-500 mb-2">Saç Rengi</p>
-                <div className="flex flex-wrap gap-2.5">
-                  {HAIR_COLORS.map(c => (
-                    <button key={c} onClick={() => setHairColor(c)}
-                      className={`w-8 h-8 rounded-full border-2 transition-transform active:scale-90 ${hairColor === c ? 'border-white scale-110' : 'border-stone-700'}`}
-                      style={{ backgroundColor: c }} />
-                  ))}
+              {/* Renk önizleme — değiştirmek için market */}
+              <div className="bg-stone-800/60 border border-stone-700 rounded-2xl p-3 space-y-2.5">
+                <p className="text-[10px] font-black uppercase tracking-widest text-stone-500">Görünüm</p>
+                <div className="flex items-center justify-between">
+                  <span className="text-stone-400 text-xs">Saç Rengi</span>
+                  <div className="w-6 h-6 rounded-full border-2 border-stone-600" style={{ backgroundColor: hairColor }} />
                 </div>
-              </div>
-
-              {/* Kıyafet */}
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-stone-500 mb-2">Kıyafet Rengi</p>
-                <div className="flex flex-wrap gap-2.5">
-                  {CLOTHING_COLORS.map(c => (
-                    <button key={c} onClick={() => { setClothingColor(c); setPlayerColor(c); }}
-                      className={`w-8 h-8 rounded-full border-2 transition-transform active:scale-90 ${clothingColor === c ? 'border-white scale-110' : 'border-stone-700'}`}
-                      style={{ backgroundColor: c }} />
-                  ))}
+                <div className="flex items-center justify-between">
+                  <span className="text-stone-400 text-xs">Kıyafet Rengi</span>
+                  <div className="w-6 h-6 rounded-full border-2 border-stone-600" style={{ backgroundColor: clothingColor }} />
                 </div>
-              </div>
-
-              {/* İsim etiketi rengi */}
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-stone-500 mb-2">İsim Etiketi Rengi</p>
-                <div className="flex flex-wrap gap-2.5">
-                  {LABEL_COLORS.map(c => (
-                    <button key={c} onClick={() => setNameLabelColor(c)}
-                      className={`w-8 h-8 rounded-full border-2 transition-transform active:scale-90 ${nameLabelColor === c ? 'border-white scale-110' : 'border-stone-700'}`}
-                      style={{ backgroundColor: c, outline: c === '#ffffff' ? '1px solid #555' : undefined }} />
-                  ))}
+                <div className="flex items-center justify-between">
+                  <span className="text-stone-400 text-xs">Etiket Rengi</span>
+                  <div className="w-6 h-6 rounded-full border-2 border-stone-600" style={{ backgroundColor: nameLabelColor, outline: nameLabelColor === '#ffffff' ? '1px solid #555' : undefined }} />
+                </div>
+                <div className="pt-1 border-t border-stone-700">
+                  <p className="text-stone-500 text-[10px] text-center">Renkleri değiştirmek için 🛒 Market'i kullan</p>
                 </div>
               </div>
             </div>

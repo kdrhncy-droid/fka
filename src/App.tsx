@@ -13,6 +13,7 @@ import { LoadingScreen } from './components/LoadingScreen';
 
 export default function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const loadIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const localPlayerRef = useRef({ x: 400, y: 300 });
   const isJoinedRef = useRef(false);
   const interactOverrideRef = useRef<(() => void) | null>(null);
@@ -49,6 +50,7 @@ export default function App() {
   const [playerColor, setPlayerColor] = useState(() => CHARACTER_TYPES[loadProfile().charType]?.bodyColor ?? CHARACTER_TYPES[0].bodyColor);
   const [playerHat, setPlayerHat] = useState('');
   const [hairColor, setHairColor] = useState(() => loadProfile().hairColor);
+  const [hairStyle, setHairStyle] = useState(() => loadProfile().hairStyle ?? 'default');
   const [clothingColor, setClothingColor] = useState(() => loadProfile().clothingColor);
   const [faceShape, setFaceShape] = useState(() => loadProfile().faceShape);
   const [nameLabelColor, setNameLabelColor] = useState(() => loadProfile().nameLabelColor);
@@ -61,6 +63,11 @@ export default function App() {
   useEffect(() => {
     saveProfile({ name: playerName, charType, hairColor, clothingColor, faceShape, nameLabelColor });
   }, [playerName, charType, hairColor, clothingColor, faceShape, nameLabelColor]);
+
+  // Unmount'ta loadInterval temizle
+  useEffect(() => {
+    return () => { if (loadIntervalRef.current) clearInterval(loadIntervalRef.current); };
+  }, []);
   const [roomId, setRoomId] = useState(() => Math.random().toString(36).substring(2, 6).toUpperCase());
 
   const handleLeaveGame = () => {
@@ -89,6 +96,7 @@ export default function App() {
       labelEffect: equippedLabelEffect,
       charType,
       hairColor,
+      hairStyle,
       clothingColor,
       faceShape,
       nameLabelColor,
@@ -99,10 +107,16 @@ export default function App() {
     isJoinedRef.current = true;
     setIsLoading(true);
     setLoadProgress(0);
+    if (loadIntervalRef.current) clearInterval(loadIntervalRef.current);
     let p = 0;
-    const iv = setInterval(() => {
+    loadIntervalRef.current = setInterval(() => {
       p += Math.random() * 18 + 8;
-      if (p >= 100) { p = 100; clearInterval(iv); setTimeout(() => { setIsLoading(false); setIsJoined(true); }, 300); }
+      if (p >= 100) {
+        p = 100;
+        clearInterval(loadIntervalRef.current!);
+        loadIntervalRef.current = null;
+        setTimeout(() => { setIsLoading(false); setIsJoined(true); }, 300);
+      }
       setLoadProgress(Math.min(p, 100));
     }, 120);
   };
@@ -132,6 +146,7 @@ export default function App() {
           playerName={playerName} setPlayerName={setPlayerName}
           charType={charType} setCharType={setCharType}
           hairColor={hairColor} setHairColor={setHairColor}
+          hairStyle={hairStyle} setHairStyle={setHairStyle}
           clothingColor={clothingColor} setClothingColor={setClothingColor}
           faceShape={faceShape} setFaceShape={setFaceShape}
           setPlayerColor={setPlayerColor}

@@ -79,6 +79,7 @@ export function useGameState(gameStateRef: React.MutableRefObject<GameState>) {
                 !arraysEqual(next.unlockedDishes, prev.unlockedDishes) ||
                 next.pendingCardChoices !== prev.pendingCardChoices ||
                 next.activeCards.length !== prev.activeCards.length ||
+                next.activeCards.some((c, i) => c.id !== prev.activeCards[i]?.id) ||
                 next.comboCount !== prev.comboCount
             ) {
                 prevRef.current = next;
