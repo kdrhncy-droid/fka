@@ -56,7 +56,7 @@ export function useSocket(
     const gameStateRef = useRef<GameState>(DEFAULT_STATE);
     const audioCtxRef = useRef<AudioContext | null>(null);
     const roomIdRef = useRef<string>('');
-    interface PlayerJoinData { room?: string; roomId?: string; name: string; color: string; hat: string; charType?: number; hairColor?: string; clothingColor?: string; faceShape?: number; mapId?: string; }
+    interface PlayerJoinData { room?: string; roomId?: string; name: string; color: string; hat: string; charType?: number; hairColor?: string; clothingColor?: string; faceShape?: number; nameLabelColor?: string; mapId?: string; }
     const playerDataRef = useRef<PlayerJoinData | null>(null);
     const reconnectAttemptsRef = useRef(0);
     const maxReconnectAttempts = 15;
@@ -191,6 +191,12 @@ export function useSocket(
 
         newSocket.on('dayEnd', (summary: DayEndSummary) => {
             setDayEndSummary(prev => prev ?? summary); // zaten varsa ezme
+            // Kazanılan coinleri profile'a ekle
+            if (summary.score > 0) {
+                import('../utils/profile').then(({ addCoinsFromScore }) => {
+                    addCoinsFromScore(summary.score);
+                });
+            }
         });
 
         newSocket.on('revengeScene', (summary: DayEndSummary) => {

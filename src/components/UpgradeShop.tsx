@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Upgrades, UpgradeKey, UPGRADE_DEFS as SHARED_UPGRADES, OVEN_UPGRADE_COSTS, INITIAL_OVEN_POSITIONS, ADDITIONAL_OVEN_POSITIONS } from '../types/game';
+import { loadProfile } from '../utils/profile';
 
 const UPGRADE_UI: { id: UpgradeKey; icon: string; name: string; desc: string; requiresDish?: string }[] = [
     { id: 'patience',      icon: '⏳', name: 'Müşteri Sabrı',        desc: 'Müşteriler daha uzun bekler' },
@@ -41,6 +42,8 @@ export const UpgradeShop: React.FC<Props> = ({
     const canBuyOven = ovenCount < maxOvens;
     const ovenIndex = ovenCount - INITIAL_OVEN_POSITIONS.length;
     const ovenCost = canBuyOven ? OVEN_UPGRADE_COSTS[ovenIndex] : 0;
+    const earnedCoins = Math.max(5, Math.floor(score * 0.1));
+    const totalCoins = useMemo(() => loadProfile().coins, []);
 
     return (
         <div className="absolute inset-0 z-30 flex flex-col items-center justify-start sm:justify-center gap-5 bg-black/65 backdrop-blur-sm p-4 overflow-y-auto py-10">
@@ -52,6 +55,14 @@ export const UpgradeShop: React.FC<Props> = ({
                 <p className="text-stone-300 text-sm mt-1">
                     Ciro: <span className="text-emerald-400 font-black text-lg">${score}</span>
                 </p>
+                <div className="mt-2 flex items-center justify-center gap-3">
+                    <span className="inline-flex items-center gap-1 bg-yellow-900/40 border border-yellow-600/40 rounded-full px-3 py-1 text-xs font-bold text-yellow-400">
+                        🪙 +{earnedCoins} kazandın
+                    </span>
+                    <span className="inline-flex items-center gap-1 bg-stone-800/60 border border-stone-600/40 rounded-full px-3 py-1 text-xs font-bold text-stone-300">
+                        Toplam: 🪙 {totalCoins.toLocaleString('tr-TR')}
+                    </span>
+                </div>
             </div>
 
             {/* Mevcut Menü */}

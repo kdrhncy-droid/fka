@@ -25,6 +25,7 @@ export interface Player {
     hairColor?: string;
     clothingColor?: string;
     faceShape?: number;
+    nameLabelColor?: string;
 }
 
 export interface Customer {

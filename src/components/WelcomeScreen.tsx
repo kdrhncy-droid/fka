@@ -141,16 +141,20 @@ interface WelcomeScreenProps {
   faceShape: number; setFaceShape: (v: number) => void;
   setPlayerColor: (v: string) => void;
   setPlayerHat: (v: string) => void;
+  nameLabelColor: string; setNameLabelColor: (v: string) => void;
+  coins: number;
 }
 
 const HAIR_COLORS = ['#4b2c20','#24150e','#8d5524','#c68642','#f1c27d','#ffffff','#ef4444','#3b82f6','#a855f7','#22c55e'];
 const CLOTHING_COLORS = ['#f5f5f4','#fef3c7','#e0f2fe','#ef4444','#3b82f6','#22c55e','#a855f7','#f97316','#ec4899','#1c1917'];
+const LABEL_COLORS = ['#ffffff','#fbbf24','#34d399','#60a5fa','#f472b6','#a78bfa','#fb923c','#f87171','#4ade80','#000000'];
 
 export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   onPlay, onSettings,
   playerName, setPlayerName,  charType, setCharType, hairColor, setHairColor,
   clothingColor, setClothingColor, faceShape, setFaceShape,
   setPlayerColor, setPlayerHat,
+  nameLabelColor, setNameLabelColor, coins,
 }) => {
   const [screen, setScreen] = useState<Screen>('main');
   const [joinCode, setJoinCode] = useState('');
@@ -212,6 +216,11 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
             {MARKET_NAME}
           </h1>
           <p className="text-xs text-white/70 tracking-widest uppercase mt-1">Multiplayer Mutfak Oyunu</p>
+          {/* Coin göstergesi */}
+          <div className="mt-2 inline-flex items-center gap-1.5 bg-black/30 backdrop-blur border border-yellow-500/30 rounded-full px-3 py-1">
+            <span className="text-base">🪙</span>
+            <span className="text-yellow-400 font-black text-sm">{coins.toLocaleString('tr-TR')}</span>
+          </div>
         </div>
 
         {/* Ana ekran */}
@@ -381,6 +390,22 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                   <button key={c} onClick={() => { setClothingColor(c); setPlayerColor(c); }}
                     className={`w-6 h-6 rounded-full border-2 transition-transform ${clothingColor === c ? 'border-white scale-110' : 'border-transparent'}`}
                     style={{ backgroundColor: c }} />
+                ))}
+              </div>
+            </div>
+            {/* İsim Etiketi Rengi */}
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-stone-500 mb-2">
+                İsim Etiketi &nbsp;
+                <span className="font-black px-2 py-0.5 rounded text-[10px]" style={{ color: nameLabelColor, background: 'rgba(0,0,0,0.5)' }}>
+                  {playerName || 'Oyuncu'}
+                </span>
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {LABEL_COLORS.map(c => (
+                  <button key={c} onClick={() => setNameLabelColor(c)}
+                    className={`w-6 h-6 rounded-full border-2 transition-transform ${nameLabelColor === c ? 'border-white scale-110' : 'border-transparent'}`}
+                    style={{ backgroundColor: c, outline: c === '#ffffff' ? '1px solid #555' : undefined }} />
                 ))}
               </div>
             </div>

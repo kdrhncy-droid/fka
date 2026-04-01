@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { CHARACTER_TYPES } from './types/game';
 import { MARKET_NAME } from './constants';
+import { loadProfile, saveProfile } from './utils/profile';
 import { useSocket } from './hooks/useSocket';
 import { useKeyboard } from './hooks/useKeyboard';
 import { useSettings } from './hooks/useSettings';
@@ -43,13 +44,20 @@ export default function App() {
   const [appReady, setAppReady] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
 
-  const [playerName, setPlayerName] = useState('');
-  const [charType, setCharType] = useState(0);
-  const [playerColor, setPlayerColor] = useState(CHARACTER_TYPES[0].bodyColor);
+  const [playerName, setPlayerName] = useState(() => loadProfile().name);
+  const [charType, setCharType] = useState(() => loadProfile().charType);
+  const [playerColor, setPlayerColor] = useState(() => CHARACTER_TYPES[loadProfile().charType]?.bodyColor ?? CHARACTER_TYPES[0].bodyColor);
   const [playerHat, setPlayerHat] = useState('');
-  const [hairColor, setHairColor] = useState('#4b2c20');
-  const [clothingColor, setClothingColor] = useState(CHARACTER_TYPES[0].bodyColor);
-  const [faceShape, setFaceShape] = useState(0);
+  const [hairColor, setHairColor] = useState(() => loadProfile().hairColor);
+  const [clothingColor, setClothingColor] = useState(() => loadProfile().clothingColor);
+  const [faceShape, setFaceShape] = useState(() => loadProfile().faceShape);
+  const [nameLabelColor, setNameLabelColor] = useState(() => loadProfile().nameLabelColor);
+  const [coins, setCoins] = useState(() => loadProfile().coins);
+
+  // Karakter değişince kaydet
+  useEffect(() => {
+    saveProfile({ name: playerName, charType, hairColor, clothingColor, faceShape, nameLabelColor });
+  }, [playerName, charType, hairColor, clothingColor, faceShape, nameLabelColor]);
   const [roomId, setRoomId] = useState(() => Math.random().toString(36).substring(2, 6).toUpperCase());
 
   const handleLeaveGame = () => {
@@ -78,6 +86,7 @@ export default function App() {
       hairColor,
       clothingColor,
       faceShape,
+      nameLabelColor,
       roomId: rid,
       marketName: targetRoomId ? '' : MARKET_NAME,
       mapId: mapId || 'classic',
@@ -122,6 +131,8 @@ export default function App() {
           faceShape={faceShape} setFaceShape={setFaceShape}
           setPlayerColor={setPlayerColor}
           setPlayerHat={setPlayerHat}
+          nameLabelColor={nameLabelColor} setNameLabelColor={setNameLabelColor}
+          coins={coins}
         />
         {showSettings && (
           <SettingsPanel

@@ -190,9 +190,10 @@ export function drawPlayer(
     const label = isMe ? `★ ${p.name}` : p.name;
     ctx.font = 'bold 11px Arial';
     const lw = ctx.measureText(label).width + 16;
-    ctx.fillStyle = isMe ? 'rgba(59, 130, 246, 0.9)' : 'rgba(0, 0, 0, 0.7)';
+    const labelBg = isMe ? 'rgba(59, 130, 246, 0.9)' : 'rgba(0, 0, 0, 0.7)';
+    ctx.fillStyle = labelBg;
     ctx.beginPath(); ctx.roundRect(-lw / 2, headY - headR - 30, lw, 18, 9); ctx.fill();
-    ctx.fillStyle = '#fff';
+    ctx.fillStyle = p.nameLabelColor || '#fff';
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.fillText(label, 0, headY - headR - 21);
 
