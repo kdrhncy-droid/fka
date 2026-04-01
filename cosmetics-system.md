@@ -78,12 +78,34 @@ Müşteriye yemek verince özel partikül çıkar. Sadece görsel, oyunu etkilem
 
 ---
 
-## Uygulama Sırası
+## Öncelik Sırası
 
-1. **Unvan sistemi** — en az teknik iş, en çok sosyal etki
-2. **Renk setleri** — mevcut sistemi genişletir, kolay
-3. **Etiket efektleri** — canvas glow, orta zorluk
-4. **Servis efektleri** — en zor, server event gerektirir
+> **Kural:** Yeni şey eklemeden önce mevcut olanı düzgün çalıştır.
+
+### Aşama 0 — Mevcut Sistemi İyileştir (ÖNCE BU)
+Şu anki market/kozmetik sistemi yarım:
+- Emoji şapka çok basit, canvas'ta düzgün render edilmiyor
+- Renk seçimi profil + market arasında tutarsız
+- Market görsel olarak zayıf, item önizlemesi yok
+- Satın alınan itemlar oyun içinde tam yansımıyor
+
+**Yapılacaklar:**
+1. Mevcut şapka sistemini kaldır veya canvas'ta gerçekten çizilen bir şapkaya dönüştür
+2. Market item kartlarına canlı karakter önizlemesi ekle
+3. Renk seti kavramını mevcut renk seçimine entegre et (isimli setler)
+4. Satın alınan itemların oyun içinde %100 çalıştığını doğrula
+
+### Aşama 1 — Unvan Sistemi
+Mevcut sistem iyileştirildikten sonra.
+
+### Aşama 2 — Renk Setleri
+Unvan sistemi çalıştıktan sonra.
+
+### Aşama 3 — Etiket Efektleri
+Renk setleri çalıştıktan sonra.
+
+### Aşama 4 — Servis Efektleri
+En son, en karmaşık.
 
 ---
 
