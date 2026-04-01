@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Upgrades, UpgradeKey, UPGRADE_DEFS as SHARED_UPGRADES, OVEN_UPGRADE_COSTS, INITIAL_OVEN_POSITIONS, ADDITIONAL_OVEN_POSITIONS } from '../types/game';
 import { loadProfile } from '../utils/profile';
 
@@ -43,7 +43,7 @@ export const UpgradeShop: React.FC<Props> = ({
     const ovenIndex = ovenCount - INITIAL_OVEN_POSITIONS.length;
     const ovenCost = canBuyOven ? OVEN_UPGRADE_COSTS[ovenIndex] : 0;
     const earnedCoins = Math.max(5, Math.floor(score * 0.1));
-    const totalCoins = useMemo(() => loadProfile().coins, []);
+    const totalCoins = loadProfile().coins;
 
     return (
         <div className="absolute inset-0 z-30 flex flex-col items-center justify-start sm:justify-center gap-5 bg-black/65 backdrop-blur-sm p-4 overflow-y-auto py-10">
