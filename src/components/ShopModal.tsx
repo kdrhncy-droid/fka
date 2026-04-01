@@ -14,22 +14,17 @@ interface Props {
   setPlayerColor: (v: string) => void;
 }
 
-const CATEGORY_LABELS: Record<ShopCategory, string> = {
-  hat: '🎩 Şapkalar',
-  hairColor: '💇 Saç Rengi',
-  clothingColor: '👕 Kıyafet',
-  labelColor: '🏷️ İsim Etiketi',
+const CATEGORY_LABELS: Record<ShopCategory, { label: string; icon: string }> = {
+  hat:           { label: 'Şapkalar',    icon: '🎩' },
+  hairColor:     { label: 'Saç',         icon: '💇' },
+  clothingColor: { label: 'Kıyafet',     icon: '👕' },
+  labelColor:    { label: 'Etiket',      icon: '🏷️' },
 };
 
-const RARITY_COLORS = {
-  common: 'border-stone-600 bg-stone-800/60',
-  rare:   'border-blue-600/60 bg-blue-900/20',
-  epic:   'border-purple-500/60 bg-purple-900/20',
-};
-const RARITY_BADGE = {
-  common: 'text-stone-400',
-  rare:   'text-blue-400',
-  epic:   'text-purple-400',
+const RARITY_STYLE = {
+  common: { border: 'border-stone-600',    bg: 'bg-stone-800/60',   badge: 'text-stone-400',  label: 'Normal' },
+  rare:   { border: 'border-blue-500/50',  bg: 'bg-blue-900/20',    badge: 'text-blue-400',   label: 'Nadir'  },
+  epic:   { border: 'border-purple-500/50',bg: 'bg-purple-900/20',  badge: 'text-purple-400', label: 'Epik'   },
 };
 
 export const ShopModal: React.FC<Props> = ({
@@ -42,8 +37,7 @@ export const ShopModal: React.FC<Props> = ({
 }) => {
   const [activeCategory, setActiveCategory] = useState<ShopCategory>('hat');
   const [feedback, setFeedback] = useState<{ id: string; ok: boolean } | null>(null);
-  const profile = loadProfile();
-  const [owned, setOwned] = useState<string[]>(profile.ownedItems);
+  const [owned, setOwned] = useState<string[]>(() => loadProfile().ownedItems);
 
   const items = SHOP_ITEMS.filter(i => i.category === activeCategory);
 
@@ -59,27 +53,18 @@ export const ShopModal: React.FC<Props> = ({
     setTimeout(() => setFeedback(null), 1200);
   };
 
-  const handleEquip = (itemId: string) => {
-    applyItem(itemId);
-  };
-
   const applyItem = (itemId: string) => {
     const item = SHOP_ITEMS.find(i => i.id === itemId);
     if (!item) return;
     if (item.category === 'hat') {
       const next = equippedHat === item.value ? '' : item.value;
-      setEquippedHat(next);
-      saveProfile({ equippedHat: next });
+      setEquippedHat(next); saveProfile({ equippedHat: next });
     } else if (item.category === 'hairColor') {
-      setHairColor(item.value);
-      saveProfile({ hairColor: item.value });
+      setHairColor(item.value); saveProfile({ hairColor: item.value });
     } else if (item.category === 'clothingColor') {
-      setClothingColor(item.value);
-      setPlayerColor(item.value);
-      saveProfile({ clothingColor: item.value });
+      setClothingColor(item.value); setPlayerColor(item.value); saveProfile({ clothingColor: item.value });
     } else if (item.category === 'labelColor') {
-      setNameLabelColor(item.value);
-      saveProfile({ nameLabelColor: item.value });
+      setNameLabelColor(item.value); saveProfile({ nameLabelColor: item.value });
     }
   };
 
@@ -93,105 +78,130 @@ export const ShopModal: React.FC<Props> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/70 backdrop-blur-sm"
-      style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm"
+      style={{ padding: 'env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)' }}
       onClick={onClose}
     >
+      {/* Landscape: sol panel + sağ panel yan yana */}
       <div
-        className="w-full sm:max-w-md bg-stone-900 border border-stone-700 sm:rounded-3xl rounded-t-3xl overflow-hidden shadow-2xl flex flex-col"
-        style={{ maxHeight: '92dvh' }}
+        className="bg-stone-900 border border-stone-700 rounded-2xl shadow-2xl overflow-hidden flex"
+        style={{ width: 'min(96vw, 720px)', height: 'min(90dvh, 480px)', maxHeight: '90dvh' }}
         onClick={e => e.stopPropagation()}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-stone-800 flex-shrink-0">
-          <div>
-            <h2 className="text-white font-black text-lg">🛒 Market</h2>
-            <p className="text-stone-400 text-xs mt-0.5">Coin ile kozmetik satın al</p>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1.5 bg-yellow-900/30 border border-yellow-600/30 rounded-full px-3 py-1">
-              <span>🪙</span>
-              <span className="text-yellow-400 font-black text-sm">{coins.toLocaleString('tr-TR')}</span>
-            </div>
-            <button onClick={onClose} className="w-9 h-9 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-400 hover:text-white flex items-center justify-center transition-all">✕</button>
-          </div>
-        </div>
 
-        {/* Karakter önizleme */}
-        <div className="flex justify-center items-center gap-4 py-3 border-b border-stone-800 flex-shrink-0 bg-stone-950/30">
-          <div className="w-16 h-16 rounded-2xl bg-stone-800 border border-stone-700 overflow-hidden flex items-center justify-center">
-            <CharacterPreview charType={charType} size={64} hairColor={hairColor} clothingColor={clothingColor} />
-          </div>
+        {/* ── SOL PANEL — karakter önizleme + coin ── */}
+        <div className="w-44 flex-shrink-0 bg-stone-950/60 border-r border-stone-800 flex flex-col items-center justify-between py-4 px-3">
+          {/* Başlık */}
           <div className="text-center">
-            <div className="text-xs text-stone-500 mb-1">Önizleme</div>
-            <div className="flex items-center gap-2">
-              {equippedHat && <span className="text-2xl">{equippedHat}</span>}
-              <div className="w-4 h-4 rounded-full border border-stone-600" style={{ backgroundColor: hairColor }} />
-              <div className="w-4 h-4 rounded-full border border-stone-600" style={{ backgroundColor: clothingColor }} />
-              <div className="w-4 h-4 rounded-full border border-stone-600" style={{ backgroundColor: nameLabelColor, outline: nameLabelColor === '#ffffff' ? '1px solid #555' : undefined }} />
+            <div className="text-white font-black text-sm">🛒 Market</div>
+            <div className="text-stone-500 text-[10px] mt-0.5">Coin ile kozmetik al</div>
+          </div>
+
+          {/* Karakter önizleme */}
+          <div className="flex flex-col items-center gap-2">
+            <div className="relative">
+              <div className="w-20 h-20 rounded-2xl bg-stone-800 border-2 border-stone-700 overflow-hidden flex items-center justify-center">
+                <CharacterPreview charType={charType} size={80} hairColor={hairColor} clothingColor={clothingColor} />
+              </div>
+              {equippedHat && (
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 text-xl">{equippedHat}</span>
+              )}
+            </div>
+            {/* İsim etiketi önizleme */}
+            <div className="px-2 py-0.5 rounded-full bg-black/60 border border-white/10 text-[10px] font-black" style={{ color: nameLabelColor }}>
+              ★ Oyuncu
+            </div>
+            {/* Renk göstergeleri */}
+            <div className="flex items-center gap-1.5">
+              <div className="w-4 h-4 rounded-full border border-stone-600" style={{ backgroundColor: hairColor }} title="Saç" />
+              <div className="w-4 h-4 rounded-full border border-stone-600" style={{ backgroundColor: clothingColor }} title="Kıyafet" />
+              <div className="w-4 h-4 rounded-full border border-stone-600" style={{ backgroundColor: nameLabelColor, outline: nameLabelColor === '#ffffff' ? '1px solid #555' : undefined }} title="Etiket" />
             </div>
           </div>
+
+          {/* Coin göstergesi */}
+          <div className="w-full">
+            <div className="bg-gradient-to-br from-yellow-900/60 to-amber-900/40 border border-yellow-600/40 rounded-xl p-2.5 text-center">
+              <div className="text-2xl mb-0.5">🪙</div>
+              <div className="text-yellow-400 font-black text-lg leading-none">{coins.toLocaleString('tr-TR')}</div>
+              <div className="text-yellow-700 text-[9px] mt-0.5 uppercase tracking-widest">Coin</div>
+            </div>
+            <div className="text-stone-600 text-[9px] text-center mt-1.5 leading-tight">
+              Her gün sonunda cironun %10'u coin olarak birikir
+            </div>
+          </div>
+
+          {/* Kapat */}
+          <button onClick={onClose}
+            className="w-full py-1.5 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-400 hover:text-white text-xs font-bold transition-all active:scale-95">
+            ✕ Kapat
+          </button>
         </div>
 
-        {/* Kategori seçimi */}
-        <div className="flex border-b border-stone-800 flex-shrink-0 overflow-x-auto no-scrollbar">
-          {(Object.keys(CATEGORY_LABELS) as ShopCategory[]).map(cat => (
-            <button key={cat} onClick={() => setActiveCategory(cat)}
-              className={`flex-shrink-0 px-3 py-2.5 text-[10px] font-black uppercase tracking-wider whitespace-nowrap transition-colors ${activeCategory === cat ? 'text-amber-400 border-b-2 border-amber-400' : 'text-stone-500 hover:text-stone-300'}`}>
-              {CATEGORY_LABELS[cat]}
-            </button>
-          ))}
-        </div>
+        {/* ── SAĞ PANEL — kategori + itemlar ── */}
+        <div className="flex-1 flex flex-col min-w-0">
 
-        {/* İtemlar */}
-        <div className="overflow-y-auto flex-1 p-3" style={{ WebkitOverflowScrolling: 'touch' } as React.CSSProperties}>
-          <div className="grid grid-cols-2 gap-2">
-            {items.map(item => {
-              const isOwned = owned.includes(item.id);
-              const equipped = isEquipped(item);
-              const fb = feedback?.id === item.id;
-
+          {/* Kategori seçimi */}
+          <div className="flex border-b border-stone-800 flex-shrink-0 bg-stone-950/30">
+            {(Object.keys(CATEGORY_LABELS) as ShopCategory[]).map(cat => {
+              const { label, icon } = CATEGORY_LABELS[cat];
               return (
-                <div key={item.id}
-                  className={`rounded-2xl border-2 p-3 flex flex-col gap-2 transition-all ${equipped ? 'border-amber-500 bg-amber-900/20' : RARITY_COLORS[item.rarity]}`}>
-
-                  {/* İkon + isim */}
-                  <div className="flex items-center gap-2">
-                    {item.category === 'hairColor' || item.category === 'clothingColor' || item.category === 'labelColor' ? (
-                      <div className="w-8 h-8 rounded-full border-2 border-stone-600 flex-shrink-0"
-                        style={{ backgroundColor: item.value, outline: item.value === '#ffffff' ? '1px solid #555' : undefined }} />
-                    ) : (
-                      <span className="text-2xl leading-none">{item.icon}</span>
-                    )}
-                    <div className="min-w-0">
-                      <div className="text-white font-bold text-xs leading-tight truncate">{item.name}</div>
-                      <div className={`text-[9px] font-black uppercase ${RARITY_BADGE[item.rarity]}`}>
-                        {item.rarity === 'common' ? 'Normal' : item.rarity === 'rare' ? 'Nadir' : 'Epik'}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Buton */}
-                  {isOwned ? (
-                    <button onClick={() => handleEquip(item.id)}
-                      className={`w-full py-1.5 rounded-xl text-xs font-black transition-all active:scale-95 ${equipped ? 'bg-amber-500 text-stone-900' : 'bg-stone-700 hover:bg-stone-600 text-stone-200'}`}>
-                      {equipped ? '✓ Giyildi' : 'Giy'}
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => handleBuy(item.id)}
-                      disabled={coins < item.price}
-                      className={`w-full py-1.5 rounded-xl text-xs font-black transition-all active:scale-95 ${
-                        fb ? (feedback!.ok ? 'bg-emerald-600 text-white' : 'bg-red-700 text-white') :
-                        coins >= item.price ? 'bg-amber-500 hover:bg-amber-400 text-stone-900' :
-                        'bg-stone-700 text-stone-500 cursor-not-allowed'
-                      }`}>
-                      {fb ? (feedback!.ok ? '✓ Alındı!' : '✗ Yetersiz') : `🪙 ${item.price}`}
-                    </button>
-                  )}
-                </div>
+                <button key={cat} onClick={() => setActiveCategory(cat)}
+                  className={`flex-1 py-2.5 flex flex-col items-center gap-0.5 text-[10px] font-black uppercase tracking-wider transition-colors ${activeCategory === cat ? 'text-amber-400 border-b-2 border-amber-400 bg-amber-900/10' : 'text-stone-500 hover:text-stone-300'}`}>
+                  <span className="text-base leading-none">{icon}</span>
+                  <span>{label}</span>
+                </button>
               );
             })}
+          </div>
+
+          {/* İtem grid */}
+          <div className="overflow-y-auto flex-1 p-3" style={{ WebkitOverflowScrolling: 'touch' } as React.CSSProperties}>
+            <div className="grid grid-cols-3 gap-2">
+              {items.map(item => {
+                const isOwned = owned.includes(item.id);
+                const equipped = isEquipped(item);
+                const fb = feedback?.id === item.id;
+                const rs = RARITY_STYLE[item.rarity];
+
+                return (
+                  <div key={item.id}
+                    className={`rounded-xl border-2 p-2.5 flex flex-col gap-1.5 transition-all ${equipped ? 'border-amber-500 bg-amber-900/20' : `${rs.border} ${rs.bg}`}`}>
+
+                    {/* İkon */}
+                    <div className="flex items-center gap-1.5">
+                      {item.category === 'hairColor' || item.category === 'clothingColor' || item.category === 'labelColor' ? (
+                        <div className="w-7 h-7 rounded-full border-2 border-stone-600 flex-shrink-0"
+                          style={{ backgroundColor: item.value, outline: item.value === '#ffffff' ? '1px solid #555' : undefined }} />
+                      ) : (
+                        <span className="text-xl leading-none">{item.icon}</span>
+                      )}
+                      <div className="min-w-0 flex-1">
+                        <div className="text-white font-bold text-[10px] leading-tight truncate">{item.name}</div>
+                        <div className={`text-[8px] font-black uppercase ${rs.badge}`}>{rs.label}</div>
+                      </div>
+                    </div>
+
+                    {/* Buton */}
+                    {isOwned ? (
+                      <button onClick={() => applyItem(item.id)}
+                        className={`w-full py-1 rounded-lg text-[10px] font-black transition-all active:scale-95 ${equipped ? 'bg-amber-500 text-stone-900' : 'bg-stone-700 hover:bg-stone-600 text-stone-200'}`}>
+                        {equipped ? '✓ Giyildi' : 'Giy'}
+                      </button>
+                    ) : (
+                      <button onClick={() => handleBuy(item.id)} disabled={coins < item.price}
+                        className={`w-full py-1 rounded-lg text-[10px] font-black transition-all active:scale-95 ${
+                          fb ? (feedback!.ok ? 'bg-emerald-600 text-white' : 'bg-red-700 text-white') :
+                          coins >= item.price ? 'bg-amber-500 hover:bg-amber-400 text-stone-900' :
+                          'bg-stone-700 text-stone-500 cursor-not-allowed'
+                        }`}>
+                        {fb ? (feedback!.ok ? '✓ Alındı!' : '✗ Yetersiz') : `🪙 ${item.price}`}
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>

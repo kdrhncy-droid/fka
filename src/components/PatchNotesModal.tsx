@@ -13,8 +13,8 @@ export const PatchNotesModal: React.FC<Props> = ({ onClose }) => {
                 <div>
                     <h2 className="text-3xl font-black text-amber-400 tracking-tight">Oyun Rehberi & Yenilikler 📜</h2>
                     <div className="flex items-center gap-2 mt-1">
-                        <span className="bg-amber-400/10 text-amber-400 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest border border-amber-400/20">v2.2.0</span>
-                        <span className="text-stone-500 text-[10px] font-bold uppercase tracking-widest">Save Sistemi, Coin, İntikam Sahnesi</span>
+                        <span className="bg-amber-400/10 text-amber-400 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest border border-amber-400/20">v2.3.0</span>
+                        <span className="text-stone-500 text-[10px] font-bold uppercase tracking-widest">Market, Profil Ekranı, Yeni Müşteri Tasarımları</span>
                     </div>
                 </div>
                 <button
@@ -212,17 +212,16 @@ export const PatchNotesModal: React.FC<Props> = ({ onClose }) => {
                 <section>
                     <h3 className="text-xs font-black text-stone-500 mb-4 uppercase tracking-[0.3em] flex items-center gap-3">
                         <span className="h-px flex-1 bg-stone-800"></span>
-                        🚀 Son Güncellemeler (v2.2.0)
+                        🚀 Son Güncellemeler (v2.3.0)
                         <span className="h-px flex-1 bg-stone-800"></span>
                     </h3>
 
                     <div className="bg-emerald-500/5 border border-emerald-500/20 p-6 rounded-[2rem] space-y-4 mb-4">
                         {[
-                            { icon: '💾', title: 'Kalıcı Profil & Save Sistemi', desc: 'Karakter görünümün, ismin ve coin\'lerin oyunlar arası kaydediliyor. Bir daha sıfırdan başlamak yok.' },
-                            { icon: '🪙', title: 'Market Parası (Coin)', desc: 'Her gün sonunda kazandığın ciron\'un %10\'u kalıcı coin olarak birikir. Ana menüde toplam coin görünür.' },
-                            { icon: '🏷️', title: 'İsim Etiketi Rengi', desc: 'Ana menü karakter panelinden isim etiketinin rengini seçebilirsin. 10 farklı renk seçeneği.' },
-                            { icon: '🔥', title: 'İntikam Sahnesi', desc: 'Müşteri dövülünce gün sonunda sinematik intikam sahnesi oynar. Ateş, yağmur, siluetler ve atmosferik ses.' },
-                            { icon: '▶️', title: 'Sahne Skip Butonu', desc: 'İntikam sahnesi başladıktan sonra sağ altta "Atla" butonu çıkar. Mobil ve PC\'de çalışır.' },
+                            { icon: '🛒', title: 'Market Sistemi', desc: 'Coin ile şapka, saç rengi, kıyafet ve isim etiketi rengi satın alabilirsin. Normal, Nadir ve Epik nadirlik seviyeleri.' },
+                            { icon: '👤', title: 'Profil Ekranı', desc: 'Ana menüde tek ekranda karakter özelleştirme + istatistikler. İsim düzenleme, coin göstergesi, sekme sistemi.' },
+                            { icon: '🎭', title: 'Yeni Müşteri Tasarımları', desc: 'Thug şapka+yüz bandı, Recep büyük burun+çizgili gömlek, Drunk X-göz+sarhoş sallanma, VIP taç+monokel, Inspector gözlük+clipboard.' },
+                            { icon: '🔧', title: 'Bug Fix\'ler', desc: 'Dialog/balon/sabır çubuğu çakışması giderildi. VIP tacı ve Thug şapkası için ekstra boşluk eklendi. AudioContext leak kapatıldı.' },
                         ].map(f => (
                             <div key={f.title} className="flex items-start gap-3">
                                 <span className="text-emerald-400 font-bold text-lg">{f.icon}</span>
@@ -234,19 +233,35 @@ export const PatchNotesModal: React.FC<Props> = ({ onClose }) => {
                         ))}
                     </div>
 
+                    <div className="bg-stone-800/30 border border-stone-700/30 p-5 rounded-[2rem] space-y-3 mb-4">
+                        <div className="text-xs font-black text-stone-400 uppercase tracking-widest">v2.2.0 — Save Sistemi, Coin, İntikam Sahnesi</div>
+                        {[
+                            { icon: '💾', title: 'Kalıcı Profil', desc: 'Karakter görünümün, ismin ve coin\'lerin oyunlar arası kaydediliyor.' },
+                            { icon: '🪙', title: 'Market Parası', desc: 'Her gün sonunda ciron\'un %10\'u coin olarak birikir.' },
+                            { icon: '🔥', title: 'İntikam Sahnesi', desc: 'Müşteri dövülünce gün sonunda sinematik sahne oynar. Skip butonu var.' },
+                        ].map(f => (
+                            <div key={f.title} className="flex items-start gap-3">
+                                <span className="text-stone-400 font-bold">{f.icon}</span>
+                                <div>
+                                    <span className="text-stone-300 font-bold text-xs">{f.title}: </span>
+                                    <span className="text-stone-500 text-xs">{f.desc}</span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
                     <div className="bg-amber-500/5 border border-amber-500/20 p-6 rounded-[2rem] space-y-4">
                         <div className="text-xs font-black text-amber-400 uppercase tracking-widest mb-2">v2.1.0 — Kart Sistemi, Combo & Özel İstekler</div>
                         {[
-                            { icon: '⚡', title: 'Kart Sistemi', desc: 'Her 3 günde bir gece ekranında 2 kart sunulur. 15 farklı kart — Sabırsız Kalabalık, Sıcak Fırın, Kaos Günü ve daha fazlası.' },
-                            { icon: '🔥', title: 'Combo Sistemi', desc: 'Arka arkaya hızlı servis yapınca combo başlar. 3 servis = 🔥 x1.5, 5 servis = 🔥🔥 x2.0, 8+ servis = 🔥🔥🔥 x3.0 bonus puan.' },
-                            { icon: '🌶️', title: 'Özel Sipariş İstekleri', desc: '🌶️ Acı (1.8x bahşiş), ➕ Bol porsiyon (1.5x), ⚡ Acele (2x bahşiş ama 2x sabır azalması).' },
-                            { icon: '🚿', title: 'Ekstra Lavabo & Kesme Tahtası', desc: 'Gece mağazasında ekstra lavabo ve kesme tahtası satın alınabilir. Maksimum 3\'e kadar.' },
+                            { icon: '⚡', title: 'Kart Sistemi', desc: 'Her 3 günde bir gece ekranında 2 kart sunulur. 15 farklı kart.' },
+                            { icon: '🔥', title: 'Combo Sistemi', desc: '3 servis = 🔥 x1.5, 5 servis = 🔥🔥 x2.0, 8+ servis = 🔥🔥🔥 x3.0 bonus puan.' },
+                            { icon: '🌶️', title: 'Özel Sipariş İstekleri', desc: '🌶️ Acı (1.8x), ➕ Bol (1.5x), ⚡ Acele (2x bahşiş ama 2x sabır azalması).' },
                         ].map(f => (
                             <div key={f.title} className="flex items-start gap-3">
                                 <span className="text-amber-400 font-bold">{f.icon}</span>
                                 <div>
-                                    <div className="text-sm font-bold text-stone-200 uppercase tracking-wider">{f.title}</div>
-                                    <p className="text-xs text-stone-400 mt-0.5 leading-relaxed">{f.desc}</p>
+                                    <span className="text-stone-300 font-bold text-xs">{f.title}: </span>
+                                    <span className="text-stone-500 text-xs">{f.desc}</span>
                                 </div>
                             </div>
                         ))}
