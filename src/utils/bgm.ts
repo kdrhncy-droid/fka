@@ -3,12 +3,12 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 const PLAYLIST = [
-  '/sounds/Local%20Forecast%20-%20Elevator.mp3',
-  '/sounds/Balzan%20Groove.mp3',
-  '/sounds/Fluffing%20a%20Duck.mp3',
-  '/sounds/Monkeys%20Spinning%20Monkeys.mp3',
+  '/sounds/Local Forecast - Elevator.mp3',
+  '/sounds/Balzan Groove.mp3',
+  '/sounds/Fluffing a Duck.mp3',
+  '/sounds/Monkeys Spinning Monkeys.mp3',
   '/sounds/Dissappointment.mp3',
-  '/sounds/Return%20of%20Lazarus.mp3',
+  '/sounds/Return of Lazarus.mp3',
 ];
 
 let audio: HTMLAudioElement | null = null;
