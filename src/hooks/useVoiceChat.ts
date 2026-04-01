@@ -1,6 +1,8 @@
 import { useEffect, useState, useRef } from "react";
 import { Socket } from "socket.io-client";
-import Peer, { MediaConnection } from "peerjs";
+import type { MediaConnection } from "peerjs";
+// peerjs lazy import — sadece oyuna girilince yüklenir (~200KB tasarruf)
+type PeerType = import("peerjs").default;
 
 interface UseVoiceChatProps {
     isJoined: boolean;
@@ -9,7 +11,7 @@ interface UseVoiceChatProps {
 }
 
 export function useVoiceChat({ isJoined, myId, socket }: UseVoiceChatProps) {
-    const [peer, setPeer] = useState<Peer | null>(null);
+    const [peer, setPeer] = useState<PeerType | null>(null);
     const [isMuted, setIsMuted] = useState(false);
     const [myStream, setMyStream] = useState<MediaStream | null>(null);
     const [audioStreams, setAudioStreams] = useState<Record<string, MediaStream>>({});
@@ -23,17 +25,18 @@ export function useVoiceChat({ isJoined, myId, socket }: UseVoiceChatProps) {
         if (!isJoined || !myId || !socket) return;
 
         let localStream: MediaStream | null = null;
-        let localPeer: Peer | null = null;
+        let localPeer: PeerType | null = null;
 
         // 1. Mikrofon izni al
         navigator.mediaDevices.getUserMedia({
             audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
             video: false
-        }).then(stream => {
+        }).then(async stream => {
             localStream = stream;
             setMyStream(stream);
 
-            // 2. PeerJS e bağlan (Ücretsiz server)
+            // 2. PeerJS lazy load — sadece burada yüklenir
+            const { default: Peer } = await import("peerjs");
             localPeer = new Peer();
 
             localPeer.on("open", (id) => {
