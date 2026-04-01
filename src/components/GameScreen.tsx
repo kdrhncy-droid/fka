@@ -18,6 +18,7 @@ import { playSound } from '../utils/audio';
 import { stopBgm } from '../utils/bgm';
 import { ChatPanel } from './ChatPanel';
 import { DayEndModal } from './DayEndModal';
+import { RevengeSceneOverlay } from './RevengeSceneOverlay';
 import { LeaveModal } from './LeaveModal';
 import { saveStats, loadStats } from './StatsModal';
 import { TutorialOverlay, isTutorialDone } from './TutorialOverlay';
@@ -71,12 +72,14 @@ interface Props {
     chatMessages: import('../hooks/useSocket').ChatMessage[];
     dayEndSummary: import('../hooks/useSocket').DayEndSummary | null;
     onClearDayEnd: () => void;
+    revengeSceneSummary: import('../hooks/useSocket').DayEndSummary | null;
+    onClearRevengeScene: () => void;
 }
 
 export const GameScreen: React.FC<Props> = ({
     canvasRef, isJoined, myId, socket,
     gameStateRef, localPlayerRef, keysRef, audioCtxRef, settings, updateSettings, roomId, onLeaveGame,
-    interactOverrideRef, ping = 0, onOpenStats, chatMessages, dayEndSummary, onClearDayEnd
+    interactOverrideRef, ping = 0, onOpenStats, chatMessages, dayEndSummary, onClearDayEnd, revengeSceneSummary, onClearRevengeScene
 }) => {
     const joystickVectorRef = useRef({ x: 0, y: 0 });
     const lastPunchTimeRef = useRef<number>(0);
@@ -258,9 +261,11 @@ export const GameScreen: React.FC<Props> = ({
                     ) : (
                         <span className="text-[10px] font-bold text-purple-400">Düzenleme Modu</span>
                     )}
-                    <div className="w-full h-1 bg-stone-800 rounded-full overflow-hidden">
-                        <div className="h-full rounded-full transition-all" style={{ width: `${progress * 100}%`, backgroundColor: barColor }} />
-                    </div>
+                    {dayPhase !== 'night' && (
+                        <div className="w-full h-1 bg-stone-800 rounded-full overflow-hidden">
+                            <div className="h-full rounded-full transition-all" style={{ width: `${progress * 100}%`, backgroundColor: barColor }} />
+                        </div>
+                    )}
                 </div>
 
                 <div className="flex items-center gap-1.5 flex-shrink-0">
@@ -642,6 +647,15 @@ export const GameScreen: React.FC<Props> = ({
 
             {showDevPanel && (
                 <DevPanel socket={socket} onClose={() => setShowDevPanel(false)} />
+            )}
+
+            {/* İntikam Sahnesi */}
+            {revengeSceneSummary && (
+                <RevengeSceneOverlay
+                    summary={revengeSceneSummary}
+                    onDone={onClearRevengeScene}
+                    bgmOn={settings.bgmOn}
+                />
             )}
         </div>
     );

@@ -166,6 +166,47 @@ export function drawCustomer(ctx: CanvasRenderingContext2D, customer: Customer, 
         ctx.fillStyle = 'rgba(255,182,193,0.4)';
         ctx.beginPath(); ctx.arc(-hr * 0.6, headY + 5, 3.5, 0, Math.PI * 2); ctx.fill();
         ctx.beginPath(); ctx.arc(hr * 0.6, headY + 5, 3.5, 0, Math.PI * 2); ctx.fill();
+
+        // ── Kişiliğe özel aksesuarlar ─────────────────────────────────────
+        const pers = customer.personality;
+
+        if (pers === 'vip') {
+            // Altın taç
+            ctx.fillStyle = '#FFD700';
+            ctx.beginPath();
+            ctx.moveTo(-hr * 0.7, headY - hr + 2);
+            ctx.lineTo(-hr * 0.45, headY - hr - 8);
+            ctx.lineTo(-hr * 0.1, headY - hr - 3);
+            ctx.lineTo(0, headY - hr - 11);
+            ctx.lineTo(hr * 0.1, headY - hr - 3);
+            ctx.lineTo(hr * 0.45, headY - hr - 8);
+            ctx.lineTo(hr * 0.7, headY - hr + 2);
+            ctx.closePath(); ctx.fill(); stk(ctx, '#b8860b', 1);
+        } else if (pers === 'drunk') {
+            // Kırmızı yanak + eğri göz
+            ctx.fillStyle = 'rgba(255,80,80,0.45)';
+            ctx.beginPath(); ctx.arc(-hr * 0.55, headY + 5, 5, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(hr * 0.55, headY + 5, 5, 0, Math.PI * 2); ctx.fill();
+        } else if (pers === 'inspector') {
+            // Gözlük
+            ctx.strokeStyle = '#444'; ctx.lineWidth = 1.5;
+            const eyeX2 = hr * 0.35;
+            const eyeY2 = headY + 2;
+            ctx.beginPath(); ctx.arc(-eyeX2, eyeY2, 4.5, 0, Math.PI * 2); ctx.stroke();
+            ctx.beginPath(); ctx.arc(eyeX2, eyeY2, 4.5, 0, Math.PI * 2); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(-eyeX2 + 4.5, eyeY2); ctx.lineTo(eyeX2 - 4.5, eyeY2); ctx.stroke();
+        } else if (pers === 'recep') {
+            // Kalın kaşlar
+            ctx.fillStyle = '#111';
+            const eyeX2 = hr * 0.35;
+            ctx.beginPath(); ctx.roundRect(-eyeX2 - 5, headY - 5, 10, 3, 1); ctx.fill();
+            ctx.beginPath(); ctx.roundRect(eyeX2 - 5, headY - 5, 10, 3, 1); ctx.fill();
+        }
+    }
+
+    // UI öğelerinin (Bar, Emoji, Balon, Yazı) ters dönmesini (ayna efekti) önle
+    if (!isSeated && !st.faceRight) {
+        ctx.scale(-1, 1);
     }
 
     // ── SABIR ÇUBUĞU ─────────────────────────────────────────────────────────

@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Müşteri Tipleri — Chibi</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#1a1510; font-family:'Courier New',monospace; color:#e8d5b7; padding:20px; }
+h1 { text-align:center; margin-bottom:8px; color:#f4a261; text-shadow:2px 2px 4px #000; font-size:22px; }
+.subtitle { text-align:center; color:#8a7060; font-size:12px; margin-bottom:24px; }
+.grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px; max-width:1300px; margin:0 auto; }
+.card { background:#120e0a; border:2px solid #3a2818; border-radius:12px; padding:16px; text-align:center; }
+.card h2 { color:#e76f51; margin-bottom:8px; font-size:15px; }
+.phases { display:flex; gap:6px; justify-content:center; margin-bottom:8px; }
+.phase-btn { background:#2a1e14; color:#c8a882; border:1px solid #4a3828; padding:4px 10px; border-radius:4px; cursor:pointer; font-size:11px; font-family:inherit; }
+.phase-btn:hover { background:#3a2818; }
+.phase-btn.active { background:#e76f51; color:#fff; border-color:#e76f51; }
+canvas { border:1px solid #3a2818; border-radius:8px; background:#0a0806; display:block; margin:0 auto; }
+.info { font-size:11px; line-height:1.5; color:#a08060; margin-top:8px; text-align:left; }
+.personality { color:#f4a261; }
+.effect { color:#e76f51; }
+.controls { text-align:center; margin-bottom:20px; display:flex; gap:8px; justify-content:center; flex-wrap:wrap; }
+button { background:#2a1e14; color:#e8d5b7; border:1px solid #5a4028; padding:7px 14px; border-radius:6px; cursor:pointer; font-family:inherit; font-size:12px; }
+button:hover { background:#3a2818; }
+button.active { background:#e76f51; color:#fff; border-color:#e76f51; }
+</style>
+</head>
+<body>
+
+<h1>👥 Müşteri Tipleri — Chibi Koleksiyonu</h1>
+<p class="subtitle">Mevcut drawCustomer.ts sistemiyle uyumlu animasyonlar: yürüme · oturma · yemek yeme</p>
+
+<div class="controls">
+  <button id="animBtn" class="active" onclick="toggleAnim()">▶ Animasyon: AÇIK</button>
+  <button onclick="setAllPhase('walk')">🚶 Hepsi: Yürüme</button>
+  <button onclick="setAllPhase('sit')">🪑 Hepsi: Oturma</button>
+  <button onclick="setAllPhase('eat')">🍽 Hepsi: Yemek</button>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<script>
+// ─── Karakter Tanımları ───────────────────────────────────────────────────────
+const CHARS = [
+  {
+    id: 'polite', label: '😊 POLITE', title: 'Normal Müşteri',
+    bodyColor: '#3b6ea5', skinColor: '#f5c090', hairColor: '#2d1b0e',
+    bodyShape: 1,
+    personality: 'Kibar, sabırlı, nazik',
+    effect: 'Dövülme: Yok — barışçıl müşteri',
+    extras: [],
+    faceType: 'happy',
+    auraColor: 'rgba(100,180,255,0.12)',
+  },
+  {
+    id: 'rude', label: '😡 RUDE', title: 'Kaba Müşteri',
+    bodyColor: '#8B1a1a', skinColor: '#d4806a', hairColor: '#1a1a1a',
+    bodyShape: 1,
+    personality: 'Agresif, sabırsız, küfürbaz',
+    effect: 'Dövülme: %30 intikam şansı',
+    extras: ['angry_brows'],
+    faceType: 'angry',
+    auraColor: 'rgba(255,50,50,0.10)',
+  },
+  {
+    id: 'recep', label: '🤪 RECEP', title: 'İvedik Tipi',
+    bodyColor: '#cc3300', skinColor: '#d4956a', hairColor: '#1a1a1a',
+    bodyShape: 2,
+    personality: 'Gürültücü, komik, abartılı',
+    effect: 'Dövülme: %60 intikam şansı (en tehlikeli)',
+    extras: ['recep_shirt', 'recep_face'],
+    faceType: 'goofy',
+    auraColor: 'rgba(200,50,0,0.10)',
+  },
+  {
+    id: 'thug', label: '💀 THUG', title: 'İntikamcı',
+    bodyColor: '#1a1a1a', skinColor: '#888', hairColor: '#000',
+    bodyShape: 3,
+    personality: 'Sessiz, tehditkâr, karanlık',
+    effect: 'Özel: Sadece intikam için gelir',
+    extras: ['cap', 'scar'],
+    faceType: 'menacing',
+    auraColor: 'rgba(0,0,0,0.35)',
+  },
+  {
+    id: 'vip', label: '👑 VIP', title: 'Özel Müşteri',
+    bodyColor: '#b8860b', skinColor: '#F5DEB3', hairColor: '#5c3317',
+    bodyShape: 1,
+    personality: 'Kibar ama beklentili, zengin',
+    effect: 'Doğru servis: 3× bahşiş / Yanlış: 2 can',
+    extras: ['crown', 'monocle'],
+    faceType: 'smug',
+    auraColor: 'rgba(255,215,0,0.12)',
+  },
+  {
+    id: 'drunk', label: '🍺 DRUNK', title: 'Sarhoş',
+    bodyColor: '#6b3a1f', skinColor: '#FFB6C1', hairColor: '#8b4513',
+    bodyShape: 4,
+    personality: 'Tutarsız, sallanır, neşeli/ağlamaklı',
+    effect: 'Özel: Yanlış yemek de kabul eder',
+    extras: ['blush'],
+    faceType: 'drunk',
+    auraColor: 'rgba(255,150,50,0.10)',
+  },
+  {
+    id: 'inspector', label: '🕵️ INSPECTOR', title: 'Müfettiş',
+    bodyColor: '#e8e8e8', skinColor: '#F5F5DC', hairColor: '#555',
+    bodyShape: 1,
+    personality: 'Ciddi, titiz, resmi',
+    effect: 'Yanlış servis: 2 can / Doğru: +50 puan',
+    extras: ['glasses', 'clipboard'],
+    faceType: 'stern',
+    auraColor: 'rgba(200,200,200,0.08)',
+  },
+];
+
+// ─── State ────────────────────────────────────────────────────────────────────
+let animEnabled = true;
+let tick = 0;
+const phases = {}; // per-card phase: 'walk' | 'sit' | 'eat'
+CHARS.forEach(c => phases[c.id] = 'walk');
+
+// ─── DOM Oluştur ──────────────────────────────────────────────────────────────
+const grid = document.getElementById('grid');
+CHARS.forEach(ch => {
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.innerHTML = `
+    <h2>${ch.label} — ${ch.title}</h2>
+    <div class="phases">
+      <button class="phase-btn active" id="btn-${ch.id}-walk" onclick="setPhase('${ch.id}','walk')">🚶 Yürüme</button>
+      <button class="phase-btn" id="btn-${ch.id}-sit"  onclick="setPhase('${ch.id}','sit')">🪑 Oturma</button>
+      <button class="phase-btn" id="btn-${ch.id}-eat"  onclick="setPhase('${ch.id}','eat')">🍽 Yemek</button>
+    </div>
+    <canvas id="cv-${ch.id}" width="220" height="180"></canvas>
+    <div class="info">
+      <div class="personality">▸ ${ch.personality}</div>
+      <div class="effect">⚡ ${ch.effect}</div>
+    </div>
+  `;
+  grid.appendChild(card);
+});
+
+function setPhase(id, phase) {
+  phases[id] = phase;
+  ['walk','sit','eat'].forEach(p => {
+    const b = document.getElementById(`btn-${id}-${p}`);
+    if (b) b.className = 'phase-btn' + (p === phase ? ' active' : '');
+  });
+}
+function setAllPhase(phase) {
+  CHARS.forEach(c => setPhase(c.id, phase));
+}
+function toggleAnim() {
+  animEnabled = !animEnabled;
+  const b = document.getElementById('animBtn');
+  b.textContent = animEnabled ? '▶ Animasyon: AÇIK' : '⏸ Animasyon: KAPALI';
+  b.className = animEnabled ? 'active' : '';
+  if (animEnabled) loop();
+}
+
+// ─── Chibi Renderer — drawCustomer.ts ile uyumlu ─────────────────────────────
+function drawChibiCustomer(ctx, ch, phase, t) {
+  const W = 220, H = 180;
+  ctx.clearRect(0, 0, W, H);
+
+  // Arka plan aura
+  const grad = ctx.createRadialGradient(W/2, H/2, 10, W/2, H/2, 80);
+  grad.addColorStop(0, ch.auraColor);
+  grad.addColorStop(1, 'transparent');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+
+  // Faz etiket
+  ctx.fillStyle = 'rgba(255,255,255,0.12)';
+  ctx.font = '10px Courier New';
+  ctx.textAlign = 'left';
+  ctx.fillText(phase === 'walk' ? '▸ entering' : phase === 'sit' ? '▸ seated' : '▸ eating', 8, 14);
+
+  // Chibi boyutları — bodyShape'e göre (drawCustomer.ts ile aynı mantık)
+  const shapes = {
+    1: { bw:26, bh:22, hr:18.7 },
+    2: { bw:32, bh:22, hr:20.4 },
+    3: { bw:22, bh:26, hr:17   },
+    4: { bw:28, bh:18, hr:18.7 },
+  };
+  const { bw, bh, hr } = shapes[ch.bodyShape] || shapes[1];
+
+  // Animasyon hesapları — drawCustomer.ts'deki ile birebir aynı
+  const bobPhase  = t * 0.35;
+  const eatPhase  = t * 0.20;
+  const wobble    = ch.id === 'drunk' ? Math.sin(t * 0.18) * 10 : 0;
+  const drunkTilt = ch.id === 'drunk' ? Math.sin(t * 0.12) * 0.18 : 0;
+
+  const isWalking = phase === 'walk';
+  const isSeated  = phase === 'sit' || phase === 'eat';
+  const isEating  = phase === 'eat';
+
+  const bobY    = isWalking ? Math.abs(Math.sin(bobPhase)) * 5 : 0;
+  const swing   = isWalking ? Math.sin(bobPhase) * 6 : 0;
+  const eatBob  = isEating  ? Math.sin(eatPhase) * 4 : 0;
+  const armSwing = isWalking ? Math.sin(bobPhase) * 4 : 0;
+
+  // Thug için yavaş hareket
+  const speedMul = ch.id === 'thug' ? 0.3 : ch.id === 'vip' ? 0.4 : 1;
+  const swingS   = swing * speedMul;
+  const armSwingS = armSwing * speedMul;
+
+  const cx = W / 2 + wobble;
+  const cy = H / 2 + 20;
+
+  ctx.save();
+  ctx.translate(cx, cy);
+  if (ch.id === 'drunk') ctx.rotate(drunkTilt);
+  ctx.translate(0, -bobY + eatBob);
+
+  // ── Zemin gölgesi ──────────────────────────────────────────────────────────
+  if (isWalking) {
+    ctx.fillStyle = 'rgba(0,0,0,0.25)';
+    ctx.beginPath();
+    ctx.ellipse(0, 28, 20, 7, 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // ── AYAKLAR ────────────────────────────────────────────────────────────────
+  if (isWalking) {
+    ctx.fillStyle = '#222';
+    // Sol ayak
+    ctx.beginPath(); ctx.ellipse(-8 + swingS, 22, 6, 4, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5; ctx.stroke();
+    // Sağ ayak
+    ctx.beginPath(); ctx.ellipse(8 - swingS, 22, 6, 4, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.stroke();
+  } else {
+    // Oturma bacakları
+    ctx.fillStyle = '#222';
+    ctx.beginPath(); ctx.roundRect(-bw/2, 14, bw, 6, 3); ctx.fill();
+    ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5; ctx.stroke();
+  }
+
+  // ── GÖVDE ──────────────────────────────────────────────────────────────────
+  const bodyY = isSeated ? -bh/2 - 2 : -bh/2 + 2;
+  ctx.beginPath(); ctx.roundRect(-bw/2, bodyY, bw, bh, 10);
+  const bg = ctx.createLinearGradient(0, bodyY, 0, bodyY + bh);
+  bg.addColorStop(0, lighten(ch.bodyColor, 25));
+  bg.addColorStop(1, ch.bodyColor);
+  ctx.fillStyle = bg; ctx.fill();
+  ctx.strokeStyle = 'rgba(0,0,0,0.5)'; ctx.lineWidth = 2; ctx.stroke();
+
+  // Inspector beyaz önlük çizgisi
+  if (ch.id === 'inspector') {
+    ctx.strokeStyle = '#ccc'; ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(0, bodyY + 4); ctx.lineTo(0, bodyY + bh - 4);
+    ctx.stroke();
+    // Düğmeler
+    for (let i = 0; i < 3; i++) {
+      ctx.fillStyle = '#aaa';
+      ctx.beginPath(); ctx.arc(0, bodyY + 6 + i * 5, 1.5, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+
+  // ── ELLER ──────────────────────────────────────────────────────────────────
+  const handY = bodyY + bh / 2;
+  const handX = bw / 2 + 4;
+  ctx.fillStyle = ch.skinColor;
+
+  if (isEating) {
+    // Yemek yerken eller öne uzanır
+    ctx.beginPath(); ctx.arc(-handX + 5, handY + 5, 5, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#000'; ctx.lineWidth = 1.2; ctx.stroke();
+    ctx.beginPath(); ctx.arc(handX - 5, handY + 5, 5, 0, Math.PI * 2); ctx.fill();
+    ctx.stroke();
+    // Çatal/kaşık
+    ctx.strokeStyle = '#888'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(-handX + 5, handY + 5); ctx.lineTo(-handX + 5, handY + 14); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(handX - 5, handY + 5); ctx.lineTo(handX - 5, handY + 14); ctx.stroke();
+  } else if (isWalking) {
+    ctx.beginPath(); ctx.arc(-handX, handY + armSwingS, 5, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#000'; ctx.lineWidth = 1.2; ctx.stroke();
+    ctx.beginPath(); ctx.arc(handX, handY - armSwingS, 5, 0, Math.PI * 2); ctx.fill();
+    ctx.stroke();
+  } else {
+    // Oturma — eller masada
+    ctx.beginPath(); ctx.arc(-handX + 4, handY + 2, 5, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#000'; ctx.lineWidth = 1.2; ctx.stroke();
+    ctx.beginPath(); ctx.arc(handX - 4, handY + 2, 5, 0, Math.PI * 2); ctx.fill();
+    ctx.stroke();
+  }
+
+  // Clipboard (inspector, oturma/yemek)
+  if (ch.id === 'inspector' && !isWalking) {
+    ctx.fillStyle = '#8B4513';
+    ctx.beginPath(); ctx.roundRect(handX + 2, handY - 8, 12, 16, 2); ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.roundRect(handX + 3, handY - 7, 10, 14, 1); ctx.fill();
+    ctx.strokeStyle = '#555'; ctx.lineWidth = 0.8;
+    for (let i = 0; i < 3; i++) {
+      ctx.beginPath(); ctx.moveTo(handX + 5, handY - 4 + i * 4); ctx.lineTo(handX + 11, handY - 4 + i * 4); ctx.stroke();
+    }
+  }
+
+  // ── KAFA ───────────────────────────────────────────────────────────────────
+  const headY = bodyY - hr + 4;
+
+  // Kafa taban
+  ctx.beginPath(); ctx.arc(0, headY, hr, 0, Math.PI * 2);
+  const hg = ctx.createRadialGradient(-4, headY - 4, 2, 0, headY, hr);
+  hg.addColorStop(0, lighten(ch.skinColor, 15));
+  hg.addColorStop(1, ch.skinColor);
+  ctx.fillStyle = hg; ctx.fill();
+  ctx.strokeStyle = 'rgba(0,0,0,0.4)'; ctx.lineWidth = 2; ctx.stroke();
+
+  // Saç
+  ctx.fillStyle = ch.hairColor;
+  ctx.beginPath(); ctx.arc(0, headY, hr, Math.PI, 0); ctx.fill();
+  ctx.beginPath(); ctx.arc(0, headY - hr + 5, hr * 0.8, Math.PI, 0); ctx.fill();
+
+  // ── YÜZ ────────────────────────────────────────────────────────────────────
+  drawFace(ctx, ch, headY, hr, t, isEating);
+
+  // ── AKSESUARLAR ────────────────────────────────────────────────────────────
+  drawExtras(ctx, ch, headY, hr, bw, bodyY, bh, t);
+
+  ctx.restore();
+
+  // ── SABIR ÇUBUĞU (oturma fazında) ─────────────────────────────────────────
+  if (isSeated && !isEating) {
+    const patience = 0.55 + Math.sin(t * 0.05) * 0.2; // demo animasyonu
+    const isAngry = patience < 0.3;
+    const barW = 50, barH = 7;
+    const bx = cx - barW / 2;
+    const by = cy + bodyY - hr - 28;
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.beginPath(); ctx.roundRect(bx, by, barW, barH, 3); ctx.fill();
+    ctx.fillStyle = patience > 0.5 ? '#22c55e' : patience > 0.3 ? '#eab308' : '#ef4444';
+    ctx.beginPath(); ctx.roundRect(bx, by, barW * patience, barH, 3); ctx.fill();
+    ctx.strokeStyle = '#111'; ctx.lineWidth = 1.5;
+    ctx.strokeRect(bx, by, barW, barH);
+    if (isAngry) {
+      ctx.font = '12px Arial'; ctx.textAlign = 'left';
+      ctx.fillText('💢', bx + barW + 4, by + barH);
+    }
+  }
+
+  // ── YEMEK BALONU (yemek fazında) ───────────────────────────────────────────
+  if (isEating) {
+    const foods = ['🍕','🍔','🍜','🌯','🥗','🍣'];
+    const food = foods[CHARS.findIndex(c => c.id === ch.id) % foods.length];
+    const bx = cx + hr + 10;
+    const by = cy + bodyY - hr - 10;
+    ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.arc(bx, by, 16, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = ch.bodyColor; ctx.lineWidth = 2; ctx.stroke();
+    ctx.font = '16px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(food, bx, by);
+  }
+}
+
+// ─── Yüz Çizimi ──────────────────────────────────────────────────────────────
+function drawFace(ctx, ch, headY, hr, t, isEating) {
+  const eyeY = headY + 2;
+  const eyeX = hr * 0.35;
+  const ft = ch.faceType;
+
+  // Gözler
+  if (ft === 'menacing') {
+    // Thug: gölgeli bant + kırmızı gözler
+    ctx.fillStyle = 'rgba(0,0,0,0.75)';
+    ctx.beginPath(); ctx.roundRect(-hr * 0.7, eyeY - 5, hr * 1.4, 9, 2); ctx.fill();
+    ctx.fillStyle = '#cc0000';
+    ctx.beginPath(); ctx.arc(-eyeX, eyeY, 2.5, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(eyeX, eyeY, 2.5, 0, Math.PI * 2); ctx.fill();
+  } else if (ft === 'drunk') {
+    // X gözler
+    ctx.strokeStyle = '#333'; ctx.lineWidth = 2.5;
+    [[-eyeX, eyeY], [eyeX, eyeY]].forEach(([ex, ey]) => {
+      ctx.beginPath(); ctx.moveTo(ex - 4, ey - 4); ctx.lineTo(ex + 4, ey + 4); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(ex + 4, ey - 4); ctx.lineTo(ex - 4, ey + 4); ctx.stroke();
+    });
+  } else {
+    // Normal oval gözler
+    ctx.fillStyle = '#222';
+    ctx.beginPath(); ctx.ellipse(-eyeX, eyeY, 2.8, 4.2, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(eyeX, eyeY, 2.8, 4.2, 0, 0, Math.PI * 2); ctx.fill();
+    // Parıltı
+    ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.arc(-eyeX + 1, eyeY - 1.5, 1.1, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(eyeX + 1, eyeY - 1.5, 1.1, 0, Math.PI * 2); ctx.fill();
+  }
+
+  // Kaşlar
+  if (ft === 'angry' || ft === 'menacing') {
+    ctx.fillStyle = '#111';
+    ctx.save();
+    ctx.translate(-eyeX, eyeY - 7);
+    ctx.rotate(-0.35);
+    ctx.fillRect(-5, -2, 10, 3);
+    ctx.restore();
+    ctx.save();
+    ctx.translate(eyeX, eyeY - 7);
+    ctx.rotate(0.35);
+    ctx.fillRect(-5, -2, 10, 3);
+    ctx.restore();
+  } else if (ft === 'stern') {
+    ctx.fillStyle = '#333';
+    ctx.fillRect(-eyeX - 5, eyeY - 9, 10, 2.5);
+    ctx.fillRect(eyeX - 5, eyeY - 9, 10, 2.5);
+  } else if (ft === 'smug') {
+    // VIP: hafif yukarı kalkık kaş
+    ctx.fillStyle = '#5c3317';
+    ctx.save(); ctx.translate(-eyeX, eyeY - 8); ctx.rotate(0.15);
+    ctx.fillRect(-5, -1.5, 10, 2.5); ctx.restore();
+    ctx.save(); ctx.translate(eyeX, eyeY - 8); ctx.rotate(-0.15);
+    ctx.fillRect(-5, -1.5, 10, 2.5); ctx.restore();
+  }
+
+  // Ağız
+  const mouthY = headY + hr * 0.45;
+  ctx.strokeStyle = '#333'; ctx.lineWidth = 2;
+  ctx.beginPath();
+
+  if (isEating) {
+    // Yemek yerken açık ağız
+    ctx.fillStyle = '#8B0000';
+    ctx.beginPath(); ctx.arc(0, mouthY, 5, 0, Math.PI); ctx.fill();
+    ctx.strokeStyle = '#333'; ctx.lineWidth = 1.5; ctx.stroke();
+  } else if (ft === 'happy') {
+    // Gülümseme — yukarı bakan yay
+    ctx.arc(0, mouthY - 3, 6, 0.15 * Math.PI, 0.85 * Math.PI);
+    ctx.stroke();
+    // Yanaklar
+    ctx.fillStyle = 'rgba(255,182,193,0.5)';
+    ctx.beginPath(); ctx.arc(-hr * 0.55, headY + 6, 4, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(hr * 0.55, headY + 6, 4, 0, Math.PI * 2); ctx.fill();
+  } else if (ft === 'angry') {
+    // Asık ağız — aşağı bakan yay
+    ctx.arc(0, mouthY + 3, 6, 1.15 * Math.PI, 1.85 * Math.PI);
+    ctx.stroke();
+  } else if (ft === 'goofy') {
+    // Recep: büyük açık gülüş
+    ctx.fillStyle = '#8B0000';
+    ctx.beginPath(); ctx.arc(0, mouthY - 2, 7, 0, Math.PI); ctx.fill();
+    ctx.strokeStyle = '#333'; ctx.lineWidth = 1.5; ctx.stroke();
+    // Dişler
+    ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.roundRect(-5, mouthY - 2, 10, 4, 1); ctx.fill();
+  } else if (ft === 'menacing') {
+    // Thug: düz çizgi
+    ctx.moveTo(-5, mouthY); ctx.lineTo(5, mouthY); ctx.stroke();
+  } else if (ft === 'drunk') {
+    // Eğri ağız
+    ctx.moveTo(-6, mouthY);
+    ctx.quadraticCurveTo(-2, mouthY + 5, 2, mouthY - 3);
+    ctx.quadraticCurveTo(5, mouthY - 7, 7, mouthY);
+    ctx.stroke();
+    // Kırmızı yanak
+    ctx.fillStyle = 'rgba(255,100,100,0.45)';
+    ctx.beginPath(); ctx.arc(-hr * 0.55, headY + 5, 5, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(hr * 0.55, headY + 5, 5, 0, Math.PI * 2); ctx.fill();
+  } else if (ft === 'smug') {
+    // VIP: hafif gülümseme, bir taraf yukarı
+    ctx.moveTo(-5, mouthY + 1);
+    ctx.quadraticCurveTo(0, mouthY - 3, 6, mouthY - 1);
+    ctx.stroke();
+  } else if (ft === 'stern') {
+    // Inspector: düz, sıkı
+    ctx.moveTo(-5, mouthY); ctx.lineTo(5, mouthY); ctx.stroke();
+  } else {
+    ctx.arc(0, mouthY - 2, 4, 0.1 * Math.PI, 0.9 * Math.PI);
+    ctx.stroke();
+  }
+}
+
+// ─── Aksesuar Çizimi ──────────────────────────────────────────────────────────
+function drawExtras(ctx, ch, headY, hr, bw, bodyY, bh, t) {
+  ch.extras.forEach(ex => {
+    if (ex === 'mustache') {
+      ctx.fillStyle = '#2a1a0a';
+      ctx.beginPath();
+      ctx.ellipse(-4, headY + hr * 0.3, 5, 2.5, -0.2, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath();
+      ctx.ellipse(4, headY + hr * 0.3, 5, 2.5, 0.2, 0, Math.PI * 2); ctx.fill();
+    }
+    if (ex === 'cap') {
+      // Thug şapkası
+      ctx.fillStyle = '#111';
+      ctx.beginPath(); ctx.ellipse(0, headY - hr + 4, hr * 1.1, 5, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.roundRect(-hr * 0.8, headY - hr * 1.7, hr * 1.6, hr * 0.9, [4, 4, 0, 0]); ctx.fill();
+      ctx.strokeStyle = '#333'; ctx.lineWidth = 1; ctx.stroke();
+    }
+    if (ex === 'scar') {
+      ctx.strokeStyle = '#8B0000'; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(hr * 0.3, headY - 4); ctx.lineTo(hr * 0.5, headY + 4); ctx.stroke();
+    }
+    if (ex === 'crown') {
+      ctx.fillStyle = '#FFD700';
+      ctx.beginPath();
+      ctx.moveTo(-hr * 0.7, headY - hr + 2);
+      ctx.lineTo(-hr * 0.5, headY - hr - 10);
+      ctx.lineTo(-hr * 0.15, headY - hr - 4);
+      ctx.lineTo(0, headY - hr - 13);
+      ctx.lineTo(hr * 0.15, headY - hr - 4);
+      ctx.lineTo(hr * 0.5, headY - hr - 10);
+      ctx.lineTo(hr * 0.7, headY - hr + 2);
+      ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = '#b8860b'; ctx.lineWidth = 1.5; ctx.stroke();
+      // Taşlar
+      ['#ff4444','#4444ff','#44ff44'].forEach((col, i) => {
+        ctx.fillStyle = col;
+        ctx.beginPath(); ctx.arc(-hr * 0.35 + i * hr * 0.35, headY - hr - 5, 2, 0, Math.PI * 2); ctx.fill();
+      });
+    }
+    if (ex === 'monocle') {
+      ctx.strokeStyle = '#b8860b'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(hr * 0.35, headY + 2, 6, 0, Math.PI * 2); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(hr * 0.35 + 6, headY + 2); ctx.lineTo(hr * 0.35 + 9, headY + 8); ctx.stroke();
+    }
+    if (ex === 'glasses') {
+      ctx.strokeStyle = '#444'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(-hr * 0.35, headY + 2, 5.5, 0, Math.PI * 2); ctx.stroke();
+      ctx.beginPath(); ctx.arc(hr * 0.35, headY + 2, 5.5, 0, Math.PI * 2); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-hr * 0.35 + 5.5, headY + 2); ctx.lineTo(hr * 0.35 - 5.5, headY + 2); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-hr * 0.35 - 5.5, headY + 2); ctx.lineTo(-hr * 0.35 - 10, headY); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(hr * 0.35 + 5.5, headY + 2); ctx.lineTo(hr * 0.35 + 10, headY); ctx.stroke();
+    }
+    if (ex === 'blush') {
+      ctx.fillStyle = 'rgba(255,100,120,0.4)';
+      ctx.beginPath(); ctx.ellipse(-hr * 0.55, headY + 5, 5, 3, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(hr * 0.55, headY + 5, 5, 3, 0, 0, Math.PI * 2); ctx.fill();
+    }
+    if (ex === 'angry_brows') {
+      // Rude için ekstra kızgın kaş çizgisi
+      ctx.strokeStyle = '#8B0000'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(-hr * 0.6, headY - hr * 0.3); ctx.lineTo(-hr * 0.1, headY - hr * 0.15); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(hr * 0.6, headY - hr * 0.3); ctx.lineTo(hr * 0.1, headY - hr * 0.15); ctx.stroke();
+    }
+    if (ex === 'recep_shirt') {
+      // Kırmızı çizgili gömlek çizgileri vücut üstüne
+      ctx.strokeStyle = '#ff6633';
+      ctx.lineWidth = 2;
+      for (let i = 0; i < 4; i++) {
+        const lx = -bw/2 + 4 + i * (bw / 4);
+        ctx.beginPath();
+        ctx.moveTo(lx, bodyY + 3);
+        ctx.lineTo(lx, bodyY + bh - 3);
+        ctx.stroke();
+      }
+      // Gömlek yakası (V yaka)
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(-5, bodyY + 2);
+      ctx.lineTo(0, bodyY + 8);
+      ctx.lineTo(5, bodyY + 2);
+      ctx.stroke();
+      // Göbek çıkıntısı — bodyShape 2 zaten geniş ama ekstra vurgu
+      ctx.strokeStyle = 'rgba(0,0,0,0.2)'; ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(0, bodyY + bh - 5, bw * 0.35, 0.1 * Math.PI, 0.9 * Math.PI);
+      ctx.stroke();
+    }
+    if (ex === 'recep_face') {
+      // Kalın kaşlar
+      ctx.fillStyle = '#111';
+      ctx.beginPath(); ctx.roundRect(-hr * 0.6, headY - hr * 0.25, hr * 0.5, 4, 2); ctx.fill();
+      ctx.beginPath(); ctx.roundRect(hr * 0.1, headY - hr * 0.25, hr * 0.5, 4, 2); ctx.fill();
+      // Büyük yuvarlak burun
+      ctx.fillStyle = darken(ch.skinColor, 20);
+      ctx.beginPath(); ctx.arc(0, headY + hr * 0.2, 5, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = 'rgba(0,0,0,0.3)'; ctx.lineWidth = 1; ctx.stroke();
+      // Burun delikleri
+      ctx.fillStyle = 'rgba(0,0,0,0.35)';
+      ctx.beginPath(); ctx.ellipse(-2.5, headY + hr * 0.25, 1.5, 1, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(2.5, headY + hr * 0.25, 1.5, 1, 0, 0, Math.PI * 2); ctx.fill();
+      // Kısa saç — düz kesilmiş
+      ctx.fillStyle = '#111';
+      ctx.beginPath(); ctx.roundRect(-hr * 0.85, headY - hr * 0.95, hr * 1.7, hr * 0.45, [4, 4, 0, 0]); ctx.fill();
+    }  });
+}
+
+// ─── Renk Yardımcıları ────────────────────────────────────────────────────────
+function lighten(hex, amt) {
+  const n = parseInt(hex.replace('#',''), 16);
+  const r = Math.min(255, (n >> 16) + amt);
+  const g = Math.min(255, ((n >> 8) & 0xff) + amt);
+  const b = Math.min(255, (n & 0xff) + amt);
+  return `rgb(${r},${g},${b})`;
+}
+
+function darken(hex, amt) {
+  const n = parseInt(hex.replace('#',''), 16);
+  const r = Math.max(0, (n >> 16) - amt);
+  const g = Math.max(0, ((n >> 8) & 0xff) - amt);
+  const b = Math.max(0, (n & 0xff) - amt);
+  return `rgb(${r},${g},${b})`;
+}
+
+// ─── Ana Loop ─────────────────────────────────────────────────────────────────
+function loop() {
+  if (!animEnabled) return;
+  tick++;
+  CHARS.forEach(ch => {
+    const canvas = document.getElementById(`cv-${ch.id}`);
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    drawChibiCustomer(ctx, ch, phases[ch.id], tick);
+  });
+  requestAnimationFrame(loop);
+}
+
+window.addEventListener('load', () => {
+  // İlk statik çizim
+  CHARS.forEach(ch => {
+    const canvas = document.getElementById(`cv-${ch.id}`);
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    drawChibiCustomer(ctx, ch, phases[ch.id], 0);
+  });
+  loop();
+});
+</script>
+</body>
+</html>

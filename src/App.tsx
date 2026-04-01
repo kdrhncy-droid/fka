@@ -16,7 +16,7 @@ export default function App() {
   const isJoinedRef = useRef(false);
   const interactOverrideRef = useRef<(() => void) | null>(null);
 
-  const { socket, isConnected, myId, gameStateRef, audioCtxRef, ping, chatMessages, dayEndSummary, clearDayEnd } = useSocket(localPlayerRef);
+  const { socket, isConnected, myId, gameStateRef, audioCtxRef, ping, chatMessages, dayEndSummary, clearDayEnd, revengeSceneSummary, clearRevengeScene } = useSocket(localPlayerRef);
   const keysRef = useKeyboard({
     isJoinedRef, socket, audioCtxRef, gameStateRef, localPlayerRef,
     onInteract: () => {
@@ -155,6 +155,8 @@ export default function App() {
       chatMessages={chatMessages}
       dayEndSummary={dayEndSummary}
       onClearDayEnd={clearDayEnd}
+      revengeSceneSummary={revengeSceneSummary}
+      onClearRevengeScene={clearRevengeScene}
     />
   );
 }

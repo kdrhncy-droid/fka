@@ -1,4 +1,4 @@
-export type Personality = 'polite' | 'rude' | 'recep' | 'thug';
+export type Personality = 'polite' | 'rude' | 'recep' | 'thug' | 'vip' | 'drunk' | 'inspector';
 export type DialogTrigger = 'entry' | 'waiting' | 'eating' | 'leaving_happy' | 'leaving_angry' | 'revenge';
 
 export const DIALOGUES: Record<Personality, Record<DialogTrigger, string[]>> = {
@@ -47,21 +47,21 @@ export const DIALOGUES: Record<Personality, Record<DialogTrigger, string[]>> = {
     },
     rude: {
         entry: [
-            "Hele şükür! Açız aç!", "Bana hemen masa verin.", "Boş yer yok mu ya bu ne kalabalık!", "Ustam karnımız zil çalıyor seri ol.",
-            "Hadi bakalım, umarım zehirlenmeyiz.", "Yemekleri de inşallah tipinize benzemiyordur.", "Çabuk olun vaktim yok.",
-            "Açlıktan masayı kemireceğim, yer verin.", "Kardeşim boş masa ayarlayın seri.", "Umarım o fırın sadece süs değildir.",
-            "Hey! Bana bakacak kimse yok mu burada?", "Şu köşeyi bana ayarlayın hemen.", "Hızlı servis var dediler geldik, görelim bakalım.",
-            "Kapıda ağaç olduk, hadi bir ilgilenin!", "Açım diyorum, şaka yapmıyorum!", "Lanet olsun çok açım, çabuk masa bulun!",
-            "Burası niye bu kadar dolu ya!", "Ne dikiliyorsunuz orda, servis açın!", "Bugün sinirliyim zaten, beni bekletmeyin!",
-            "Paramızla rezil olmaya gelmedik umarım."
+            "Hele şükür! Açız lan aç!", "Masayı hazırla seri yoksa dükkanı başına yıkarım.", "Bu ne biçim mekan lan, pavyon mu burası!", "Açlıktan midem sikildi, çabuk masa verin.",
+            "Zehirlenmeyiz inşallah amk.", "Ulan sabahtan beri sizi bekliyoz yarrak kafalılar.", "Aşçı uyuyor mu içerde, dürtün şu pezevengi.",
+            "Açım lan açım, şaka mısınız amına koyayım!", "Boş atıp dolu tutmaya gelmedik, yemeği getirin.", "Masayı kemiricem amk, çabuk olun.",
+            "Şu dükkanda bize bakacak bir tane delikanlı yok mu!", "Hadi lan amcık ağızlılar, hızlı servis dediler geldik.", "Benim asabımı bozmayın, yemeğimi getirin.",
+            "Kapıda ağaç olduk lan! Ağaç!", "Ne dikiliyorsun bön bön, masa ayarla!", "Sikecem dükkanınızı ha, ilgilenin bizle!",
+            "Paramızla rezil olmaya geldik iyi mi.", "Bugün canım sıkkın zaten, beni delirtmeyin ulan!", "Şu mekana bak, ahırdan hallice.",
+            "Ne bakıyon dik dik, yemek ver yemek!"
         ],
         waiting: [
-            "Nerde kaldı bu yemek kardeşim?!", "Ölelim mi açlıktan, hadi ya!", "Aşçı içeride uyudu herhalde.", "Siparişimi unuttunuz mu lan?",
-            "Bizden sonrakilere gitti yemekler, ne iş!", "Ne kadar bekleyeceğiz daha?!", "Masayı yiyeceğim birazdan getirin şu yemeği.",
-            "Hesabı ödeyecek adam bulamayacaksınız, açlıktan ölecem.", "Şefim fırına kedi mi kaçtı nerede yemek!", "Hızlanın biraz, kaplumbağa gibisiniz!",
-            "Böyle yavaş servis hayatımda görmedim.", "Kendim pişirsem daha hızlı yemiştim.", "Uyuyor musunuz ayakta?!", "Aşçı fırını yeni yakıyor galiba.",
-            "Kaç saat oldu, saymayı unuttum!", "Aga bu ne yavaşlık ya, sabrım taşıyor!", "Masaya yapışıp kaldık ulan!", "Yemeğin tarlasını mı sürüyorsunuz!",
-            "Yemin ediyorum sinir krizi geçirecem şimdi!", "Getir ulan artık şu zıkkımı!"
+            "Nerde kaldı ulan bu zıkkım?!", "Açlıktan götüm düştü be! Hadi amk!", "Aşçı içeride osuruyor herhalde.", "Siparişi siktiri boktan bi menüye niye yazdınız?!",
+            "Bizden sonrakilere gitti yemekler, sizin ben adaletinizi sikeyim!", "Amına koduğumun menüsünü okumak suç mu, nerde yemek!", "Masayı yiyeceğim birazdan getirin şu orospu yemeğini.",
+            "Fırına atıp sizi pişirecem şimdi!", "Hızlanın biraz lan, kaplumbağa yapsa daha hızlı olur be!", "Sizin yapacağınız servisin ben ta amk.",
+            "Böyle yavaş servis sikiş hikayelerinde bile yok.", "Kendim pişirsem mideme daha çabuk inerdi pezevenkler.", "Ayakta 31 mi çekiyorsunuz lan, getirin yemeği!", 
+            "Bir yemeği pişirmek kaç saat sürer dalyaraklar!", "Aga bu ne yavaşlık ya, siki tutacaz açlıktan!", "Masa altına yapıştık anasını satayım!", 
+            "Yemeğin tarlasını mı sikiyorsunuz lan çıkmadı o yemek!", "Sinirden sikimi koparıcam şimdi!", "Getir ulan artık şu zıkkımın kökünü!"
         ],
         eating: [
             "İdare eder işte.", "Daha iyisini de yemiştim.", "Sos az olmuş ama yicez artık.", "Sıcakmış bare, neyse yiyelim.",
@@ -137,27 +137,139 @@ export const DIALOGUES: Record<Personality, Record<DialogTrigger, string[]>> = {
     },
     thug: { // YENİ: Vurulan müşterinin arkadaşları
         entry: [],
-        waiting: [],
-        eating: [],
-        leaving_happy: [],
-        leaving_angry: [],
+        waiting: [
+            "Nerde lan benim adamıma vuran o amcık hoşafı!",
+            "Kim ulan benim kardeşime el kaldıran gavat!",
+            "Mekanı başınıza yıkmaya geldim amına koduklarım!",
+            "Kardeşime vuran ellerinizi götünüze sokarım sizin!",
+            "Adamsanız çıkın lan karşıma, sikecem belanızı teke tek!",
+            "Arkadaşımın hesabı fena sorulacak lan burada sürtükler!",
+            "Topunuza dalarım amk çocukları, kimi vurdunuz lan!",
+            "Dükkanı yakıcam lan, nerde o kabadayı ibne!",
+            "Şimdi bittiniz olm, aşçıyı o fırına atıp amına koycam!",
+            "Benim dostuma el kaldırmak ne demekmiş ecdadınızı sikecem!",
+        ],
+        eating: [
+            "İyi yemek... ama bu bizi kurtarmaz.",
+            "Şlop şlop... Hesabı kapatıyoruz sonra.",
+            "Güzel pişirmiş, yazık olacak.",
+            "Ye kardeşim ye, güç lazım olacak.",
+        ],
+        leaving_happy: [
+            "Bu sefer geçtiniz... Bu sefer.",
+            "Lezzetliydi. Ama unutmadık.",
+            "Eyvallah aşçı. Bir dahaki sefere daha dikkatli ol.",
+            "Gidiyoruz... Şimdilik.",
+        ],
+        leaving_angry: [
+            "Tamam. Tamam. Anladık.",
+            "Beklettiniz. Bunu not ettik.",
+            "Gidin lan, zaten planımız vardı.",
+        ],
         revenge: [
-            "Nerde lan benim adamıma vuran o şerefsiz!",
-            "Kim ulan benim kardeşime el kaldıran!",
-            "Mekanı başınıza yıkmaya geldim ulan!",
-            "Kardeşime vuran ellerinizi kırarım sizin!",
-            "Adamsanız çıkın lan karşıma, teke tek!",
-            "Arkadaşımın hesabı sorulacak lan burada!",
-            "Topunuza dalarım ulan, bana kimi vurduğunu söyleyin!",
-            "Dükkanı yakıcam lan, nerde o kabadayı!",
-            "Şimdi bittiniz olm, aşçıyı fırına atıcam!",
-            "Benim dostuma nasıl vurursunuz lan siz kahpeler!",
-            "Ödettirmeye geldim, mekanın tapusunu alıcam!",
-            "Yazıklar olsun ulan, müşteriye vurmak neymiş gösterecem!",
-            "Karşim sen rahat ol, şimdi bunların kafasını ezicem!",
-            "Lan o lavuk buraya gelecek yoksa dükkanı yıkarım!",
-            "Gelin lan teker teker, hepinizi ipe dizicem!",
-            "Kim ulan o efe! Çıksın karşıma çabuk!"
+            "Nerde lan benim adamıma vuran o amcık hoşafı!",
+            "Kim ulan benim kardeşime el kaldıran gavat!",
+            "Mekanı başınıza yıkmaya geldim amına koduklarım!",
+            "Kardeşime vuran ellerinizi götünüze sokarım sizin!",
+            "Adamsanız çıkın lan karşıma, sikecem belanızı teke tek!",
+            "Arkadaşımın hesabı fena sorulacak lan burada sürtükler!",
+            "Topunuza dalarım amk çocukları, kimi vurdunuz lan!",
+            "Dükkanı yakıcam lan, nerde o kabadayı ibne!",
+            "Şimdi bittiniz olm, aşçıyı o fırına atıp amına koycam!",
+            "Benim dostuma el kaldırmak ne demekmiş ecdadınızı sikecem!",
+            "Ödettirmeye geldim lan, mekanın tapusunu götünüze monte edicem!",
+            "Yazıklar olsun ulan ibneler, adam mı oldunuz başımıza!",
+            "Karşim sen rahat ol, şimdi bunların anasını avradını teker teker...",
+            "Lan o lavuk buraya gelecek yoksa dükkanın ebesini sikerim!",
+            "Gelin lan teker teker, alayınızı ipe dizip sikecem!",
+            "Kim ulan o yarrak kafalı şef! Çıksın karşıma çabuk amk!"
         ]
-    }
+    },
+    vip: {
+        entry: [
+            "İyi günler. Rezervasyonum var.", "Burayı çok tavsiye ettiler, görelim.",
+            "Masam hazır mı?", "Umarım kalite beklentilerimi karşılar.",
+            "Merhaba. En iyi masanızı istiyorum.", "Şef burada mı? Selamlarımı iletin.",
+        ],
+        waiting: [
+            "Biraz uzun sürüyor...", "Kaliteli hizmet sabır ister, anlıyorum.",
+            "Siparişim ne zaman gelecek acaba?", "Diğer masalar önce mi servis aldı?",
+            "Vaktim kıymetli, lütfen hızlanın.", "Beklemeye alışkın değilim açıkçası.",
+        ],
+        eating: [
+            "Fena değil... beklentilerimi karşılıyor.", "Sunum biraz daha özenli olabilirdi.",
+            "Lezzet iyi, puan veriyorum.", "Malzeme kalitesi belli oluyor, aferin.",
+            "Bir dahaki sefere daha iyi olur umarım.", "Şefin ellerine sağlık.",
+        ],
+        leaving_happy: [
+            "Beklentilerimi karşıladınız, tebrikler.", "Bahşişi hak ettiniz.",
+            "Arkadaşlarıma tavsiye edeceğim.", "Kalite vardı, tekrar gelirim.",
+            "Memnun ayrılıyorum, elinize sağlık.", "İyi iş çıkardınız.",
+        ],
+        leaving_angry: [
+            "Bu hizmet seviyesi kabul edilemez.", "Beklentilerimin çok altında kaldınız.",
+            "Bir daha gelmeyeceğim, emin olun.", "Şikayetimi ilgili yerlere ileteceğim.",
+            "Vaktimi boşa harcattınız.", "Hayal kırıklığı yaşadım.",
+        ],
+        revenge: [],
+    },
+    drunk: {
+        entry: [
+            "Heyyyy! Burasıı çok güüzel!", "Arkadaşlar nerede? Ah ben geldim!",
+            "Yemek istiyorum... ya da içki... ikisi de olur!",
+            "Merhaba güzel insan! Masa var mı?", "Burası mı... evet burası!",
+            "Hepinizi seviyorum! Yemek getirin!",
+        ],
+        waiting: [
+            "Yemek geliyor mu? Geliyor mu?", "Ben buradayım! Unutmadınız mı?",
+            "Çok güzel bir yer burası... ne yiyordum ben?",
+            "Arkadaşım nerede gitti acaba...", "Beklemek güzel... her şey güzel!",
+            "Yemek... evet yemek istiyorum... sanırım.",
+        ],
+        eating: [
+            "Mmm bu çok güzel! Yoksa kötü mü? Güzel!", "Yiyorum işte, ne güzel!",
+            "Bu ne yemek? Fark etmez, yiyorum!", "Lezzzetli! Sanırım...",
+            "Herkese ısmarlıyorum! Ah param yok...", "Şef dahi biri!",
+        ],
+        leaving_happy: [
+            "Hepinizi seviyorum! Güle güle!", "Çok güzeldi! Ne yedim bilmiyorum ama güzeldi!",
+            "Tekrar geleceğim! Yarın mı? Bugün mü?", "Eyvallah dostlar!",
+            "Harika bir gece! Gündüz mü? Fark etmez!", "Sizi seviyorum!",
+        ],
+        leaving_angry: [
+            "Neden bu kadar beklettiniz... üzüldüm.", "Gidiyorum... nereye gidiyorum?",
+            "Açım hâlâ... bu doğru mu?", "Tamam tamam gidiyorum...",
+            "Üzgünüm... siz de üzgün müsünüz?", "Elveda güzel mekan...",
+        ],
+        revenge: [],
+    },
+    inspector: {
+        entry: [
+            "Sağlık müfettişiyim. Denetim zamanı.", "Belgelerin hazır mı?",
+            "Mutfak hijyenini kontrol edeceğim.", "Şikayetler üzerine geldim.",
+            "Resmi denetim. Lütfen normal çalışmaya devam edin.",
+            "Ruhsatınızı görmek istiyorum.",
+        ],
+        waiting: [
+            "Servis süresi ölçülüyor.", "Bekleme süresi standartları aşıyor.",
+            "Not alıyorum...", "Bu gecikme raporda yer alacak.",
+            "Standart bekleme süresi 8 dakikadır.", "Saatim çalışıyor.",
+        ],
+        eating: [
+            "Malzeme tazeliği... kabul edilebilir.", "Sunum standartlara uygun.",
+            "Lezzet değerlendirmesi yapılıyor.", "Pişirme süresi uygun görünüyor.",
+            "Hijyen notu: iyi.", "Porsiyon standardı... yeterli.",
+        ],
+        leaving_happy: [
+            "Denetim tamamlandı. Sonuçlar olumlu.", "Standartları karşılıyorsunuz.",
+            "Raporunuz temiz çıktı.", "Tebrikler, devam edin.",
+            "Bu sefere geçtiniz.", "Belgeleri düzenli tutun.",
+        ],
+        leaving_angry: [
+            "Rapor olumsuz. Ceza kesilecek.", "Standartların altında hizmet.",
+            "Kapatma kararı değerlendiriliyor.", "Bu durum kabul edilemez.",
+            "Resmi uyarı verildi.", "Bir dahaki denetimde daha dikkatli olun.",
+        ],
+        revenge: [],
+    },
 };

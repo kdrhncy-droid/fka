@@ -213,6 +213,7 @@ export interface GameState {
     _seatCooldown?: number;
     _kaosTimer?: number;
     mapId?: string;
+    pendingRevengeScene?: boolean;
 }
 
 export interface StationPosition {

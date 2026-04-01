@@ -20,6 +20,8 @@ interface UseSocketReturn {
     chatMessages: ChatMessage[];
     dayEndSummary: DayEndSummary | null;
     clearDayEnd: () => void;
+    revengeSceneSummary: DayEndSummary | null;
+    clearRevengeScene: () => void;
 }
 
 export interface ChatMessage {
@@ -50,6 +52,7 @@ export function useSocket(
     const pingBufferRef = useRef<number[]>([]);
     const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
     const [dayEndSummary, setDayEndSummary] = useState<DayEndSummary | null>(null);
+    const [revengeSceneSummary, setRevengeSceneSummary] = useState<DayEndSummary | null>(null);
     const gameStateRef = useRef<GameState>(DEFAULT_STATE);
     const audioCtxRef = useRef<AudioContext | null>(null);
     const roomIdRef = useRef<string>('');
@@ -189,6 +192,10 @@ export function useSocket(
             setDayEndSummary(prev => prev ?? summary); // zaten varsa ezme
         });
 
+        newSocket.on('revengeScene', (summary: DayEndSummary) => {
+            setRevengeSceneSummary(summary);
+        });
+
         // ─── Visibility API: Arka planda/Ön planda Algılama ───────────────
         const handleVisibilityChange = () => {
             if (document.hidden) {
@@ -231,6 +238,7 @@ export function useSocket(
     }, [socket]);
 
     const clearDayEnd = () => setDayEndSummary(null);
+    const clearRevengeScene = () => setRevengeSceneSummary(null);
 
-    return { socket, isConnected, myId, gameStateRef, audioCtxRef, connectionStatus, ping, chatMessages, dayEndSummary, clearDayEnd };
+    return { socket, isConnected, myId, gameStateRef, audioCtxRef, connectionStatus, ping, chatMessages, dayEndSummary, clearDayEnd, revengeSceneSummary, clearRevengeScene };
 }

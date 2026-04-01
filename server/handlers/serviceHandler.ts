@@ -63,28 +63,39 @@ export const handleCustomers: InteractionHandler = ({ gs, p, px, py, snd, io, ro
       // Doğru yemek mi?
       const correctFood = !isTray(p.holding) && c.wants === baseFood;
 
-      if (correctFood) {
-        // Acı istek uyumsuzluğu kontrolü
-        if (customerWantsSpicy && !playerHasSpicy) {
-          // Müşteri acı istiyor ama normal yemek verdin - can kaybı
+      // Sarhoş müşteri: yanlış yemek de kabul eder ama %50 ihtimalle
+      const isDrunk = c.personality === 'drunk';
+      const drunkAccept = isDrunk && !isTray(p.holding) && Math.random() < 0.5;
+
+      if (correctFood || drunkAccept) {
+        // Acı istek uyumsuzluğu kontrolü (sarhoş için atla)
+        if (!isDrunk && customerWantsSpicy && !playerHasSpicy) {
           gs.lives = Math.max(0, gs.lives - 1);
           c.isEating = true; c.eatTimer = EAT_TICKS; c.wants = null; p.holding = null;
-          c.tipAmount = 0; // Bahşiş yok
+          c.tipAmount = 0;
           snd("fail");
           return true;
-        } else if (!customerWantsSpicy && playerHasSpicy) {
-          // Müşteri normal istiyor ama acı verdin - can kaybı
+        } else if (!isDrunk && !customerWantsSpicy && playerHasSpicy) {
           gs.lives = Math.max(0, gs.lives - 1);
           c.isEating = true; c.eatTimer = EAT_TICKS; c.wants = null; p.holding = null;
-          c.tipAmount = 0; // Bahşiş yok
+          c.tipAmount = 0;
           snd("fail");
           return true;
         } else {
-          // Doğru servis - normal akış
-          c.tipAmount = earn(gs.upgrades.earnings, c.maxPatience, c.patience, specialMult);
+          // Doğru servis
+          let tip = earn(gs.upgrades.earnings, c.maxPatience, c.patience, specialMult);
+
+          // VIP: 3x bahşiş
+          if (c.personality === 'vip') tip = Math.round(tip * 3);
+          // Sarhoş: 0-3x rastgele bahşiş
+          if (isDrunk) tip = Math.round(tip * Math.random() * 3);
+          // Inspector: +50 bonus puan
+          if (c.personality === 'inspector') { gs.score += 50; io.to(roomId).emit('inspectorBonus', { x: c.seatX, y: c.seatY }); }
+
+          c.tipAmount = tip;
           c.isEating = true; c.eatTimer = EAT_TICKS; c.wants = null; p.holding = null;
           if (c.specialRequest) io.to(roomId).emit('specialServed', { x: c.seatX, y: c.seatY, request: c.specialRequest });
-          applyCombo(gs, io, roomId, c.seatX, c.seatY, c.tipAmount ?? 0);
+          applyCombo(gs, io, roomId, c.seatX, c.seatY, tip);
           snd("success");
           return true;
         }
@@ -125,6 +136,16 @@ export const handleCustomers: InteractionHandler = ({ gs, p, px, py, snd, io, ro
               return true;
             }
           }
+        }
+      } else {
+        // Yanlış yemek — VIP ve inspector için 2 can kaybı
+        if (c.personality === 'vip' || c.personality === 'inspector') {
+          gs.lives = Math.max(0, gs.lives - 2);
+          c.isEating = true; c.eatTimer = EAT_TICKS; c.wants = null; p.holding = null;
+          c.tipAmount = 0;
+          io.to(roomId).emit('wrongServe', { x: c.seatX, y: c.seatY, personality: c.personality });
+          snd("fail");
+          return true;
         }
       }
     }

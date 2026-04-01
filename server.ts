@@ -270,6 +270,15 @@ io.on("connection", (socket) => {
       gs.day++;
       gs.dayPhase = 'prep';
       gs.dayTimer = DAY_TICKS;
+      
+      // İntikam sahnesi hasar efektleri (eğer önceki gün sahne gösterildiyse)
+      if (gs.revengeQueue.length > 0) {
+        // Başlangıç tabak sayısı -1
+        gs.plateStack.count = Math.max(1, gs.plateStack.count - 1);
+        // O gün müşteri spawn hızı +%20 (dedikodu yayıldı)
+        // Bu efekt gameLoop.ts'de spawnTick'te uygulanacak
+      }
+      
       io.to(roomId).emit("state", gs);
       socket.emit("sound", "success");
     }
@@ -435,7 +444,10 @@ io.on("connection", (socket) => {
 
     if (c.punchCount >= MAX_PUNCHES) {
       const revengeChance = c.personality === 'recep' ? 0.6 : 0.3;
-      if (Math.random() < revengeChance) gs.revengeQueue.push(5400 + Math.floor(Math.random() * 1800));
+      if (Math.random() < revengeChance) {
+        gs.revengeQueue.push(5400 + Math.floor(Math.random() * 1800));
+        gs.pendingRevengeScene = true; // gün bitince sahne göster
+      }
       const leaveDialogs: Record<string, string[]> = {
         rude: ["YETER BE! Gidiyorum!", "Polisi arayacam lan!", "Mahvettiniz beni!"],
         recep: ["BÖHÖHÖYT! Anam babam öldüm bittim!", "Yeter vurma lan, gidiyom amk!", "Kırılmadık kemik bırakmadın be!"],

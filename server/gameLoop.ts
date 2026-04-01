@@ -132,10 +132,17 @@ export function tryQueueSeat(gs: GameState, io: Server, rid: string) {
     if (gs.day >= 3 && (guest.personality === 'polite' || guest.personality === 'rude') && Math.random() < SPECIAL_REQUEST_CHANCE) {
       specialRequest = SPECIAL_REQUESTS[Math.floor(Math.random() * SPECIAL_REQUESTS.length)] as 'spicy' | 'extra' | 'quick';
     }
+
+    // Kişiliğe göre sabır çarpanı
+    let patienceMult = 1.0;
+    if (guest.personality === 'vip') patienceMult = 1.8;       // çok sabırlı
+    else if (guest.personality === 'drunk') patienceMult = 1.5; // sabırlı ama tutarsız
+    else if (guest.personality === 'inspector') patienceMult = 0.5; // çok az bekler
+    const adjustedMaxP = Math.round(maxP * patienceMult);
     gs.customers.push({
       id: guest.id, seatX: seat.x, seatY: seat.y,
       x: DOOR_X, y: DOOR_ENTRY_Y, targetY: EXTERIOR_Y - 10,
-      wants: guest.wants, patience: maxP, maxPatience: maxP,
+      wants: guest.wants, patience: adjustedMaxP, maxPatience: adjustedMaxP,
       isSeated: false, isEating: false, eatTimer: 0,
       tipAmount: undefined,
       personality: guest.personality,
@@ -311,11 +318,21 @@ export function gameTick(gs: GameState, io: Server, rid: string) {
 
       // Game over olduysa dayEnd emit etme — race condition engeli
       if (!gs.isGameOver) {
-        io.to(rid).emit("dayEnd", {
-          day: gs.day,
-          score: gs.score,
-          lives: gs.lives,
-        });
+        // İntikam sahnesi bekleniyorsa dayEnd yerine revengeScene emit et
+        if (gs.pendingRevengeScene) {
+          gs.pendingRevengeScene = false;
+          io.to(rid).emit("revengeScene", {
+            day: gs.day,
+            score: gs.score,
+            lives: gs.lives,
+          });
+        } else {
+          io.to(rid).emit("dayEnd", {
+            day: gs.day,
+            score: gs.score,
+            lives: gs.lives,
+          });
+        }
 
         // Sadece belirli günlerde yemek seçim ekranı çıkar
         if (MENU_UNLOCK_DAYS.includes(gs.day + 1)) {
@@ -433,7 +450,9 @@ function spawnTick(gs: GameState, io: Server, rid: string) {
 
   const baseRate = 0.0015 + Math.min(gs.day * 0.0003, 0.0060);
   const dayProgress = 1 - gs.dayTimer / DAY_TICKS;
-  const spawnMultiplier = (1 + (playerCount - 1) * 0.3) * cm.spawnMult;
+  // İntikam kuyruğu varsa spawn hızı +%20 (dedikodu)
+  const revengeBonus = gs.revengeQueue.length > 0 ? 1.2 : 1.0;
+  const spawnMultiplier = (1 + (playerCount - 1) * 0.3) * cm.spawnMult * revengeBonus;
   const queueLimit = Math.min(14, (4 + Math.floor(gs.day / 3)) * Math.ceil(spawnMultiplier));
   const currentRate = (baseRate + dayProgress * 0.0008) * spawnMultiplier;
 
@@ -459,7 +478,17 @@ function spawnTick(gs: GameState, io: Server, rid: string) {
           ? ['rude', 'rude', 'recep']
           : ['polite', 'rude', 'recep'];
       }
-      const pers = personalities[Math.floor(Math.random() * personalities.length)];
+      let pers = personalities[Math.floor(Math.random() * personalities.length)] as Personality;
+
+      // Yeni tipler — gün bazlı şans
+      const roll = Math.random();
+      if (gs.day >= 5 && roll < 0.10) {
+        pers = 'vip';
+      } else if (gs.day >= 3 && roll < 0.25) {
+        pers = 'drunk';
+      } else if (gs.day >= 7 && roll < 0.08) {
+        pers = 'inspector';
+      }
       let dialog: string | undefined;
       let timer: number | undefined;
       if (g === 0 && Math.random() < 0.3) {
@@ -471,8 +500,11 @@ function spawnTick(gs: GameState, io: Server, rid: string) {
       const bodyColors: Record<Personality, string[]> = {
         polite: ['#3b82f6', '#0ea5e9', '#6366f1', '#8b5cf6'],
         rude: ['#f59e0b', '#ef4444', '#f97316', '#dc2626'],
-        recep: ['#7c3aed', '#b91c1c', '#1d4ed8', '#064e3b'],
+        recep: ['#cc3300', '#b91c1c', '#7c2d12', '#991b1b'],
         thug: ['#000000', '#1c1917', '#7f1d1d', '#57534e'],
+        vip: ['#b8860b', '#d4a017', '#92700a', '#c9a227'],
+        drunk: ['#6b3a1f', '#7c4a2a', '#8b4513', '#5c2e0e'],
+        inspector: ['#e8e8e8', '#d1d5db', '#9ca3af', '#f3f4f6'],
       };
       const bodyShape = bodyShapes[Math.floor(Math.random() * bodyShapes.length)];
       const bodyColor = bodyColors[pers][Math.floor(Math.random() * bodyColors[pers].length)];
