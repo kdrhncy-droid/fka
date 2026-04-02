@@ -21,7 +21,6 @@ import { DevPanel } from './DevPanel';
 import { GameTopBar } from './GameTopBar';
 import { GameNightOverlays } from './GameNightOverlays';
 import { JoystickPanel, TouchActionButtons } from './GameActionButtons';
-import { Joystick } from './Joystick';
 
 interface Props {
     canvasRef: React.RefObject<HTMLCanvasElement>;
@@ -299,71 +298,6 @@ export const GameScreen: React.FC<Props> = ({
                                 </div>
                             </div>
                         )}
-
-                        {/* PC HUD butonları */}
-                        {!showHudEditor && !isTouchDevice && (<>
-                            <div className="absolute z-10 touch-none" style={{ left: `${settings.hudLayout.joystick.x}%`, top: `${settings.hudLayout.joystick.y}%`, transform: `scale(${settings.hudLayout.joystick.scale})`, transformOrigin: 'top left' }}>
-                                <Joystick size={joystickSize} onMove={(x, y) => { joystickVectorRef.current = { x, y }; }} />
-                            </div>
-                            <div className="absolute z-10" style={{ left: `${settings.hudLayout.punchBtn.x}%`, top: `${settings.hudLayout.punchBtn.y}%`, transform: `scale(${settings.hudLayout.punchBtn.scale})`, transformOrigin: 'top left' }}>
-                                <button onPointerDown={(e) => {
-                                    e.preventDefault();
-                                    const now = Date.now();
-                                    if (now - lastPunchTimeRef.current < 250) return;
-                                    lastPunchTimeRef.current = now;
-                                    const gs = gameStateRef.current; const lp = localPlayerRef.current;
-                                    const t = gs.customers.find(c => {
-                                        if (c.isLeaving) return false;
-                                        const vy = c.isSeated ? c.seatY + 20 : c.y;
-                                        return Math.hypot(c.x - lp.x, vy - lp.y) <= 120 && (c.personality === 'rude' || c.personality === 'recep' || c.personality === 'thug');
-                                    });
-                                    if (t) socket?.emit('punchCustomer', t.id);
-                                }} style={{ width: punchButtonSize, height: punchButtonSize, touchAction: 'none' }}
-                                    className="bg-red-600/85 hover:bg-red-500/90 active:scale-90 text-white rounded-2xl shadow-lg font-black text-xs flex flex-col items-center justify-center gap-0.5 border border-red-400/30 backdrop-blur-sm transition-all">
-                                    <span className="text-[9px] uppercase tracking-wider">Döv</span>
-                                </button>
-                            </div>
-                            <div className="absolute z-10" style={{ left: `${settings.hudLayout.actionBtn.x}%`, top: `${settings.hudLayout.actionBtn.y}%`, transform: `scale(${settings.hudLayout.actionBtn.scale})`, transformOrigin: 'top left' }}>
-                                <button onPointerDown={(e) => { e.preventDefault(); if (dayPhase === 'prep') handleInteract(); else emit('interact'); }}
-                                    style={{ width: bs, height: bs, touchAction: 'none' }}
-                                    className="bg-blue-600/85 hover:bg-blue-500/90 active:scale-90 text-white rounded-2xl shadow-lg font-black text-xs flex flex-col items-center justify-center gap-0.5 border border-blue-400/30 backdrop-blur-sm transition-all">
-                                    <span className="text-[9px] uppercase tracking-wider">Al/Ver</span>
-                                </button>
-                            </div>
-                            {dayPhase === 'day' && (
-                            <div className="absolute z-10" style={{ left: `${settings.hudLayout.chopBtn.x}%`, top: `${settings.hudLayout.chopBtn.y}%`, transform: `scale(${settings.hudLayout.chopBtn.scale})`, transformOrigin: 'top left' }}>
-                                <button
-                                    onPointerDown={(e) => {
-                                        e.preventDefault();
-                                        const gs = gameStateRef.current; const lp = localPlayerRef.current;
-                                        const board = gs.choppingBoards?.find(b => Math.hypot(b.x - lp.x, b.y - lp.y) < 90);
-                                        if (board) { socket?.emit('chop_start', board.id); playSound(null, 'chop'); if (chopTouchIntervalRef.current) clearInterval(chopTouchIntervalRef.current); chopTouchIntervalRef.current = setInterval(() => playSound(null, 'chop'), 300); }
-                                    }}
-                                    onPointerUp={(e) => {
-                                        e.preventDefault();
-                                        if (chopTouchIntervalRef.current) { clearInterval(chopTouchIntervalRef.current); chopTouchIntervalRef.current = null; }
-                                        const gs = gameStateRef.current; const lp = localPlayerRef.current;
-                                        const board = gs.choppingBoards?.find(b => Math.hypot(b.x - lp.x, b.y - lp.y) < 90);
-                                        if (board) socket?.emit('chop_stop', board.id);
-                                    }}
-                                    onPointerLeave={(e) => {
-                                        e.preventDefault();
-                                        if (chopTouchIntervalRef.current) { clearInterval(chopTouchIntervalRef.current); chopTouchIntervalRef.current = null; }
-                                        gameStateRef.current.choppingBoards?.forEach(b => socket?.emit('chop_stop', b.id));
-                                    }}
-                                    style={{ width: Math.round(bs * 0.7), height: Math.round(bs * 0.7), touchAction: 'none' }}
-                                    className="bg-amber-600/85 hover:bg-amber-500/90 active:scale-90 text-white rounded-2xl shadow-lg font-black text-xs flex flex-col items-center justify-center gap-0.5 border border-amber-400/30 backdrop-blur-sm transition-all">
-                                    <span className="text-[9px] uppercase tracking-wider">Doğra</span>
-                                </button>
-                            </div>
-                            )}
-                            <div className="absolute z-10" style={{ left: `${settings.hudLayout.musicBtn.x}%`, top: `${settings.hudLayout.musicBtn.y}%`, transform: `scale(${settings.hudLayout.musicBtn.scale})`, transformOrigin: 'top left' }}>
-                                <button onClick={toggleMusic} style={{ width: Math.round(bs * 0.55), height: Math.round(bs * 0.55) }}
-                                    className={`rounded-xl shadow text-base flex items-center justify-center transition-all border backdrop-blur-sm ${musicOn ? 'bg-violet-600/80 border-violet-400/30 text-white' : 'bg-stone-700/70 border-stone-600/30 text-stone-400'}`}>
-                                    {musicOn ? '🎵' : '🔇'}
-                                </button>
-                            </div>
-                        </>)}
 
                         {settings.showPerfStats && (
                             <div className="absolute top-2 right-2 z-20 pointer-events-none">
