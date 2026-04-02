@@ -5,6 +5,7 @@ import { TutorialOverlay, markTutorialDone } from './TutorialOverlay';
 import { ProfileModal } from './ProfileModal';
 import { ShopModal } from './ShopModal';
 import { stk, adjustColor, drawShadowEllipse } from '../renderer/rendererUtils';
+import { getAchievementProgress } from '../utils/achievements';
 
 // ── Arka plan canvas animasyonu (loading screen ile aynı stil) ──────────────
 const FOOD_EMOJIS = ['🍕', '🍔', '🥗', '🍜', '🌯', '🍽️', '🥩', '🥬'];
@@ -147,6 +148,7 @@ interface WelcomeScreenProps {
   equippedTitle: string; setEquippedTitle: (v: string) => void;
   equippedLabelEffect: string; setEquippedLabelEffect: (v: string) => void;
   equippedServiceEffect: string; setEquippedServiceEffect: (v: string) => void;
+  onAchievements: () => void;
 }
 
 export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
@@ -160,6 +162,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   coins, setCoins, equippedHat, setEquippedHat, equippedTitle, setEquippedTitle,
   equippedLabelEffect, setEquippedLabelEffect,
   equippedServiceEffect, setEquippedServiceEffect,
+  onAchievements,
 }) => {
   const [screen, setScreen] = useState<Screen>('main');
   const [joinCode, setJoinCode] = useState('');
@@ -170,6 +173,15 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   const [showProfile, setShowProfile] = useState(false);
   const [showShop, setShowShop] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
+
+  const unlockedCount = getAchievementProgress().filter(i => i.unlocked).length;
+  const seenCount = parseInt(localStorage.getItem('ach-seen-count') ?? '0');
+  const newAchievementCount = Math.max(0, unlockedCount - seenCount);
+
+  const handleOpenAchievements = () => {
+    localStorage.setItem('ach-seen-count', String(unlockedCount));
+    onAchievements();
+  };
 
   const openCreate = () => {
     const rid = Math.random().toString(36).substring(2, 6).toUpperCase();
@@ -257,6 +269,15 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                 Nasıl Oynanır?
               </button>
             </div>
+            <button onClick={handleOpenAchievements}
+              className="relative w-full py-3 rounded-2xl bg-white/10 hover:bg-white/20 active:scale-[0.97] backdrop-blur border border-white/15 text-white/90 font-bold text-sm uppercase tracking-widest transition-all flex items-center justify-center gap-2">
+              🏆 Başarımlar
+              {newAchievementCount > 0 && (
+                <span className="absolute top-2 right-3 w-5 h-5 rounded-full bg-red-500 text-white text-[10px] font-black flex items-center justify-center animate-pulse">
+                  {newAchievementCount}
+                </span>
+              )}
+            </button>
           </div>
         )}
 

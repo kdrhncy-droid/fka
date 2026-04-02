@@ -149,6 +149,7 @@ export default function App() {
         <WelcomeScreen
           onPlay={(rid, mapId) => handleDirectJoin(rid, mapId)}
           onSettings={() => setShowSettings(true)}
+          onAchievements={() => setShowAchievements(true)}
           playerName={playerName} setPlayerName={setPlayerName}
           charType={charType} setCharType={setCharType}
           hairColor={hairColor} setHairColor={setHairColor}
@@ -173,6 +174,7 @@ export default function App() {
             isJoined={isJoined}
           />
         )}
+        {showAchievements && <AchievementsModal onClose={() => setShowAchievements(false)} />}
       </>
     );
   }
