@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { addCoinsFromScore } from '../utils/profile';
+import { addCoinsFromScore, loadProfile, saveProfile } from '../utils/profile';
+import { checkAchievements } from '../utils/achievements';
 import { io, Socket } from 'socket.io-client';
 import { GameState, mkGameState } from '../types/game';
 import { playSound } from '../utils/audio';
@@ -25,6 +26,8 @@ interface UseSocketReturn {
     clearRevengeScene: () => void;
     lastEarnedCoins: number;
     clearEarnedCoins: () => void;
+    newAchievements: import('../utils/achievements').Achievement[];
+    clearAchievements: () => void;
 }
 
 export interface ChatMessage {
@@ -58,6 +61,9 @@ export function useSocket(
     const [dayEndSummary, setDayEndSummary] = useState<DayEndSummary | null>(null);
     const [revengeSceneSummary, setRevengeSceneSummary] = useState<DayEndSummary | null>(null);
     const [lastEarnedCoins, setLastEarnedCoins] = useState(0);
+    const [newAchievements, setNewAchievements] = useState<import('../utils/achievements').Achievement[]>([]);
+    // runtime stats (tek oyun içi)
+    const runtimeRef = useRef({ perfectDays: 0, maxCombo: 0, servedInOneDay: 0, livesAtDayStart: 3 });
     const gameStateRef = useRef<GameState>(DEFAULT_STATE);
     const audioCtxRef = useRef<AudioContext | null>(null);
     const roomIdRef = useRef<string>('');
@@ -191,6 +197,32 @@ export function useSocket(
             playSound(audioCtxRef, type);
         });
 
+        // Servis sayısı ve combo takibi
+        newSocket.on('comboServe', (data: { count: number }) => {
+            const rt = runtimeRef.current;
+            if (data.count > rt.maxCombo) {
+                rt.maxCombo = data.count;
+                const profile = loadProfile();
+                if (data.count > (profile.maxCombo ?? 0)) {
+                    saveProfile({ maxCombo: data.count });
+                    const stats = { totalServed: profile.totalServed, totalDays: profile.totalDays, totalScore: profile.totalScore, gamesPlayed: profile.gamesPlayed, totalPlayTime: profile.totalPlayTime, perfectDays: profile.perfectDays ?? 0, maxCombo: data.count, servedInOneDay: rt.servedInOneDay };
+                    const unlocked = checkAchievements(stats);
+                    if (unlocked.length > 0) setNewAchievements(prev => [...prev, ...unlocked]);
+                }
+            }
+        });
+
+        newSocket.on('tipCollected', () => {
+            const rt = runtimeRef.current;
+            rt.servedInOneDay++;
+            const profile = loadProfile();
+            saveProfile({ totalServed: profile.totalServed + 1 });
+            const updatedProfile = loadProfile();
+            const stats = { totalServed: updatedProfile.totalServed, totalDays: updatedProfile.totalDays, totalScore: updatedProfile.totalScore, gamesPlayed: updatedProfile.gamesPlayed, totalPlayTime: updatedProfile.totalPlayTime, perfectDays: updatedProfile.perfectDays ?? 0, maxCombo: updatedProfile.maxCombo ?? 0, servedInOneDay: rt.servedInOneDay };
+            const unlocked = checkAchievements(stats);
+            if (unlocked.length > 0) setNewAchievements(prev => [...prev, ...unlocked]);
+        });
+
         newSocket.on('chatMessage', (msg: ChatMessage) => {
             setChatMessages(prev => [...prev.slice(-49), msg]);
         });
@@ -201,6 +233,30 @@ export function useSocket(
                 const earned = addCoinsFromScore(summary.score);
                 setLastEarnedCoins(earned);
             }
+            // Başarım kontrolü
+            const rt = runtimeRef.current;
+            if (summary.lives === 3) rt.perfectDays++;
+            const profile = loadProfile();
+            saveProfile({
+                totalDays: profile.totalDays + 1,
+                totalScore: profile.totalScore + summary.score,
+                perfectDays: (profile.perfectDays ?? 0) + (summary.lives === 3 ? 1 : 0),
+            });
+            const updatedProfile = loadProfile();
+            const stats = {
+                totalServed: updatedProfile.totalServed,
+                totalDays: updatedProfile.totalDays,
+                totalScore: updatedProfile.totalScore,
+                gamesPlayed: updatedProfile.gamesPlayed,
+                totalPlayTime: updatedProfile.totalPlayTime,
+                perfectDays: updatedProfile.perfectDays ?? 0,
+                maxCombo: updatedProfile.maxCombo ?? 0,
+                servedInOneDay: rt.servedInOneDay,
+            };
+            const unlocked = checkAchievements(stats);
+            if (unlocked.length > 0) setNewAchievements(prev => [...prev, ...unlocked]);
+            rt.servedInOneDay = 0;
+            rt.livesAtDayStart = summary.lives;
         });
 
         newSocket.on('revengeScene', (summary: DayEndSummary) => {
@@ -252,6 +308,7 @@ export function useSocket(
     const clearDayEnd = () => setDayEndSummary(null);
     const clearRevengeScene = () => setRevengeSceneSummary(null);
     const clearEarnedCoins = () => setLastEarnedCoins(0);
+    const clearAchievements = () => setNewAchievements([]);
 
-    return { socket, isConnected, myId, gameStateRef, audioCtxRef, connectionStatus, ping, chatMessages, dayEndSummary, clearDayEnd, revengeSceneSummary, clearRevengeScene, lastEarnedCoins, clearEarnedCoins };
+    return { socket, isConnected, myId, gameStateRef, audioCtxRef, connectionStatus, ping, chatMessages, dayEndSummary, clearDayEnd, revengeSceneSummary, clearRevengeScene, lastEarnedCoins, clearEarnedCoins, newAchievements, clearAchievements };
 }

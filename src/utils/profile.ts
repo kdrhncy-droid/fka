@@ -24,6 +24,9 @@ export interface PlayerProfile {
   totalServed: number;
   gamesPlayed: number;
   lastPlayed: number;
+  unlockedAchievements: string[];
+  perfectDays: number;
+  maxCombo: number;
 }
 
 const DEFAULT: PlayerProfile = {
@@ -47,6 +50,9 @@ const DEFAULT: PlayerProfile = {
   totalServed: 0,
   gamesPlayed: 0,
   lastPlayed: 0,
+  unlockedAchievements: [],
+  perfectDays: 0,
+  maxCombo: 0,
 };
 
 export function loadProfile(): PlayerProfile {
