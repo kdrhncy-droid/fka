@@ -44,6 +44,7 @@ export function startDay(gs: GameState): boolean {
 /** Game over sonrası tüm state'i sıfırlar. */
 export function resetGameState(gs: GameState): void {
   gs.isGameOver = false; gs.lives = 3; gs.day = 1;
+  gs.customers = []; gs.waitList = []; gs.dirtyTables = [];
   gs.unlockedDishes = [];
   gs.dayPhase = 'prep'; gs.dayTimer = DAY_TICKS;
   gs.score = Math.floor(gs.score * 0.8);

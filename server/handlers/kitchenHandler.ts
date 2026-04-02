@@ -150,6 +150,8 @@ export const handleIngredients: InteractionHandler = ({ gs, p, px, py, snd }) =>
       }
       if (!p.holding) {
         p.holding = s.key; snd("pickup"); return true;
+      } else {
+        snd("fail"); return true;
       }
     }
   }

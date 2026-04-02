@@ -46,6 +46,8 @@ export const handleChoppingBoards: InteractionHandler = ({ gs, p, px, py, snd })
         snd("fail");
       } else if (CHOPPABLE.includes(p.holding as any) && !board.input) {
         board.input = p.holding; board.progress = 0; board.isChopping = false; board.choppingPlayerId = null; p.holding = null; snd("success");
+      } else {
+        snd("fail");
       }
       return true;
     }
