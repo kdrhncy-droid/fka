@@ -218,6 +218,11 @@ export const GameScreen: React.FC<Props> = ({
     return (
         <div className="game-screen w-full flex flex-col select-none safe-top safe-bottom" style={{ background: '#545250' }}>
 
+            {/* Yemek seçim ekranı açıkken tüm UI'ı blokla */}
+            {menuChoices && menuChoices.length > 0 && dayPhase === 'prep' && (
+                <div className="absolute inset-0 z-[45] pointer-events-auto" />
+            )}
+
             <GameTopBar
                 marketName={gameStateRef.current.marketName}
                 roomId={roomId}

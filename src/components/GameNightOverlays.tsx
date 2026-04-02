@@ -79,7 +79,7 @@ export const GameNightOverlays: React.FC<Props> = ({
             )}
 
             {menuChoices && menuChoices.length > 0 && (
-                <div className="absolute inset-0 z-30 bg-indigo-950/85 backdrop-blur-sm p-4 overflow-y-auto overflow-x-hidden flex flex-col items-center justify-start sm:justify-center py-8">
+                <div className="absolute inset-0 z-[50] bg-indigo-950/85 backdrop-blur-sm p-4 overflow-y-auto overflow-x-hidden flex flex-col items-center justify-start sm:justify-center py-8">
                     <div className="text-center mb-6 flex-shrink-0 mt-4 sm:mt-0">
                         <div className="text-5xl mb-2">⭐</div>
                         <h2 className="text-white font-black text-2xl">{unlockedDishes.length === 0 ? 'Hangi yemeği yapacaksın?' : 'Yeni Yemek Seç!'}</h2>
