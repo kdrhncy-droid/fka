@@ -330,6 +330,26 @@ export function drawPlayer(
         ctx.strokeStyle = adjustColor(hairColor, -20); ctx.lineWidth = 1; ctx.stroke();
     }
 
+    // ── YÜZ DETAYLARI ────────────────────────────────────────────────────────
+    // Yanaklar
+    ctx.fillStyle = 'rgba(255,182,193,0.5)';
+    ctx.beginPath(); ctx.arc(-10, headY + 5, 4, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(10, headY + 5, 4, 0, Math.PI * 2); ctx.fill();
+
+    // Gözler
+    ctx.fillStyle = '#222';
+    ctx.beginPath(); ctx.ellipse(-7, headY + 2, 3, 4.2, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(7, headY + 2, 3, 4.2, 0, 0, Math.PI * 2); ctx.fill();
+
+    // Göz parıltısı
+    ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.arc(-6, headY, 1.2, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(8, headY, 1.2, 0, Math.PI * 2); ctx.fill();
+
+    // Ağız
+    ctx.strokeStyle = '#844'; ctx.lineWidth = 1.8; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.arc(0, headY + 7, 3.5, 0.2, Math.PI - 0.2); ctx.stroke();
+
     // ── ŞAPKA — kafaya tam uyumlu, her şapka özel konumlandırılmış ──────────
     if (p.hat) {
         ctx.save();
