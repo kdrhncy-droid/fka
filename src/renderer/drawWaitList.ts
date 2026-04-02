@@ -172,17 +172,20 @@ const MAX_VISIBLE_Y = CANVAS_HEIGHT + 30; // biraz taşmaya izin ver, sonra kes
 export function drawWaitList(ctx: CanvasRenderingContext2D, list: WaitingGuest[]) {
     if (list.length === 0) return;
 
+    let currentY = QUEUE_START_Y;
+    let prevGroupId: string | undefined = undefined;
     let visibleCount = 0;
 
     for (let i = 0; i < list.length; i++) {
         const guest = list[i];
 
-        // Server'dan gelen pozisyonu kullan, yoksa fallback hesapla
-        let gx = guest.x ?? DOOR_X;
-        let gy = guest.y ?? (QUEUE_START_Y + i * SLOT_SPACING);
+        // Yeni grup başlıyorsa ekstra boşluk ekle
+        if (i > 0 && guest.groupId !== prevGroupId) {
+            currentY += GROUP_GAP;
+        }
 
-        // Canvas dışındaysa çizme
-        if (gy > MAX_VISIBLE_Y) {
+        // Canvas dışına taşıyorsa çizme, sayacı göster
+        if (currentY > MAX_VISIBLE_Y) {
             const remaining = list.length - visibleCount;
             const labelX = DOOR_X;
             const labelY = MAX_VISIBLE_Y - 10;
@@ -194,14 +197,10 @@ export function drawWaitList(ctx: CanvasRenderingContext2D, list: WaitingGuest[]
             break;
         }
 
-        // Ekranın altından henüz gelmemişse çizme
-        if (gy > CANVAS_HEIGHT + 20) {
-            visibleCount++;
-            continue;
-        }
-
-        drawQueueCustomer(ctx, guest, gx, gy);
+        drawQueueCustomer(ctx, guest, DOOR_X, currentY);
         visibleCount++;
+        currentY += SLOT_SPACING;
+        prevGroupId = guest.groupId;
     }
 
     // Kaç kişi beklediğini gösteren etiket (kapı yanı)
