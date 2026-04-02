@@ -1,6 +1,6 @@
 import { Socket, Server } from "socket.io";
 import { GameState, INGREDIENTS, RECIPE_DEFS, SERVICE_WINDOW_SLOTS, SERVICE_WINDOW_R, TRASH_STATION, TRAY_STATION, PLATE_STACK_POS, SPICE_RACK_POS } from "../shared/types.js";
-import { InteractContext, InteractionHandler, bcastSound } from "./handlers/utils.js";
+import { InteractContext, InteractionHandler } from "./handlers/utils.js";
 
 // Tüm handler dosyalarını içe aktar
 import { handleCookStations, handleFryers, handleCakeBakers, handleCoffeeMachines, handleIngredients } from "./handlers/kitchenHandler.js";
@@ -156,7 +156,10 @@ export function registerInteractHandler(
       socketId: socket.id,
       io,
       roomId,
-      snd: (type: string) => bcastSound(io, roomId, socket, type),
+      snd: (type: string) => {
+        if (type === 'fail') socket.emit("sound", type);
+        else io.to(roomId).emit("sound", type);
+      },
       emitTip: (x: number, y: number, amount: number) => {
         io.to(roomId).emit("tipCollected", { x, y, amount });
       }

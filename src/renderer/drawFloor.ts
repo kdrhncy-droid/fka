@@ -222,11 +222,6 @@ export function drawFloor(ctx: CanvasRenderingContext2D, unlockedDishes: string[
 
 
   // ══════════════════════════════════════════════════════════════════
-  // SALON DEKORASYONLARı
-  // ══════════════════════════════════════════════════════════════════
-  drawSalonDecorations(ctx);
-
-  // ══════════════════════════════════════════════════════════════════
   // DIŞ ALAN — kaldırım + yol + çimen
   // EXTERIOR_Y (720) → GAME_HEIGHT (870)
   // ══════════════════════════════════════════════════════════════════
@@ -239,6 +234,11 @@ export function drawFloor(ctx: CanvasRenderingContext2D, unlockedDishes: string[
 
   // ÜST DUVAR
   drawTopWall(ctx, 30);
+
+  // ══════════════════════════════════════════════════════════════════
+  // SALON DEKORASYONLARı — duvarların üstüne çizilmeli
+  // ══════════════════════════════════════════════════════════════════
+  drawSalonDecorations(ctx);
 }
 
 /**
