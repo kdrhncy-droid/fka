@@ -70,6 +70,9 @@ export const GameScreen: React.FC<Props> = ({
     const [voiceActive, setVoiceActive] = useState(false);
     const [showVoiceSettings, setShowVoiceSettings] = useState(false);
     const [globalVoiceVol, setGlobalVoiceVol] = useState(1.0);
+    const [lifeFlash, setLifeFlash] = useState(false);
+    const [comboEdge, setComboEdge] = useState<{ color: string; key: number } | null>(null);
+    const [perfectBanner, setPerfectBanner] = useState<{ visible: boolean; leaving: boolean } | null>(null);
 
     const { score, dayPhase, dayTimer, upgrades, day, ovenCount, queueLen, lives, isGameOver, menuChoices, unlockedDishes, pendingCardChoices, activeCards, comboCount } = useGameState(gameStateRef);
 
@@ -123,6 +126,39 @@ export const GameScreen: React.FC<Props> = ({
     }, []);
 
     useEffect(() => { return () => stopBgm(); }, []);
+
+    // ── Can kaybı flash + combo kenar efekti ─────────────────────────────────
+    useEffect(() => {
+        if (!socket) return;
+        const onLoseHeart = () => {
+            setLifeFlash(true);
+            setTimeout(() => setLifeFlash(false), 400);
+        };
+        const onCombo = (data: { count: number }) => {
+            if (data.count < 5) return;
+            const color = data.count >= 10 ? '#f97316' : data.count >= 7 ? '#eab308' : '#a855f7';
+            setComboEdge({ color, key: Date.now() });
+            setTimeout(() => setComboEdge(null), 750);
+        };
+        socket.on('loseHeart', onLoseHeart);
+        socket.on('comboServe', onCombo);
+        return () => { socket.off('loseHeart', onLoseHeart); socket.off('comboServe', onCombo); };
+    }, [socket]);
+
+    // ── Mükemmel gün — hiç can kaybetmeden gün bitti ─────────────────────────
+    useEffect(() => {
+        if (!socket) return;
+        const onDayEnd = (data: { lives: number }) => {
+            const gs = gameStateRef.current;
+            if (data.lives === 3 && gs.lives === 3) {
+                setPerfectBanner({ visible: true, leaving: false });
+                setTimeout(() => setPerfectBanner(b => b ? { ...b, leaving: true } : null), 3000);
+                setTimeout(() => setPerfectBanner(null), 3400);
+            }
+        };
+        socket.on('dayEnd', onDayEnd);
+        return () => { socket.off('dayEnd', onDayEnd); };
+    }, [socket]);
 
     useEffect(() => {
         if (lastEarnedCoins > 0) {
@@ -232,6 +268,37 @@ export const GameScreen: React.FC<Props> = ({
                             pendingCardChoices={pendingCardChoices} activeCards={activeCards}
                             onEmit={emit} onLeaveGame={onLeaveGame}
                         />
+
+                        {/* Can kaybı kırmızı flash */}
+                        {lifeFlash && (
+                            <div className="life-flash absolute inset-0 rounded-sm bg-red-600 z-30" />
+                        )}
+
+                        {/* Combo x5+ kenar efekti */}
+                        {comboEdge && (
+                            <div
+                                key={comboEdge.key}
+                                className="combo-edge absolute inset-0 rounded-sm z-30"
+                                style={{ '--combo-color': comboEdge.color } as React.CSSProperties}
+                            />
+                        )}
+
+                        {/* Mükemmel gün banner */}
+                        {perfectBanner && (
+                            <div
+                                className={`absolute top-[18%] left-1/2 z-40 pointer-events-none ${perfectBanner.leaving ? 'perfect-banner-out' : 'perfect-banner-in'}`}
+                                style={{ transform: 'translateX(-50%)' }}
+                            >
+                                <div className="flex items-center gap-2 bg-yellow-900/90 border-2 border-yellow-400/80 backdrop-blur-sm rounded-2xl px-5 py-3 shadow-2xl">
+                                    <span className="text-2xl">⭐</span>
+                                    <div className="flex flex-col">
+                                        <span className="text-yellow-300 font-black text-base leading-tight">Mükemmel Gün!</span>
+                                        <span className="text-yellow-500 text-xs">Hiç can kaybetmedin</span>
+                                    </div>
+                                    <span className="text-2xl">⭐</span>
+                                </div>
+                            </div>
+                        )}
 
                         {/* PC HUD butonları */}
                         {!showHudEditor && !isTouchDevice && (<>

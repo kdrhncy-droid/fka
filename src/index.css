@@ -102,3 +102,38 @@ body {
   from { opacity: 1; transform: translateX(-50%) translateY(0)     scale(1);    }
   to   { opacity: 0; transform: translateX(-50%) translateY(-8px)  scale(0.9);  }
 }
+
+/* ── Can Kaybı Flash ──────────────────────────────────────────────────────── */
+@keyframes lifeFlash {
+  0%   { opacity: 0.55; }
+  40%  { opacity: 0.35; }
+  100% { opacity: 0; }
+}
+.life-flash {
+  animation: lifeFlash 0.35s ease-out forwards;
+  pointer-events: none;
+}
+
+/* ── Combo Kenar Efekti ───────────────────────────────────────────────────── */
+@keyframes comboPulse {
+  0%   { opacity: 0.9; box-shadow: inset 0 0 60px 20px var(--combo-color); }
+  60%  { opacity: 0.5; box-shadow: inset 0 0 80px 30px var(--combo-color); }
+  100% { opacity: 0;   box-shadow: inset 0 0 40px 10px var(--combo-color); }
+}
+.combo-edge {
+  animation: comboPulse 0.7s ease-out forwards;
+  pointer-events: none;
+}
+
+/* ── Mükemmel Gün Banner ──────────────────────────────────────────────────── */
+@keyframes perfectIn {
+  0%   { opacity: 0; transform: translateX(-50%) translateY(-20px) scale(0.8); }
+  60%  { opacity: 1; transform: translateX(-50%) translateY(4px)   scale(1.05); }
+  100% { opacity: 1; transform: translateX(-50%) translateY(0)     scale(1); }
+}
+@keyframes perfectOut {
+  from { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+  to   { opacity: 0; transform: translateX(-50%) translateY(-16px) scale(0.9); }
+}
+.perfect-banner-in  { animation: perfectIn  0.4s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+.perfect-banner-out { animation: perfectOut 0.35s ease-in forwards; }
