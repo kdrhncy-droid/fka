@@ -3,14 +3,14 @@ import {
   FRYER_TICKS, CAKE_TICKS, COFFEE_ITEM, CLEAN_PLATE, BURNED_FOOD, 
   CHOPPABLE, CHOP_PREFIX, isTray, getTrayItems, createTray, INGREDIENTS, RECIPE_DEFS, MAX_TRAY_CAPACITY
 } from "../../shared/types.js";
+import { getStationPos } from './utils.js';
 
 const COOK_R = 145;
 const INTERACT_R = 110;
 
 export const handleCookStations: InteractionHandler = ({ gs, p, px, py, snd }) => {
   for (const station of gs.cookStations) {
-    const dynX = gs.stationLayout?.[station.id]?.x ?? station.x;
-    const dynY = gs.stationLayout?.[station.id]?.y ?? station.y;
+    const { x: dynX, y: dynY } = getStationPos(gs, station);
     if (Math.hypot(px - dynX, py - dynY) < COOK_R) {
       const holding = p.holding;
       const isRawChoppable = typeof holding === 'string' && CHOPPABLE.includes(holding as any);
@@ -49,8 +49,7 @@ export const handleCookStations: InteractionHandler = ({ gs, p, px, py, snd }) =
 export const handleFryers: InteractionHandler = ({ gs, p, px, py, snd }) => {
   if (!gs.fryers) return false;
   for (const fryer of gs.fryers) {
-    const dynX = gs.stationLayout?.[fryer.id]?.x ?? fryer.x;
-    const dynY = gs.stationLayout?.[fryer.id]?.y ?? fryer.y;
+    const { x: dynX, y: dynY } = getStationPos(gs, fryer);
     if (Math.hypot(px - dynX, py - dynY) < INTERACT_R) {
       if (!p.holding) {
         if (fryer.output && !fryer.isBurned) {
@@ -81,8 +80,7 @@ export const handleFryers: InteractionHandler = ({ gs, p, px, py, snd }) => {
 export const handleCakeBakers: InteractionHandler = ({ gs, p, px, py, snd }) => {
   if (!gs.cakeBakers) return false;
   for (const baker of gs.cakeBakers) {
-    const dynX = gs.stationLayout?.[baker.id]?.x ?? baker.x;
-    const dynY = gs.stationLayout?.[baker.id]?.y ?? baker.y;
+    const { x: dynX, y: dynY } = getStationPos(gs, baker);
     if (Math.hypot(px - dynX, py - dynY) < INTERACT_R) {
       if (!p.holding) {
         if (baker.output && !baker.isBurned) { snd('fail'); }
@@ -109,8 +107,7 @@ export const handleCakeBakers: InteractionHandler = ({ gs, p, px, py, snd }) => 
 export const handleCoffeeMachines: InteractionHandler = ({ gs, p, px, py, snd }) => {
   if (!gs.coffeeMachines) return false;
   for (const cm of gs.coffeeMachines) {
-    const dynX = gs.stationLayout?.[cm.id]?.x ?? cm.x;
-    const dynY = gs.stationLayout?.[cm.id]?.y ?? cm.y;
+    const { x: dynX, y: dynY } = getStationPos(gs, cm);
     if (Math.hypot(px - dynX, py - dynY) < INTERACT_R) {
       if (!p.holding && cm.cups > 0) {
         p.holding = COFFEE_ITEM; cm.cups--; snd('pickup');

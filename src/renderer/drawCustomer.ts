@@ -349,36 +349,20 @@ export function drawCustomer(ctx: CanvasRenderingContext2D, customer: Customer, 
     // UI — ayna efektini önle
     if (!isSeated && !st.faceRight) ctx.scale(-1, 1);
 
-    // ── UI KATMANI — sabır çubuğu, dialog, yemek balonu ─────────────────────
-    // Kişiliğe göre kafa üstü boşluk (taç/şapka için ekstra)
+    // ── UI KATMANI — dialog ve yemek balonu (kafa üstü) ─────────────────────
     const headTopExtra = (pers === 'vip') ? 18 : (pers === 'thug') ? 14 : 0;
-    const uiBaseY = headY - hr - 14 - headTopExtra; // sabır çubuğu taban Y
+    const uiBaseY = headY - hr - 14 - headTopExtra;
 
     const isAngry = (patience / maxPatience) < 0.3;
     const angryShake = isAngry ? Math.sin(Date.now() / 40) * 1.5 : 0;
 
-    // Sabır çubuğu — sadece dialog yoksa göster
-    if (isSeated && !isEating && patience < maxPatience && !hidePatience && !currentDialog) {
-        const barW = 35, barH = 6;
-        const bx = -barW / 2 + angryShake, by = uiBaseY;
-        const pct = patience / maxPatience;
-        ctx.fillStyle = 'rgba(0,0,0,0.5)';
-        ctx.beginPath(); ctx.roundRect(bx, by, barW, barH, 3); ctx.fill();
-        let barColor = pct > 0.5 ? '#22c55e' : pct > 0.3 ? '#eab308' : '#ef4444';
-        if (isAngry && Math.floor(Date.now() / 150) % 2 === 0) barColor = '#fca5a5';
-        ctx.fillStyle = barColor;
-        ctx.beginPath(); ctx.roundRect(bx, by, Math.max(0, barW * pct), barH, 3); ctx.fill();
-        stk(ctx, '#111', 1.5); ctx.strokeRect(bx, by, barW, barH);
-        if (isAngry) { ctx.font = '10px Arial'; ctx.fillText('💢', bx + barW + 8, by + barH / 2); }
-    }
-
-    // Dialog balonu — sabır çubuğunun üstünde
+    // Dialog balonu — her zaman kafa üstünde
     if (currentDialog) {
         drawDialogBubble(ctx, currentDialog, angryShake, uiBaseY - 4, '#fff', isAngry ? '#ef4444' : bodyColor, '#222');
     } else if (wants && isSeated && !isEating) {
-        // Yemek balonu — sabır çubuğunun üstünde
+        // Yemek balonu
         const bx = angryShake;
-        const by = uiBaseY - 18; // çubuğun üstünde
+        const by = uiBaseY - 18;
         const specialReq = customer.specialRequest;
         const specialIcon = specialReq === 'spicy' ? '🌶️' : specialReq === 'extra' ? '➕' : specialReq === 'quick' ? '⚡' : null;
         const bubbleR = specialIcon ? 18 : 14;
@@ -388,6 +372,46 @@ export function drawCustomer(ctx: CanvasRenderingContext2D, customer: Customer, 
         ctx.font = '16px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
         ctx.fillText(wants, bx - (specialIcon ? 5 : 0), by);
         if (specialIcon) { ctx.font = '12px Arial'; ctx.fillText(specialIcon, bx + bubbleR - 3, by - bubbleR + 4); }
+    }
+
+    // ── SABIR BARI — müşterinin altında, sandalye seviyesinde ───────────────
+    if (isSeated && !isEating && patience < maxPatience && !hidePatience) {
+        const pct = patience / maxPatience;
+        const barW = 50;
+        const barH = 7;
+        // Oturma yönüne göre bar pozisyonu: arkaya bakıyorsa üstte, öne bakıyorsa altta
+        const barOffsetY = facingBack ? -(bh + hr + 28) : (bh / 2 + 22);
+        const bx = -barW / 2;
+        const by = barOffsetY;
+
+        // Kritik pulse efekti
+        const pulse = isAngry ? 1 + Math.sin(Date.now() / 120) * 0.08 : 1;
+        ctx.save();
+        if (isAngry) ctx.scale(pulse, 1);
+
+        // Arka plan
+        ctx.fillStyle = 'rgba(0,0,0,0.55)';
+        ctx.beginPath(); ctx.roundRect(bx - 1, by - 1, barW + 2, barH + 2, 4); ctx.fill();
+
+        // Bar rengi
+        let barColor = pct > 0.6 ? '#22c55e' : pct > 0.3 ? '#eab308' : '#ef4444';
+        if (isAngry && Math.floor(Date.now() / 150) % 2 === 0) barColor = '#fca5a5';
+        ctx.fillStyle = barColor;
+        ctx.beginPath(); ctx.roundRect(bx, by, Math.max(2, barW * pct), barH, 3); ctx.fill();
+
+        // Çerçeve
+        ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+        ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.roundRect(bx, by, barW, barH, 3); ctx.stroke();
+
+        // Emoji göstergesi
+        const emoji = pct > 0.6 ? '😊' : pct > 0.3 ? '😐' : '😡';
+        ctx.font = '10px Arial';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(emoji, bx + barW + 4, by + barH / 2);
+
+        ctx.restore();
     }
 
     ctx.restore();

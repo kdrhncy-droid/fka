@@ -1,5 +1,6 @@
 import { Socket, Server } from "socket.io";
 import { GameState, GRID_CELL_SIZE, GAME_WIDTH, GAME_HEIGHT, TablePosition, getTableDims, WALL_Y1, WALL_Y2 } from "../shared/types.js";
+import { moveStation } from "./stationUtils.js";
 
 function snapToGrid(x: number, y: number): { x: number; y: number } {
   const col = Math.floor(x / GRID_CELL_SIZE);
@@ -118,31 +119,8 @@ export function registerLayoutHandler(
     gs.stationLayout[stationId].x = snapped.x;
     gs.stationLayout[stationId].y = snapped.y;
 
-    // Fırın ise cookStation koordinatını da güncelle
-    const oven = gs.cookStations.find(s => s.id === stationId);
-    if (oven) { oven.x = snapped.x; oven.y = snapped.y; }
-
-    // Kesme tahtası ise choppingBoards koordinatını da güncelle
-    const board = gs.choppingBoards?.find(b => b.id === stationId);
-    if (board) { board.x = snapped.x; board.y = snapped.y; }
-
-    // Fritöz ise fryers koordinatını da güncelle
-    const fryer = gs.fryers?.find(f => f.id === stationId);
-    if (fryer) { fryer.x = snapped.x; fryer.y = snapped.y; }
-
-    // Buzdolabı ise fridges koordinatını da güncelle
-    const fridge = gs.fridges?.find(f => f.id === stationId);
-    if (fridge) { fridge.x = snapped.x; fridge.y = snapped.y; }
-
-    // Pasta fırını ise cakeBakers koordinatını da güncelle
-    const cakeBaker = gs.cakeBakers?.find(c => c.id === stationId);
-    if (cakeBaker) { cakeBaker.x = snapped.x; cakeBaker.y = snapped.y; }
-
-    // Kahve makinesi ise coffeeMachines koordinatını da güncelle
-    const coffeeMachine = gs.coffeeMachines?.find(c => c.id === stationId);
-    if (coffeeMachine) { coffeeMachine.x = snapped.x; coffeeMachine.y = snapped.y; }
-
-    // Baharat rafı — stationLayout güncellenmesi yeterli (ayrı array yok)
+    // Tüm istasyon array'lerini tek seferde güncelle
+    moveStation(gs, stationId, snapped.x, snapped.y);
 
     delete gs.lockedStations[stationId];
     io.to(roomId).emit("stationMoved", { stationId, x: snapped.x, y: snapped.y });

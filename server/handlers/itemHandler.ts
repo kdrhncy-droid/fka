@@ -4,6 +4,7 @@ import {
   TRASH_STATION, TRAY_STATION, MAX_TRAY_CAPACITY, PLATE_STACK_POS,
   DRINK_ITEM, SPICE_RACK_POS, SPICEABLE_DISHES, SPICY_CONVERSIONS
 } from "../../shared/types.js";
+import { getStationPos } from './utils.js';
 
 const INTERACT_R = 110;
 
@@ -130,8 +131,7 @@ export const handleSpiceRack: InteractionHandler = (ctx) => {
 export const handleFridges: InteractionHandler = ({ gs, p, px, py, snd }) => {
   if (!gs.fridges) return false;
   for (const fridge of gs.fridges) {
-    const dynX = gs.stationLayout?.[fridge.id]?.x ?? fridge.x;
-    const dynY = gs.stationLayout?.[fridge.id]?.y ?? fridge.y;
+    const { x: dynX, y: dynY } = getStationPos(gs, fridge);
     if (Math.hypot(px - dynX, py - dynY) < INTERACT_R) {
       if (!p.holding) {
         p.holding = DRINK_ITEM; snd('pickup');

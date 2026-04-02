@@ -218,6 +218,7 @@ export interface GameState {
     _stateTick?: number;
     _seatCooldown?: number;
     _kaosTimer?: number;
+    _needsQueueSeat?: boolean;
     mapId?: string;
     pendingRevengeScene?: boolean;
 }

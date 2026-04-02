@@ -1,5 +1,8 @@
 import { Server, Socket } from "socket.io";
 import { GameState, DISH_ITEMS, COMBO_TIMEOUT_TICKS, getComboMultiplier, getComboLabel } from "../../shared/types.js";
+import { getStationPos } from "../stationUtils.js";
+
+export { getStationPos };
 
 export interface InteractContext {
   gs: GameState;
