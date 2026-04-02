@@ -117,6 +117,19 @@ export function setupGameEffects(socket: Socket | null) {
     }
   };
 
+  // 💔 Can kaybı animasyonu
+  const handleLoseHeart = (data: { x: number; y: number; amount: number }) => {
+    const text = data.amount >= 2 ? `💔💔 -${data.amount}` : '💔 -1';
+    floatingTexts.push({
+      x: data.x,
+      y: data.y - 20,
+      text,
+      life: 90,
+      color: '#ef4444',
+      size: data.amount >= 2 ? 22 : 18,
+    });
+  };
+
   // 🌶️ Özel istek karşılandı
   const handleSpecialServed = (data: { x: number; y: number; request: string }) => {
     const icons: Record<string, string> = { spicy: '🌶️', extra: '➕', quick: '⚡' };
@@ -139,6 +152,7 @@ export function setupGameEffects(socket: Socket | null) {
     socket.on("happyLeave", handleHappyLeave);
     socket.on("specialServed", handleSpecialServed);
     socket.on("serviceEffect", handleServiceEffect);
+    socket.on("loseHeart", handleLoseHeart);
   }
 
   const cleanup = () => {
@@ -150,6 +164,7 @@ export function setupGameEffects(socket: Socket | null) {
       socket.off("happyLeave", handleHappyLeave);
       socket.off("specialServed", handleSpecialServed);
       socket.off("serviceEffect", handleServiceEffect);
+      socket.off("loseHeart", handleLoseHeart);
     }
   };
 

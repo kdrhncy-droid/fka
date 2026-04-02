@@ -99,6 +99,7 @@ export function customerTick(gs: GameState, io: Server, rid: string) {
             gs.score = Math.max(0, gs.score - 10);
             gs.lives = Math.max(0, gs.lives - 1);
             io.to(rid).emit("sound", "fail");
+            io.to(rid).emit("loseHeart", { x: c.seatX, y: c.seatY, amount: 1 });
             if (gs.lives <= 0) {
               gs.isGameOver = true;
               gs.dayPhase = 'night';
