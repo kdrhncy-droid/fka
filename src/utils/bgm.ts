@@ -14,7 +14,7 @@ const PLAYLIST = [
 
 let audio: HTMLAudioElement | null = null;
 let index = 0;
-let targetVolume = 0.5;
+let targetVolume = 0.2;
 let enabled = true;
 let userHasInteracted = false;
 

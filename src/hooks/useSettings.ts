@@ -48,7 +48,7 @@ export interface Settings {
 
 const DEFAULTS: Settings = {
     masterVolume: 0.5,
-    bgmVolume: 0.5,
+    bgmVolume: 0.2,
     sfxVolume: 0.8,
     sfxOn: true,
     bgmOn: true,
