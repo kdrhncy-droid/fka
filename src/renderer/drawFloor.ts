@@ -369,6 +369,20 @@ function drawExterior(ctx: CanvasRenderingContext2D) {
   // ── Sokak lambaları ────────────────────────────────────────────────────────
   drawStreetLamp(ctx, 28, WALL_BOT + 6);
   drawStreetLamp(ctx, W - 28, WALL_BOT + 6);
+
+  // ── Restoran tabelası ─────────────────────────────────────────────────────
+  drawSignBoard(ctx, DOOR_X0, DOOR_X1, WALL_TOP);
+
+  // ── Kapı önü paspas ───────────────────────────────────────────────────────
+  const doorMid = (DOOR_X0 + DOOR_X1) / 2;
+  drawDoormat(ctx, doorMid, WALL_BOT + 8);
+
+  // ── Çiçek saksıları (kapı yanları) ────────────────────────────────────────
+  drawFlowerPot(ctx, DOOR_X0 - 18, WALL_BOT + 14);
+  drawFlowerPot(ctx, DOOR_X1 + 18, WALL_BOT + 14);
+
+  // ── Bekleme bankı (kapı sağı) ─────────────────────────────────────────────
+  drawBench(ctx, DOOR_X1 + 80, WALL_BOT + 20);
 }
 
 /** Gerçekçi çift kanatlı cam kapı */
@@ -424,6 +438,149 @@ function drawFrontDoor(
   ctx.strokeStyle = '#a07820'; ctx.lineWidth = 1; ctx.stroke();
 }
 
+
+/** Restoran tabelası — kapı üstünde */
+function drawSignBoard(ctx: CanvasRenderingContext2D, doorX0: number, doorX1: number, wallTop: number) {
+  const cx = (doorX0 + doorX1) / 2;
+  const sw = 200, sh = 22, sy = wallTop - 28;
+
+  // Gölge
+  ctx.fillStyle = 'rgba(0,0,0,0.35)';
+  ctx.beginPath(); ctx.roundRect(cx - sw / 2 + 3, sy + 3, sw, sh, 6); ctx.fill();
+
+  // Tabela zemini
+  const sg = ctx.createLinearGradient(cx - sw / 2, sy, cx + sw / 2, sy + sh);
+  sg.addColorStop(0, '#1a1a2e'); sg.addColorStop(1, '#16213e');
+  ctx.fillStyle = sg;
+  ctx.beginPath(); ctx.roundRect(cx - sw / 2, sy, sw, sh, 6); ctx.fill();
+
+  // Altın çerçeve
+  ctx.strokeStyle = '#d4a830'; ctx.lineWidth = 1.8;
+  ctx.beginPath(); ctx.roundRect(cx - sw / 2, sy, sw, sh, 6); ctx.stroke();
+
+  // Köşe yıldızlar
+  ctx.fillStyle = '#d4a830'; ctx.font = '9px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText('★', cx - sw / 2 + 12, sy + sh / 2);
+  ctx.fillText('★', cx + sw / 2 - 12, sy + sh / 2);
+
+  // Yazı
+  ctx.fillStyle = '#fde68a'; ctx.font = 'bold 12px Arial';
+  ctx.fillText('🍽️  FKA MARKET', cx, sy + sh / 2);
+
+  // Alt ışık halesi
+  const halo = ctx.createLinearGradient(0, sy + sh, 0, sy + sh + 16);
+  halo.addColorStop(0, 'rgba(255,240,100,0.18)');
+  halo.addColorStop(1, 'rgba(255,240,100,0)');
+  ctx.fillStyle = halo;
+  ctx.fillRect(cx - sw / 2, sy + sh, sw, 16);
+
+  // Tabela askı ipleri
+  ctx.strokeStyle = '#888'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(cx - sw / 2 + 20, sy); ctx.lineTo(cx - sw / 2 + 20, wallTop); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx + sw / 2 - 20, sy); ctx.lineTo(cx + sw / 2 - 20, wallTop); ctx.stroke();
+}
+
+/** Kapı önü paspas */
+function drawDoormat(ctx: CanvasRenderingContext2D, cx: number, cy: number) {
+  // Gölge
+  ctx.fillStyle = 'rgba(0,0,0,0.25)';
+  ctx.beginPath(); ctx.roundRect(cx - 48, cy - 3, 96, 14, 3); ctx.fill();
+
+  // Paspas zemini
+  const mg = ctx.createLinearGradient(cx - 46, cy - 2, cx + 46, cy + 10);
+  mg.addColorStop(0, '#4a3828'); mg.addColorStop(1, '#3a2818');
+  ctx.fillStyle = mg;
+  ctx.beginPath(); ctx.roundRect(cx - 46, cy - 2, 92, 12, 3); ctx.fill();
+
+  // Desen çizgileri
+  ctx.strokeStyle = 'rgba(255,255,255,0.12)'; ctx.lineWidth = 1.5;
+  for (let i = 0; i < 5; i++) {
+    const lx = cx - 36 + i * 18;
+    ctx.beginPath(); ctx.moveTo(lx, cy); ctx.lineTo(lx, cy + 8); ctx.stroke();
+  }
+
+  // Kenar
+  ctx.strokeStyle = '#2e2018'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.roundRect(cx - 46, cy - 2, 92, 12, 3); ctx.stroke();
+}
+
+/** Çiçek saksısı */
+function drawFlowerPot(ctx: CanvasRenderingContext2D, cx: number, cy: number) {
+  ctx.save();
+  ctx.translate(cx, cy);
+
+  // Gölge
+  ctx.fillStyle = 'rgba(0,0,0,0.2)';
+  ctx.beginPath(); ctx.ellipse(0, 14, 12, 4, 0, 0, Math.PI * 2); ctx.fill();
+
+  // Saksı gövdesi (trapez)
+  ctx.fillStyle = '#c1440e';
+  ctx.beginPath();
+  ctx.moveTo(-10, 0); ctx.lineTo(10, 0);
+  ctx.lineTo(8, 14); ctx.lineTo(-8, 14);
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = '#8B2e08'; ctx.lineWidth = 1; ctx.stroke();
+
+  // Saksı üst kenar
+  ctx.fillStyle = '#d4561a';
+  ctx.beginPath(); ctx.roundRect(-11, -2, 22, 5, 2); ctx.fill();
+
+  // Toprak
+  ctx.fillStyle = '#5c3317';
+  ctx.beginPath(); ctx.ellipse(0, 0, 9, 4, 0, 0, Math.PI * 2); ctx.fill();
+
+  // Yapraklar
+  ctx.fillStyle = '#4a9a28';
+  ctx.beginPath(); ctx.moveTo(0, -2); ctx.bezierCurveTo(-12, -14, -16, -8, -8, -4); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(0, -2); ctx.bezierCurveTo(12, -14, 16, -8, 8, -4); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = '#6ab840';
+  ctx.beginPath(); ctx.moveTo(0, -2); ctx.bezierCurveTo(-6, -18, 0, -20, 4, -10); ctx.closePath(); ctx.fill();
+
+  // Çiçekler
+  const flowers = [[-6, -16, '#ff6b9d'], [4, -18, '#ff9f43'], [-2, -22, '#ff6b9d']] as const;
+  flowers.forEach(([fx, fy, col]) => {
+    ctx.fillStyle = col;
+    ctx.beginPath(); ctx.arc(fx, fy, 3.5, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#fff8';
+    ctx.beginPath(); ctx.arc(fx, fy, 1.2, 0, Math.PI * 2); ctx.fill();
+  });
+
+  ctx.restore();
+}
+
+/** Bekleme bankı */
+function drawBench(ctx: CanvasRenderingContext2D, cx: number, cy: number) {
+  ctx.save();
+  ctx.translate(cx, cy);
+
+  // Gölge
+  ctx.fillStyle = 'rgba(0,0,0,0.2)';
+  ctx.beginPath(); ctx.ellipse(0, 16, 40, 5, 0, 0, Math.PI * 2); ctx.fill();
+
+  // Bacaklar
+  ctx.fillStyle = '#555';
+  ctx.beginPath(); ctx.roundRect(-34, 8, 6, 12, 2); ctx.fill();
+  ctx.beginPath(); ctx.roundRect(28, 8, 6, 12, 2); ctx.fill();
+  ctx.strokeStyle = '#333'; ctx.lineWidth = 1; ctx.stroke();
+
+  // Oturma yüzeyi — 3 tahta
+  const woodColors = ['#8B6914', '#9a7520', '#8B6914'];
+  woodColors.forEach((col, i) => {
+    const bg = ctx.createLinearGradient(-36, -4 + i * 4, 36, 0 + i * 4);
+    bg.addColorStop(0, col); bg.addColorStop(1, '#6b4f10');
+    ctx.fillStyle = bg;
+    ctx.beginPath(); ctx.roundRect(-36, -4 + i * 4, 72, 5, 1); ctx.fill();
+    ctx.strokeStyle = 'rgba(0,0,0,0.2)'; ctx.lineWidth = 0.5; ctx.stroke();
+  });
+
+  // Metal bağlantılar
+  ctx.fillStyle = '#888';
+  [[-28, 0], [28, 0]].forEach(([bx, by]) => {
+    ctx.beginPath(); ctx.arc(bx, by, 2.5, 0, Math.PI * 2); ctx.fill();
+  });
+
+  ctx.restore();
+}
 
 /** Top-down ağaç */
 function drawTree(ctx: CanvasRenderingContext2D, cx: number, cy: number) {

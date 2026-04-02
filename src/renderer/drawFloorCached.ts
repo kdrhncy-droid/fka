@@ -2,7 +2,7 @@ import { GAME_WIDTH, GAME_HEIGHT } from "../types/game";
 import { drawFloor } from "./drawFloor";
 import { drawTable } from "./drawTable";
 
-const FLOOR_CACHE_VERSION = 14;
+const FLOOR_CACHE_VERSION = 15;
 let floorCache: OffscreenCanvas | HTMLCanvasElement | null = null;
 let floorCacheVersion = 0;
 let cachedUnlockedDishes = "";
