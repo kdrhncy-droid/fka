@@ -6,26 +6,26 @@ export function drawTable(ctx: CanvasRenderingContext2D, cx: number, cy: number,
     const s = seats ?? 4;
     
     // Masa ebatları
-    let w = 84, h = 62;
-    if (s === 1) { w = 44; h = 44; }
-    else if (s === 2) { w = 44; h = 62; }
-    else if (s === 3) { w = 64; h = 62; }
+    let w = 60, h = 44;
+    if (s === 1) { w = 32; h = 32; }
+    else if (s === 2) { w = 32; h = 44; }
+    else if (s === 3) { w = 46; h = 44; }
 
     // ── Sandalyeler ───────────────────────────────────────────────────────────
     if (s === 1) {
-        drawChair(ctx, cx, cy + 25, 'down'); // yukarı bakacak (alt sandalye)
+        drawChair(ctx, cx, cy + 20, 'down');
     } else if (s === 2) {
-        drawChair(ctx, cx, cy - 56, 'up');
-        drawChair(ctx, cx, cy + 40, 'down');
+        drawChair(ctx, cx, cy - 42, 'up');
+        drawChair(ctx, cx, cy + 30, 'down');
     } else if (s === 3) {
-        drawChair(ctx, cx, cy - 56, 'up');
-        drawChair(ctx, cx - 24, cy + 40, 'down');
-        drawChair(ctx, cx + 24, cy + 40, 'down');
+        drawChair(ctx, cx, cy - 42, 'up');
+        drawChair(ctx, cx - 18, cy + 30, 'down');
+        drawChair(ctx, cx + 18, cy + 30, 'down');
     } else {
-        drawChair(ctx, cx - 28, cy - 56, 'up');
-        drawChair(ctx, cx + 28, cy - 56, 'up');
-        drawChair(ctx, cx - 28, cy + 40, 'down');
-        drawChair(ctx, cx + 28, cy + 40, 'down');
+        drawChair(ctx, cx - 20, cy - 42, 'up');
+        drawChair(ctx, cx + 20, cy - 42, 'up');
+        drawChair(ctx, cx - 20, cy + 30, 'down');
+        drawChair(ctx, cx + 20, cy + 30, 'down');
     }
 
     // ── Masa Gölgesi ──────────────────────────────────────────────────────────

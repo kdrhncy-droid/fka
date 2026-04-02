@@ -73,7 +73,7 @@ export const GameScreen: React.FC<Props> = ({
     const [comboEdge, setComboEdge] = useState<{ color: string; key: number } | null>(null);
     const [perfectBanner, setPerfectBanner] = useState<{ visible: boolean; leaving: boolean } | null>(null);
 
-    const { score, dayPhase, dayTimer, upgrades, day, ovenCount, queueLen, lives, isGameOver, menuChoices, unlockedDishes, pendingCardChoices, activeCards, comboCount } = useGameState(gameStateRef);
+    const { score, dayPhase, dayTimer, upgrades, day, ovenCount, tableCount, queueLen, lives, isGameOver, menuChoices, unlockedDishes, pendingCardChoices, activeCards, comboCount } = useGameState(gameStateRef);
 
     const { editorState, editorStateRef, handleInteract, handleCancel, handleCycleSeats, updatePreview } = useLayoutEditor({
         socket, gameStateRef, localPlayerRef, dayPhase,
@@ -267,7 +267,7 @@ export const GameScreen: React.FC<Props> = ({
 
                         <GameNightOverlays
                             isGameOver={isGameOver} dayPhase={dayPhase} day={day} score={score}
-                            upgrades={upgrades} lives={lives} ovenCount={ovenCount}
+                            upgrades={upgrades} lives={lives} ovenCount={ovenCount} tableCount={tableCount}
                             unlockedDishes={unlockedDishes} menuChoices={menuChoices}
                             pendingCardChoices={pendingCardChoices} activeCards={activeCards}
                             onEmit={emit} onLeaveGame={onLeaveGame}

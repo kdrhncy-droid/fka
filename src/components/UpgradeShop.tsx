@@ -25,23 +25,29 @@ interface Props {
     day: number;
     lives: number;
     ovenCount: number;
+    tableCount: number;
     unlockedDishes: string[];
     menuChoices: string[] | null;
     pendingCardChoices?: any[] | null;
     onUpgrade: (id: keyof Upgrades) => void;
     onBuyOven: () => void;
     onBuyLife: () => void;
+    onBuyTable: () => void;
     onOrder: () => void;
     onNextDay: () => void;
 }
 
 export const UpgradeShop: React.FC<Props> = ({
-    score, upgrades, day, lives, ovenCount, unlockedDishes, menuChoices, pendingCardChoices, onUpgrade, onBuyOven, onBuyLife, onOrder, onNextDay,
+    score, upgrades, day, lives, ovenCount, tableCount, unlockedDishes, menuChoices, pendingCardChoices, onUpgrade, onBuyOven, onBuyLife, onBuyTable, onOrder, onNextDay,
 }) => {
     const maxOvens = INITIAL_OVEN_POSITIONS.length + ADDITIONAL_OVEN_POSITIONS.length;
     const canBuyOven = ovenCount < maxOvens;
     const ovenIndex = ovenCount - INITIAL_OVEN_POSITIONS.length;
     const ovenCost = canBuyOven ? OVEN_UPGRADE_COSTS[ovenIndex] : 0;
+    const TABLE_COSTS = [150, 200, 250, 300];
+    const MAX_TABLES = 5;
+    const canBuyTable = tableCount < MAX_TABLES;
+    const tableCost = canBuyTable ? TABLE_COSTS[Math.min(tableCount - 3, TABLE_COSTS.length - 1)] : 0;
     const earnedCoins = Math.max(5, Math.floor(score * 0.1));
     const totalCoins = loadProfile().coins;
 
@@ -102,8 +108,29 @@ export const UpgradeShop: React.FC<Props> = ({
                     </button>
                 </div>
 
-                {/* Can */}
+                {/* Masa */}
                 <div className="bg-stone-800/90 rounded-xl p-3 border border-stone-600 flex flex-col gap-2">
+                    <div className="flex items-start gap-2">
+                        <span className="text-2xl">🪑</span>
+                        <div>
+                            <div className="text-white font-bold text-sm leading-tight">Yeni Masa</div>
+                            <div className="text-stone-400 text-xs">Daha fazla müşteri</div>
+                        </div>
+                    </div>
+                    <div className="text-stone-300 text-xs">Mevcut: {tableCount}/{MAX_TABLES}</div>
+                    <button
+                        onClick={() => canBuyTable && score >= tableCost && onBuyTable()}
+                        disabled={!canBuyTable || score < tableCost}
+                        className={`w-full py-1.5 rounded-lg text-sm font-black transition-colors ${!canBuyTable ? 'bg-stone-700 text-stone-500 cursor-default' :
+                            score >= tableCost ? 'bg-teal-600 hover:bg-teal-500 text-white' :
+                                'bg-stone-700 text-stone-500 cursor-not-allowed'
+                            }`}
+                    >
+                        {!canBuyTable ? 'MAX ✓' : `$${tableCost} Satın Al`}
+                    </button>
+                </div>
+
+                {/* Can */}                <div className="bg-stone-800/90 rounded-xl p-3 border border-stone-600 flex flex-col gap-2">
                     <div className="flex items-start gap-2">
                         <span className="text-2xl">❤️</span>
                         <div>

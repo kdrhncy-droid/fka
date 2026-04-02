@@ -21,8 +21,8 @@ export const WASH_TICKS = 60; // ~2 saniye
 export const TRAY_PREFIX = 'TRAY:';
 export const MAX_TRAY_CAPACITY = 4;
 
-export const TABLE_HALF_W = 45; // Geriye dönük uyumluluk (gerekiyorsa)
-export const TABLE_HALF_H = 35;
+export const TABLE_HALF_W = 32; // Geriye dönük uyumluluk (gerekiyorsa)
+export const TABLE_HALF_H = 25;
 
 export const GAME_WIDTH = 1280;
 export const GAME_HEIGHT = 870;

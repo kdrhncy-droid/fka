@@ -28,6 +28,7 @@ interface Props {
     upgrades: Upgrades;
     lives: number;
     ovenCount: number;
+    tableCount: number;
     unlockedDishes: string[];
     menuChoices: string[] | null;
     pendingCardChoices: GameCard[] | null;
@@ -37,7 +38,7 @@ interface Props {
 }
 
 export const GameNightOverlays: React.FC<Props> = ({
-    isGameOver, dayPhase, day, score, upgrades, lives, ovenCount,
+    isGameOver, dayPhase, day, score, upgrades, lives, ovenCount, tableCount,
     unlockedDishes, menuChoices, pendingCardChoices, activeCards, onEmit, onLeaveGame,
 }) => {
     if (isGameOver) {
@@ -120,13 +121,14 @@ export const GameNightOverlays: React.FC<Props> = ({
             {(!menuChoices || menuChoices.length === 0) && dayPhase === 'night' && (
                 <UpgradeShop
                     score={score} upgrades={upgrades} day={day}
-                    lives={lives} ovenCount={ovenCount}
+                    lives={lives} ovenCount={ovenCount} tableCount={tableCount}
                     unlockedDishes={unlockedDishes}
                     menuChoices={menuChoices}
                     pendingCardChoices={pendingCardChoices}
                     onUpgrade={id => onEmit('upgrade', id)}
                     onBuyOven={() => onEmit('buyOven')}
                     onBuyLife={() => onEmit('buyLife')}
+                    onBuyTable={() => onEmit('buyTable')}
                     onOrder={() => onEmit('order')}
                     onNextDay={() => onEmit('nextDay')}
                 />

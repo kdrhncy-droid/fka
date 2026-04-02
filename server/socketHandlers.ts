@@ -162,6 +162,26 @@ export function registerSocketHandlers(socket: Socket, io: Server) {
     } else { socket.emit("sound", "fail"); }
   });
 
+  socket.on("buyTable", () => {
+    if (!roomId || !RoomManager.getRoomState(roomId)) return;
+    const gs = RoomManager.getRoomState(roomId)!;
+    if (gs.dayPhase !== 'night') return;
+    const TABLE_POSITIONS = [
+      { x: 320, y: 570 }, { x: 560, y: 570 }, { x: 800, y: 570 },
+      { x: 1040, y: 570 }, { x: 180, y: 570 },
+    ];
+    const TABLE_COSTS = [150, 200, 250, 300];
+    const currentCount = Object.keys(gs.tableLayout).length;
+    if (currentCount >= TABLE_POSITIONS.length) { socket.emit("sound", "fail"); return; }
+    const cost = TABLE_COSTS[Math.min(currentCount - 3, TABLE_COSTS.length - 1)];
+    if (gs.score < cost) { socket.emit("sound", "fail"); return; }
+    gs.score -= cost;
+    const id = `table${currentCount}`;
+    gs.tableLayout[id] = { id, x: TABLE_POSITIONS[currentCount].x, y: TABLE_POSITIONS[currentCount].y };
+    io.to(roomId).emit("state", gs);
+    socket.emit("sound", "success");
+  });
+
   socket.on("buyLife", () => {
     if (!roomId || !RoomManager.getRoomState(roomId)) return;
     const gs = RoomManager.getRoomState(roomId)!;

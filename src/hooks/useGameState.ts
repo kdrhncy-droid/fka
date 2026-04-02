@@ -9,6 +9,7 @@ interface GameUIState {
     upgrades: Upgrades;
     day: number;
     ovenCount: number;
+    tableCount: number;
     queueLen: number;
     lives: number;
     isGameOver: boolean;
@@ -23,7 +24,7 @@ const DEFAULT_UI: GameUIState = {
     score: 0, dayPhase: 'prep', dayTimer: DAY_TICKS,
     upgrades: { patience: 0, earnings: 0, plateStackMax: 0, safeOven: 0,
                 fryerSpeed: 0, cakeBaker: 0, coffeeMachine: 0, extraSink: 0, extraChopBoard: 0 },
-    day: 1, ovenCount: 1, queueLen: 0, lives: 3,
+    day: 1, ovenCount: 1, tableCount: 3, queueLen: 0, lives: 3,
     isGameOver: false, menuChoices: null, unlockedDishes: [],
     pendingCardChoices: null, activeCards: [], comboCount: 0,
 };
@@ -59,6 +60,7 @@ export function useGameState(gameStateRef: React.MutableRefObject<GameState>) {
                 upgrades: s.upgrades,
                 day: s.day,
                 ovenCount: s.cookStations?.length ?? 1,
+                tableCount: Object.keys(s.tableLayout ?? {}).length,
                 queueLen: s.waitList?.length ?? 0,
                 lives: s.lives ?? 3,
                 isGameOver: s.isGameOver ?? false,
@@ -72,7 +74,7 @@ export function useGameState(gameStateRef: React.MutableRefObject<GameState>) {
             if (
                 next.score !== prev.score || next.dayPhase !== prev.dayPhase ||
                 next.dayTimer !== prev.dayTimer || next.day !== prev.day ||
-                next.ovenCount !== prev.ovenCount || next.queueLen !== prev.queueLen ||
+                next.ovenCount !== prev.ovenCount || next.tableCount !== prev.tableCount || next.queueLen !== prev.queueLen ||
                 next.lives !== prev.lives || next.isGameOver !== prev.isGameOver ||
                 !upgradesEqual(next.upgrades, prev.upgrades) ||
                 !arraysEqual(next.menuChoices, prev.menuChoices) ||
