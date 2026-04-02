@@ -29,10 +29,15 @@ export function tryQueueSeat(gs: GameState, io: Server, rid: string) {
   ]);
 
   const firstGuest = gs.waitList[0];
+  // Müşteri henüz yoldan geliyorsa bekle (kaldırıma ulaşmamış)
+  const QUEUE_START_Y = 755;
+  if (firstGuest.y !== undefined && firstGuest.y > QUEUE_START_Y + 10) return;
   const groupId = firstGuest.groupId;
   const groupToSeat = groupId
     ? gs.waitList.filter(g => g.groupId === groupId)
     : [firstGuest];
+  // Gruptaki tüm üyeler kaldırıma ulaşmış olmalı
+  if (groupToSeat.some(g => g.y !== undefined && g.y > QUEUE_START_Y + 10)) return;
 
   let selectedSeats: { x: number; y: number }[] | null = null;
   for (const t of Object.values(gs.tableLayout)) {
