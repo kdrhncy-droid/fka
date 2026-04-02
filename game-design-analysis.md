@@ -45,9 +45,9 @@ Malzeme al → Fırına koy → Pişince tabağa al → Müşteriye servis et �
 | Doğrama | ✅ var | ❌ yok | Ses var ama görsel yok |
 | Servis | ✅ var | ⚠️ zayıf | Servis efekti var ama küçük |
 | Müşteri sinirlenme | ❌ yok | ⚠️ dialog var | Animasyon yok |
-| Müşteri kaçma | ✅ ses var | ⚠️ sadece yürüyüş | Kalp kırılması yok |
-| Combo | ✅ yazı var | ⚠️ küçük | Ekran efekti yok |
-| Can kaybı | ✅ ses var | ⚠️ kalp değişiyor | Ekran titremesi yok |
+| Müşteri kaçma | ✅ ses var | ✅ 💔 -1 animasyonu | ✅ Tamamlandı |
+| Combo | ✅ yazı var | ✅ ekran kenarı efekti | ✅ Tamamlandı |
+| Can kaybı | ✅ ses var | ✅ kırmızı ekran flash | ✅ Tamamlandı |
 | Yemek yanma | ✅ ses var | ⚠️ renk değişiyor | Duman efekti yok |
 | Gece upgrade | ✅ ses var | ✅ modal var | İyi |
 
@@ -228,15 +228,15 @@ Malzeme al → Fırına koy → Pişince tabağa al → Müşteriye servis et �
 
 ### Kısa Vadeli (Sıradaki)
 
-- [ ] Can kaybı ekran flash efekti (kırmızı, 0.3 sn)
-- [ ] Müşteri kaçınca "💔 -1" animasyonu
-- [ ] Sabır barı kritik seviyede kırmızı + titreme
-- [ ] Combo x5+ ekran kenarı efekti
+- [x] Can kaybı ekran flash efekti (kırmızı, 0.35 sn)
+- [x] Müşteri kaçınca "💔 -1" animasyonu
+- [x] Sabır barı yeniden tasarlandı — müşteri altına taşındı, dialog ile çakışma yok
+- [x] Combo x5+ ekran kenarı efekti
 
 ### Orta Vadeli
 
+- [x] Mükemmel gün ödülü (banner animasyonu)
 - [ ] Başarım sistemi (milestone'lar)
-- [ ] Mükemmel gün ödülü
 - [ ] Günlük özel olay sistemi
 
 ---
