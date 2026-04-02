@@ -31,3 +31,81 @@ export function drawShadowEllipse(
     ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2);
     ctx.fill();
 }
+
+/** Gradient + fill + stroke ile istasyon gövdesi */
+export function drawStationBody(
+    ctx: CanvasRenderingContext2D,
+    x: number, y: number, w: number, h: number,
+    colorTop: string, colorBot: string,
+    borderColor: string,
+    radius = 6,
+    borderWidth = 2,
+) {
+    const g = ctx.createLinearGradient(x - w / 2, y - h / 2, x + w / 2, y + h / 2);
+    g.addColorStop(0, colorTop);
+    g.addColorStop(1, colorBot);
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.roundRect(x - w / 2, y - h / 2, w, h, radius); ctx.fill();
+    stk(ctx, borderColor, borderWidth);
+}
+
+/** Progress bar — arka plan + dolgu */
+export function drawProgressBar(
+    ctx: CanvasRenderingContext2D,
+    cx: number, cy: number,
+    width: number, height = 5,
+    progress: number,
+    color: string,
+    bgColor = 'rgba(0,0,0,0.5)',
+    radius = 2,
+) {
+    ctx.fillStyle = bgColor;
+    ctx.beginPath(); ctx.roundRect(cx - width / 2, cy, width, height, radius); ctx.fill();
+    if (progress > 0) {
+        ctx.fillStyle = color;
+        ctx.beginPath(); ctx.roundRect(cx - width / 2, cy, width * progress, height, radius); ctx.fill();
+    }
+}
+
+/** Üst parlama şeridi */
+export function drawShine(
+    ctx: CanvasRenderingContext2D,
+    x: number, y: number, w: number, h: number,
+    alpha = 0.12,
+    radius = 4,
+) {
+    ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+    ctx.beginPath(); ctx.roundRect(x, y, w, h, radius); ctx.fill();
+}
+
+/** Ortalanmış etiket */
+export function drawLabel(
+    ctx: CanvasRenderingContext2D,
+    text: string,
+    x: number, y: number,
+    color = '#f0ddb8',
+    fontSize = 9,
+    bold = true,
+) {
+    ctx.font = `${bold ? 'bold ' : ''}${fontSize}px Arial`;
+    ctx.fillStyle = color;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    ctx.fillText(text, x, y);
+}
+
+/** Emoji çiz (ortalanmış) */
+export function drawEmoji(
+    ctx: CanvasRenderingContext2D,
+    emoji: string,
+    x: number, y: number,
+    size = 18,
+    alpha = 1,
+) {
+    ctx.globalAlpha = alpha;
+    ctx.font = `${size}px Arial`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(emoji, x, y);
+    ctx.globalAlpha = 1;
+}

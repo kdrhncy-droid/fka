@@ -10,7 +10,6 @@ import {
 import { drawCustomer, cleanupCRS } from "../renderer/drawCustomer";
 import { drawPlayer } from "../renderer/drawPlayer";
 import { drawCookStation } from "../renderer/drawCookStation";
-import { drawCounters } from "../renderer/drawCounter";
 import { movePlayer } from "./usePlayerMovement";
 import { setupGameEffects, renderFloatingTexts, renderPunchParticles, renderSparkleParticles, renderServiceParticles } from "./useGameEffects";
 import { updateProximityAudio } from "./useProximityAudio";
@@ -122,7 +121,6 @@ export function useGameLoop({
       const hs = state.holdingStations;
       if (hs) {
         drawPlateStack(ctx, state, movingId, PLATE_STACK_POS);
-        drawCounters(ctx, hs);
       }
 
       // Servis penceresi

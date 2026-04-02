@@ -1,63 +1,32 @@
 import { CakeBaker, CAKE_TICKS } from '../../shared/types';
-import { stk } from './rendererUtils';
+import { stk, drawShadowEllipse, drawStationBody, drawProgressBar, drawLabel, drawEmoji } from './rendererUtils';
 
 export function drawCakeBaker(ctx: CanvasRenderingContext2D, baker: CakeBaker, time: number) {
-  const x = baker.x, y = baker.y;
+  const { x, y } = baker;
 
-  // Gölge
-  ctx.fillStyle = 'rgba(0,0,0,0.22)';
-  ctx.beginPath(); ctx.ellipse(x + 2, y + 22, 26, 8, 0, 0, Math.PI * 2); ctx.fill();
-
-  // Gövde — pembe/pastel
-  const bodyGrad = ctx.createLinearGradient(x - 22, y - 18, x + 22, y + 18);
-  bodyGrad.addColorStop(0, '#f9a8d4');
-  bodyGrad.addColorStop(1, '#ec4899');
-  ctx.fillStyle = bodyGrad;
-  ctx.beginPath(); ctx.roundRect(x - 22, y - 18, 44, 36, 6); ctx.fill();
-  stk(ctx, '#be185d', 2);
+  drawShadowEllipse(ctx, x + 2, y + 22, 26, 8, 0.22);
+  drawStationBody(ctx, x, y, 44, 36, '#f9a8d4', '#ec4899', '#be185d');
 
   // Cam kapak
   ctx.fillStyle = 'rgba(255,255,255,0.15)';
   ctx.beginPath(); ctx.roundRect(x - 16, y - 12, 32, 20, 4); ctx.fill();
   stk(ctx, '#f9a8d4', 1);
 
-  // Pişirme progress
   if (baker.input && baker.timer > 0) {
     const progress = 1 - baker.timer / CAKE_TICKS;
-    const barW = 32;
-    ctx.fillStyle = 'rgba(0,0,0,0.4)';
-    ctx.beginPath(); ctx.roundRect(x - barW / 2, y + 12, barW, 5, 2); ctx.fill();
-    ctx.fillStyle = `hsl(${320 + progress * 20}, 80%, 65%)`;
-    ctx.beginPath(); ctx.roundRect(x - barW / 2, y + 12, barW * progress, 5, 2); ctx.fill();
+    drawProgressBar(ctx, x, y + 12, 32, 5, progress, `hsl(${320 + progress * 20}, 80%, 65%)`, 'rgba(0,0,0,0.4)');
 
-    // Buhar animasyonu
-    const steamT = time * 0.003;
+    const t = time * 0.003;
     for (let i = 0; i < 2; i++) {
-      const sx = x - 6 + i * 12 + Math.sin(steamT + i * 2) * 2;
-      const sy = y - 20 + Math.sin(steamT * 1.2 + i) * 3;
       ctx.fillStyle = 'rgba(255,255,255,0.3)';
-      ctx.beginPath(); ctx.arc(sx, sy, 3, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath();
+      ctx.arc(x - 6 + i * 12 + Math.sin(t + i * 2) * 2, y - 20 + Math.sin(t * 1.2 + i) * 3, 3, 0, Math.PI * 2);
+      ctx.fill();
     }
   }
 
-  // Output
-  if (baker.output) {
-    ctx.font = '18px Arial';
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText(baker.isBurned ? '⬛' : baker.output, x, y - 2);
-  }
+  if (baker.output) drawEmoji(ctx, baker.isBurned ? '⬛' : baker.output, x, y - 2);
+  else if (baker.input) drawEmoji(ctx, baker.input, x, y - 2, 14, 0.7);
 
-  if (baker.input) {
-    ctx.font = '14px Arial';
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.globalAlpha = 0.7;
-    ctx.fillText(baker.input, x, y - 2);
-    ctx.globalAlpha = 1;
-  }
-
-  // Etiket
-  ctx.font = 'bold 9px Arial';
-  ctx.fillStyle = '#fce7f3';
-  ctx.textAlign = 'center'; ctx.textBaseline = 'top';
-  ctx.fillText('PASTA', x, y + 20);
+  drawLabel(ctx, 'PASTA', x, y + 20, '#fce7f3');
 }

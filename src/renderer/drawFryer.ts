@@ -1,20 +1,11 @@
 import { Fryer, FRYER_TICKS } from '../../shared/types';
-import { stk } from './rendererUtils';
+import { stk, drawShadowEllipse, drawStationBody, drawProgressBar, drawLabel, drawEmoji } from './rendererUtils';
 
 export function drawFryer(ctx: CanvasRenderingContext2D, fryer: Fryer, time: number) {
-  const x = fryer.x, y = fryer.y;
+  const { x, y } = fryer;
 
-  // Gölge
-  ctx.fillStyle = 'rgba(0,0,0,0.25)';
-  ctx.beginPath(); ctx.ellipse(x + 2, y + 22, 26, 8, 0, 0, Math.PI * 2); ctx.fill();
-
-  // Gövde
-  const bodyGrad = ctx.createLinearGradient(x - 22, y - 18, x + 22, y + 18);
-  bodyGrad.addColorStop(0, '#78716c');
-  bodyGrad.addColorStop(1, '#44403c');
-  ctx.fillStyle = bodyGrad;
-  ctx.beginPath(); ctx.roundRect(x - 22, y - 18, 44, 36, 6); ctx.fill();
-  stk(ctx, '#1c1917', 2);
+  drawShadowEllipse(ctx, x + 2, y + 22, 26, 8, 0.25);
+  drawStationBody(ctx, x, y, 44, 36, '#78716c', '#44403c', '#1c1917');
 
   // Yağ havuzu
   ctx.fillStyle = '#92400e';
@@ -25,44 +16,21 @@ export function drawFryer(ctx: CanvasRenderingContext2D, fryer: Fryer, time: num
   ctx.fillStyle = 'rgba(251,191,36,0.3)';
   ctx.beginPath(); ctx.ellipse(x - 4, y - 6, 8, 4, -0.3, 0, Math.PI * 2); ctx.fill();
 
-  // Pişirme progress
   if (fryer.input && fryer.timer > 0) {
     const progress = 1 - fryer.timer / FRYER_TICKS;
-    const barW = 32;
-    ctx.fillStyle = 'rgba(0,0,0,0.5)';
-    ctx.beginPath(); ctx.roundRect(x - barW / 2, y + 12, barW, 5, 2); ctx.fill();
-    ctx.fillStyle = `hsl(${45 + progress * 30}, 90%, 55%)`;
-    ctx.beginPath(); ctx.roundRect(x - barW / 2, y + 12, barW * progress, 5, 2); ctx.fill();
+    drawProgressBar(ctx, x, y + 12, 32, 5, progress, `hsl(${45 + progress * 30}, 90%, 55%)`);
 
-    // Kabarcık animasyonu
-    const bubbleT = time * 0.005;
+    const t = time * 0.005;
     for (let i = 0; i < 3; i++) {
-      const bx = x - 10 + i * 10 + Math.sin(bubbleT + i) * 3;
-      const by = y - 4 + Math.sin(bubbleT * 1.5 + i) * 4;
       ctx.fillStyle = 'rgba(251,191,36,0.6)';
-      ctx.beginPath(); ctx.arc(bx, by, 2, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath();
+      ctx.arc(x - 10 + i * 10 + Math.sin(t + i) * 3, y - 4 + Math.sin(t * 1.5 + i) * 4, 2, 0, Math.PI * 2);
+      ctx.fill();
     }
   }
 
-  // Output
-  if (fryer.output) {
-    ctx.font = '18px Arial';
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText(fryer.isBurned ? '⬛' : fryer.output, x, y - 2);
-  }
+  if (fryer.output) drawEmoji(ctx, fryer.isBurned ? '⬛' : fryer.output, x, y - 2);
+  else if (fryer.input) drawEmoji(ctx, fryer.input, x, y - 2, 14, 0.7);
 
-  // Input göster
-  if (fryer.input) {
-    ctx.font = '14px Arial';
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.globalAlpha = 0.7;
-    ctx.fillText(fryer.input, x, y - 2);
-    ctx.globalAlpha = 1;
-  }
-
-  // Etiket
-  ctx.font = 'bold 9px Arial';
-  ctx.fillStyle = '#d6d3d1';
-  ctx.textAlign = 'center'; ctx.textBaseline = 'top';
-  ctx.fillText('FRİTÖZ', x, y + 20);
+  drawLabel(ctx, 'FRİTÖZ', x, y + 20, '#d6d3d1');
 }
