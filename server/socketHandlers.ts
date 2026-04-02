@@ -135,7 +135,8 @@ export function registerSocketHandlers(socket: Socket, io: Server) {
   socket.on("selectMenu", (dish: string) => {
     if (!roomId || !RoomManager.getRoomState(roomId)) return;
     const gs = RoomManager.getRoomState(roomId)!;
-    if (gs.dayPhase !== 'night' || !gs.menuChoices?.includes(dish)) return;
+    if (gs.dayPhase !== 'night' && gs.dayPhase !== 'prep') return;
+    if (!gs.menuChoices?.includes(dish)) return;
     gs.unlockedDishes.push(dish);
     gs.menuChoices = null;
     io.to(roomId).emit("state", gs);
