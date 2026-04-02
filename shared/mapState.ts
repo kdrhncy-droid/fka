@@ -58,9 +58,9 @@ function mkClassicMapState(): GameState {
     },
     lockedStations: {},
     tableLayout: {
-      'table0': { id: 'table0', x: 320, y: 570 },
-      'table1': { id: 'table1', x: 560, y: 570 },
-      'table2': { id: 'table2', x: 800, y: 570 },
+      'table0': { id: 'table0', x: 200, y: 570 },
+      'table1': { id: 'table1', x: 440, y: 570 },
+      'table2': { id: 'table2', x: 680, y: 570 },
     },
     lockedTables: {},
     choppingBoards: [

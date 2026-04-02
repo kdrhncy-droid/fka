@@ -64,8 +64,8 @@ export const GameNightOverlays: React.FC<Props> = ({
     }
 
     if (dayPhase !== 'night') {
-        // Başlangıç yemek seçimi: prep fazında menuChoices varsa göster
-        if (!(menuChoices && menuChoices.length > 0)) return null;
+        // Başlangıç yemek seçimi: prep fazında menuChoices varsa VE henüz yemek seçilmemişse göster
+        if (!(menuChoices && menuChoices.length > 0 && unlockedDishes.length === 0)) return null;
     }
 
     return (
