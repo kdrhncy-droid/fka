@@ -126,13 +126,16 @@ export function getNearestInteractable(px: number, py: number, gs: GameState, la
 
   // Malzemeler — sadece unlock edilmiş yemeklerin malzemeleri
   INGREDIENTS.forEach(ing => {
-    const recipe = RECIPE_DEFS[ing.key as keyof typeof RECIPE_DEFS];
+    const recipeKey = (ing.key in RECIPE_DEFS) ? ing.key : `CHOPPED_${ing.key}`;
+    const recipe = RECIPE_DEFS[recipeKey as keyof typeof RECIPE_DEFS];
     // Fırın tarifi varsa o yemek unlock edilmişse göster
     if (recipe && !gs.unlockedDishes?.includes(recipe.output)) return;
     // 🥔 patates — 🍟 unlock edilmişse
     if (ing.key === '🥔' && !gs.unlockedDishes?.includes('🍟')) return;
     // 🧁 tatlı hamuru — 🍰 unlock edilmişse
     if (ing.key === '🧁' && !gs.unlockedDishes?.includes('🍰')) return;
+    // Hiç yemek açılmamışsa malzeme etkileşime kapalı
+    if (!recipe && !gs.unlockedDishes?.length) return;
     const dynPos = gs.stationLayout?.[`ingredient_${ing.key}`];
     addCandidate(dynPos?.x ?? ing.pos.x, dynPos?.y ?? ing.pos.y, INTERACT_R, 'ingredient', ing.key);
   });
