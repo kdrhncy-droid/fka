@@ -184,7 +184,25 @@ export function drawPlayer(
     const headR = 18.7;
     const headY = -15;
 
-    // ── SAÇ (kafadan ÖNCE çizilir — kafa üstüne gelir, yüzü kapatmaz) ────────
+    // Kafa çizimi
+    ctx.beginPath();
+    if (faceShape === 1) {
+        ctx.roundRect(-headR, headY - headR, headR * 2, headR * 2, 8);
+    } else if (faceShape === 2) {
+        ctx.moveTo(0, headY + headR + 2);
+        ctx.lineTo(-headR, headY - headR / 2);
+        ctx.lineTo(-headR / 2, headY - headR);
+        ctx.lineTo(headR / 2, headY - headR);
+        ctx.lineTo(headR, headY - headR / 2);
+        ctx.closePath();
+    } else {
+        ctx.arc(0, headY, headR, 0, Math.PI * 2);
+    }
+    const headG = ctx.createRadialGradient(-4, headY - 4, 2, 0, headY, headR);
+    headG.addColorStop(0, '#fff1e0'); headG.addColorStop(1, '#f5c090');
+    ctx.fillStyle = headG; ctx.fill(); stk(ctx, '#000', 2);
+
+    // ── SAÇ (kafadan SONRA çizilir — alın kısmına gelir, doğal görünür) ──────
     const hairStyle = p.hairStyle || 'default';
     ctx.fillStyle = hairColor;
     ctx.strokeStyle = adjustColor(hairColor, -20);
@@ -311,24 +329,6 @@ export function drawPlayer(
         ctx.closePath(); ctx.fill();
         ctx.strokeStyle = adjustColor(hairColor, -20); ctx.lineWidth = 1; ctx.stroke();
     }
-
-    // ── KAFA (saçtan SONRA çizilir — yüzü temiz tutar) ───────────────────────
-    ctx.beginPath();
-    if (faceShape === 1) {
-        ctx.roundRect(-headR, headY - headR, headR * 2, headR * 2, 8);
-    } else if (faceShape === 2) {
-        ctx.moveTo(0, headY + headR + 2);
-        ctx.lineTo(-headR, headY - headR / 2);
-        ctx.lineTo(-headR / 2, headY - headR);
-        ctx.lineTo(headR / 2, headY - headR);
-        ctx.lineTo(headR, headY - headR / 2);
-        ctx.closePath();
-    } else {
-        ctx.arc(0, headY, headR, 0, Math.PI * 2);
-    }
-    const headG = ctx.createRadialGradient(-4, headY - 4, 2, 0, headY, headR);
-    headG.addColorStop(0, '#fff1e0'); headG.addColorStop(1, '#f5c090');
-    ctx.fillStyle = headG; ctx.fill(); stk(ctx, '#000', 2);
 
     // ── ŞAPKA — kafaya tam uyumlu, her şapka özel konumlandırılmış ──────────
     if (p.hat) {
