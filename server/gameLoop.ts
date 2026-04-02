@@ -65,6 +65,7 @@ export function resetGameState(gs: GameState): void {
 }
 
 export function gameTick(gs: GameState, io: Server, rid: string) {
+  if (gs.isGameOver) return; // game over sonrası tick durur
   const cm = getCardMultipliers(gs);
 
   updateCookStations(gs, io, rid);
@@ -143,9 +144,10 @@ export function gameTick(gs: GameState, io: Server, rid: string) {
         const rows = Math.floor(870 / 40);
         const newX = (Math.floor(Math.random() * (cols - 2)) + 1) * 40 + 20;
         const newY = (Math.floor(Math.random() * Math.min(rows - 2, 8)) + 1) * 40 + 20;
-        moveStation(gs, id, newX, newY);
-        io.to(rid).emit('stationMoved', { stationId: id, x: newX, y: newY });
-        io.to(rid).emit('sound', 'fail');
+        if (moveStation(gs, id, newX, newY)) {
+          io.to(rid).emit('stationMoved', { stationId: id, x: newX, y: newY });
+          io.to(rid).emit('sound', 'fail');
+        }
       }
     }
   }

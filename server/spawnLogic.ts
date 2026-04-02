@@ -24,7 +24,7 @@ export function tryQueueSeat(gs: GameState, io: Server, rid: string) {
   if (gs.waitList.length === 0) return;
 
   const occupied = new Set([
-    ...gs.customers.map(c => `${c.seatX},${c.seatY}`),
+    ...gs.customers.filter(c => !c.isLeaving).map(c => `${c.seatX},${c.seatY}`),
     ...gs.dirtyTables.map(t => `${t.seatX},${t.seatY}`),
   ]);
 

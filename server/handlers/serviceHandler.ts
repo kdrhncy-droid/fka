@@ -1,10 +1,25 @@
 import { InteractionHandler, earn, applyCombo } from './utils.js';
 import { 
   SERVICE_WINDOW_SLOTS, SERVICE_WINDOW_R, SPECIAL_REQUEST_TIP_MULT, EAT_TICKS,
-  isTray, getTrayItems, createTray, DIRTY_PLATE, MAX_TRAY_CAPACITY
+  isTray, getTrayItems, createTray, DIRTY_PLATE, MAX_TRAY_CAPACITY, GameState
 } from "../../shared/types.js";
+import { Server } from "socket.io";
 
 const SERVE_R = 125;
+
+/** Can azalt, 0'a düşünce game over tetikle. true dönerse game over oldu. */
+function loseLife(gs: GameState, io: Server, roomId: string, amount = 1): boolean {
+  gs.lives = Math.max(0, gs.lives - amount);
+  if (gs.lives <= 0) {
+    gs.isGameOver = true;
+    gs.dayPhase = 'night';
+    gs.customers = []; gs.waitList = []; gs.dirtyTables = [];
+    io.to(roomId).emit("state", gs);
+    io.to(roomId).emit("sound", "fail");
+    return true;
+  }
+  return false;
+}
 
 export const handleServiceWindow: InteractionHandler = ({ gs, p, px, py, snd }) => {
   if (!gs.serviceWindow?.length) return false;
@@ -70,13 +85,13 @@ export const handleCustomers: InteractionHandler = ({ gs, p, px, py, snd, io, ro
       if (correctFood || drunkAccept) {
         // Acı istek uyumsuzluğu kontrolü (sarhoş için atla)
         if (!isDrunk && customerWantsSpicy && !playerHasSpicy) {
-          gs.lives = Math.max(0, gs.lives - 1);
+          loseLife(gs, io, roomId);
           c.isEating = true; c.eatTimer = EAT_TICKS; c.wants = null; p.holding = null;
           c.tipAmount = 0;
           snd("fail");
           return true;
         } else if (!isDrunk && !customerWantsSpicy && playerHasSpicy) {
-          gs.lives = Math.max(0, gs.lives - 1);
+          loseLife(gs, io, roomId);
           c.isEating = true; c.eatTimer = EAT_TICKS; c.wants = null; p.holding = null;
           c.tipAmount = 0;
           snd("fail");
@@ -111,16 +126,14 @@ export const handleCustomers: InteractionHandler = ({ gs, p, px, py, snd, io, ro
           if (c.wants === itemBase) {
             // Acı istek uyumsuzluğu kontrolü
             if (customerWantsSpicy && !itemIsSpicy) {
-              // Can kaybı
-              gs.lives = Math.max(0, gs.lives - 1);
+              loseLife(gs, io, roomId);
               items.splice(i, 1); p.holding = createTray(items);
               c.isEating = true; c.eatTimer = EAT_TICKS; c.wants = null;
               c.tipAmount = 0;
               snd("fail");
               return true;
             } else if (!customerWantsSpicy && itemIsSpicy) {
-              // Can kaybı
-              gs.lives = Math.max(0, gs.lives - 1);
+              loseLife(gs, io, roomId);
               items.splice(i, 1); p.holding = createTray(items);
               c.isEating = true; c.eatTimer = EAT_TICKS; c.wants = null;
               c.tipAmount = 0;
@@ -142,7 +155,7 @@ export const handleCustomers: InteractionHandler = ({ gs, p, px, py, snd, io, ro
       } else {
         // Yanlış yemek — VIP ve inspector için 2 can kaybı
         if (c.personality === 'vip' || c.personality === 'inspector') {
-          gs.lives = Math.max(0, gs.lives - 2);
+          loseLife(gs, io, roomId, 2);
           c.isEating = true; c.eatTimer = EAT_TICKS; c.wants = null; p.holding = null;
           c.tipAmount = 0;
           io.to(roomId).emit('wrongServe', { x: c.seatX, y: c.seatY, personality: c.personality });

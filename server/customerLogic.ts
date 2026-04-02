@@ -97,7 +97,7 @@ export function customerTick(gs: GameState, io: Server, rid: string) {
           c.patience -= actualDrain;
           if (c.patience <= 0) {
             gs.score = Math.max(0, gs.score - 10);
-            gs.lives -= 1;
+            gs.lives = Math.max(0, gs.lives - 1);
             io.to(rid).emit("sound", "fail");
             if (gs.lives <= 0) {
               gs.isGameOver = true;
