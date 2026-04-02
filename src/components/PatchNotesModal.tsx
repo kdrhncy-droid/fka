@@ -21,7 +21,7 @@ export const PatchNotesModal: React.FC<Props> = ({ onClose }) => {
             <div className="flex items-center justify-between px-5 py-3 border-b border-stone-700/50 flex-shrink-0">
                 <div className="flex items-center gap-3">
                     <span className="text-amber-400 font-black text-base">📜 Oyun Rehberi</span>
-                    <span className="bg-amber-400/10 text-amber-400 text-[10px] font-black px-2 py-0.5 rounded-full border border-amber-400/20">v2.4.0</span>
+                    <span className="bg-amber-400/10 text-amber-400 text-[10px] font-black px-2 py-0.5 rounded-full border border-amber-400/20">v2.5.0</span>
                 </div>
                 <button onClick={onClose}
                     className="w-9 h-9 bg-stone-800 hover:bg-stone-700 text-stone-400 hover:text-white rounded-xl flex items-center justify-center text-lg transition-all active:scale-90 border border-stone-700">

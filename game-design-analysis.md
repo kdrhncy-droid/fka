@@ -195,24 +195,24 @@ Malzeme al → Fırına koy → Pişince tabağa al → Müşteriye servis et �
 
 | # | Bug | Etki | Durum |
 |---|-----|------|-------|
-| 1 | Android/iOS klavye kapanınca alt kısım eski haline dönmüyor | Chat kullanılamaz | ❌ Açık |
-| 2 | Chat mesajı gelince bildirim yok, mesaj butonuna basmak gerekiyor | Sosyal özellik işlevsiz | ❌ Açık |
+| 1 | Android/iOS klavye kapanınca alt kısım eski haline dönmüyor | Chat kullanılamaz | ✅ Düzeltildi |
+| 2 | Chat mesajı gelince bildirim yok, mesaj butonuna basmak gerekiyor | Sosyal özellik işlevsiz | ✅ Düzeltildi (toast var) |
 
 ### Orta
 
 | # | Bug | Etki | Durum |
 |---|-----|------|-------|
-| 3 | CharacterPreview kıyafet stilini göstermiyor | Market önizleme yanlış | ❌ Açık |
-| 4 | PatchNotes "Yakında" bölümü eski — saç/kıyafet/servis efekti zaten var | Yanıltıcı bilgi | ❌ Açık |
+| 3 | CharacterPreview kıyafet stilini göstermiyor | Market önizleme yanlış | ✅ Düzeltildi |
+| 4 | PatchNotes "Yakında" bölümü eski — saç/kıyafet/servis efekti zaten var | Yanıltıcı bilgi | ✅ Düzeltildi |
 | 5 | Profil modalında hairStyle prop eksik (bazı yerlerde) | Önizleme yanlış | ✅ Düzeltildi |
 
 ### Küçük
 
 | # | Bug | Etki | Durum |
 |---|-----|------|-------|
-| 6 | WelcomeScreen'de HAIR_COLORS, CLOTHING_COLORS, LABEL_COLORS tanımlı ama kullanılmıyor | Gereksiz kod | ❌ Açık |
-| 7 | useSocket'te `myId` state'i `useEffect` dependency'de yok | Stale closure riski | ❌ Açık |
-| 8 | drawPlayer'da `outfitStyle` prop'u Player tipinde var ama CharacterPreview'da yok | Önizleme eksik | ❌ Açık |
+| 6 | WelcomeScreen'de HAIR_COLORS, CLOTHING_COLORS, LABEL_COLORS tanımlı ama kullanılmıyor | Gereksiz kod | ✅ Düzeltildi |
+| 7 | useSocket'te `myId` state'i `useEffect` dependency'de yok | Stale closure riski | ✅ Düzeltildi |
+| 8 | drawPlayer'da `outfitStyle` prop'u Player tipinde var ama CharacterPreview'da yok | Önizleme eksik | ✅ Düzeltildi |
 
 ---
 
@@ -220,16 +220,16 @@ Malzeme al → Fırına koy → Pişince tabağa al → Müşteriye servis et �
 
 ### Acil (Bu Oturumda)
 
-- [ ] Chat klavye fix — Android/iOS viewport sorunu
-- [ ] Chat toast bildirimi — oyun içinde 3-4 sn görünen bildirim
-- [ ] PatchNotes güncelleme — mevcut özellikleri yansıt
-- [ ] CharacterPreview'a outfitStyle desteği
-- [ ] WelcomeScreen'deki kullanılmayan sabit dizileri temizle
+- [x] Chat klavye fix — Android/iOS viewport sorunu
+- [x] Chat toast bildirimi — oyun içinde 3-4 sn görünen bildirim
+- [x] PatchNotes güncelleme — mevcut özellikleri yansıt
+- [x] CharacterPreview'a outfitStyle desteği
+- [x] WelcomeScreen'deki kullanılmayan sabit dizileri temizle
 
-### Kısa Vadeli
+### Kısa Vadeli (Sıradaki)
 
-- [ ] Can kaybı ekran flash efekti
-- [ ] Müşteri kaçınca "💔" animasyonu
+- [ ] Can kaybı ekran flash efekti (kırmızı, 0.3 sn)
+- [ ] Müşteri kaçınca "💔 -1" animasyonu
 - [ ] Sabır barı kritik seviyede kırmızı + titreme
 - [ ] Combo x5+ ekran kenarı efekti
 
