@@ -47,6 +47,13 @@ export default function App() {
   const [showSettings, setShowSettings] = useState(false);
   const [showAchievements, setShowAchievements] = useState(false);
 
+  // Başarım toast'larını 4 saniye sonra otomatik temizle
+  useEffect(() => {
+    if (newAchievements.length === 0) return;
+    const t = setTimeout(() => clearAchievements(), 4000);
+    return () => clearTimeout(t);
+  }, [newAchievements]);
+
   const [playerName, setPlayerName] = useState(() => loadProfile().name);
   const [charType, setCharType] = useState(() => loadProfile().charType);
   const [playerColor, setPlayerColor] = useState(() => CHARACTER_TYPES[loadProfile().charType]?.bodyColor ?? CHARACTER_TYPES[0].bodyColor);

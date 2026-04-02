@@ -235,11 +235,11 @@ export function useSocket(
             }
             // Başarım kontrolü
             const rt = runtimeRef.current;
-            if (summary.lives === 3) rt.perfectDays++;
             const profile = loadProfile();
             saveProfile({
                 totalDays: profile.totalDays + 1,
                 totalScore: profile.totalScore + summary.score,
+                gamesPlayed: profile.gamesPlayed + 1,
                 perfectDays: (profile.perfectDays ?? 0) + (summary.lives === 3 ? 1 : 0),
             });
             const updatedProfile = loadProfile();
