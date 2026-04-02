@@ -1,5 +1,6 @@
 // ═══════════════════════════════════════════════════════════════════════════════
-// BGM Manager — Tüm şarkılar sırayla çalar (iOS Safari uyumlu)
+// BGM Manager — Web Audio API gain ile iOS dahil tüm platformlarda ses kontrolü
+// HTMLAudioElement.volume iOS'ta çalışmaz, gainNode kullanıyoruz.
 // ═══════════════════════════════════════════════════════════════════════════════
 
 const PLAYLIST = [
@@ -13,30 +14,68 @@ const PLAYLIST = [
 
 let audio: HTMLAudioElement | null = null;
 let index = 0;
-let volume = 0.5;
-let enabled = true; // localStorage'dan gelen değer setBgmEnabled ile set edilir
+let targetVolume = 0.5;
+let enabled = true;
 let userHasInteracted = false;
 
-/** iOS Safari AudioContext unlock — ilk dokunuşta çağır */
+// Web Audio API nesneleri
+let audioCtx: AudioContext | null = null;
+let gainNode: GainNode | null = null;
+let sourceNode: MediaElementAudioSourceNode | null = null;
+
+function getAudioCtx(): AudioContext | null {
+  if (audioCtx) return audioCtx;
+  const AC = window.AudioContext || (window as any).webkitAudioContext;
+  if (!AC) return null;
+  audioCtx = new AC();
+  return audioCtx;
+}
+
+function connectGain(el: HTMLAudioElement) {
+  const ctx = getAudioCtx();
+  if (!ctx) return;
+
+  // Önceki source'u temizle
+  if (sourceNode) {
+    try { sourceNode.disconnect(); } catch (_) {}
+    sourceNode = null;
+  }
+
+  // GainNode bir kez oluştur
+  if (!gainNode) {
+    gainNode = ctx.createGain();
+    gainNode.connect(ctx.destination);
+  }
+  gainNode.gain.value = enabled ? targetVolume : 0;
+
+  try {
+    sourceNode = ctx.createMediaElementSource(el);
+    sourceNode.connect(gainNode);
+  } catch (_) {
+    // Aynı element iki kez bağlanamaz — güvenli geç
+  }
+}
+
+function resumeCtx() {
+  if (audioCtx?.state === 'suspended') {
+    audioCtx.resume().catch(() => {});
+  }
+}
+
 function unlockIOSAudio() {
   if (userHasInteracted) return;
   userHasInteracted = true;
-
-  // Webkit AudioContext'i uyandır
-  const AC = window.AudioContext || (window as any).webkitAudioContext;
-  if (!AC) return;
-  const ctx = new AC();
-  if (ctx.state === 'suspended') {
-    ctx.resume().catch(() => {});
-  }
-  // Sessiz bir buffer çal — iOS'un audio pipeline'ını aç
+  const ctx = getAudioCtx();
+  if (!ctx) return;
+  if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+  // Sessiz buffer — iOS pipeline'ı aç
   try {
     const buf = ctx.createBuffer(1, 1, 22050);
     const src = ctx.createBufferSource();
     src.buffer = buf;
     src.connect(ctx.destination);
     src.start(0);
-  } catch (_) { /* güvenli fail */ }
+  } catch (_) {}
 }
 
 function playIndex(i: number) {
@@ -45,54 +84,66 @@ function playIndex(i: number) {
   if (audio) {
     audio.onended = null;
     audio.pause();
+    // Eski source'u temizle
+    if (sourceNode) {
+      try { sourceNode.disconnect(); } catch (_) {}
+      sourceNode = null;
+    }
     audio.src = '';
   }
+
   index = ((i % PLAYLIST.length) + PLAYLIST.length) % PLAYLIST.length;
   audio = new Audio(PLAYLIST[index]);
-  audio.volume = volume;
-  // iOS: preload hint
   audio.preload = 'auto';
-  audio.onended = () => playIndex(index + 1);
+  // HTMLAudioElement.volume — desktop için fallback (iOS'ta etkisiz)
+  audio.volume = 1;
 
+  connectGain(audio);
+  resumeCtx();
+
+  audio.onended = () => playIndex(index + 1);
   const p = audio.play();
   if (p !== undefined) p.catch((e) => console.warn('[BGM] play() engellendi:', e));
 }
 
-/** Kullanıcı oyuna katılınca çağır (gerçek etkileşim anında) */
 export function startBgm() {
   unlockIOSAudio();
   if (!enabled) return;
-  if (audio && !audio.paused) return; // Zaten çalıyor
+  if (audio && !audio.paused) return;
   playIndex(index);
 }
 
-/** settings.bgmVolume (0–1) değişince çağır */
 export function setBgmVolume(v: number) {
-  volume = Math.max(0, Math.min(1, v));
-  if (audio) audio.volume = volume;
+  targetVolume = Math.max(0, Math.min(1, v));
+  if (gainNode && enabled) {
+    gainNode.gain.value = targetVolume;
+  }
+  // Desktop fallback
+  if (audio) audio.volume = 1; // gain hallediyor, element volume 1'de kalır
 }
 
-/**
- * BGM aç/kapat — useSettings'ten çağrılır.
- * startBgm'den ÖNCE çağrılabilir, o yüzden enabled flag'ini set eder.
- */
 export function setBgmEnabled(v: boolean) {
   enabled = v;
+  if (gainNode) {
+    gainNode.gain.value = v ? targetVolume : 0;
+  }
   if (!v) {
     audio?.pause();
   } else if (audio && audio.paused) {
-    // Durdurulmuş şarkıyı devam ettir
+    resumeCtx();
     const p = audio.play();
     if (p !== undefined) p.catch(() => {});
   }
-  // enabled=true ama audio=null ise startBgm() zaten handle eder
 }
 
-/** Oda bırakınca çağır */
 export function stopBgm() {
   if (audio) {
     audio.onended = null;
     audio.pause();
+    if (sourceNode) {
+      try { sourceNode.disconnect(); } catch (_) {}
+      sourceNode = null;
+    }
     audio.src = '';
     audio = null;
   }
