@@ -106,6 +106,7 @@ export const handleCakeBakers: InteractionHandler = ({ gs, p, px, py, snd }) => 
 
 export const handleCoffeeMachines: InteractionHandler = ({ gs, p, px, py, snd }) => {
   if (!gs.coffeeMachines) return false;
+  if (!gs.unlockedDishes.includes(COFFEE_ITEM)) return false;
   for (const cm of gs.coffeeMachines) {
     const { x: dynX, y: dynY } = getStationPos(gs, cm);
     if (Math.hypot(px - dynX, py - dynY) < INTERACT_R) {
