@@ -180,37 +180,17 @@ export function drawPlayer(
         ctx.beginPath(); ctx.arc(handX, handY - armSwing, 5, 0, Math.PI * 2); ctx.fill(); stk(ctx, '#000', 1.5);
     }
 
-    // ── KAFA (100/15 oranında küçültüldü: 22 -> 18.7) ────────────────────────
+    // ── KAFA ─────────────────────────────────────────────────────────────────
     const headR = 18.7;
     const headY = -15;
 
-    // Yüz Şekli Uygulama
-    ctx.beginPath();
-    if (faceShape === 1) { // Karemsi
-        ctx.roundRect(-headR, headY - headR, headR * 2, headR * 2, 8);
-    } else if (faceShape === 2) { // Sivri
-        ctx.moveTo(0, headY + headR + 2);
-        ctx.lineTo(-headR, headY - headR / 2);
-        ctx.lineTo(-headR / 2, headY - headR);
-        ctx.lineTo(headR / 2, headY - headR);
-        ctx.lineTo(headR, headY - headR / 2);
-        ctx.closePath();
-    } else { // Normal (Yuvarlak)
-        ctx.arc(0, headY, headR, 0, Math.PI * 2);
-    }
-    
-    const headG = ctx.createRadialGradient(-4, headY - 4, 2, 0, headY, headR);
-    headG.addColorStop(0, '#fff1e0'); headG.addColorStop(1, '#f5c090');
-    ctx.fillStyle = headG; ctx.fill(); stk(ctx, '#000', 2);
-
-    // ── SAÇ ──────────────────────────────────────────────────────────────────
+    // ── SAÇ (kafadan ÖNCE çizilir — kafa üstüne gelir, yüzü kapatmaz) ────────
     const hairStyle = p.hairStyle || 'default';
     ctx.fillStyle = hairColor;
     ctx.strokeStyle = adjustColor(hairColor, -20);
     ctx.lineWidth = 1;
 
     if (hairStyle === 'short') {
-        // Kısa saç — sadece üst kısım, yanlarda kısa
         ctx.beginPath();
         ctx.arc(0, headY - 3, headR + 1, Math.PI, 0);
         ctx.lineTo(headR + 1, headY + 1);
@@ -221,35 +201,30 @@ export function drawPlayer(
         ctx.fill(); ctx.stroke();
 
     } else if (hairStyle === 'long') {
-        // Uzun saç — yanlarda aşağı inen uzun saç
         ctx.beginPath();
         ctx.arc(0, headY - 5, headR + 1, Math.PI, 0);
         ctx.lineTo(headR + 1, headY + 2);
-        ctx.lineTo(headR + 3, headY + 18); // sağ uzun
+        ctx.lineTo(headR + 3, headY + 18);
         ctx.lineTo(headR - 2, headY + 20);
         ctx.lineTo(headR - 6, headY + 14);
         ctx.lineTo(-headR + 6, headY + 14);
         ctx.lineTo(-headR + 2, headY + 20);
-        ctx.lineTo(-headR - 3, headY + 18); // sol uzun
+        ctx.lineTo(-headR - 3, headY + 18);
         ctx.lineTo(-headR - 1, headY + 2);
         ctx.closePath();
         ctx.fill(); ctx.stroke();
-        // Orta çizgi
         ctx.strokeStyle = adjustColor(hairColor, -30);
         ctx.lineWidth = 0.8;
         ctx.beginPath(); ctx.moveTo(0, headY - headR); ctx.lineTo(0, headY + 14); ctx.stroke();
 
     } else if (hairStyle === 'wavy') {
-        // Dalgalı saç — yanlarda dalgalı uzun
         ctx.beginPath();
         ctx.arc(0, headY - 5, headR + 1, Math.PI, 0);
         ctx.lineTo(headR + 1, headY + 2);
-        // Sağ dalga
         ctx.bezierCurveTo(headR + 5, headY + 6, headR + 1, headY + 10, headR + 4, headY + 14);
         ctx.bezierCurveTo(headR + 6, headY + 18, headR + 1, headY + 20, headR - 2, headY + 22);
         ctx.lineTo(headR - 6, headY + 14);
         ctx.lineTo(-headR + 6, headY + 14);
-        // Sol dalga
         ctx.lineTo(-headR + 2, headY + 22);
         ctx.bezierCurveTo(-headR - 1, headY + 20, -headR - 6, headY + 18, -headR - 4, headY + 14);
         ctx.bezierCurveTo(-headR - 1, headY + 10, -headR - 5, headY + 6, -headR - 1, headY + 2);
@@ -257,19 +232,11 @@ export function drawPlayer(
         ctx.fill(); ctx.stroke();
 
     } else if (hairStyle === 'afro') {
-        // Afro — kafanın etrafında büyük yuvarlak
-        ctx.beginPath();
-        ctx.arc(0, headY - 2, headR + 9, Math.PI * 1.1, Math.PI * 1.9);
-        ctx.arc(0, headY - 2, headR + 9, -Math.PI * 0.1, Math.PI * 0.1);
-        ctx.arc(0, headY, headR + 1, 0, Math.PI);
-        ctx.closePath();
-        // Büyük daire
         ctx.beginPath();
         ctx.arc(0, headY - 4, headR + 8, Math.PI * 0.85, Math.PI * 2.15);
         ctx.arc(0, headY + 2, headR + 1, 0, Math.PI);
         ctx.closePath();
         ctx.fill(); ctx.stroke();
-        // Doku için küçük daireler
         ctx.fillStyle = adjustColor(hairColor, -15);
         for (let i = 0; i < 8; i++) {
             const a = (i / 8) * Math.PI * 2;
@@ -280,122 +247,88 @@ export function drawPlayer(
         }
 
     } else if (hairStyle === 'bun') {
-        // Topuz — üstte küçük topuz
         ctx.beginPath();
         ctx.arc(0, headY - 3, headR + 1, Math.PI, 0);
-        ctx.lineTo(headR + 1, headY + 2);
-        ctx.lineTo(headR - 4, headY + 2);
-        ctx.lineTo(-headR + 4, headY + 2);
-        ctx.lineTo(-headR - 1, headY + 2);
-        ctx.closePath();
+        ctx.lineTo(headR + 1, headY + 2); ctx.lineTo(headR - 4, headY + 2);
+        ctx.lineTo(-headR + 4, headY + 2); ctx.lineTo(-headR - 1, headY + 2);
+        ctx.closePath(); ctx.fill(); ctx.stroke();
+        ctx.beginPath(); ctx.arc(0, headY - headR - 5, 7, 0, Math.PI * 2);
         ctx.fill(); ctx.stroke();
-        // Topuz
-        ctx.beginPath();
-        ctx.arc(0, headY - headR - 5, 7, 0, Math.PI * 2);
-        ctx.fill(); ctx.stroke();
-        // Topuz çizgisi
-        ctx.strokeStyle = adjustColor(hairColor, -25);
-        ctx.lineWidth = 1;
+        ctx.strokeStyle = adjustColor(hairColor, -25); ctx.lineWidth = 1;
         ctx.beginPath(); ctx.arc(0, headY - headR - 5, 5, 0.3, Math.PI - 0.3); ctx.stroke();
 
     } else if (hairStyle === 'spiky') {
-        // Dikenli saç — yukarı diken diken
         ctx.beginPath();
         ctx.arc(0, headY - 3, headR + 1, Math.PI * 0.75, Math.PI * 0.25);
-        ctx.lineTo(headR + 1, headY + 2);
-        ctx.lineTo(headR - 4, headY + 2);
-        ctx.lineTo(-headR + 4, headY + 2);
-        ctx.lineTo(-headR - 1, headY + 2);
-        ctx.closePath();
-        ctx.fill(); ctx.stroke();
-        // Dikenler
-        const spikes = [[-12, -1], [-6, -1], [0, -1], [6, -1], [12, -1]];
-        spikes.forEach(([sx, _]) => {
+        ctx.lineTo(headR + 1, headY + 2); ctx.lineTo(headR - 4, headY + 2);
+        ctx.lineTo(-headR + 4, headY + 2); ctx.lineTo(-headR - 1, headY + 2);
+        ctx.closePath(); ctx.fill(); ctx.stroke();
+        const spikes = [[-12], [-6], [0], [6], [12]];
+        spikes.forEach(([sx]) => {
             const baseY = headY - headR + 1;
             ctx.beginPath();
             ctx.moveTo(sx - 5, baseY + 2);
             ctx.lineTo(sx, baseY - 10 - Math.abs(sx) * 0.2);
             ctx.lineTo(sx + 5, baseY + 2);
-            ctx.closePath();
-            ctx.fill(); ctx.stroke();
+            ctx.closePath(); ctx.fill(); ctx.stroke();
         });
 
     } else if (hairStyle === 'ponytail') {
-        // At kuyruğu — arkada uzun kuyruk (yön bağımsız)
         ctx.beginPath();
         ctx.arc(0, headY - 3, headR + 1, Math.PI, 0);
-        ctx.lineTo(headR + 1, headY + 2);
-        ctx.lineTo(headR - 4, headY + 2);
-        ctx.lineTo(-headR + 4, headY + 2);
-        ctx.lineTo(-headR - 1, headY + 2);
-        ctx.closePath();
-        ctx.fill(); ctx.stroke();
-        // Kuyruk (sağ tarafa)
+        ctx.lineTo(headR + 1, headY + 2); ctx.lineTo(headR - 4, headY + 2);
+        ctx.lineTo(-headR + 4, headY + 2); ctx.lineTo(-headR - 1, headY + 2);
+        ctx.closePath(); ctx.fill(); ctx.stroke();
         ctx.beginPath();
         ctx.moveTo(headR - 2, headY - 4);
         ctx.bezierCurveTo(headR + 10, headY, headR + 12, headY + 10, headR + 6, headY + 22);
         ctx.bezierCurveTo(headR + 10, headY + 22, headR + 14, headY + 10, headR + 8, headY - 2);
-        ctx.closePath();
-        ctx.fill(); ctx.stroke();
-        // Lastik
+        ctx.closePath(); ctx.fill(); ctx.stroke();
         ctx.fillStyle = adjustColor(hairColor, -40);
         ctx.beginPath(); ctx.arc(headR + 2, headY - 2, 3, 0, Math.PI * 2); ctx.fill();
 
     } else if (hairStyle === 'mohawk') {
-        // Mohawk — ortada dik şerit
         ctx.beginPath();
         ctx.arc(0, headY - 3, headR + 1, Math.PI, 0);
-        ctx.lineTo(headR + 1, headY + 2);
-        ctx.lineTo(headR - 4, headY + 2);
-        ctx.lineTo(-headR + 4, headY + 2);
-        ctx.lineTo(-headR - 1, headY + 2);
-        ctx.closePath();
-        ctx.fill(); ctx.stroke();
-        // Mohawk şeridi
+        ctx.lineTo(headR + 1, headY + 2); ctx.lineTo(headR - 4, headY + 2);
+        ctx.lineTo(-headR + 4, headY + 2); ctx.lineTo(-headR - 1, headY + 2);
+        ctx.closePath(); ctx.fill(); ctx.stroke();
         ctx.beginPath();
         ctx.moveTo(-5, headY - headR + 2);
         ctx.lineTo(-7, headY - headR - 18);
         ctx.lineTo(0, headY - headR - 22);
         ctx.lineTo(7, headY - headR - 18);
         ctx.lineTo(5, headY - headR + 2);
-        ctx.closePath();
-        ctx.fill(); ctx.stroke();
+        ctx.closePath(); ctx.fill(); ctx.stroke();
 
     } else {
-        // Default — orijinal saç stili
+        // Default
         ctx.beginPath();
         ctx.arc(0, headY - 5, headR + 1, Math.PI, 0);
-        ctx.lineTo(headR + 1, headY + 2);
-        ctx.lineTo(headR - 4, headY + 2);
-        ctx.lineTo(headR - 8, headY - 2);
-        ctx.lineTo(-headR + 8, headY - 2);
-        ctx.lineTo(-headR + 4, headY + 2);
-        ctx.lineTo(-headR - 1, headY + 2);
-        ctx.closePath();
-        ctx.fill();
-        ctx.strokeStyle = adjustColor(hairColor, -20);
-        ctx.lineWidth = 1;
-        ctx.stroke();
+        ctx.lineTo(headR + 1, headY + 2); ctx.lineTo(headR - 4, headY + 2);
+        ctx.lineTo(headR - 8, headY - 2); ctx.lineTo(-headR + 8, headY - 2);
+        ctx.lineTo(-headR + 4, headY + 2); ctx.lineTo(-headR - 1, headY + 2);
+        ctx.closePath(); ctx.fill();
+        ctx.strokeStyle = adjustColor(hairColor, -20); ctx.lineWidth = 1; ctx.stroke();
     }
 
-    // Yanaklar
-    ctx.fillStyle = 'rgba(255,182,193,0.5)';
-    ctx.beginPath(); ctx.arc(-10, headY + 5, 4, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.arc(10, headY + 5, 4, 0, Math.PI * 2); ctx.fill();
-
-    // Gözler
-    ctx.fillStyle = '#222';
-    ctx.beginPath(); ctx.ellipse(-7, headY + 2, 3, 4.2, 0, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.ellipse(7, headY + 2, 3, 4.2, 0, 0, Math.PI * 2); ctx.fill();
-    
-    // Göz parıltısı
-    ctx.fillStyle = '#fff';
-    ctx.beginPath(); ctx.arc(-6, headY, 1.2, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.arc(8, headY, 1.2, 0, Math.PI * 2); ctx.fill();
-
-    // Ağız
-    ctx.strokeStyle = '#844'; ctx.lineWidth = 1.8; ctx.lineCap = 'round';
-    ctx.beginPath(); ctx.arc(0, headY + 7, 3.5, 0.2, Math.PI - 0.2); ctx.stroke();
+    // ── KAFA (saçtan SONRA çizilir — yüzü temiz tutar) ───────────────────────
+    ctx.beginPath();
+    if (faceShape === 1) {
+        ctx.roundRect(-headR, headY - headR, headR * 2, headR * 2, 8);
+    } else if (faceShape === 2) {
+        ctx.moveTo(0, headY + headR + 2);
+        ctx.lineTo(-headR, headY - headR / 2);
+        ctx.lineTo(-headR / 2, headY - headR);
+        ctx.lineTo(headR / 2, headY - headR);
+        ctx.lineTo(headR, headY - headR / 2);
+        ctx.closePath();
+    } else {
+        ctx.arc(0, headY, headR, 0, Math.PI * 2);
+    }
+    const headG = ctx.createRadialGradient(-4, headY - 4, 2, 0, headY, headR);
+    headG.addColorStop(0, '#fff1e0'); headG.addColorStop(1, '#f5c090');
+    ctx.fillStyle = headG; ctx.fill(); stk(ctx, '#000', 2);
 
     // ── ŞAPKA — kafaya tam uyumlu, her şapka özel konumlandırılmış ──────────
     if (p.hat) {

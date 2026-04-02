@@ -117,26 +117,7 @@ export const CharacterPreview: React.FC<CharacterPreviewProps> = ({ charType, si
         const headR = 18.7;
         const headY = -15;
 
-        // Yüz Şekli Uygulama
-        ctx.beginPath();
-        if (faceShape === 1) { // Karemsi
-            ctx.roundRect(-headR, headY - headR, headR * 2, headR * 2, 8);
-        } else if (faceShape === 2) { // Sivri
-            ctx.moveTo(0, headY + headR + 2);
-            ctx.lineTo(-headR, headY - headR / 2);
-            ctx.lineTo(-headR / 2, headY - headR);
-            ctx.lineTo(headR / 2, headY - headR);
-            ctx.lineTo(headR, headY - headR / 2);
-            ctx.closePath();
-        } else { // Normal (Yuvarlak)
-            ctx.arc(0, headY, headR, 0, Math.PI * 2);
-        }
-        
-        const headG = ctx.createRadialGradient(-4, headY - 4, 2, 0, headY, headR);
-        headG.addColorStop(0, '#fff1e0'); headG.addColorStop(1, '#f5c090');
-        ctx.fillStyle = headG; ctx.fill(); stk(ctx, '#000', 2);
-
-        // ── SAÇ ──────────────────────────────────────────────────────────────
+        // ── SAÇ (kafadan ÖNCE — kafa üstüne gelir, yüzü kapatmaz) ────────────
         ctx.fillStyle = hairCol;
         ctx.strokeStyle = adjustColor(hairCol, -20);
         ctx.lineWidth = 1;
@@ -144,25 +125,17 @@ export const CharacterPreview: React.FC<CharacterPreviewProps> = ({ charType, si
         if (hairStyle === 'short') {
             ctx.beginPath();
             ctx.arc(0, headY - 3, headR + 1, Math.PI, 0);
-            ctx.lineTo(headR + 1, headY + 1);
-            ctx.lineTo(headR - 5, headY + 1);
-            ctx.lineTo(-headR + 5, headY + 1);
-            ctx.lineTo(-headR - 1, headY + 1);
-            ctx.closePath();
-            ctx.fill(); ctx.stroke();
+            ctx.lineTo(headR + 1, headY + 1); ctx.lineTo(headR - 5, headY + 1);
+            ctx.lineTo(-headR + 5, headY + 1); ctx.lineTo(-headR - 1, headY + 1);
+            ctx.closePath(); ctx.fill(); ctx.stroke();
         } else if (hairStyle === 'long') {
             ctx.beginPath();
             ctx.arc(0, headY - 5, headR + 1, Math.PI, 0);
-            ctx.lineTo(headR + 1, headY + 2);
-            ctx.lineTo(headR + 3, headY + 18);
-            ctx.lineTo(headR - 2, headY + 20);
-            ctx.lineTo(headR - 6, headY + 14);
-            ctx.lineTo(-headR + 6, headY + 14);
-            ctx.lineTo(-headR + 2, headY + 20);
-            ctx.lineTo(-headR - 3, headY + 18);
-            ctx.lineTo(-headR - 1, headY + 2);
-            ctx.closePath();
-            ctx.fill(); ctx.stroke();
+            ctx.lineTo(headR + 1, headY + 2); ctx.lineTo(headR + 3, headY + 18);
+            ctx.lineTo(headR - 2, headY + 20); ctx.lineTo(headR - 6, headY + 14);
+            ctx.lineTo(-headR + 6, headY + 14); ctx.lineTo(-headR + 2, headY + 20);
+            ctx.lineTo(-headR - 3, headY + 18); ctx.lineTo(-headR - 1, headY + 2);
+            ctx.closePath(); ctx.fill(); ctx.stroke();
             ctx.strokeStyle = adjustColor(hairCol, -30); ctx.lineWidth = 0.8;
             ctx.beginPath(); ctx.moveTo(0, headY - headR); ctx.lineTo(0, headY + 14); ctx.stroke();
         } else if (hairStyle === 'wavy') {
@@ -171,26 +144,20 @@ export const CharacterPreview: React.FC<CharacterPreviewProps> = ({ charType, si
             ctx.lineTo(headR + 1, headY + 2);
             ctx.bezierCurveTo(headR + 5, headY + 6, headR + 1, headY + 10, headR + 4, headY + 14);
             ctx.bezierCurveTo(headR + 6, headY + 18, headR + 1, headY + 20, headR - 2, headY + 22);
-            ctx.lineTo(headR - 6, headY + 14);
-            ctx.lineTo(-headR + 6, headY + 14);
+            ctx.lineTo(headR - 6, headY + 14); ctx.lineTo(-headR + 6, headY + 14);
             ctx.lineTo(-headR + 2, headY + 22);
             ctx.bezierCurveTo(-headR - 1, headY + 20, -headR - 6, headY + 18, -headR - 4, headY + 14);
             ctx.bezierCurveTo(-headR - 1, headY + 10, -headR - 5, headY + 6, -headR - 1, headY + 2);
-            ctx.closePath();
-            ctx.fill(); ctx.stroke();
+            ctx.closePath(); ctx.fill(); ctx.stroke();
         } else if (hairStyle === 'afro') {
             ctx.beginPath();
             ctx.arc(0, headY - 4, headR + 8, Math.PI * 0.85, Math.PI * 2.15);
             ctx.arc(0, headY + 2, headR + 1, 0, Math.PI);
-            ctx.closePath();
-            ctx.fill(); ctx.stroke();
+            ctx.closePath(); ctx.fill(); ctx.stroke();
             ctx.fillStyle = adjustColor(hairCol, -15);
             for (let i = 0; i < 8; i++) {
-                const a = (i / 8) * Math.PI * 2;
-                const r = headR + 4;
-                ctx.beginPath();
-                ctx.arc(Math.cos(a) * r * 0.6, headY - 4 + Math.sin(a) * r * 0.5, 3, 0, Math.PI * 2);
-                ctx.fill();
+                const a = (i / 8) * Math.PI * 2; const r = headR + 4;
+                ctx.beginPath(); ctx.arc(Math.cos(a) * r * 0.6, headY - 4 + Math.sin(a) * r * 0.5, 3, 0, Math.PI * 2); ctx.fill();
             }
         } else if (hairStyle === 'bun') {
             ctx.beginPath();
@@ -211,10 +178,7 @@ export const CharacterPreview: React.FC<CharacterPreviewProps> = ({ charType, si
             const spikes = [[-12], [-6], [0], [6], [12]];
             spikes.forEach(([sx]) => {
                 const baseY = headY - headR + 1;
-                ctx.beginPath();
-                ctx.moveTo(sx - 5, baseY + 2);
-                ctx.lineTo(sx, baseY - 10 - Math.abs(sx) * 0.2);
-                ctx.lineTo(sx + 5, baseY + 2);
+                ctx.beginPath(); ctx.moveTo(sx - 5, baseY + 2); ctx.lineTo(sx, baseY - 10 - Math.abs(sx) * 0.2); ctx.lineTo(sx + 5, baseY + 2);
                 ctx.closePath(); ctx.fill(); ctx.stroke();
             });
         } else if (hairStyle === 'ponytail') {
@@ -237,14 +201,10 @@ export const CharacterPreview: React.FC<CharacterPreviewProps> = ({ charType, si
             ctx.lineTo(-headR + 4, headY + 2); ctx.lineTo(-headR - 1, headY + 2);
             ctx.closePath(); ctx.fill(); ctx.stroke();
             ctx.beginPath();
-            ctx.moveTo(-5, headY - headR + 2);
-            ctx.lineTo(-7, headY - headR - 18);
-            ctx.lineTo(0, headY - headR - 22);
-            ctx.lineTo(7, headY - headR - 18);
-            ctx.lineTo(5, headY - headR + 2);
-            ctx.closePath(); ctx.fill(); ctx.stroke();
+            ctx.moveTo(-5, headY - headR + 2); ctx.lineTo(-7, headY - headR - 18);
+            ctx.lineTo(0, headY - headR - 22); ctx.lineTo(7, headY - headR - 18);
+            ctx.lineTo(5, headY - headR + 2); ctx.closePath(); ctx.fill(); ctx.stroke();
         } else {
-            // default
             ctx.beginPath();
             ctx.arc(0, headY - 5, headR + 1, Math.PI, 0);
             ctx.lineTo(headR + 1, headY + 2); ctx.lineTo(headR - 4, headY + 2);
@@ -253,24 +213,23 @@ export const CharacterPreview: React.FC<CharacterPreviewProps> = ({ charType, si
             ctx.closePath(); ctx.fill(); ctx.stroke();
         }
 
-        // Yanaklar
-        ctx.fillStyle = 'rgba(255,182,193,0.5)';
-        ctx.beginPath(); ctx.arc(-10, headY + 5, 4, 0, Math.PI * 2); ctx.fill();
-        ctx.beginPath(); ctx.arc(10, headY + 5, 4, 0, Math.PI * 2); ctx.fill();
-
-        // Gözler
-        ctx.fillStyle = '#222';
-        ctx.beginPath(); ctx.ellipse(-7, headY + 2, 3, 4.2, 0, 0, Math.PI * 2); ctx.fill();
-        ctx.beginPath(); ctx.ellipse(7, headY + 2, 3, 4.2, 0, 0, Math.PI * 2); ctx.fill();
-        
-        // Göz parıltısı
-        ctx.fillStyle = '#fff';
-        ctx.beginPath(); ctx.arc(-6, headY, 1.2, 0, Math.PI * 2); ctx.fill();
-        ctx.beginPath(); ctx.arc(8, headY, 1.2, 0, Math.PI * 2); ctx.fill();
-
-        // Ağız
-        ctx.strokeStyle = '#844'; ctx.lineWidth = 1.8; ctx.lineCap = 'round';
-        ctx.beginPath(); ctx.arc(0, headY + 7, 3.5, 0.2, Math.PI - 0.2); ctx.stroke();
+        // ── KAFA (saçtan SONRA — yüzü temiz tutar) ───────────────────────────
+        ctx.beginPath();
+        if (faceShape === 1) {
+            ctx.roundRect(-headR, headY - headR, headR * 2, headR * 2, 8);
+        } else if (faceShape === 2) {
+            ctx.moveTo(0, headY + headR + 2);
+            ctx.lineTo(-headR, headY - headR / 2);
+            ctx.lineTo(-headR / 2, headY - headR);
+            ctx.lineTo(headR / 2, headY - headR);
+            ctx.lineTo(headR, headY - headR / 2);
+            ctx.closePath();
+        } else {
+            ctx.arc(0, headY, headR, 0, Math.PI * 2);
+        }
+        const headG = ctx.createRadialGradient(-4, headY - 4, 2, 0, headY, headR);
+        headG.addColorStop(0, '#fff1e0'); headG.addColorStop(1, '#f5c090');
+        ctx.fillStyle = headG; ctx.fill(); stk(ctx, '#000', 2);
 
         // ── ŞAPKA (kaldırıldı — emoji artık çizilmiyor) ────────────────────────
 
