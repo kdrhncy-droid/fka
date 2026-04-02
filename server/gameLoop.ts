@@ -50,12 +50,12 @@ export function resetGameState(gs: GameState): void {
   gs.score = Math.floor(gs.score * 0.8);
   gs.dirtyTrayCount = 0; gs.revengeQueue = []; gs.pendingRevengeScene = false;
   gs.tableLayout = {
-    'table0': { id: 'table0', x: 180, y: 490 },
-    'table1': { id: 'table1', x: 420, y: 490 },
-    'table2': { id: 'table2', x: 660, y: 490 },
-    'table3': { id: 'table3', x: 900, y: 490 },
-    'table4': { id: 'table4', x: 1140, y: 490 },
-    'table5': { id: 'table5', x: 300, y: 620 },
+    'table0': { id: 'table0', x: 160, y: 460 },
+    'table1': { id: 'table1', x: 380, y: 460 },
+    'table2': { id: 'table2', x: 600, y: 460 },
+    'table3': { id: 'table3', x: 820, y: 460 },
+    'table4': { id: 'table4', x: 1040, y: 460 },
+    'table5': { id: 'table5', x: 1200, y: 460 },
   };
   gs.lockedStations = {}; gs.lockedTables = {}; gs._seatCooldown = 0;
   gs.menuChoices = ['🥗', '🍔']; gs.hasOrderedTonight = false;

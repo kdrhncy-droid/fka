@@ -167,20 +167,19 @@ export function registerSocketHandlers(socket: Socket, io: Server) {
     const gs = RoomManager.getRoomState(roomId)!;
     if (gs.dayPhase !== 'night') return;
     const TABLE_POSITIONS = [
-      // Başlangıç 6 masa
-      { x: 180, y: 490 }, { x: 420, y: 490 }, { x: 660, y: 490 },
-      { x: 900, y: 490 }, { x: 1140, y: 490 }, { x: 300, y: 620 },
-      // Satın alınabilir 9 masa
-      { x: 540, y: 620 }, { x: 780, y: 620 }, { x: 1020, y: 620 },
-      { x: 180, y: 620 }, { x: 1140, y: 620 },
-      { x: 60, y: 490 },  { x: 60, y: 620 },
-      { x: 420, y: 680 }, { x: 660, y: 680 },
+      // Başlangıç 6 masa (sıra 1)
+      { x: 160, y: 460 }, { x: 380, y: 460 }, { x: 600, y: 460 },
+      { x: 820, y: 460 }, { x: 1040, y: 460 }, { x: 1200, y: 460 },
+      // Satın alınabilir 9 masa (sıra 2 ve 3)
+      { x: 160, y: 590 }, { x: 380, y: 590 }, { x: 600, y: 590 },
+      { x: 820, y: 590 }, { x: 1040, y: 590 }, { x: 1200, y: 590 },
+      { x: 270, y: 660 }, { x: 640, y: 660 }, { x: 1010, y: 660 },
     ];
     const TABLE_COSTS = [100, 150, 200, 250, 300, 350, 400, 450, 500];
     const MAX_TABLES = 15;
     const currentCount = Object.keys(gs.tableLayout).length;
     if (currentCount >= MAX_TABLES) { socket.emit("sound", "fail"); return; }
-    const cost = TABLE_COSTS[Math.min(currentCount - 3, TABLE_COSTS.length - 1)];
+    const cost = TABLE_COSTS[Math.min(currentCount - 6, TABLE_COSTS.length - 1)];
     if (gs.score < cost) { socket.emit("sound", "fail"); return; }
     gs.score -= cost;
     const id = `table${currentCount}`;
