@@ -1,5 +1,5 @@
 import { Socket, Server } from "socket.io";
-import { GameState, INGREDIENTS, SERVICE_WINDOW_SLOTS, SERVICE_WINDOW_R, TRASH_STATION, TRAY_STATION, PLATE_STACK_POS, SPICE_RACK_POS } from "../shared/types.js";
+import { GameState, INGREDIENTS, RECIPE_DEFS, SERVICE_WINDOW_SLOTS, SERVICE_WINDOW_R, TRASH_STATION, TRAY_STATION, PLATE_STACK_POS, SPICE_RACK_POS } from "../shared/types.js";
 import { InteractContext, InteractionHandler, bcastSound } from "./handlers/utils.js";
 
 // Tüm handler dosyalarını içe aktar
@@ -116,8 +116,13 @@ function buildSortedHandlers(px: number, py: number, gs: GameState): Interaction
     if (c.isSeated && !c.isEating) track(handleCustomers, c.seatX, c.seatY, SERVE_R);
   });
 
-  // Malzemeler
+  // Malzemeler — sadece unlock edilmiş yemeklerin malzemeleri
   INGREDIENTS.forEach(ing => {
+    const recipeKey = (ing.key in RECIPE_DEFS) ? ing.key : `CHOPPED_${ing.key}`;
+    const recipe = (RECIPE_DEFS as Record<string, { output: string }>)[recipeKey];
+    if (recipe && !gs.unlockedDishes.includes(recipe.output)) return;
+    if (ing.key === '🥔' && !gs.unlockedDishes.includes('🍟')) return;
+    if (ing.key === '🧁' && !gs.unlockedDishes.includes('🍰')) return;
     const dynPos = gs.stationLayout[`ingredient_${ing.key}`];
     track(handleIngredients, dynPos?.x ?? ing.pos.x, dynPos?.y ?? ing.pos.y, INTERACT_R);
   });

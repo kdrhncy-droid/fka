@@ -17,11 +17,13 @@ const LOCKED_DISH_STATIONS: Record<string, string> = {
   'fridge1':          '🥤',
   'cakebaker1':       '🍰',
   'coffee1':          '☕',
-  'ingredient_🥔':    '🍟',  // Patates — 🍟 unlock gerekli
-  'ingredient_🧁':    '🍰',  // Hamur tatlı — 🍰 unlock gerekli
-  'ingredient_🍢':    '🌯',  // Kebap — 🌯 unlock gerekli
-  'ingredient_🍞':    '🍕',  // Hamur — 🍕 Pizza unlock gerekli
-  'ingredient_🥘':    '🍜',  // Çorba — 🍜 unlock gerekli
+  'ingredient_🥔':    '🍟',
+  'ingredient_🧁':    '🍰',
+  'ingredient_🍢':    '🌯',
+  'ingredient_🍞':    '🍕',
+  'ingredient_🥘':    '🍜',
+  'ingredient_🥩':    '🍔',
+  'ingredient_🥬':    '🥗',
 };
 
 interface Params {

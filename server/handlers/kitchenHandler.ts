@@ -134,8 +134,9 @@ export const handleIngredients: InteractionHandler = ({ gs, p, px, py, snd }) =>
       if (hasPlate || isDish(p.holding)) {
         snd("fail"); return true;
       }
-      // Fırın tarifi varsa unlock kontrolü
-      const recipe = RECIPE_DEFS[s.key as keyof typeof RECIPE_DEFS];
+      // Fırın tarifi varsa unlock kontrolü (CHOPPED_ prefix dahil)
+      const recipeKey = (s.key in RECIPE_DEFS) ? s.key : `CHOPPED_${s.key}`;
+      const recipe = RECIPE_DEFS[recipeKey as keyof typeof RECIPE_DEFS];
       if (recipe && !gs.unlockedDishes.includes(recipe.output)) {
         snd("fail"); return true;
       }

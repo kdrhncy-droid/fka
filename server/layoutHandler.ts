@@ -80,13 +80,17 @@ export function registerLayoutHandler(
 
     // Unlock edilmemiş yemeklere ait istasyonları kilitleme
     const LOCKED_DISH_STATIONS: Record<string, string> = {
-      'fryer1':        '🍟',
-      'fridge1':       '🥤',
-      'cakebaker1':    '🍰',
-      'coffee1':       '☕',
-      'ingredient_🥔': '🍟',
-      'ingredient_🧁': '🍰',
-      'ingredient_🍢': '🌯',
+      'fryer1':           '🍟',
+      'fridge1':          '🥤',
+      'cakebaker1':       '🍰',
+      'coffee1':          '☕',
+      'ingredient_🥔':    '🍟',
+      'ingredient_🧁':    '🍰',
+      'ingredient_🍢':    '🌯',
+      'ingredient_🍞':    '🍕',
+      'ingredient_🥘':    '🍜',
+      'ingredient_🥩':    '🍔',
+      'ingredient_🥬':    '🥗',
     };
     const requiredDish = LOCKED_DISH_STATIONS[stationId];
     if (requiredDish && !gs.unlockedDishes.includes(requiredDish)) return;
