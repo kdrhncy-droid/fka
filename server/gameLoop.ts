@@ -58,7 +58,7 @@ export function resetGameState(gs: GameState): void {
     'table5': { id: 'table5', x: 1200, y: 460 },
   };
   gs.lockedStations = {}; gs.lockedTables = {}; gs._seatCooldown = 0;
-  gs.menuChoices = ['🥗', '🍔']; gs.hasOrderedTonight = false;
+  gs.unlockedDishes = ['🥗']; gs.menuChoices = null; gs.hasOrderedTonight = false;
   gs.activeCards = []; gs.pendingCardChoices = null;
   gs.hidePatience = false; gs.comboCount = 0; gs.comboTimer = 0;
   gs.serviceWindow?.forEach(s => { s.item = null; });
