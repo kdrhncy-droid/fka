@@ -44,10 +44,10 @@ export const UpgradeShop: React.FC<Props> = ({
     const canBuyOven = ovenCount < maxOvens;
     const ovenIndex = ovenCount - INITIAL_OVEN_POSITIONS.length;
     const ovenCost = canBuyOven ? OVEN_UPGRADE_COSTS[ovenIndex] : 0;
-    const TABLE_COSTS = [150, 200, 250, 300];
-    const MAX_TABLES = 6;
+    const TABLE_COSTS = [100, 150, 200, 250, 300, 350, 400, 450, 500];
+    const MAX_TABLES = 15;
     const canBuyTable = tableCount < MAX_TABLES;
-    const tableCost = canBuyTable ? TABLE_COSTS[Math.min(tableCount - 3, TABLE_COSTS.length - 1)] : 0;
+    const tableCost = canBuyTable ? TABLE_COSTS[Math.min(tableCount - 6, TABLE_COSTS.length - 1)] : 0;
     const earnedCoins = Math.max(5, Math.floor(score * 0.1));
     const totalCoins = loadProfile().coins;
 

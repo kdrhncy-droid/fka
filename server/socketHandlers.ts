@@ -167,11 +167,17 @@ export function registerSocketHandlers(socket: Socket, io: Server) {
     const gs = RoomManager.getRoomState(roomId)!;
     if (gs.dayPhase !== 'night') return;
     const TABLE_POSITIONS = [
-      { x: 200, y: 570 }, { x: 440, y: 570 }, { x: 680, y: 570 }, // başlangıç 3 masa
-      { x: 920, y: 570 }, { x: 1100, y: 570 }, { x: 320, y: 480 }, // satın alınabilir 3 masa
+      // Başlangıç 6 masa
+      { x: 180, y: 490 }, { x: 420, y: 490 }, { x: 660, y: 490 },
+      { x: 900, y: 490 }, { x: 1140, y: 490 }, { x: 300, y: 620 },
+      // Satın alınabilir 9 masa
+      { x: 540, y: 620 }, { x: 780, y: 620 }, { x: 1020, y: 620 },
+      { x: 180, y: 620 }, { x: 1140, y: 620 },
+      { x: 60, y: 490 },  { x: 60, y: 620 },
+      { x: 420, y: 680 }, { x: 660, y: 680 },
     ];
-    const TABLE_COSTS = [150, 200, 250, 300];
-    const MAX_TABLES = 6;
+    const TABLE_COSTS = [100, 150, 200, 250, 300, 350, 400, 450, 500];
+    const MAX_TABLES = 15;
     const currentCount = Object.keys(gs.tableLayout).length;
     if (currentCount >= MAX_TABLES) { socket.emit("sound", "fail"); return; }
     const cost = TABLE_COSTS[Math.min(currentCount - 3, TABLE_COSTS.length - 1)];
