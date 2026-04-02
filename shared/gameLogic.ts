@@ -28,28 +28,27 @@ export function createTray(items: string[]): string {
 // Masa
 export function getTableDims(seats?: 1 | 2 | 3 | 4): { hw: number; hh: number } {
   const s = seats ?? 4;
-  if (s === 1) return { hw: 25, hh: 25 };
-  if (s === 2) return { hw: 25, hh: 35 };
-  if (s === 3) return { hw: 35, hh: 35 };
-  return { hw: 45, hh: 35 };
+  if (s === 1) return { hw: 18, hh: 18 };
+  if (s === 2) return { hw: 18, hh: 25 };
+  if (s === 3) return { hw: 25, hh: 25 };
+  return { hw: 32, hh: 25 };
 }
 
 export function getSeatSlots(tableLayout: Record<string, TablePosition>): { x: number; y: number }[] {
   return Object.values(tableLayout).flatMap(t => {
     const s = t.seats ?? 4;
-    if (s === 1) return [{ x: t.x, y: t.y + 35 }]; // masanın altı (yukarı bakacak)
-    if (s === 2) return [{ x: t.x, y: t.y - 50 }, { x: t.x, y: t.y + 40 }]; // Karşılıklı
+    if (s === 1) return [{ x: t.x, y: t.y + 20 }];
+    if (s === 2) return [{ x: t.x, y: t.y - 42 }, { x: t.x, y: t.y + 30 }];
     if (s === 3) return [
-      { x: t.x, y: t.y - 50 }, // üst
-      { x: t.x - 28, y: t.y + 40 }, // alt-sol
-      { x: t.x + 28, y: t.y + 40 }, // alt-sağ
+      { x: t.x, y: t.y - 42 },
+      { x: t.x - 18, y: t.y + 30 },
+      { x: t.x + 18, y: t.y + 30 },
     ];
-    // 4 kişilik:
     return [
-      { x: t.x - 28, y: t.y - 50 }, // üst-sol
-      { x: t.x + 28, y: t.y - 50 }, // üst-sağ
-      { x: t.x - 28, y: t.y + 40 }, // alt-sol
-      { x: t.x + 28, y: t.y + 40 }, // alt-sağ
+      { x: t.x - 20, y: t.y - 42 },
+      { x: t.x + 20, y: t.y - 42 },
+      { x: t.x - 20, y: t.y + 30 },
+      { x: t.x + 20, y: t.y + 30 },
     ];
   });
 }

@@ -167,8 +167,8 @@ export function registerSocketHandlers(socket: Socket, io: Server) {
     const gs = RoomManager.getRoomState(roomId)!;
     if (gs.dayPhase !== 'night') return;
     const TABLE_POSITIONS = [
-      { x: 320, y: 570 }, { x: 560, y: 570 }, { x: 800, y: 570 },
-      { x: 1040, y: 570 }, { x: 180, y: 570 },
+      { x: 320, y: 570 }, { x: 560, y: 570 }, { x: 800, y: 570 }, // başlangıç 3 masa
+      { x: 1040, y: 570 }, { x: 180, y: 570 },                     // satın alınabilir 2 masa
     ];
     const TABLE_COSTS = [150, 200, 250, 300];
     const currentCount = Object.keys(gs.tableLayout).length;

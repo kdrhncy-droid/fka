@@ -48,6 +48,11 @@ export function resetGameState(gs: GameState): void {
   gs.dayPhase = 'prep'; gs.dayTimer = DAY_TICKS;
   gs.score = Math.floor(gs.score * 0.8);
   gs.dirtyTrayCount = 0; gs.revengeQueue = []; gs.pendingRevengeScene = false;
+  gs.tableLayout = {
+    'table0': { id: 'table0', x: 320, y: 570 },
+    'table1': { id: 'table1', x: 560, y: 570 },
+    'table2': { id: 'table2', x: 800, y: 570 },
+  };
   gs.lockedStations = {}; gs.lockedTables = {}; gs._seatCooldown = 0;
   gs.menuChoices = ['🥗', '🍔']; gs.hasOrderedTonight = false;
   gs.activeCards = []; gs.pendingCardChoices = null;

@@ -38,10 +38,10 @@ export function tryQueueSeat(gs: GameState, io: Server, rid: string) {
   for (const t of Object.values(gs.tableLayout)) {
     const s = t.seats ?? 4;
     const tableSlots: { x: number; y: number }[] = [];
-    if (s === 1) tableSlots.push({ x: t.x, y: t.y + 35 });
-    else if (s === 2) tableSlots.push({ x: t.x, y: t.y - 50 }, { x: t.x, y: t.y + 40 });
-    else if (s === 3) tableSlots.push({ x: t.x, y: t.y - 50 }, { x: t.x - 28, y: t.y + 40 }, { x: t.x + 28, y: t.y + 40 });
-    else tableSlots.push({ x: t.x - 28, y: t.y - 50 }, { x: t.x + 28, y: t.y - 50 }, { x: t.x - 28, y: t.y + 40 }, { x: t.x + 28, y: t.y + 40 });
+    if (s === 1) tableSlots.push({ x: t.x, y: t.y + 20 });
+    else if (s === 2) tableSlots.push({ x: t.x, y: t.y - 42 }, { x: t.x, y: t.y + 30 });
+    else if (s === 3) tableSlots.push({ x: t.x, y: t.y - 42 }, { x: t.x - 18, y: t.y + 30 }, { x: t.x + 18, y: t.y + 30 });
+    else tableSlots.push({ x: t.x - 20, y: t.y - 42 }, { x: t.x + 20, y: t.y - 42 }, { x: t.x - 20, y: t.y + 30 }, { x: t.x + 20, y: t.y + 30 });
 
     const tableFree = tableSlots.filter(s => !occupied.has(`${s.x},${s.y}`));
     if (tableFree.length >= groupToSeat.length) {
