@@ -1,18 +1,15 @@
 import { InteractionHandler, earn, applyCombo } from './utils.js';
 import { 
   SERVICE_WINDOW_SLOTS, SERVICE_WINDOW_R, SPECIAL_REQUEST_TIP_MULT, EAT_TICKS,
-  isTray, getTrayItems, createTray, DIRTY_PLATE, MAX_TRAY_CAPACITY, GameState
+  isTray, getTrayItems, createTray, DIRTY_PLATE, MAX_TRAY_CAPACITY, GameState, Customer, Player
 } from "../../shared/types.js";
 import { Server } from "socket.io";
 
 const SERVE_R = 125;
 
-/** Can azalt, 0'a düşünce game over tetikle. true dönerse game over oldu. */
 function loseLife(gs: GameState, io: Server, roomId: string, amount = 1, x?: number, y?: number): boolean {
   gs.lives = Math.max(0, gs.lives - amount);
-  if (x !== undefined && y !== undefined) {
-    io.to(roomId).emit('loseHeart', { x, y, amount });
-  }
+  if (x !== undefined && y !== undefined) io.to(roomId).emit('loseHeart', { x, y, amount });
   if (gs.lives <= 0) {
     gs.isGameOver = true;
     gs.dayPhase = 'night';
@@ -22,6 +19,20 @@ function loseLife(gs: GameState, io: Server, roomId: string, amount = 1, x?: num
     return true;
   }
   return false;
+}
+
+/** Müşteriyi yeme moduna al, elindekini bırak */
+function startEating(c: Customer, p: Player, tip: number, holdingOverride?: string | null) {
+  c.isEating = true;
+  c.eatTimer = EAT_TICKS;
+  c.wants = null;
+  c.tipAmount = tip;
+  if (holdingOverride !== undefined) p.holding = holdingOverride;
+}
+
+/** Acı istek uyumsuzluğu kontrolü. Uyumsuzsa true döner. */
+function spicyMismatch(customerWantsSpicy: boolean, itemIsSpicy: boolean): boolean {
+  return (customerWantsSpicy && !itemIsSpicy) || (!customerWantsSpicy && itemIsSpicy);
 }
 
 export const handleServiceWindow: InteractionHandler = ({ gs, p, px, py, snd }) => {
@@ -70,97 +81,68 @@ export const handleCustomers: InteractionHandler = ({ gs, p, px, py, snd, io, ro
   if (!p.holding) return false;
   for (let ci = 0; ci < gs.customers.length; ci++) {
     const c = gs.customers[ci];
-    if (c.isSeated && !c.isEating && Math.hypot(px - c.seatX, py - c.seatY) < SERVE_R) {
-      const specialMult = c.specialRequest ? (SPECIAL_REQUEST_TIP_MULT[c.specialRequest] ?? 1.0) : 1.0;
+    if (!c.isSeated || c.isEating || Math.hypot(px - c.seatX, py - c.seatY) >= SERVE_R) continue;
 
-      // Acı istek kontrolü
-      const customerWantsSpicy = c.specialRequest === 'spicy';
-      const playerHasSpicy = p.holding?.startsWith('SPICY_');
-      const baseFood = playerHasSpicy ? p.holding.replace('SPICY_', '') : p.holding;
+    const specialMult = c.specialRequest ? (SPECIAL_REQUEST_TIP_MULT[c.specialRequest] ?? 1.0) : 1.0;
+    const customerWantsSpicy = c.specialRequest === 'spicy';
+    const isDrunk = c.personality === 'drunk';
 
-      // Doğru yemek mi?
-      const correctFood = !isTray(p.holding) && c.wants === baseFood;
+    if (isTray(p.holding)) {
+      // Tepsi servisi
+      const items = getTrayItems(p.holding);
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        const itemIsSpicy = item.startsWith('SPICY_');
+        const itemBase = itemIsSpicy ? item.replace('SPICY_', '') : item;
+        if (c.wants !== itemBase) continue;
 
-      // Sarhoş müşteri: yanlış yemek de kabul eder ama %50 ihtimalle
-      const isDrunk = c.personality === 'drunk';
-      const drunkAccept = isDrunk && !isTray(p.holding) && Math.random() < 0.5;
+        items.splice(i, 1);
+        p.holding = createTray(items);
 
-      if (correctFood || drunkAccept) {
-        // Acı istek uyumsuzluğu kontrolü (sarhoş için atla)
-        if (!isDrunk && customerWantsSpicy && !playerHasSpicy) {
+        if (!isDrunk && spicyMismatch(customerWantsSpicy, itemIsSpicy)) {
           loseLife(gs, io, roomId, 1, c.seatX, c.seatY);
-          c.isEating = true; c.eatTimer = EAT_TICKS; c.wants = null; p.holding = null;
-          c.tipAmount = 0;
+          startEating(c, p, 0);
           snd("fail");
-          return true;
-        } else if (!isDrunk && !customerWantsSpicy && playerHasSpicy) {
-          loseLife(gs, io, roomId, 1, c.seatX, c.seatY);
-          c.isEating = true; c.eatTimer = EAT_TICKS; c.wants = null; p.holding = null;
-          c.tipAmount = 0;
-          snd("fail");
-          return true;
         } else {
-          // Doğru servis
-          let tip = earn(gs.upgrades.earnings, c.maxPatience, c.patience, specialMult);
-
-          // VIP: 3x bahşiş
-          if (c.personality === 'vip') tip = Math.round(tip * 3);
-          // Sarhoş: 0-3x rastgele bahşiş
-          if (isDrunk) tip = Math.round(tip * Math.random() * 3);
-          // Inspector: +50 bonus puan
-          if (c.personality === 'inspector') { gs.score += 50; io.to(roomId).emit('inspectorBonus', { x: c.seatX, y: c.seatY }); }
-
-          c.tipAmount = tip;
-          c.isEating = true; c.eatTimer = EAT_TICKS; c.wants = null; p.holding = null;
+          const tip = earn(gs.upgrades.earnings, c.maxPatience, c.patience, specialMult);
+          startEating(c, p, tip);
           if (c.specialRequest) io.to(roomId).emit('specialServed', { x: c.seatX, y: c.seatY, request: c.specialRequest });
           if (p.serviceEffect) io.to(roomId).emit('serviceEffect', { x: c.seatX, y: c.seatY, effect: p.serviceEffect });
           applyCombo(gs, io, roomId, c.seatX, c.seatY, tip);
           snd("success");
+        }
+        return true;
+      }
+    } else {
+      // Tek yemek servisi
+      const playerIsSpicy = p.holding?.startsWith('SPICY_');
+      const baseFood = playerIsSpicy ? p.holding!.replace('SPICY_', '') : p.holding;
+      const correctFood = c.wants === baseFood;
+      const drunkAccept = isDrunk && Math.random() < 0.5;
+
+      if (correctFood || drunkAccept) {
+        if (!isDrunk && spicyMismatch(customerWantsSpicy, !!playerIsSpicy)) {
+          loseLife(gs, io, roomId, 1, c.seatX, c.seatY);
+          startEating(c, p, 0, null);
+          snd("fail");
           return true;
         }
-      } else if (isTray(p.holding)) {
-        const items = getTrayItems(p.holding);
-
-        for (let i = 0; i < items.length; i++) {
-          const item = items[i];
-          const itemIsSpicy = item.startsWith('SPICY_');
-          const itemBase = itemIsSpicy ? item.replace('SPICY_', '') : item;
-
-          if (c.wants === itemBase) {
-            // Acı istek uyumsuzluğu kontrolü
-            if (customerWantsSpicy && !itemIsSpicy) {
-              loseLife(gs, io, roomId, 1, c.seatX, c.seatY);
-              items.splice(i, 1); p.holding = createTray(items);
-              c.isEating = true; c.eatTimer = EAT_TICKS; c.wants = null;
-              c.tipAmount = 0;
-              snd("fail");
-              return true;
-            } else if (!customerWantsSpicy && itemIsSpicy) {
-              loseLife(gs, io, roomId, 1, c.seatX, c.seatY);
-              items.splice(i, 1); p.holding = createTray(items);
-              c.isEating = true; c.eatTimer = EAT_TICKS; c.wants = null;
-              c.tipAmount = 0;
-              snd("fail");
-              return true;
-            } else {
-              // Doğru servis
-              items.splice(i, 1); p.holding = createTray(items);
-              c.tipAmount = earn(gs.upgrades.earnings, c.maxPatience, c.patience, specialMult);
-              c.isEating = true; c.eatTimer = EAT_TICKS; c.wants = null;
-              if (c.specialRequest) io.to(roomId).emit('specialServed', { x: c.seatX, y: c.seatY, request: c.specialRequest });
-              if (p.serviceEffect) io.to(roomId).emit('serviceEffect', { x: c.seatX, y: c.seatY, effect: p.serviceEffect });
-              applyCombo(gs, io, roomId, c.seatX, c.seatY, c.tipAmount ?? 0);
-              snd("success");
-              return true;
-            }
-          }
-        }
+        // Doğru servis
+        let tip = earn(gs.upgrades.earnings, c.maxPatience, c.patience, specialMult);
+        if (c.personality === 'vip') tip = Math.round(tip * 3);
+        if (isDrunk) tip = Math.round(tip * Math.random() * 3);
+        if (c.personality === 'inspector') { gs.score += 50; io.to(roomId).emit('inspectorBonus', { x: c.seatX, y: c.seatY }); }
+        startEating(c, p, tip, null);
+        if (c.specialRequest) io.to(roomId).emit('specialServed', { x: c.seatX, y: c.seatY, request: c.specialRequest });
+        if (p.serviceEffect) io.to(roomId).emit('serviceEffect', { x: c.seatX, y: c.seatY, effect: p.serviceEffect });
+        applyCombo(gs, io, roomId, c.seatX, c.seatY, tip);
+        snd("success");
+        return true;
       } else {
         // Yanlış yemek — VIP ve inspector için 2 can kaybı
         if (c.personality === 'vip' || c.personality === 'inspector') {
           loseLife(gs, io, roomId, 2, c.seatX, c.seatY);
-          c.isEating = true; c.eatTimer = EAT_TICKS; c.wants = null; p.holding = null;
-          c.tipAmount = 0;
+          startEating(c, p, 0, null);
           io.to(roomId).emit('wrongServe', { x: c.seatX, y: c.seatY, personality: c.personality });
           snd("fail");
           return true;

@@ -164,6 +164,10 @@ export function useSocket(
                 }
             }
             gameStateRef.current = state;
+            // Artık state'te olmayan oyuncuları temizle
+            for (const id of lastPositions.keys()) {
+                if (!state.players[id]) lastPositions.delete(id);
+            }
             // Pozisyonları geri yaz
             for (const [id, pos] of lastPositions) {
                 if (gameStateRef.current.players[id]) {

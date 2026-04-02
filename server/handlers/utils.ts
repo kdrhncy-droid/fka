@@ -1,4 +1,4 @@
-import { Server, Socket } from "socket.io";
+import { Server } from "socket.io";
 import { GameState, DISH_ITEMS, COMBO_TIMEOUT_TICKS, getComboMultiplier, getComboLabel } from "../../shared/types.js";
 import { getStationPos } from "../stationUtils.js";
 
@@ -31,13 +31,7 @@ export function earn(lv: number, maxPatience: number, currentPatience: number, s
 
 export function isDish(item: import("../../shared/types.js").Item): item is string { return !!item && DISH_ITEMS.includes(item as any); }
 
-export function bcastSound(io: Server, roomId: string, socket: Socket, type: string) {
-  if (type === 'fail') {
-    socket.emit("sound", type);
-  } else {
-    io.to(roomId).emit("sound", type);
-  }
-}
+// bcastSound kaldırıldı — hiçbir yerde kullanılmıyordu
 
 export function applyCombo(gs: GameState, io: Server, roomId: string, x: number, y: number, baseTip: number) {
   gs.comboCount = (gs.comboCount ?? 0) + 1;
