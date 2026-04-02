@@ -62,7 +62,10 @@ export const GameNightOverlays: React.FC<Props> = ({
         );
     }
 
-    if (dayPhase !== 'night') return null;
+    if (dayPhase !== 'night') {
+        // Başlangıç yemek seçimi: prep fazında menuChoices varsa göster
+        if (!(menuChoices && menuChoices.length > 0)) return null;
+    }
 
     return (
         <>
@@ -79,9 +82,11 @@ export const GameNightOverlays: React.FC<Props> = ({
                 <div className="absolute inset-0 z-30 bg-indigo-950/85 backdrop-blur-sm p-4 overflow-y-auto overflow-x-hidden flex flex-col items-center justify-start sm:justify-center py-8">
                     <div className="text-center mb-6 flex-shrink-0 mt-4 sm:mt-0">
                         <div className="text-5xl mb-2">⭐</div>
-                        <h2 className="text-white font-black text-2xl">Yeni Yemek Seç!</h2>
+                        <h2 className="text-white font-black text-2xl">{unlockedDishes.length === 0 ? 'Hangi yemeği yapacaksın?' : 'Yeni Yemek Seç!'}</h2>
                         <p className="text-indigo-200 text-sm mt-1">
-                            Menüye eklemek için bir yemek seç. Gün {day + 1}'den itibaren müşteriler bu yemeği sipariş edebilecek.
+                            {unlockedDishes.length === 0
+                                ? 'Menünü oluşturmak için bir yemek seç.'
+                                : `Menüye eklemek için bir yemek seç. Gün ${day + 1}'den itibaren müşteriler bu yemeği sipariş edebilecek.`}
                         </p>
                         <div className="mt-2 flex flex-wrap justify-center gap-2">
                             <span className="text-indigo-300 text-xs">Mevcut menün:</span>
@@ -112,7 +117,7 @@ export const GameNightOverlays: React.FC<Props> = ({
                 </div>
             )}
 
-            {(!menuChoices || menuChoices.length === 0) && (
+            {(!menuChoices || menuChoices.length === 0) && dayPhase === 'night' && (
                 <UpgradeShop
                     score={score} upgrades={upgrades} day={day}
                     lives={lives} ovenCount={ovenCount}

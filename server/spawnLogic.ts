@@ -1,7 +1,7 @@
 import { Server } from "socket.io";
 import {
   GameState, Personality,
-  DAY_TICKS, DISH_ITEMS,
+  DAY_TICKS,
   GAME_HEIGHT, EXTERIOR_Y,
   SPECIAL_REQUEST_CHANCE, SPECIAL_REQUESTS,
 } from "../shared/types.js";
@@ -96,7 +96,8 @@ export function tryQueueSeat(gs: GameState, io: Server, rid: string) {
 
 export function spawnTick(gs: GameState, io: Server, rid: string) {
   const cm = getCardMultipliers(gs);
-  const availableDishes = gs.unlockedDishes.length > 0 ? gs.unlockedDishes : [...DISH_ITEMS];
+  const availableDishes = gs.unlockedDishes.length > 0 ? gs.unlockedDishes : null;
+  if (!availableDishes) return; // Henüz yemek seçilmemiş, spawn etme
   const playerCount = Object.keys(gs.players).length || 1;
   const isSolo = playerCount === 1;
 

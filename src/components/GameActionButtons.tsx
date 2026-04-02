@@ -99,9 +99,8 @@ export const TouchActionButtons: React.FC<TouchButtonsProps> = ({
         <button
             onPointerDown={(e) => { e.preventDefault(); if (dayPhase === 'prep') handleInteract(); else onEmit('interact'); }}
             style={{ width: bs, height: bs, touchAction: 'none' }}
-            className="bg-blue-600/85 active:scale-90 text-white rounded-2xl shadow-lg font-black text-xs flex flex-col items-center justify-center gap-0.5 border border-blue-400/30 backdrop-blur-sm transition-all">
-            <span className="text-lg">🤲</span>
-            <span className="text-[8px] uppercase tracking-wider">Al/Ver</span>
+            className="bg-blue-600/85 active:scale-90 text-white rounded-2xl shadow-lg font-black text-xs flex items-center justify-center border border-blue-400/30 backdrop-blur-sm transition-all">
+            <span className="text-[10px] uppercase tracking-wider">Al/Ver</span>
         </button>
         {/* DOĞRA */}
         {dayPhase === 'day' && (
@@ -130,9 +129,8 @@ export const TouchActionButtons: React.FC<TouchButtonsProps> = ({
                     gameStateRef.current.choppingBoards?.forEach(b => socket?.emit('chop_stop', b.id));
                 }}
                 style={{ width: Math.round(bs * 0.8), height: Math.round(bs * 0.8), touchAction: 'none' }}
-                className="bg-amber-600/85 active:scale-90 text-white rounded-2xl shadow-lg font-black text-xs flex flex-col items-center justify-center gap-0.5 border border-amber-400/30 backdrop-blur-sm transition-all">
-                <span className="text-base">🔪</span>
-                <span className="text-[8px] uppercase tracking-wider">Doğra</span>
+                className="bg-amber-600/85 active:scale-90 text-white rounded-2xl shadow-lg font-black text-xs flex items-center justify-center border border-amber-400/30 backdrop-blur-sm transition-all">
+                <span className="text-[10px] uppercase tracking-wider">Doğra</span>
             </button>
         )}
         {/* DÖV */}
@@ -151,9 +149,8 @@ export const TouchActionButtons: React.FC<TouchButtonsProps> = ({
                 if (punchTarget) socket?.emit('punchCustomer', punchTarget.id);
             }}
             style={{ width: Math.round(bs * 0.8), height: Math.round(bs * 0.8), touchAction: 'none' }}
-            className="bg-red-600/85 active:scale-90 text-white rounded-2xl shadow-lg font-black text-xs flex flex-col items-center justify-center gap-0.5 border border-red-400/30 backdrop-blur-sm transition-all">
-            <span className="text-base">👊</span>
-            <span className="text-[8px] uppercase tracking-wider">Döv</span>
+            className="bg-red-600/85 active:scale-90 text-white rounded-2xl shadow-lg font-black text-xs flex items-center justify-center border border-red-400/30 backdrop-blur-sm transition-all">
+            <span className="text-[10px] uppercase tracking-wider">Döv</span>
         </button>
         {/* Müzik */}
         <button onClick={toggleMusic}

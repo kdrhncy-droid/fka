@@ -44,12 +44,12 @@ export function startDay(gs: GameState): boolean {
 /** Game over sonrası tüm state'i sıfırlar. */
 export function resetGameState(gs: GameState): void {
   gs.isGameOver = false; gs.lives = 3; gs.day = 1;
-  gs.customers = []; gs.waitList = []; gs.dirtyTables = [];
+  gs.unlockedDishes = [];
   gs.dayPhase = 'prep'; gs.dayTimer = DAY_TICKS;
   gs.score = Math.floor(gs.score * 0.8);
   gs.dirtyTrayCount = 0; gs.revengeQueue = []; gs.pendingRevengeScene = false;
   gs.lockedStations = {}; gs.lockedTables = {}; gs._seatCooldown = 0;
-  gs.menuChoices = null; gs.hasOrderedTonight = false;
+  gs.menuChoices = ['🥗', '🍔']; gs.hasOrderedTonight = false;
   gs.activeCards = []; gs.pendingCardChoices = null;
   gs.hidePatience = false; gs.comboCount = 0; gs.comboTimer = 0;
   gs.serviceWindow?.forEach(s => { s.item = null; });

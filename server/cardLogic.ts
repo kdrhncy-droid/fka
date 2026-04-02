@@ -4,7 +4,7 @@ export function generateMenuChoices(gs: GameState): void {
   const locked = [...DISH_UNLOCK_POOL].filter((d: string) => !gs.unlockedDishes.includes(d));
   if (locked.length === 0) { gs.menuChoices = null; return; }
   const shuffled = locked.sort(() => Math.random() - 0.5);
-  gs.menuChoices = shuffled.slice(0, Math.min(2, locked.length));
+  gs.menuChoices = shuffled.slice(0, 1);
 }
 
 export function generateCardChoices(gs: GameState): void {

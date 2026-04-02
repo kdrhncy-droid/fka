@@ -24,7 +24,7 @@ const DEFAULT_UI: GameUIState = {
     upgrades: { patience: 0, earnings: 0, plateStackMax: 0, safeOven: 0,
                 fryerSpeed: 0, cakeBaker: 0, coffeeMachine: 0, extraSink: 0, extraChopBoard: 0 },
     day: 1, ovenCount: 1, queueLen: 0, lives: 3,
-    isGameOver: false, menuChoices: null, unlockedDishes: ['🥗', '🍔'],
+    isGameOver: false, menuChoices: null, unlockedDishes: [],
     pendingCardChoices: null, activeCards: [], comboCount: 0,
 };
 
@@ -63,7 +63,7 @@ export function useGameState(gameStateRef: React.MutableRefObject<GameState>) {
                 lives: s.lives ?? 3,
                 isGameOver: s.isGameOver ?? false,
                 menuChoices: s.menuChoices ?? null,
-                unlockedDishes: s.unlockedDishes ?? ['🥗', '🍔'],
+                unlockedDishes: s.unlockedDishes ?? [],
                 pendingCardChoices: s.pendingCardChoices ?? null,
                 activeCards: s.activeCards ?? [],
                 comboCount: s.comboCount ?? 0,
