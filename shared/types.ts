@@ -68,6 +68,10 @@ export interface WaitingGuest {
     bodyShape: 1 | 2 | 3 | 4;
     bodyColor: string;
     groupId?: string;
+    // Kaldırıma yürüyüş pozisyonu
+    x?: number;
+    y?: number;
+    targetQueueY?: number; // Sıradaki hedef y pozisyonu
 }
 
 export interface Upgrades {

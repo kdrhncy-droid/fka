@@ -169,10 +169,30 @@ export function gameTick(gs: GameState, io: Server, rid: string) {
 
   tryQueueSeat(gs, io, rid);
 
-  gs.waitList.forEach(guest => {
+  gs.waitList.forEach((guest, idx) => {
     if (guest.dialogTimer && guest.dialogTimer > 0) {
       guest.dialogTimer--;
       if (guest.dialogTimer <= 0) guest.currentDialog = undefined;
+    }
+
+    // Kuyruktaki hedef pozisyonu hesapla (her müşteri bir slot aşağıda)
+    const QUEUE_START_Y = 755;
+    const SLOT_SPACING = 52;
+    const GROUP_GAP = 14;
+    let targetY = QUEUE_START_Y;
+    for (let i = 0; i < idx; i++) {
+      if (gs.waitList[i].groupId !== gs.waitList[i > 0 ? i - 1 : 0].groupId) targetY += GROUP_GAP;
+      targetY += SLOT_SPACING;
+    }
+    guest.targetQueueY = targetY;
+
+    // Pozisyon yoksa başlat
+    if (guest.x === undefined) guest.x = 640;
+    if (guest.y === undefined) guest.y = 870 + 60;
+
+    // Hedefe doğru yürü
+    if (guest.y > targetY) {
+      guest.y = Math.max(targetY, guest.y - 4);
     }
   });
 

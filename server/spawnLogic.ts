@@ -164,6 +164,9 @@ export function spawnTick(gs: GameState, io: Server, rid: string) {
         currentDialog: dialog, dialogTimer: timer,
         bodyShape, bodyColor,
         groupId,
+        x: DOOR_X,
+        y: GAME_HEIGHT + 60, // Ekranın altından gelir
+        targetQueueY: 0,     // gameLoop'ta hesaplanacak
       });
     }
   }
@@ -191,6 +194,9 @@ export function spawnTick(gs: GameState, io: Server, rid: string) {
           currentDialog: dialog, dialogTimer: 240,
           bodyShape, bodyColor,
           groupId: thugGroupId,
+          x: DOOR_X,
+          y: GAME_HEIGHT + 60,
+          targetQueueY: 0,
         });
       }
       io.to(rid).emit("sound", "fail");
