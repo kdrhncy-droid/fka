@@ -201,6 +201,7 @@ export interface GameState {
     activeCards: ActiveCard[];
     pendingCardChoices: GameCard[] | null;
     hidePatience: boolean;
+    hidePersonality: boolean;
     comboCount: number;
     comboTimer: number;
     stationLayout: Record<string, StationPosition>;

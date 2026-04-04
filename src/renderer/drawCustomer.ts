@@ -52,9 +52,9 @@ function fallbackHair(id: string): string {
     return FALLBACK_HAIR[h % FALLBACK_HAIR.length];
 }
 
-export function drawCustomer(ctx: CanvasRenderingContext2D, customer: Customer, tableLayout?: Record<string, { id: string; x: number; y: number }>, hidePatience = false) {
+export function drawCustomer(ctx: CanvasRenderingContext2D, customer: Customer, tableLayout?: Record<string, { id: string; x: number; y: number }>, hidePatience = false, hidePersonality = false) {
     const { id, x, y, seatX, seatY, wants, patience, maxPatience, isSeated, isEating, beatUpTimer, currentDialog } = customer;
-    const pers = customer.personality;
+    const pers = hidePersonality ? 'polite' : customer.personality;
     const shape = customer.bodyShape ?? 1;
 
     // Kişiliğe göre renk — yoksa bodyColor fallback

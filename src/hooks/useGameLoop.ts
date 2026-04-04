@@ -187,7 +187,7 @@ export function useGameLoop({
         }
       }
 
-      state.customers.forEach((c: import('../types/game').Customer) => drawCustomer(ctx, c, state.tableLayout, state.hidePatience ?? false));
+      state.customers.forEach((c: import('../types/game').Customer) => drawCustomer(ctx, c, state.tableLayout, state.hidePatience ?? false, state.hidePersonality ?? false));
       if (frameId % 150 === 0) {
         const activeIds = new Set<string>(state.customers.map((c: import('../types/game').Customer) => c.id));
         cleanupCRS(activeIds);

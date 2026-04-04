@@ -60,7 +60,7 @@ export function resetGameState(gs: GameState): void {
   gs.lockedStations = {}; gs.lockedTables = {}; gs._seatCooldown = 0;
   gs.unlockedDishes = ['🥗']; gs.menuChoices = null; gs.hasOrderedTonight = false;
   gs.activeCards = []; gs.pendingCardChoices = null;
-  gs.hidePatience = false; gs.comboCount = 0; gs.comboTimer = 0;
+  gs.hidePatience = false; gs.hidePersonality = false; gs.comboCount = 0; gs.comboTimer = 0;
   gs.serviceWindow?.forEach(s => { s.item = null; });
   gs.sinks?.forEach(s => { s.input = null; s.progress = 0; s.isWashing = false; s.washingPlayerId = null; });
   gs.plateStack.count = gs.plateStack.maxCount;
@@ -76,6 +76,8 @@ export function resetGameState(gs: GameState): void {
 export function gameTick(gs: GameState, io: Server, rid: string) {
   if (gs.isGameOver) return; // game over sonrası tick durur
   const cm = getCardMultipliers(gs);
+  gs.hidePatience = cm.hidePatience;
+  gs.hidePersonality = cm.hidePersonality;
 
   updateCookStations(gs, io, rid);
   updateChoppingBoards(gs);
