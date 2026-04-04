@@ -80,41 +80,68 @@ export const GameNightOverlays: React.FC<Props> = ({
             )}
 
             {menuChoices && menuChoices.length > 0 && (
-                <div className="absolute inset-0 z-[50] bg-indigo-950/85 backdrop-blur-sm p-4 overflow-y-auto overflow-x-hidden flex flex-col items-center justify-start sm:justify-center py-8">
-                    <div className="text-center mb-6 flex-shrink-0 mt-4 sm:mt-0">
-                        <div className="text-5xl mb-2">⭐</div>
-                        <h2 className="text-white font-black text-2xl">{unlockedDishes.length === 0 ? 'Hangi yemeği yapacaksın?' : 'Yeni Yemek Seç!'}</h2>
-                        <p className="text-indigo-200 text-sm mt-1">
+                <div className="absolute inset-0 z-[50] bg-indigo-950/90 backdrop-blur-md p-4 overflow-y-auto flex flex-col items-center justify-center py-4 sm:py-8">
+                    <div className="text-center mb-4 sm:mb-8 flex-shrink-0">
+                        <div className="text-4xl sm:text-5xl mb-1 sm:mb-2">⭐</div>
+                        <h2 className="text-white font-black text-xl sm:text-3xl uppercase tracking-tight">
+                            {unlockedDishes.length === 0 ? 'İlk Yemeğini Seç!' : 'Yeni Menü Öğesi!'}
+                        </h2>
+                        <p className="text-indigo-200 text-[10px] sm:text-sm mt-1 max-w-md mx-auto px-4">
                             {unlockedDishes.length === 0
-                                ? 'Menünü oluşturmak için bir yemek seç.'
-                                : `Menüye eklemek için bir yemek seç. Gün ${day + 1}'den itibaren müşteriler bu yemeği sipariş edebilecek.`}
+                                ? 'Restoranını açmak için bir başlangıç yemeği seçmelisin.'
+                                : `Menünü genişlet! Yeni yemeğin yarından itibaren sipariş edilebilecek.`}
                         </p>
-                        <div className="mt-2 flex flex-wrap justify-center gap-2">
-                            <span className="text-indigo-300 text-xs">Mevcut menün:</span>
-                            {unlockedDishes.map(d => (
-                                <span key={d} className="text-base" title={DISH_NAMES[d]}>{d}</span>
-                            ))}
-                        </div>
                     </div>
-                    <div className="flex flex-col sm:flex-row gap-4 w-full max-w-lg flex-shrink-0">
+
+                    <div className="flex flex-row gap-3 sm:gap-6 w-full max-w-4xl justify-center px-2 sm:px-6">
                         {menuChoices.map(dish => {
                             const info = DISH_INFO[dish];
                             return (
                                 <button key={dish} onClick={() => onEmit('selectMenu', dish)}
-                                    className={`flex-1 bg-gradient-to-b ${info?.color ?? 'from-stone-600 to-stone-700'} hover:brightness-110 active:scale-95 text-white rounded-2xl p-5 border-2 border-white/20 transition-all shadow-xl flex flex-col items-center gap-2`}>
-                                    <span className="text-5xl">{dish}</span>
-                                    <span className="font-black text-xl">{DISH_NAMES[dish] ?? dish}</span>
+                                    className={`flex-1 max-w-[280px] bg-gradient-to-br ${info?.color ?? 'from-stone-600 to-stone-700'} 
+                                    hover:scale-[1.02] active:scale-95 text-white rounded-xl sm:rounded-3xl p-3 sm:p-8 
+                                    border-2 sm:border-4 border-white/30 transition-all shadow-[0_20px_50px_rgba(0,0,0,0.3)] 
+                                    flex flex-col items-center justify-between gap-2 sm:gap-4 relative overflow-hidden group`}>
+                                    
+                                    {/* Parlama Efekti */}
+                                    <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+                                    
+                                    <div className="flex flex-col items-center gap-1 sm:gap-3">
+                                        <span className="text-4xl sm:text-7xl drop-shadow-lg transform group-hover:rotate-12 transition-transform">{dish}</span>
+                                        <span className="font-black text-sm sm:text-2xl uppercase tracking-tighter">{DISH_NAMES[dish] ?? dish}</span>
+                                    </div>
+
                                     {info && (
-                                        <div className="text-white/80 text-xs text-center space-y-0.5">
-                                            <div>Malzeme: {info.ingredient}</div>
-                                            <div>Pişirme: ~{info.time}</div>
+                                        <div className="bg-black/20 backdrop-blur-sm rounded-lg sm:rounded-xl p-2 sm:p-4 w-full text-[9px] sm:text-xs space-y-1 border border-white/10">
+                                            <div className="flex justify-between items-center">
+                                                <span className="opacity-70">Malzeme:</span>
+                                                <span className="font-bold">{info.ingredient.split(' ')[1]}</span>
+                                            </div>
+                                            <div className="flex justify-between items-center">
+                                                <span className="opacity-70">Hazırlık:</span>
+                                                <span className="font-bold">{info.time}</span>
+                                            </div>
                                         </div>
                                     )}
-                                    <span className="mt-1 px-3 py-1 bg-white/20 rounded-full text-sm font-bold">Seç →</span>
+
+                                    <div className="w-full py-1.5 sm:py-3 bg-white text-indigo-900 rounded-lg sm:rounded-xl font-black text-[10px] sm:text-base uppercase shadow-lg group-hover:bg-indigo-50 transition-colors">
+                                        SEÇ VE BAŞLA
+                                    </div>
                                 </button>
                             );
                         })}
                     </div>
+
+                    {unlockedDishes.length > 0 && (
+                        <div className="mt-6 sm:mt-10 flex flex-col items-center gap-2 opacity-60">
+                            <span className="text-indigo-300 text-[10px] sm:text-xs font-bold uppercase tracking-widest">Mevcut Menün</span>
+                            <div className="flex gap-2 bg-white/5 p-2 rounded-full px-4 border border-white/10">
+                                {unlockedDishes.map(d => (
+                                    <span key={d} className="text-lg sm:text-2xl filter grayscale hover:grayscale-0 transition-all cursor-help" title={DISH_NAMES[d]}>{d}</span>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </div>
             )}
 
