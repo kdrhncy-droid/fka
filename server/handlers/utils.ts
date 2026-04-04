@@ -18,7 +18,7 @@ export interface InteractContext {
 
 export type InteractionHandler = (ctx: InteractContext) => boolean;
 
-export function earn(lv: number, maxPatience: number, currentPatience: number, specialMult = 1.0) {
+export function earn(lv: number, maxPatience: number, currentPatience: number) {
   const base = 10 + 5 * lv;
   const ratio = Math.max(0, currentPatience / maxPatience);
   let mult = 0.5;
@@ -26,7 +26,7 @@ export function earn(lv: number, maxPatience: number, currentPatience: number, s
   else if (ratio > 0.5) mult = 1.5;
   else if (ratio > 0.2) mult = 1.0;
   else mult = 0.5;
-  return Math.floor(base * mult * specialMult);
+  return Math.floor(base * mult);
 }
 
 export function isDish(item: import("../../shared/types.js").Item): item is string { return !!item && DISH_ITEMS.includes(item as any); }

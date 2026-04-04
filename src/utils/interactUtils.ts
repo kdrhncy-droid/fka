@@ -1,7 +1,7 @@
 import {
   GameState, INGREDIENTS, TRAY_STATION, TRASH_STATION, PLATE_STACK_POS,
   DIRTY_TRAY_POS, SINK_STATION, SERVICE_WINDOW_SLOTS, SERVICE_WINDOW_R,
-  SPICE_RACK_POS, RECIPE_DEFS,
+  RECIPE_DEFS,
 } from "../types/game";
 
 const INTERACT_R = 110;
@@ -70,11 +70,6 @@ export function getNearestInteractable(px: number, py: number, gs: GameState, la
     addCandidate(x, y, INTERACT_R, 'choppingBoard', b.id);
   });
 
-  // Baharat rafı — gün 3'ten sonra
-  if (gs.day >= 3) {
-    const spicePos = gs.stationLayout?.['spice_rack'] ?? SPICE_RACK_POS;
-    addCandidate(spicePos.x, spicePos.y, INTERACT_R, 'spiceRack');
-  }
 
   // Fritözler — sadece 🍟 unlock edilmişse
   if (gs.unlockedDishes?.includes('🍟')) {

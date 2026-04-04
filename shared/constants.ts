@@ -50,11 +50,7 @@ export const SERVICE_WINDOW_R = 90;
 export const WALL_Y1 = 340;
 export const WALL_Y2 = 380;
 
-export const SPICE_RACK_R = 90;
 
-export const SPICY_PREFIX = 'SPICY_';
 
-export const SPECIAL_REQUEST_CHANCE = 0.30; // %30 ihtimalle özel istek
 
-export const QUICK_PATIENCE_DRAIN = 2.0;
 export const COMBO_TIMEOUT_TICKS = 180; // ~6 saniye içinde servis yapılmazsa combo sıfırlanır

@@ -1,11 +1,11 @@
 import { Socket, Server } from "socket.io";
-import { GameState, INGREDIENTS, RECIPE_DEFS, SERVICE_WINDOW_SLOTS, SERVICE_WINDOW_R, TRASH_STATION, TRAY_STATION, PLATE_STACK_POS, SPICE_RACK_POS } from "../shared/types.js";
+import { GameState, INGREDIENTS, RECIPE_DEFS, SERVICE_WINDOW_SLOTS, SERVICE_WINDOW_R, TRASH_STATION, TRAY_STATION, PLATE_STACK_POS } from "../shared/types.js";
 import { InteractContext, InteractionHandler } from "./handlers/utils.js";
 
 // Tüm handler dosyalarını içe aktar
 import { handleCookStations, handleFryers, handleCakeBakers, handleCoffeeMachines, handleIngredients } from "./handlers/kitchenHandler.js";
 import { handleServiceWindow, handleDirtyTables, handleCustomers } from "./handlers/serviceHandler.js";
-import { handleTrash, handleTrayStation, handleDirtyTrayBasket, handlePlateStack, handleSpiceRack, handleFridges } from "./handlers/itemHandler.js";
+import { handleTrash, handleTrayStation, handleDirtyTrayBasket, handlePlateStack, handleFridges } from "./handlers/itemHandler.js";
 import { handleSinks, handleChoppingBoards } from "./handlers/sinkHandler.js";
 
 const INTERACT_R = 110;
@@ -70,11 +70,6 @@ function buildSortedHandlers(px: number, py: number, gs: GameState): Interaction
     track(handleChoppingBoards, x, y, INTERACT_R);
   });
 
-  // Baharat rafı (gün 3+)
-  if (gs.day >= 3) {
-    const spicePos = gs.stationLayout?.['spice_rack'] ?? SPICE_RACK_POS;
-    track(handleSpiceRack, spicePos.x, spicePos.y, INTERACT_R);
-  }
 
   // Fritözler
   gs.fryers?.forEach(f => {

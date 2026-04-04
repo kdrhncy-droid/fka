@@ -86,7 +86,7 @@ function runBasicTest(gs: GameState, io: Server, roomId: string, socket: Socket)
   let step = 0;
   const steps = [
     () => {
-      gs.customers.push({ id: 'test-1', x: 100, y: 300, seatX: 200, seatY: 300, targetY: 300, wants: '🍕', specialRequest: null, patience: 100, maxPatience: 100, isSeated: false, isEating: false, eatTimer: 0, tipAmount: 0, personality: 'polite', bodyShape: 1, bodyColor: '#8B4513', phase: 'entering' });
+      gs.customers.push({ id: 'test-1', x: 100, y: 300, seatX: 200, seatY: 300, targetY: 300, wants: '🍕', patience: 100, maxPatience: 100, isSeated: false, isEating: false, eatTimer: 0, tipAmount: 0, personality: 'polite', bodyShape: 1, bodyColor: '#8B4513', phase: 'entering' });
       io.to(roomId).emit("state", gs);
       socket.emit("testLog", "✅ Müşteri spawn edildi");
     },
@@ -111,7 +111,7 @@ function runComboTest(gs: GameState, io: Server, roomId: string, socket: Socket)
   const steps = [
     () => {
       for (let i = 0; i < 3; i++) {
-        gs.customers.push({ id: `combo-${i}`, x: 100 + i * 50, y: 300, seatX: 200 + i * 50, seatY: 300, targetY: 300, wants: '🍕', specialRequest: null, patience: 100, maxPatience: 100, isSeated: false, isEating: false, eatTimer: 0, tipAmount: 0, personality: 'polite', bodyShape: 1, bodyColor: '#8B4513', phase: 'entering' });
+        gs.customers.push({ id: `combo-${i}`, x: 100 + i * 50, y: 300, seatX: 200 + i * 50, seatY: 300, targetY: 300, wants: '🍕', patience: 100, maxPatience: 100, isSeated: false, isEating: false, eatTimer: 0, tipAmount: 0, personality: 'polite', bodyShape: 1, bodyColor: '#8B4513', phase: 'entering' });
       }
       io.to(roomId).emit("state", gs);
       socket.emit("testLog", "✅ 3 müşteri spawn edildi");
@@ -135,7 +135,7 @@ function runStressTest(gs: GameState, io: Server, roomId: string, socket: Socket
   socket.emit("testLog", "⚡ Stress Test — 10 müşteri spawn ediliyor...");
   for (let i = 0; i < 10; i++) {
     setTimeout(() => {
-      gs.customers.push({ id: `stress-${i}`, x: 50 + (i % 5) * 100, y: 250 + Math.floor(i / 5) * 100, seatX: 200 + (i % 5) * 100, seatY: 300 + Math.floor(i / 5) * 100, targetY: 300 + Math.floor(i / 5) * 100, wants: ['🍕', '🍜', '🌯', '🍟', '🥤'][i % 5] as any, specialRequest: null, patience: 100, maxPatience: 100, isSeated: false, isEating: false, eatTimer: 0, tipAmount: 0, personality: ['polite', 'rude', 'recep', 'thug'][i % 4] as any, bodyShape: (i % 4 + 1) as any, bodyColor: '#8B4513', phase: 'entering' });
+      gs.customers.push({ id: `stress-${i}`, x: 50 + (i % 5) * 100, y: 250 + Math.floor(i / 5) * 100, seatX: 200 + (i % 5) * 100, seatY: 300 + Math.floor(i / 5) * 100, targetY: 300 + Math.floor(i / 5) * 100, wants: ['🍕', '🍜', '🌯', '🍟', '🥤'][i % 5] as any, patience: 100, maxPatience: 100, isSeated: false, isEating: false, eatTimer: 0, tipAmount: 0, personality: ['polite', 'rude', 'recep', 'thug'][i % 4] as any, bodyShape: (i % 4 + 1) as any, bodyColor: '#8B4513', phase: 'entering' });
       io.to(roomId).emit("state", gs);
     }, i * 200);
   }
@@ -152,7 +152,7 @@ function runVisualTest(gs: GameState, io: Server, roomId: string, socket: Socket
     () => { gs.comboCount = 5; gs.comboTimer = 300; io.to(roomId).emit("state", gs); socket.emit("testLog", "🔥 Combo efekti tetiklendi"); },
     () => {
       ['polite', 'rude', 'recep', 'thug'].forEach((p, i) => {
-        gs.customers.push({ id: `visual-${p}`, x: 100 + i * 150, y: 200, seatX: 200 + i * 150, seatY: 300, targetY: 300, wants: '🍕', specialRequest: null, patience: 100 - i * 20, maxPatience: 100, isSeated: false, isEating: false, eatTimer: 0, tipAmount: 0, personality: p as any, bodyShape: (i % 4 + 1) as any, bodyColor: '#8B4513', phase: 'entering' });
+        gs.customers.push({ id: `visual-${p}`, x: 100 + i * 150, y: 200, seatX: 200 + i * 150, seatY: 300, targetY: 300, wants: '🍕', patience: 100 - i * 20, maxPatience: 100, isSeated: false, isEating: false, eatTimer: 0, tipAmount: 0, personality: p as any, bodyShape: (i % 4 + 1) as any, bodyColor: '#8B4513', phase: 'entering' });
       });
       io.to(roomId).emit("state", gs);
       socket.emit("testLog", "✅ 4 müşteri tipi spawn edildi");

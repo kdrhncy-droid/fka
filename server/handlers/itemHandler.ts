@@ -2,7 +2,7 @@ import { InteractionHandler, isDish } from './utils.js';
 import { 
   CLEAN_PLATE, DIRTY_PLATE, isTray, getTrayItems, createTray,
   TRASH_STATION, TRAY_STATION, MAX_TRAY_CAPACITY, PLATE_STACK_POS,
-  DRINK_ITEM, SPICE_RACK_POS, SPICEABLE_DISHES, SPICY_CONVERSIONS
+  DRINK_ITEM
 } from "../../shared/types.js";
 import { getStationPos } from './utils.js';
 
@@ -98,35 +98,6 @@ export const handlePlateStack: InteractionHandler = ({ gs, p, px, py, snd }) => 
   return false;
 };
 
-export const handleSpiceRack: InteractionHandler = (ctx) => {
-  const { p, px, py, snd, gs } = ctx;
-
-  if (gs.day < 3) return false;
-
-  const dynPos = gs.stationLayout?.['spice_rack'];
-  const x = dynPos?.x ?? SPICE_RACK_POS.x;
-  const y = dynPos?.y ?? SPICE_RACK_POS.y;
-
-  if (Math.hypot(px - x, py - y) > INTERACT_R) return false;
-
-  if (!p.holding || !isDish(p.holding) || p.holding.startsWith('SPICY_')) {
-    return false;
-  }
-
-  if (!SPICEABLE_DISHES.includes(p.holding as any)) {
-    snd('fail');
-    return true;
-  }
-  const spicyVersion = SPICY_CONVERSIONS[p.holding];
-  if (spicyVersion) {
-    p.holding = spicyVersion;
-    snd('pickup');
-    return true;
-  }
-
-  snd('fail');
-  return false;
-};
 
 export const handleFridges: InteractionHandler = ({ gs, p, px, py, snd }) => {
   if (!gs.fridges) return false;

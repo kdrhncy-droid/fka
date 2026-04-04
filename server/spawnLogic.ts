@@ -3,7 +3,6 @@ import {
   GameState, Personality,
   DAY_TICKS,
   GAME_HEIGHT, EXTERIOR_Y,
-  SPECIAL_REQUEST_CHANCE, SPECIAL_REQUESTS,
 } from "../shared/types.js";
 import { DIALOGUES } from "../shared/dialogues.js";
 import { getCardMultipliers } from "./cardLogic.js";
@@ -62,10 +61,6 @@ export function tryQueueSeat(gs: GameState, io: Server, rid: string) {
     if (idx !== -1) gs.waitList.splice(idx, 1);
 
     const seat = selectedSeats[i];
-    let specialRequest: 'spicy' | 'extra' | 'quick' | null = null;
-    if (gs.day >= 3 && (guest.personality === 'polite' || guest.personality === 'rude') && Math.random() < SPECIAL_REQUEST_CHANCE) {
-      specialRequest = SPECIAL_REQUESTS[Math.floor(Math.random() * SPECIAL_REQUESTS.length)] as 'spicy' | 'extra' | 'quick';
-    }
 
     let patienceMult = 1.0;
     if (guest.personality === 'vip') patienceMult = 1.8;
@@ -87,7 +82,6 @@ export function tryQueueSeat(gs: GameState, io: Server, rid: string) {
       punchCount: 0,
       phase: 'entering',
       doorX: DOOR_X,
-      specialRequest,
     });
   }
   io.to(rid).emit("sound", "arrive");

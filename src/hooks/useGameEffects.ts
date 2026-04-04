@@ -130,19 +130,6 @@ export function setupGameEffects(socket: Socket | null) {
     });
   };
 
-  // 🌶️ Özel istek karşılandı
-  const handleSpecialServed = (data: { x: number; y: number; request: string }) => {
-    const icons: Record<string, string> = { spicy: '🌶️', extra: '➕', quick: '⚡' };
-    const colors: Record<string, string> = { spicy: '#ef4444', extra: '#22c55e', quick: '#f59e0b' };
-    floatingTexts.push({
-      x: data.x,
-      y: data.y - 30,
-      text: `${icons[data.request] ?? '⭐'} Mükemmel!`,
-      life: 70,
-      color: colors[data.request] ?? '#22c55e',
-      size: 18,
-    });
-  };
 
   if (socket) {
     socket.on("tipCollected", handleTip);
@@ -150,7 +137,6 @@ export function setupGameEffects(socket: Socket | null) {
     socket.on("comboServe", handleCombo);
     socket.on("cookDone", handleCookDone);
     socket.on("happyLeave", handleHappyLeave);
-    socket.on("specialServed", handleSpecialServed);
     socket.on("serviceEffect", handleServiceEffect);
     socket.on("loseHeart", handleLoseHeart);
   }
@@ -162,7 +148,6 @@ export function setupGameEffects(socket: Socket | null) {
       socket.off("comboServe", handleCombo);
       socket.off("cookDone", handleCookDone);
       socket.off("happyLeave", handleHappyLeave);
-      socket.off("specialServed", handleSpecialServed);
       socket.off("serviceEffect", handleServiceEffect);
       socket.off("loseHeart", handleLoseHeart);
     }

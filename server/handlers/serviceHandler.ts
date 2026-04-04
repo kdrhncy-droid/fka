@@ -1,6 +1,6 @@
 import { InteractionHandler, earn, applyCombo } from './utils.js';
 import { 
-  SERVICE_WINDOW_SLOTS, SERVICE_WINDOW_R, SPECIAL_REQUEST_TIP_MULT, EAT_TICKS,
+  SERVICE_WINDOW_SLOTS, SERVICE_WINDOW_R, EAT_TICKS,
   isTray, getTrayItems, createTray, DIRTY_PLATE, MAX_TRAY_CAPACITY, GameState, Customer, Player
 } from "../../shared/types.js";
 import { Server } from "socket.io";
@@ -30,10 +30,6 @@ function startEating(c: Customer, p: Player, tip: number, holdingOverride?: stri
   if (holdingOverride !== undefined) p.holding = holdingOverride;
 }
 
-/** Acı istek uyumsuzluğu kontrolü. Uyumsuzsa true döner. */
-function spicyMismatch(customerWantsSpicy: boolean, itemIsSpicy: boolean): boolean {
-  return (customerWantsSpicy && !itemIsSpicy) || (!customerWantsSpicy && itemIsSpicy);
-}
 
 export const handleServiceWindow: InteractionHandler = ({ gs, p, px, py, snd }) => {
   if (!gs.serviceWindow?.length) return false;
@@ -83,8 +79,6 @@ export const handleCustomers: InteractionHandler = ({ gs, p, px, py, snd, io, ro
     const c = gs.customers[ci];
     if (!c.isSeated || c.isEating || Math.hypot(px - c.seatX, py - c.seatY) >= SERVE_R) continue;
 
-    const specialMult = c.specialRequest ? (SPECIAL_REQUEST_TIP_MULT[c.specialRequest] ?? 1.0) : 1.0;
-    const customerWantsSpicy = c.specialRequest === 'spicy';
     const isDrunk = c.personality === 'drunk';
 
     if (isTray(p.holding)) {
@@ -92,48 +86,30 @@ export const handleCustomers: InteractionHandler = ({ gs, p, px, py, snd, io, ro
       const items = getTrayItems(p.holding);
       for (let i = 0; i < items.length; i++) {
         const item = items[i];
-        const itemIsSpicy = item.startsWith('SPICY_');
-        const itemBase = itemIsSpicy ? item.replace('SPICY_', '') : item;
-        if (c.wants !== itemBase) continue;
+        if (c.wants !== item) continue;
 
         items.splice(i, 1);
         p.holding = createTray(items);
 
-        if (!isDrunk && spicyMismatch(customerWantsSpicy, itemIsSpicy)) {
-          loseLife(gs, io, roomId, 1, c.seatX, c.seatY);
-          startEating(c, p, 0);
-          snd("fail");
-        } else {
-          const tip = earn(gs.upgrades.earnings, c.maxPatience, c.patience, specialMult);
-          startEating(c, p, tip);
-          if (c.specialRequest) io.to(roomId).emit('specialServed', { x: c.seatX, y: c.seatY, request: c.specialRequest });
-          if (p.serviceEffect) io.to(roomId).emit('serviceEffect', { x: c.seatX, y: c.seatY, effect: p.serviceEffect });
-          applyCombo(gs, io, roomId, c.seatX, c.seatY, tip);
-          snd("success");
-        }
+        const tip = earn(gs.upgrades.earnings, c.maxPatience, c.patience);
+        startEating(c, p, tip);
+        if (p.serviceEffect) io.to(roomId).emit('serviceEffect', { x: c.seatX, y: c.seatY, effect: p.serviceEffect });
+        applyCombo(gs, io, roomId, c.seatX, c.seatY, tip);
+        snd("success");
         return true;
       }
     } else {
       // Tek yemek servisi
-      const playerIsSpicy = p.holding?.startsWith('SPICY_');
-      const baseFood = playerIsSpicy ? p.holding!.replace('SPICY_', '') : p.holding;
-      const correctFood = c.wants === baseFood;
+      const correctFood = c.wants === p.holding;
       const drunkAccept = isDrunk && Math.random() < 0.5;
 
       if (correctFood || drunkAccept) {
-        if (!isDrunk && spicyMismatch(customerWantsSpicy, !!playerIsSpicy)) {
-          loseLife(gs, io, roomId, 1, c.seatX, c.seatY);
-          startEating(c, p, 0, null);
-          snd("fail");
-          return true;
-        }
         // Doğru servis
-        let tip = earn(gs.upgrades.earnings, c.maxPatience, c.patience, specialMult);
+        let tip = earn(gs.upgrades.earnings, c.maxPatience, c.patience);
         if (c.personality === 'vip') tip = Math.round(tip * 3);
         if (isDrunk) tip = Math.round(tip * Math.random() * 3);
         if (c.personality === 'inspector') { gs.score += 50; io.to(roomId).emit('inspectorBonus', { x: c.seatX, y: c.seatY }); }
         startEating(c, p, tip, null);
-        if (c.specialRequest) io.to(roomId).emit('specialServed', { x: c.seatX, y: c.seatY, request: c.specialRequest });
         if (p.serviceEffect) io.to(roomId).emit('serviceEffect', { x: c.seatX, y: c.seatY, effect: p.serviceEffect });
         applyCombo(gs, io, roomId, c.seatX, c.seatY, tip);
         snd("success");

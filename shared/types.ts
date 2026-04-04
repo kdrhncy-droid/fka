@@ -56,7 +56,6 @@ export interface Customer {
     phase?: 'entering' | 'seating' | 'seated';
     doorX?: number;
 
-    specialRequest?: 'spicy' | 'extra' | 'quick' | null;
 }
 
 export interface WaitingGuest {
@@ -242,6 +241,4 @@ export interface ServiceWindowSlot {
   item: Item;
 }
 
-export type SpecialRequest = 'spicy' | 'extra' | 'quick';
-export type SpiceableDish = '🍕' | '🍔' | '🍜' | '🌯' | '🥗';
 export type MapId = 'classic';

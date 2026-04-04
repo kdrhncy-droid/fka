@@ -1,4 +1,4 @@
-import type { GameCard, StockKey, UpgradeKey, SpecialRequest } from './types';
+import type { GameCard, StockKey, UpgradeKey } from './types';
 
 // Sadeleştirilmiş Karakter Tipleri
 export const CHARACTER_TYPES = [
@@ -90,47 +90,15 @@ export const EXTRA_CHOP_POSITIONS = [
   { x: 960, y: 170 },
 ];
 
-export const SPICE_RACK_POS = { x: 1160, y: 170 };
 
-export const SPICEABLE_DISHES = ['🍕', '🍔', '🍜', '🌯', '🥗'] as const;
 
-export const SPICY_CONVERSIONS: Record<string, string> = {
-  '🍕': 'SPICY_🍕',
-  '🍔': 'SPICY_🍔', 
-  '🍜': 'SPICY_🍜',
-  '🌯': 'SPICY_🌯',
-  '🥗': 'SPICY_🥗',
-};
 
-export const SPICY_DISPLAY: Record<string, string> = {
-  'SPICY_🍕': '🍕🌶️',
-  'SPICY_🍔': '🍔🌶️',
-  'SPICY_🍜': '🍜🌶️', 
-  'SPICY_🌯': '🌯🌶️',
-  'SPICY_🥗': '🥗🌶️',
-};
 
-export const DISH_ITEMS = ['🍕', '🍔', '🥗', '🍜', '🌯', '🍟', '🥤', '🍰', '☕', 'SPICY_🍕', 'SPICY_🍔', 'SPICY_🍜', 'SPICY_🌯', 'SPICY_🥗'] as const;
+export const DISH_ITEMS = ['🍕', '🍔', '🥗', '🍜', '🌯', '🍟', '🥤', '🍰', '☕'] as const;
 
-export const SPECIAL_REQUESTS = ['spicy', 'extra', 'quick'] as const;
 
-export const SPECIAL_REQUEST_ICONS: Record<SpecialRequest, string> = {
-  spicy: '🌶️',
-  extra: '➕',
-  quick: '⚡',
-};
 
-export const SPECIAL_REQUEST_LABELS: Record<SpecialRequest, string> = {
-  spicy: 'Acı olsun!',
-  extra: 'Bol porsiyon!',
-  quick: 'Acele ediyorum!',
-};
 
-export const SPECIAL_REQUEST_TIP_MULT: Record<SpecialRequest, number> = {
-  spicy: 1.8,
-  extra: 1.5,
-  quick: 2.0,
-};
 
 export const UPGRADE_DEFS: Record<UpgradeKey, { costs: number[]; max: number }> = {
     patience:      { costs: [150, 300, 600, 1200], max: 4 },

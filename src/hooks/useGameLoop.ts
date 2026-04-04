@@ -32,7 +32,6 @@ import { drawFryer } from '../renderer/drawFryer';
 import { drawFridge } from '../renderer/drawFridge';
 import { drawCakeBaker } from '../renderer/drawCakeBaker';
 import { drawCoffeeMachine } from '../renderer/drawCoffeeMachine';
-import { drawSpiceRack } from '../renderer/drawSpiceRack';
 
 interface UseGameLoopProps {
   canvasRef: React.RefObject<HTMLCanvasElement>;
@@ -179,13 +178,6 @@ export function useGameLoop({
         }
       }
 
-      // Baharat Rafı — gün 3'ten sonra göster (özel istekler gün 3'te başlıyor)
-      if (state.day >= 3) {
-        const spiceRackPos = state.stationLayout?.['spice_rack'];
-        if (movingId !== 'spice_rack') {
-          drawSpiceRack(ctx, spiceRackPos?.x, spiceRackPos?.y);
-        }
-      }
 
       state.customers.forEach((c: import('../types/game').Customer) => drawCustomer(ctx, c, state.tableLayout, state.hidePatience ?? false, state.hidePersonality ?? false));
       if (frameId % 150 === 0) {

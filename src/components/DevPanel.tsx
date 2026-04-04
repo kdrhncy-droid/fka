@@ -55,8 +55,6 @@ export const DevPanel: React.FC<Props> = ({ socket, onClose }) => {
                     <button onClick={() => emit('dev:spawnCustomer', { personality: 'rude' })} className="dev-btn bg-orange-700">😡 Kaba Müşteri</button>
                     <button onClick={() => emit('dev:spawnCustomer', { personality: 'recep' })} className="dev-btn bg-purple-700">🤪 Recep</button>
                     <button onClick={() => emit('dev:spawnCustomer', { personality: 'thug' })} className="dev-btn bg-stone-700">💀 Thug</button>
-                    <button onClick={() => emit('dev:spawnCustomer', { personality: 'polite', specialRequest: 'spicy' })} className="dev-btn bg-red-700">🌶️ Acı İstek</button>
-                    <button onClick={() => emit('dev:spawnCustomer', { personality: 'polite', specialRequest: 'quick' })} className="dev-btn bg-yellow-700">⚡ Acele İstek</button>
 
                     {/* Kart Sistemi */}
                     <div className="col-span-2 text-[10px] font-black text-stone-500 uppercase tracking-widest mt-2">Kart Sistemi</div>

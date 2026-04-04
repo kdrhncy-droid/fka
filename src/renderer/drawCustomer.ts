@@ -363,15 +363,12 @@ export function drawCustomer(ctx: CanvasRenderingContext2D, customer: Customer, 
         // Yemek balonu
         const bx = angryShake;
         const by = uiBaseY - 18;
-        const specialReq = customer.specialRequest;
-        const specialIcon = specialReq === 'spicy' ? '🌶️' : specialReq === 'extra' ? '➕' : specialReq === 'quick' ? '⚡' : null;
-        const bubbleR = specialIcon ? 18 : 14;
-        ctx.fillStyle = specialIcon ? (specialReq === 'quick' ? '#fef3c7' : '#fff0f0') : (isAngry && Math.floor(Date.now() / 200) % 2 === 0 ? '#fee2e2' : '#fff');
+        const bubbleR = 14;
+        ctx.fillStyle = isAngry && Math.floor(Date.now() / 200) % 2 === 0 ? '#fee2e2' : '#fff';
         ctx.beginPath(); ctx.arc(bx, by, bubbleR, 0, Math.PI * 2); ctx.fill();
-        stk(ctx, specialIcon ? (specialReq === 'quick' ? '#f59e0b' : '#ef4444') : (isAngry ? '#ef4444' : bodyColor), 1.8);
+        stk(ctx, isAngry ? '#ef4444' : bodyColor, 1.8);
         ctx.font = '16px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.fillText(wants, bx - (specialIcon ? 5 : 0), by);
-        if (specialIcon) { ctx.font = '12px Arial'; ctx.fillText(specialIcon, bx + bubbleR - 3, by - bubbleR + 4); }
+        ctx.fillText(wants, bx, by);
     }
 
     // ── SABIR BARI — müşterinin altında, sandalye seviyesinde ───────────────

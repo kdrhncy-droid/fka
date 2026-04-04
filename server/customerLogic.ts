@@ -3,7 +3,6 @@ import {
   GameState,
   DAY_TICKS, EAT_TICKS,
   GAME_HEIGHT, EXTERIOR_Y,
-  QUICK_PATIENCE_DRAIN,
 } from "../shared/types.js";
 import { DIALOGUES } from "../shared/dialogues.js";
 import { getCardMultipliers } from "./cardLogic.js";
@@ -88,7 +87,6 @@ export function customerTick(gs: GameState, io: Server, rid: string) {
         const cm = getCardMultipliers(gs);
         let patienceDrain = 1 + (playerCount - 1) * 0.1;
         if (gs.dayTimer <= DAY_TICKS * 0.25) patienceDrain *= 1.2;
-        if (c.specialRequest === 'quick') patienceDrain *= QUICK_PATIENCE_DRAIN;
         patienceDrain = patienceDrain / cm.patienceMult;
         const baseDrain = Math.floor(patienceDrain);
         const actualDrain = baseDrain + (Math.random() < (patienceDrain - baseDrain) ? 1 : 0);
