@@ -1,5 +1,6 @@
 import { Socket, Server } from "socket.io";
 import { GameState, INGREDIENTS, RECIPE_DEFS, SERVICE_WINDOW_SLOTS, SERVICE_WINDOW_R, TRASH_STATION, TRAY_STATION, PLATE_STACK_POS } from "../shared/types.js";
+import { DIRTY_TRAY_POS } from "../shared/gameData.js";
 import { InteractContext, InteractionHandler } from "./handlers/utils.js";
 
 // Tüm handler dosyalarını içe aktar
@@ -50,7 +51,7 @@ function buildSortedHandlers(px: number, py: number, gs: GameState): Interaction
   track(handleTrayStation, trayPos.x, trayPos.y, INTERACT_R);
 
   // Kirli tepsi sepeti
-  const dirtyTrayPos = gs.stationLayout['dirty_tray'] ?? { x: 1050, y: 90 };
+  const dirtyTrayPos = gs.stationLayout['dirty_tray'] ?? DIRTY_TRAY_POS;
   track(handleDirtyTrayBasket, dirtyTrayPos.x, dirtyTrayPos.y, INTERACT_R);
 
   // Kirli masalar
