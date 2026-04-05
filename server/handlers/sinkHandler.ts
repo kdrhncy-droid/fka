@@ -1,8 +1,7 @@
 import { InteractionHandler } from './utils.js';
 import { CLEAN_PLATE, DIRTY_PLATE, CHOPPABLE, isChopped } from "../../shared/types.js";
 import { getStationPos } from './utils.js';
-
-const INTERACT_R = 110;
+import { INTERACT_R } from '../../shared/constants.js';
 
 export const handleSinks: InteractionHandler = ({ gs, p, px, py, socketId, snd }) => {
   if (!gs.sinks) return false;

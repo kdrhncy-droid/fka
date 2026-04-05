@@ -7,10 +7,7 @@ import { handleCookStations, handleFryers, handleCakeBakers, handleCoffeeMachine
 import { handleServiceWindow, handleDirtyTables, handleCustomers } from "./handlers/serviceHandler.js";
 import { handleTrash, handleTrayStation, handleDirtyTrayBasket, handlePlateStack, handleFridges } from "./handlers/itemHandler.js";
 import { handleSinks, handleChoppingBoards } from "./handlers/sinkHandler.js";
-
-const INTERACT_R = 110;
-const COOK_R = 145;
-const SERVE_R = 125;
+import { INTERACT_R, COOK_R, SERVE_R } from "../shared/constants.js";
 
 interface HandlerCandidate {
   handler: InteractionHandler;

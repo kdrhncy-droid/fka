@@ -111,3 +111,15 @@ export const UPGRADE_DEFS: Record<UpgradeKey, { costs: number[]; max: number }> 
     extraSink:     { costs: [300, 600],             max: 2 },
     extraChopBoard:{ costs: [250, 500],             max: 2 },
 };
+
+export const MENU_UNLOCK_DAYS = [3, 10, 13, 20, 24, 28]; // Bu günlerin gecesinde yemek seçimi çıkar
+
+export const TABLE_POSITIONS: { x: number; y: number }[] = [
+    // Başlangıç 6 masa (sıra 1)
+    { x: 160, y: 460 }, { x: 380, y: 460 }, { x: 600, y: 460 },
+    { x: 820, y: 460 }, { x: 1040, y: 460 }, { x: 1200, y: 460 },
+    // Satın alınabilir 9 masa (sıra 2 ve 3)
+    { x: 160, y: 590 }, { x: 380, y: 590 }, { x: 600, y: 590 },
+    { x: 820, y: 590 }, { x: 1040, y: 590 }, { x: 1200, y: 590 },
+    { x: 270, y: 660 }, { x: 640, y: 660 }, { x: 1010, y: 660 },
+];

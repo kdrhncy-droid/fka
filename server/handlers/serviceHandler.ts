@@ -4,8 +4,7 @@ import {
   isTray, getTrayItems, createTray, DIRTY_PLATE, MAX_TRAY_CAPACITY, GameState, Customer, Player
 } from "../../shared/types.js";
 import { Server } from "socket.io";
-
-const SERVE_R = 125;
+import { SERVE_R } from '../../shared/constants.js';
 
 function loseLife(gs: GameState, io: Server, roomId: string, amount = 1, x?: number, y?: number): boolean {
   gs.lives = Math.max(0, gs.lives - amount);

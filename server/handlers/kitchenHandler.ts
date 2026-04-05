@@ -5,9 +5,7 @@ import {
 } from "../../shared/types.js";
 import { getStationPos } from './utils.js';
 import { isIngredientUnlocked, isStationUnlocked } from '../../shared/stationRegistry.js';
-
-const COOK_R = 145;
-const INTERACT_R = 110;
+import { INTERACT_R, COOK_R } from '../../shared/constants.js';
 
 export const handleCookStations: InteractionHandler = ({ gs, p, px, py, snd }) => {
   for (const station of gs.cookStations) {

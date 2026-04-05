@@ -4,10 +4,7 @@ import {
   RECIPE_DEFS,
 } from "../types/game";
 import { isStationUnlocked, isIngredientUnlocked } from '../../shared/stationRegistry';
-
-const INTERACT_R = 110;
-const COOK_R = 145;
-const SERVE_R = 125;
+import { INTERACT_R, COOK_R, SERVE_R } from '../../shared/constants';
 const DISTANCE_TOLERANCE = 25; // Yakın objeler için tolerans
 
 interface InteractableCandidate {
