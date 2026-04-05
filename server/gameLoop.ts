@@ -6,6 +6,7 @@ import {
   CARD_DAYS,
 } from "../shared/types.js";
 import { getCardMultipliers, generateMenuChoices, generateCardChoices } from "./cardLogic.js";
+import { MENU_UNLOCK_DAYS } from "../shared/gameData.js";
 import { tryQueueSeat, spawnTick } from "./spawnLogic.js";
 import { customerTick } from "./customerLogic.js";
 import {
@@ -21,7 +22,6 @@ import { moveStation } from "./stationUtils.js";
 export { generateMenuChoices, generateCardChoices, getCardMultipliers, tryQueueSeat };
 
 const SPAWN_GRACE_TICKS = 240;
-const MENU_UNLOCK_DAYS = [3, 10, 13, 20, 24, 28];
 
 /** Gece → Hazırlık geçişi. Başarılıysa true döner. */
 export function transitionToNextDay(gs: GameState): boolean {

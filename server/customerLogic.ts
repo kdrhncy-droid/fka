@@ -6,8 +6,7 @@ import {
 } from "../shared/types.js";
 import { DIALOGUES } from "../shared/dialogues.js";
 import { getCardMultipliers } from "./cardLogic.js";
-
-const DOOR_X = 640;
+import { DOOR_X } from "../shared/constants.js";
 
 export function customerTick(gs: GameState, io: Server, rid: string) {
   for (let i = gs.customers.length - 1; i >= 0; i--) {

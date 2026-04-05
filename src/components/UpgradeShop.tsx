@@ -1,6 +1,7 @@
 import React from 'react';
 import { Upgrades, UpgradeKey, UPGRADE_DEFS as SHARED_UPGRADES, OVEN_UPGRADE_COSTS, INITIAL_OVEN_POSITIONS, ADDITIONAL_OVEN_POSITIONS } from '../types/game';
 import { loadProfile } from '../utils/profile';
+import { TABLE_COSTS, MAX_TABLES } from '../../shared/constants';
 
 const UPGRADE_UI: { id: UpgradeKey; icon: string; name: string; desc: string; requiresDish?: string }[] = [
     { id: 'patience',      icon: '⏳', name: 'Müşteri Sabrı',        desc: 'Müşteriler daha uzun bekler' },
@@ -44,8 +45,6 @@ export const UpgradeShop: React.FC<Props> = ({
     const canBuyOven = ovenCount < maxOvens;
     const ovenIndex = ovenCount - INITIAL_OVEN_POSITIONS.length;
     const ovenCost = canBuyOven ? OVEN_UPGRADE_COSTS[ovenIndex] : 0;
-    const TABLE_COSTS = [100, 150, 200, 250, 300, 350, 400, 450, 500];
-    const MAX_TABLES = 15;
     const canBuyTable = tableCount < MAX_TABLES;
     const tableCost = canBuyTable ? TABLE_COSTS[Math.min(tableCount - 6, TABLE_COSTS.length - 1)] : 0;
     const earnedCoins = Math.max(5, Math.floor(score * 0.1));

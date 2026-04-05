@@ -1,7 +1,6 @@
 import { WashingSink } from "../types/game";
 import { drawProgressBar } from './rendererUtils';
-
-const WASH_TICKS = 60;
+import { WASH_TICKS } from '../../shared/constants';
 
 export function drawSinks(
   ctx: CanvasRenderingContext2D,

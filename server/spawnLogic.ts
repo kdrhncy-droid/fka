@@ -6,9 +6,7 @@ import {
 } from "../shared/types.js";
 import { DIALOGUES } from "../shared/dialogues.js";
 import { getCardMultipliers } from "./cardLogic.js";
-
-const DOOR_X = 640;
-const DOOR_ENTRY_Y = GAME_HEIGHT - 20;
+import { DOOR_X, DOOR_ENTRY_Y } from "../shared/constants.js";
 
 function patLimit(lv: number, day: number, playerCount: number) {
   const basePatience = playerCount === 1 ? 1500 : 1200;

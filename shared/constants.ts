@@ -50,6 +50,18 @@ export const SERVICE_WINDOW_R = 90;
 export const WALL_Y1 = 340;
 export const WALL_Y2 = 380;
 
+export const DOOR_X = 640;           // Kapı merkezi x koordinatı
+export const DOOR_ENTRY_Y = 850;     // Müşteri içeri girerken başlangıç y (GAME_HEIGHT - 20)
+
+export const INTERACT_R = 110;       // Genel etkileşim yarıçapı
+export const COOK_R = 145;           // Fırın etkileşim yarıçapı (daha büyük)
+export const SERVE_R = 125;          // Servis etkileşim yarıçapı
+
+export const TABLE_COSTS = [100, 150, 200, 250, 300, 350, 400, 450, 500];
+export const MAX_TABLES = 15;
+
+
+
 
 
 
