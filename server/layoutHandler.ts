@@ -1,6 +1,7 @@
 import { Socket, Server } from "socket.io";
 import { GameState, GRID_CELL_SIZE, GAME_WIDTH, GAME_HEIGHT, TablePosition, getTableDims, WALL_Y1, WALL_Y2 } from "../shared/types.js";
 import { moveStation } from "./stationUtils.js";
+import { isStationUnlocked } from "../shared/stationRegistry.js";
 
 function snapToGrid(x: number, y: number): { x: number; y: number } {
   const col = Math.floor(x / GRID_CELL_SIZE);
@@ -79,21 +80,7 @@ export function registerLayoutHandler(
     if (!(stationId in gs.stationLayout)) return;
 
     // Unlock edilmemiş yemeklere ait istasyonları kilitleme
-    const LOCKED_DISH_STATIONS: Record<string, string> = {
-      'fryer1':           '🍟',
-      'fridge1':          '🥤',
-      'cakebaker1':       '🍰',
-      'coffee1':          '☕',
-      'ingredient_🥔':    '🍟',
-      'ingredient_🧁':    '🍰',
-      'ingredient_🍢':    '🌯',
-      'ingredient_🍞':    '🍕',
-      'ingredient_🥘':    '🍜',
-      'ingredient_🥩':    '🍔',
-      'ingredient_🥬':    '🥗',
-    };
-    const requiredDish = LOCKED_DISH_STATIONS[stationId];
-    if (requiredDish && !gs.unlockedDishes.includes(requiredDish)) return;
+    if (!isStationUnlocked(stationId, gs.unlockedDishes)) return;
 
     // Zaten kilitliyse reddet
     if (gs.lockedStations[stationId]) {

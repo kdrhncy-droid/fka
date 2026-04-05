@@ -3,6 +3,7 @@ import {
   DIRTY_TRAY_POS, SINK_STATION, SERVICE_WINDOW_SLOTS, SERVICE_WINDOW_R,
   RECIPE_DEFS,
 } from "../types/game";
+import { isStationUnlocked, isIngredientUnlocked } from '../../shared/stationRegistry';
 
 const INTERACT_R = 110;
 const COOK_R = 145;
@@ -71,8 +72,8 @@ export function getNearestInteractable(px: number, py: number, gs: GameState, la
   });
 
 
-  // Fritözler — sadece 🍟 unlock edilmişse
-  if (gs.unlockedDishes?.includes('🍟')) {
+  // Fritözler
+  if (isStationUnlocked('fryer1', gs.unlockedDishes ?? [])) {
     gs.fryers?.forEach(f => {
       const x = gs.stationLayout?.[f.id]?.x ?? f.x;
       const y = gs.stationLayout?.[f.id]?.y ?? f.y;
@@ -80,8 +81,8 @@ export function getNearestInteractable(px: number, py: number, gs: GameState, la
     });
   }
 
-  // Buzdolapları — sadece 🥤 unlock edilmişse
-  if (gs.unlockedDishes?.includes('🥤')) {
+  // Buzdolapları
+  if (isStationUnlocked('fridge1', gs.unlockedDishes ?? [])) {
     gs.fridges?.forEach(f => {
       const x = gs.stationLayout?.[f.id]?.x ?? f.x;
       const y = gs.stationLayout?.[f.id]?.y ?? f.y;
@@ -89,8 +90,8 @@ export function getNearestInteractable(px: number, py: number, gs: GameState, la
     });
   }
 
-  // Pasta fırınları — sadece 🍰 unlock edilmişse
-  if (gs.unlockedDishes?.includes('🍰')) {
+  // Pasta fırınları
+  if (isStationUnlocked('cakebaker1', gs.unlockedDishes ?? [])) {
     gs.cakeBakers?.forEach(c => {
       const x = gs.stationLayout?.[c.id]?.x ?? c.x;
       const y = gs.stationLayout?.[c.id]?.y ?? c.y;
@@ -98,8 +99,8 @@ export function getNearestInteractable(px: number, py: number, gs: GameState, la
     });
   }
 
-  // Kahve makineleri — sadece ☕ unlock edilmişse
-  if (gs.unlockedDishes?.includes('☕')) {
+  // Kahve makineleri
+  if (isStationUnlocked('coffee1', gs.unlockedDishes ?? [])) {
     gs.coffeeMachines?.forEach(c => {
       const x = gs.stationLayout?.[c.id]?.x ?? c.x;
       const y = gs.stationLayout?.[c.id]?.y ?? c.y;
@@ -119,17 +120,12 @@ export function getNearestInteractable(px: number, py: number, gs: GameState, la
     if (c.isSeated && !c.isEating) addCandidate(c.seatX, c.seatY, SERVE_R, 'customer', c.id);
   });
 
-  // Malzemeler — sadece unlock edilmiş yemeklerin malzemeleri
+  // Malzemeler
   INGREDIENTS.forEach(ing => {
     const recipeKey = (ing.key in RECIPE_DEFS) ? ing.key : `CHOPPED_${ing.key}`;
     const recipe = RECIPE_DEFS[recipeKey as keyof typeof RECIPE_DEFS];
-    // Fırın tarifi varsa o yemek unlock edilmişse göster
     if (recipe && !gs.unlockedDishes?.includes(recipe.output)) return;
-    // 🥔 patates — 🍟 unlock edilmişse
-    if (ing.key === '🥔' && !gs.unlockedDishes?.includes('🍟')) return;
-    // 🧁 tatlı hamuru — 🍰 unlock edilmişse
-    if (ing.key === '🧁' && !gs.unlockedDishes?.includes('🍰')) return;
-    // Hiç yemek açılmamışsa malzeme etkileşime kapalı
+    if (!isIngredientUnlocked(ing.key, gs.unlockedDishes ?? [])) return;
     if (!recipe && !gs.unlockedDishes?.length) return;
     const dynPos = gs.stationLayout?.[`ingredient_${ing.key}`];
     addCandidate(dynPos?.x ?? ing.pos.x, dynPos?.y ?? ing.pos.y, INTERACT_R, 'ingredient', ing.key);

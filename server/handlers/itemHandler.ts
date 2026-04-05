@@ -5,6 +5,7 @@ import {
   DRINK_ITEM
 } from "../../shared/types.js";
 import { getStationPos } from './utils.js';
+import { isStationUnlocked } from '../../shared/stationRegistry.js';
 
 const INTERACT_R = 110;
 
@@ -100,8 +101,7 @@ export const handlePlateStack: InteractionHandler = ({ gs, p, px, py, snd }) => 
 
 
 export const handleFridges: InteractionHandler = ({ gs, p, px, py, snd }) => {
-  if (!gs.fridges) return false;
-  if (!gs.unlockedDishes.includes(DRINK_ITEM)) return false;
+  if (!gs.fridges || !isStationUnlocked('fridge1', gs.unlockedDishes)) return false;
   for (const fridge of gs.fridges) {
     const { x: dynX, y: dynY } = getStationPos(gs, fridge);
     if (Math.hypot(px - dynX, py - dynY) < INTERACT_R) {

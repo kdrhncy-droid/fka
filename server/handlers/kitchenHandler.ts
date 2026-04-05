@@ -4,6 +4,7 @@ import {
   CHOPPABLE, CHOP_PREFIX, isTray, getTrayItems, createTray, INGREDIENTS, RECIPE_DEFS, MAX_TRAY_CAPACITY
 } from "../../shared/types.js";
 import { getStationPos } from './utils.js';
+import { isIngredientUnlocked, isStationUnlocked } from '../../shared/stationRegistry.js';
 
 const COOK_R = 145;
 const INTERACT_R = 110;
@@ -47,7 +48,7 @@ export const handleCookStations: InteractionHandler = ({ gs, p, px, py, snd }) =
 };
 
 export const handleFryers: InteractionHandler = ({ gs, p, px, py, snd }) => {
-  if (!gs.fryers) return false;
+  if (!gs.fryers || !isStationUnlocked('fryer1', gs.unlockedDishes)) return false;
   for (const fryer of gs.fryers) {
     const { x: dynX, y: dynY } = getStationPos(gs, fryer);
     if (Math.hypot(px - dynX, py - dynY) < INTERACT_R) {
@@ -78,7 +79,7 @@ export const handleFryers: InteractionHandler = ({ gs, p, px, py, snd }) => {
 };
 
 export const handleCakeBakers: InteractionHandler = ({ gs, p, px, py, snd }) => {
-  if (!gs.cakeBakers) return false;
+  if (!gs.cakeBakers || !isStationUnlocked('cakebaker1', gs.unlockedDishes)) return false;
   for (const baker of gs.cakeBakers) {
     const { x: dynX, y: dynY } = getStationPos(gs, baker);
     if (Math.hypot(px - dynX, py - dynY) < INTERACT_R) {
@@ -105,8 +106,7 @@ export const handleCakeBakers: InteractionHandler = ({ gs, p, px, py, snd }) => 
 };
 
 export const handleCoffeeMachines: InteractionHandler = ({ gs, p, px, py, snd }) => {
-  if (!gs.coffeeMachines) return false;
-  if (!gs.unlockedDishes.includes(COFFEE_ITEM)) return false;
+  if (!gs.coffeeMachines || !isStationUnlocked('coffee1', gs.unlockedDishes)) return false;
   for (const cm of gs.coffeeMachines) {
     const { x: dynX, y: dynY } = getStationPos(gs, cm);
     if (Math.hypot(px - dynX, py - dynY) < INTERACT_R) {
@@ -141,12 +141,7 @@ export const handleIngredients: InteractionHandler = ({ gs, p, px, py, snd }) =>
       if (recipe && !gs.unlockedDishes.includes(recipe.output)) {
         snd("fail"); return true;
       }
-      // 🥔 patates — 🍟 unlock edilmemişse alma
-      if (s.key === '🥔' && !gs.unlockedDishes.includes('🍟')) {
-        snd("fail"); return true;
-      }
-      // 🧁 tatlı hamuru — 🍰 unlock edilmemişse alma
-      if (s.key === '🧁' && !gs.unlockedDishes.includes('🍰')) {
+      if (!isIngredientUnlocked(s.key, gs.unlockedDishes)) {
         snd("fail"); return true;
       }
       if (!p.holding) {

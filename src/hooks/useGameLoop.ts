@@ -32,6 +32,7 @@ import { drawFryer } from '../renderer/drawFryer';
 import { drawFridge } from '../renderer/drawFridge';
 import { drawCakeBaker } from '../renderer/drawCakeBaker';
 import { drawCoffeeMachine } from '../renderer/drawCoffeeMachine';
+import { isStationUnlocked } from '../../shared/stationRegistry';
 
 interface UseGameLoopProps {
   canvasRef: React.RefObject<HTMLCanvasElement>;
@@ -143,7 +144,7 @@ export function useGameLoop({
       }
 
       // Fritözler — sadece 🍟 unlock edilmişse göster
-      if (state.fryers && state.unlockedDishes.includes('🍟')) {
+      if (state.fryers && isStationUnlocked('fryer1', state.unlockedDishes)) {
         for (const fryer of state.fryers) {
           if (movingId === fryer.id) continue;
           const pos = getDynPos(fryer.id, fryer, state.stationLayout);
@@ -152,7 +153,7 @@ export function useGameLoop({
       }
 
       // Buzdolabı — sadece 🥤 unlock edilmişse göster
-      if (state.fridges && state.unlockedDishes.includes('🥤')) {
+      if (state.fridges && isStationUnlocked('fridge1', state.unlockedDishes)) {
         for (const fridge of state.fridges) {
           if (movingId === fridge.id) continue;
           const pos = getDynPos(fridge.id, fridge, state.stationLayout);
@@ -161,7 +162,7 @@ export function useGameLoop({
       }
 
       // Pasta fırını — sadece 🍰 unlock edilmişse göster
-      if (state.cakeBakers && state.unlockedDishes.includes('🍰')) {
+      if (state.cakeBakers && isStationUnlocked('cakebaker1', state.unlockedDishes)) {
         for (const baker of state.cakeBakers) {
           if (movingId === baker.id) continue;
           const pos = getDynPos(baker.id, baker, state.stationLayout);
@@ -170,7 +171,7 @@ export function useGameLoop({
       }
 
       // Kahve makinesi — sadece ☕ unlock edilmişse göster
-      if (state.coffeeMachines && state.unlockedDishes.includes('☕')) {
+      if (state.coffeeMachines && isStationUnlocked('coffee1', state.unlockedDishes)) {
         for (const cm of state.coffeeMachines) {
           if (movingId === cm.id) continue;
           const pos = getDynPos(cm.id, cm, state.stationLayout);
