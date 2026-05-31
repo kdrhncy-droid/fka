@@ -99,6 +99,17 @@ export function drawCustomer(ctx: CanvasRenderingContext2D, customer: Customer, 
     if (st.beatUpShake > 0) ctx.globalAlpha = 0.9;
     if (pers === 'drunk') ctx.rotate(drunkTilt);
 
+    // ✨ Şans müşterisi altın parıltı halkası
+    if (pers === 'lucky') {
+        const pulse = 0.65 + Math.sin(Date.now() / 180) * 0.35;
+        const gy = isSeated ? -20 : -10;
+        const gr = ctx.createRadialGradient(0, gy, 10, 0, gy, 42);
+        gr.addColorStop(0, `rgba(251,191,36,${0.22 * pulse})`);
+        gr.addColorStop(1, 'rgba(251,191,36,0)');
+        ctx.fillStyle = gr;
+        ctx.beginPath(); ctx.arc(0, gy, 42, 0, Math.PI * 2); ctx.fill();
+    }
+
     if (!isSeated) drawShadowEllipse(ctx, 0, 25, 18, 8, 0.2);
 
     ctx.translate(0, -bobY + eatBob);
@@ -326,6 +337,16 @@ export function drawCustomer(ctx: CanvasRenderingContext2D, customer: Customer, 
             ctx.strokeStyle = '#b8860b'; ctx.lineWidth = 2;
             ctx.beginPath(); ctx.arc(hr * 0.35, headY + 2, 6, 0, Math.PI * 2); ctx.stroke();
             ctx.beginPath(); ctx.moveTo(hr * 0.35 + 6, headY + 2); ctx.lineTo(hr * 0.35 + 9, headY + 8); ctx.stroke();
+        } else if (pers === 'lucky') {
+            // 🍀 Dört yapraklı yonca şapka
+            const lcx = 0, lcy = headY - hr - 8;
+            ctx.font = '18px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillText('🍀', lcx, lcy);
+            // Altın parıldayan yıldız
+            const starPulse = 0.7 + Math.sin(Date.now() / 130) * 0.3;
+            ctx.globalAlpha = starPulse;
+            ctx.font = '10px Arial'; ctx.fillText('✨', lcx + 12, lcy - 8);
+            ctx.globalAlpha = 1;
         } else if (pers === 'inspector') {
             // Gözlük
             ctx.strokeStyle = '#444'; ctx.lineWidth = 2;
@@ -342,7 +363,7 @@ export function drawCustomer(ctx: CanvasRenderingContext2D, customer: Customer, 
     if (!isSeated && !st.faceRight) ctx.scale(-1, 1);
 
     // ── UI KATMANI — dialog ve yemek balonu (kafa üstü) ─────────────────────
-    const headTopExtra = (pers === 'vip') ? 18 : (pers === 'thug') ? 14 : 0;
+    const headTopExtra = (pers === 'vip') ? 18 : (pers === 'thug') ? 14 : (pers === 'lucky') ? 16 : 0;
     const uiBaseY = headY - hr - 14 - headTopExtra;
 
     const isAngry = (patience / maxPatience) < 0.3;
