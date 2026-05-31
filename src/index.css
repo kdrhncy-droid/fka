@@ -71,20 +71,39 @@ body {
 
 /* Canvas responsive boyutlandırma */
 .canvas-container {
-  max-width: 100vw;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
 }
 
-/* Mobilde canvas daha dar */
-@media (max-width: 768px) {
-  .canvas-container {
-    max-width: 95vw;
+canvas {
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+}
+
+/* Mobilde canvas'ın daha yakın görünmesi için ölçeklendirme */
+@media (max-width: 1024px) {
+  .canvas-container canvas {
+    /* Mobilde ekranı daha iyi doldurması için hafifçe büyütüyoruz */
+    transform: scale(1.05);
+    transform-origin: center center;
   }
 }
 
-/* Çok küçük ekranlarda daha da dar */
+@media (max-width: 768px) {
+  .canvas-container canvas {
+    transform: scale(1.15);
+  }
+}
+
 @media (max-width: 480px) {
-  .canvas-container {
-    max-width: 92vw;
+  .canvas-container canvas {
+    transform: scale(1.25);
   }
 }
 

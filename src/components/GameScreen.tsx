@@ -214,6 +214,26 @@ export const GameScreen: React.FC<Props> = ({
         showPerfStats: settings.showPerfStats, onPreviewUpdate: updatePreview,
     });
 
+    // High DPI ekranlar için canvas çözünürlüğünü ayarla
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        const updateCanvasSize = () => {
+            const dpr = window.devicePixelRatio || 1;
+            // İç çözünürlüğü sabit tutuyoruz ama DPR ile netliği artırıyoruz
+            // Not: Bu oyunun çizim mantığı GAME_WIDTH/HEIGHT üzerine kurulu olduğu için 
+            // sadece CSS boyutlandırması ve image-rendering ile netlik sağlıyoruz.
+            // Eğer gerçek çözünürlüğü artırırsak tüm çizim koordinatlarını dpr ile çarpmak gerekir.
+            // Bu yüzden burada sadece dpr'ı kontrol edip gerekirse canvas style'ını optimize ediyoruz.
+            canvas.style.imageRendering = dpr > 1 ? 'auto' : 'pixelated';
+        };
+
+        updateCanvasSize();
+        window.addEventListener('resize', updateCanvasSize);
+        return () => window.removeEventListener('resize', updateCanvasSize);
+    }, [canvasRef]);
+
     // ── Render ────────────────────────────────────────────────────────────────
     return (
         <div className="game-screen w-full flex flex-col select-none safe-top safe-bottom" style={{ background: '#545250' }}>
@@ -257,8 +277,8 @@ export const GameScreen: React.FC<Props> = ({
                 )}
 
                 {/* Canvas */}
-                <div className="relative flex items-center justify-center flex-1">
-                    <div className="relative canvas-container" style={{ aspectRatio: '1280/870', maxHeight: '100%', width: '100%' }}>
+                <div className="relative flex items-center justify-center flex-1 overflow-hidden">
+                    <div className="relative canvas-container" style={{ aspectRatio: '1280/870', height: '100%', width: '100%' }}>
                         <canvas
                             ref={canvasRef} width={GAME_WIDTH} height={GAME_HEIGHT}
                             onContextMenu={(e) => e.preventDefault()}
