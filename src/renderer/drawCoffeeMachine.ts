@@ -14,17 +14,15 @@ export function drawCoffeeMachine(ctx: CanvasRenderingContext2D, machine: Coffee
   ctx.fillStyle = '#34d399';
   ctx.font = 'bold 8px Arial';
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillText(`☕${machine.cups}`, x, y - 11);
+  ctx.fillText(`☕∞`, x, y - 11);
 
   // Çıkış noktası
   ctx.fillStyle = '#92400e';
   ctx.beginPath(); ctx.roundRect(x - 8, y + 2, 16, 8, 2); ctx.fill();
   stk(ctx, '#78350f', 1);
 
-  if (machine.cups > 0) {
-    ctx.fillStyle = '#451a03';
-    ctx.beginPath(); ctx.arc(x, y + 14, 3, 0, Math.PI * 2); ctx.fill();
-  }
+  ctx.fillStyle = '#451a03';
+  ctx.beginPath(); ctx.arc(x, y + 14, 3, 0, Math.PI * 2); ctx.fill();
 
   drawLabel(ctx, 'KAHVE', x, y + 18, '#d97706', 8);
 }
