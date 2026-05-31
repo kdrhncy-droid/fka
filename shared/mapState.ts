@@ -86,5 +86,6 @@ function mkClassicMapState(): GameState {
       { id: 'coffee1', x: 100, y: 285, cups: COFFEE_BASE_CAPACITY, maxCups: COFFEE_BASE_CAPACITY },
     ],
     serviceWindow: SERVICE_WINDOW_SLOTS.map(s => ({ id: s.id, item: null })),
+    dailyObjectives: [],
   };
 }
