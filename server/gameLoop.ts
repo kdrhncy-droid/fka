@@ -6,6 +6,7 @@ import {
   CARD_DAYS,
 } from "../shared/types.js";
 import { getCardMultipliers, generateMenuChoices, generateCardChoices } from "./cardLogic.js";
+import { pickDailyObjectives } from "../shared/objectives.js";
 import { MENU_UNLOCK_DAYS } from "../shared/gameData.js";
 import { tryQueueSeat, spawnTick } from "./spawnLogic.js";
 import { customerTick } from "./customerLogic.js";
@@ -38,6 +39,7 @@ export function startDay(gs: GameState): boolean {
   if (gs.dayPhase !== 'prep') return false;
   gs.dayPhase = 'day';
   gs.dayTimer = DAY_TICKS;
+  gs.dailyObjectives = pickDailyObjectives(gs.day);
   return true;
 }
 
@@ -104,11 +106,25 @@ export function gameTick(gs: GameState, io: Server, rid: string) {
       gs.comboTimer = 0;
 
       if (!gs.isGameOver) {
+        // Günlük hedefleri tamamla ve bonus hesapla
+        if (gs.dailyObjectives) {
+          for (const obj of gs.dailyObjectives) {
+            if (obj.type === 'no_life_loss' && !obj.failed) {
+              obj.completed = true;
+              obj.progress = 1;
+            }
+          }
+          const objectiveBonus = gs.dailyObjectives
+            .filter(o => o.completed && !o.failed)
+            .reduce((sum, o) => sum + o.bonusCoins, 0);
+          if (objectiveBonus > 0) gs.score += objectiveBonus;
+        }
+
         if (gs.pendingRevengeScene) {
           gs.pendingRevengeScene = false;
-          io.to(rid).emit("revengeScene", { day: gs.day, score: gs.score, lives: gs.lives });
+          io.to(rid).emit("revengeScene", { day: gs.day, score: gs.score, lives: gs.lives, dailyObjectives: gs.dailyObjectives ?? [] });
         } else {
-          io.to(rid).emit("dayEnd", { day: gs.day, score: gs.score, lives: gs.lives });
+          io.to(rid).emit("dayEnd", { day: gs.day, score: gs.score, lives: gs.lives, dailyObjectives: gs.dailyObjectives ?? [] });
         }
 
         if (MENU_UNLOCK_DAYS.includes(gs.day + 1)) {
