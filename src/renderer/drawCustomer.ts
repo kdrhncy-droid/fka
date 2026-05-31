@@ -44,7 +44,7 @@ function fallbackHair(id: string): string {
     return FALLBACK_HAIR[h % FALLBACK_HAIR.length];
 }
 
-export function drawCustomer(ctx: CanvasRenderingContext2D, customer: Customer, tableLayout?: Record<string, { id: string; x: number; y: number }>, hidePatience = false, hidePersonality = false) {
+export function drawCustomer(ctx: CanvasRenderingContext2D, customer: Customer, tableLayout?: Record<string, { id: string; x: number; y: number }>, hidePatience = false, hidePersonality = false, dialogYOffset = 0) {
     const { id, x, y, seatX, seatY, wants, patience, maxPatience, isSeated, isEating, beatUpTimer, currentDialog } = customer;
     const pers = hidePersonality ? 'polite' : customer.personality;
     const shape = customer.bodyShape ?? 1;
@@ -371,11 +371,11 @@ export function drawCustomer(ctx: CanvasRenderingContext2D, customer: Customer, 
 
     // Dialog balonu — her zaman kafa üstünde
     if (currentDialog) {
-        drawDialogBubble(ctx, currentDialog, angryShake, uiBaseY - 4, '#fff', isAngry ? '#ef4444' : bodyColor, '#222');
+        drawDialogBubble(ctx, currentDialog, angryShake, uiBaseY - 4 - dialogYOffset, '#fff', isAngry ? '#ef4444' : bodyColor, '#222');
     } else if (wants && isSeated && !isEating) {
         // Yemek balonu
         const bx = angryShake;
-        const by = uiBaseY - 18;
+        const by = uiBaseY - 18 - dialogYOffset;
         const bubbleR = 14;
         ctx.fillStyle = isAngry && Math.floor(Date.now() / 200) % 2 === 0 ? '#fee2e2' : '#fff';
         ctx.beginPath(); ctx.arc(bx, by, bubbleR, 0, Math.PI * 2); ctx.fill();

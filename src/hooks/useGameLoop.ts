@@ -180,7 +180,27 @@ export function useGameLoop({
       }
 
 
-      state.customers.forEach((c: import('../types/game').Customer) => drawCustomer(ctx, c, state.tableLayout, state.hidePatience ?? false, state.hidePersonality ?? false));
+      // Painter's algorithm: Y'e göre sırala (arkadaski müşteri önce çizilir)
+      const sortedCustomers = [...state.customers].sort(
+        (a: import('../types/game').Customer, b: import('../types/game').Customer) => a.y - b.y
+      );
+
+      // Yakın müşterilerin dialog balonları üst üste binmesin diye Y offset hesapla
+      const dialogOffsets = new Map<string, number>();
+      sortedCustomers.forEach((c: import('../types/game').Customer, idx: number) => {
+        if (!c.currentDialog && !(c.wants && c.isSeated && !c.isEating)) return;
+        for (let j = 0; j < idx; j++) {
+          const other = sortedCustomers[j];
+          if (!other.currentDialog && !(other.wants && other.isSeated && !other.isEating)) continue;
+          if (Math.abs(c.x - other.x) < 100 && Math.abs(c.y - other.y) < 85) {
+            dialogOffsets.set(c.id, (dialogOffsets.get(c.id) ?? 0) + 46);
+          }
+        }
+      });
+
+      sortedCustomers.forEach((c: import('../types/game').Customer) =>
+        drawCustomer(ctx, c, state.tableLayout, state.hidePatience ?? false, state.hidePersonality ?? false, dialogOffsets.get(c.id) ?? 0)
+      );
       if (frameId % 150 === 0) {
         const activeIds = new Set<string>(state.customers.map((c: import('../types/game').Customer) => c.id));
         cleanupCRS(activeIds);
