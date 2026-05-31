@@ -1,4 +1,5 @@
 import { Socket } from "socket.io-client";
+import { playSound } from "../utils/audio";
 
 export interface FloatingText {
   x: number; y: number;
@@ -30,11 +31,19 @@ export interface ServiceParticle {
   scale: number;
 }
 
+export interface ScreenFlash {
+  life: number;
+  maxLife: number;
+  color: string;
+}
+
 export function setupGameEffects(socket: Socket | null) {
   const floatingTexts: FloatingText[] = [];
   const punchParticles: PunchParticle[] = [];
   const sparkleParticles: SparkleParticle[] = [];
   const serviceParticles: ServiceParticle[] = [];
+  // Tek seferlik ekran flash — mutable nesne olarak tutulur
+  const screenFlash: ScreenFlash[] = [];
 
   const spawnServiceEffect = (x: number, y: number, effect: string) => {
     const configs: Record<string, { emojis: string[]; count: number; speed: number; life: number }> = {
@@ -87,6 +96,20 @@ export function setupGameEffects(socket: Socket | null) {
       color: data.count >= 8 ? '#f97316' : data.count >= 5 ? '#eab308' : '#f59e0b',
       size: data.count >= 5 ? 24 : 20,
     });
+
+    // Combo milestone floating label + ses
+    if (data.count === 3) {
+      floatingTexts.push({ x: data.x, y: data.y - 65, text: 'COMBO! 🔥', life: 70, color: '#fbbf24', size: 18 });
+      playSound(null, 'combo3');
+    } else if (data.count === 5) {
+      floatingTexts.push({ x: data.x, y: data.y - 65, text: 'ON FIRE! 🔥🔥', life: 80, color: '#f97316', size: 22 });
+      playSound(null, 'combo5');
+    } else if (data.count === 8) {
+      floatingTexts.push({ x: data.x, y: data.y - 65, text: '🔥🔥🔥 UNSTOPPABLE!', life: 100, color: '#ef4444', size: 26 });
+      playSound(null, 'combo8');
+      // Ekran flash — altın/turuncu
+      screenFlash.push({ life: 18, maxLife: 18, color: '#f97316' });
+    }
   };
 
   // ✨ Yemek pişince sparkle
@@ -128,8 +151,22 @@ export function setupGameEffects(socket: Socket | null) {
       color: '#ef4444',
       size: data.amount >= 2 ? 22 : 18,
     });
+    // Kırmızı ekran flash — can kaybı
+    screenFlash.push({ life: 14, maxLife: 14, color: '#ef4444' });
   };
 
+  // 🚨 Acil müşteri uyarısı — sabır kritik seviyede
+  const handleUrgentCustomer = (data: { x: number; y: number }) => {
+    playSound(null, 'urgent');
+    floatingTexts.push({
+      x: data.x,
+      y: data.y - 30,
+      text: '⚠️',
+      life: 55,
+      color: '#ef4444',
+      size: 22,
+    });
+  };
 
   if (socket) {
     socket.on("tipCollected", handleTip);
@@ -139,6 +176,7 @@ export function setupGameEffects(socket: Socket | null) {
     socket.on("happyLeave", handleHappyLeave);
     socket.on("serviceEffect", handleServiceEffect);
     socket.on("loseHeart", handleLoseHeart);
+    socket.on("urgentCustomer", handleUrgentCustomer);
   }
 
   const cleanup = () => {
@@ -150,10 +188,11 @@ export function setupGameEffects(socket: Socket | null) {
       socket.off("happyLeave", handleHappyLeave);
       socket.off("serviceEffect", handleServiceEffect);
       socket.off("loseHeart", handleLoseHeart);
+      socket.off("urgentCustomer", handleUrgentCustomer);
     }
   };
 
-  return { floatingTexts, punchParticles, sparkleParticles, serviceParticles, cleanup };
+  return { floatingTexts, punchParticles, sparkleParticles, serviceParticles, screenFlash, cleanup };
 }
 
 export function renderFloatingTexts(ctx: CanvasRenderingContext2D, texts: FloatingText[]) {
@@ -235,5 +274,26 @@ export function renderServiceParticles(ctx: CanvasRenderingContext2D, particles:
     p.rot += p.rotV;
     p.life--;
     if (p.life <= 0) particles.splice(i, 1);
+  }
+}
+
+export function renderScreenFlash(
+  ctx: CanvasRenderingContext2D,
+  flashes: ScreenFlash[],
+  w: number,
+  h: number
+) {
+  for (let i = flashes.length - 1; i >= 0; i--) {
+    const f = flashes[i];
+    const t = f.life / f.maxLife;
+    // Sinüs eğrisi: hızlı çıkış, yavaş sönme — daha organik his
+    const alpha = Math.sin(t * Math.PI) * 0.28;
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = f.color;
+    ctx.fillRect(0, 0, w, h);
+    ctx.restore();
+    f.life--;
+    if (f.life <= 0) flashes.splice(i, 1);
   }
 }

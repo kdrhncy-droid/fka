@@ -92,6 +92,11 @@ export function customerTick(gs: GameState, io: Server, rid: string) {
 
         if (!c.isEating && c.wants) {
           c.patience -= actualDrain;
+          // Sabır %15'e düştüğünde bir kez acil uyarı gönder
+          if (!c.urgentEmitted && c.patience <= c.maxPatience * 0.15 && c.patience > 0) {
+            c.urgentEmitted = true;
+            io.to(rid).emit('urgentCustomer', { x: c.seatX, y: c.seatY });
+          }
           if (c.patience <= 0) {
             gs.score = Math.max(0, gs.score - 10);
             gs.lives = Math.max(0, gs.lives - 1);

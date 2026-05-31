@@ -55,6 +55,7 @@ export interface Customer {
 
     phase?: 'entering' | 'seating' | 'seated';
     doorX?: number;
+    urgentEmitted?: boolean;
 
 }
 

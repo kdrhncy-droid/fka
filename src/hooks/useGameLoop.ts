@@ -11,7 +11,7 @@ import { drawCustomer, cleanupCRS } from "../renderer/drawCustomer";
 import { drawPlayer } from "../renderer/drawPlayer";
 import { drawCookStation } from "../renderer/drawCookStation";
 import { movePlayer } from "./usePlayerMovement";
-import { setupGameEffects, renderFloatingTexts, renderPunchParticles, renderSparkleParticles, renderServiceParticles } from "./useGameEffects";
+import { setupGameEffects, renderFloatingTexts, renderPunchParticles, renderSparkleParticles, renderServiceParticles, renderScreenFlash } from "./useGameEffects";
 import { updateProximityAudio } from "./useProximityAudio";
 import { drawLayoutPreview, LayoutEditorState } from '../renderer/drawLayoutEditor';
 import { drawDirtyTrayBasket } from '../renderer/drawDirtyTrayBasket';
@@ -69,7 +69,7 @@ export function useGameLoop({
     let frameId = 0;
     let lastFrameTime = 0;
     const lastEmitRef = { current: 0 };
-    const { floatingTexts, punchParticles, sparkleParticles, serviceParticles, cleanup: cleanupEffects } = setupGameEffects(socket);
+    const { floatingTexts, punchParticles, sparkleParticles, serviceParticles, screenFlash, cleanup: cleanupEffects } = setupGameEffects(socket);
 
     // Perf stats
     const fpsBuffer: number[] = [];
@@ -213,6 +213,7 @@ export function useGameLoop({
       renderPunchParticles(ctx, punchParticles);
       renderSparkleParticles(ctx, sparkleParticles);
       renderServiceParticles(ctx, serviceParticles);
+      renderScreenFlash(ctx, screenFlash, canvas.width, canvas.height);
 
       // ── Işıklandırma Sistemi ──────────────────────────────────────────────
       drawLighting(ctx, state.dayPhase, state.dayTimer);

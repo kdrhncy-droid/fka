@@ -111,6 +111,39 @@ export function playSound(_audioCtxRef: any, type: string) {
       playNote(ctx, 180, now, 0.05, 0.12, 'triangle');
       break;
     }
+    case 'combo3': {
+      // 3x combo — kısa, coşkulu yükselen fanfar
+      playNote(ctx, 523, now, 0.07, 0.10, 'triangle');       // C5
+      playNote(ctx, 659, now + 0.07, 0.07, 0.10, 'triangle'); // E5
+      playNote(ctx, 784, now + 0.14, 0.12, 0.12, 'sine');     // G5
+      break;
+    }
+    case 'combo5': {
+      // 5x combo — daha heyecanlı, 4 nota
+      playNote(ctx, 523, now, 0.06, 0.12, 'triangle');        // C5
+      playNote(ctx, 659, now + 0.06, 0.06, 0.12, 'triangle'); // E5
+      playNote(ctx, 784, now + 0.12, 0.06, 0.14, 'triangle'); // G5
+      playNote(ctx, 1047, now + 0.18, 0.20, 0.16, 'sine');    // C6
+      break;
+    }
+    case 'combo8': {
+      // 8x combo — epik fanfar + bas vuruşu
+      playNote(ctx, 131, now, 0.15, 0.18, 'triangle');         // C3 bas
+      playNote(ctx, 523, now, 0.07, 0.14, 'triangle');         // C5
+      playNote(ctx, 659, now + 0.07, 0.06, 0.14, 'triangle');  // E5
+      playNote(ctx, 784, now + 0.13, 0.06, 0.16, 'triangle');  // G5
+      playNote(ctx, 1047, now + 0.19, 0.07, 0.18, 'sine');     // C6
+      playNote(ctx, 1319, now + 0.26, 0.30, 0.20, 'sine');     // E6 — doruk nota
+      break;
+    }
+    case 'urgent': {
+      // Acil uyarı — hızlı titreyen yüksek frekanslı çift nota
+      playNote(ctx, 880, now, 0.06, 0.10, 'triangle');         // A5
+      playNote(ctx, 1100, now + 0.07, 0.06, 0.10, 'triangle'); // ~C#6
+      playNote(ctx, 880, now + 0.14, 0.06, 0.09, 'triangle');  // tekrar
+      playNote(ctx, 1100, now + 0.21, 0.10, 0.09, 'triangle');
+      break;
+    }
     default:
       break;
   }

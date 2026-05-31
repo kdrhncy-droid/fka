@@ -27,6 +27,7 @@ export interface PlayerProfile {
   unlockedAchievements: string[];
   perfectDays: number;
   maxCombo: number;
+  highScore: number;
 }
 
 const DEFAULT: PlayerProfile = {
@@ -53,6 +54,7 @@ const DEFAULT: PlayerProfile = {
   unlockedAchievements: [],
   perfectDays: 0,
   maxCombo: 0,
+  highScore: 0,
 };
 
 export function loadProfile(): PlayerProfile {

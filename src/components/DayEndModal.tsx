@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DayEndSummary } from '../hooks/useSocket';
+import { loadProfile, saveProfile } from '../utils/profile';
 
 interface Props {
     summary: DayEndSummary;
@@ -8,6 +9,25 @@ interface Props {
 
 export const DayEndModal: React.FC<Props> = ({ summary, onClose }) => {
     const [open, setOpen] = useState(false);
+
+    const profile = loadProfile();
+    const prevHighScore = profile.highScore ?? 0;
+    const isNewRecord = summary.score > prevHighScore;
+    const isPerfectDay = summary.lives >= 3;
+    const gapToRecord = prevHighScore - summary.score;
+
+    // Rekor güncellemesi — modal açılmadan önce bir kez yap
+    useEffect(() => {
+        if (isNewRecord) {
+            saveProfile({ highScore: summary.score });
+        }
+    }, []);
+
+    // Gün bitince modal otomatik açılır
+    useEffect(() => {
+        const t = setTimeout(() => setOpen(true), 300);
+        return () => clearTimeout(t);
+    }, []);
 
     const hearts = Array.from({ length: 3 }, (_, i) => i < summary.lives ? '❤️' : '🖤');
 
@@ -30,13 +50,14 @@ export const DayEndModal: React.FC<Props> = ({ summary, onClose }) => {
             {open && (
                 <div
                     className="fixed inset-0 z-50 flex items-center justify-center"
-                    style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}
+                    style={{ background: 'rgba(0,0,0,0.72)', backdropFilter: 'blur(6px)' }}
                     onClick={handleClose}
                 >
                     <div
-                        className="bg-stone-900 border border-stone-700 rounded-3xl p-8 flex flex-col items-center gap-5 shadow-2xl max-h-[90vh] overflow-y-auto w-[90%] sm:w-auto"
+                        className="bg-stone-900 border border-stone-700 rounded-3xl p-8 flex flex-col items-center gap-5 shadow-2xl max-h-[90vh] overflow-y-auto w-[90%] sm:w-auto min-w-[280px]"
                         onClick={e => e.stopPropagation()}
                     >
+                        {/* Başlık */}
                         <div className="text-center">
                             <div className="text-5xl mb-2">🌙</div>
                             <h2 className="text-2xl font-black uppercase tracking-widest text-stone-100">
@@ -44,10 +65,45 @@ export const DayEndModal: React.FC<Props> = ({ summary, onClose }) => {
                             </h2>
                         </div>
 
+                        {/* YENİ REKOR banner */}
+                        {isNewRecord && (
+                            <div
+                                className="w-full rounded-2xl px-4 py-3 text-center animate-pulse"
+                                style={{ background: 'linear-gradient(135deg, #f59e0b, #f97316)', boxShadow: '0 0 24px #f97316aa' }}
+                            >
+                                <div className="text-2xl font-black text-stone-950 tracking-widest">
+                                    🏆 YENİ REKOR!
+                                </div>
+                                <div className="text-sm font-bold text-stone-800 mt-1">
+                                    Önceki: ${prevHighScore} → Yeni: ${summary.score}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* MÜKEMMEL GÜN banner */}
+                        {isPerfectDay && (
+                            <div
+                                className="w-full rounded-2xl px-4 py-3 text-center"
+                                style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', boxShadow: '0 0 20px #8b5cf688' }}
+                            >
+                                <div className="text-xl font-black text-white tracking-widest">
+                                    ⭐ MÜKEMMEL GÜN
+                                </div>
+                                <div className="text-xs font-semibold text-violet-200 mt-1">
+                                    Hiç can kaybetmeden tamamladın!
+                                </div>
+                            </div>
+                        )}
+
+                        {/* İstatistikler */}
                         <div className="w-full space-y-3 min-w-[220px]">
                             <div className="flex items-center justify-between bg-stone-800 rounded-xl px-4 py-3">
                                 <span className="text-sm text-stone-400 font-bold">💰 Günlük Ciro</span>
                                 <span className="text-xl font-black text-amber-400">${summary.score}</span>
+                            </div>
+                            <div className="flex items-center justify-between bg-stone-800 rounded-xl px-4 py-3">
+                                <span className="text-sm text-stone-400 font-bold">🏆 En Yüksek</span>
+                                <span className="text-lg font-black text-amber-300">${isNewRecord ? summary.score : prevHighScore}</span>
                             </div>
                             <div className="flex items-center justify-between bg-stone-800 rounded-xl px-4 py-3">
                                 <span className="text-sm text-stone-400 font-bold">❤️ Can</span>
@@ -55,11 +111,22 @@ export const DayEndModal: React.FC<Props> = ({ summary, onClose }) => {
                             </div>
                         </div>
 
+                        {/* "Neredeyse çıktı" satırı */}
+                        {!isNewRecord && prevHighScore > 0 && gapToRecord > 0 && (
+                            <div className="w-full bg-stone-800 rounded-xl px-4 py-2 text-center">
+                                <span className="text-xs text-stone-400 font-semibold">
+                                    Rekora sadece{' '}
+                                    <span className="text-amber-400 font-black">${gapToRecord}</span>
+                                    {' '}kaldı! 💪
+                                </span>
+                            </div>
+                        )}
+
                         <button
                             onClick={handleClose}
                             className="w-full rounded-xl bg-amber-500 hover:bg-amber-400 px-6 py-3 text-sm font-black uppercase tracking-widest text-stone-950 active:scale-95 transition-all"
                         >
-                            Kapat ✕
+                            Devam Et →
                         </button>
                     </div>
                 </div>
