@@ -125,7 +125,9 @@ export function spawnTick(gs: GameState, io: Server, rid: string) {
       let pers = personalities[Math.floor(Math.random() * personalities.length)] as Personality;
 
       const roll = Math.random();
-      if (gs.day >= 5 && roll < 0.10) pers = 'vip';
+      const luckyRoll = Math.random();
+      if (gs.day >= 2 && luckyRoll < 0.05) pers = 'lucky';
+      else if (gs.day >= 5 && roll < 0.10) pers = 'vip';
       else if (gs.day >= 3 && roll < 0.25) pers = 'drunk';
       else if (gs.day >= 7 && roll < 0.08) pers = 'inspector';
 
@@ -146,6 +148,7 @@ export function spawnTick(gs: GameState, io: Server, rid: string) {
         vip: ['#b8860b', '#d4a017', '#92700a', '#c9a227'],
         drunk: ['#6b3a1f', '#7c4a2a', '#8b4513', '#5c2e0e'],
         inspector: ['#e8e8e8', '#d1d5db', '#9ca3af', '#f3f4f6'],
+        lucky: ['#16a34a', '#15803d', '#14532d', '#166534'],
       };
       const bodyShape = bodyShapes[Math.floor(Math.random() * bodyShapes.length)];
       const bodyColor = bodyColors[pers][Math.floor(Math.random() * bodyColors[pers].length)];
