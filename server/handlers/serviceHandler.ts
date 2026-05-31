@@ -126,12 +126,17 @@ export const handleCustomers: InteractionHandler = ({ gs, p, px, py, snd, io, ro
       if (correctFood || drunkAccept) {
         // Doğru servis
         let tip = earn(gs.upgrades.earnings, c.maxPatience, c.patience);
+        if (c.personality === 'lucky') tip = Math.round(tip * 4);
         if (c.personality === 'vip') tip = Math.round(tip * 3);
         if (isDrunk) tip = Math.round(tip * Math.random() * 3);
         if (c.personality === 'inspector') { gs.score += 50; io.to(roomId).emit('inspectorBonus', { x: c.seatX, y: c.seatY }); }
         startEating(c, p, tip, null);
         if (p.serviceEffect) io.to(roomId).emit('serviceEffect', { x: c.seatX, y: c.seatY, effect: p.serviceEffect });
         applyCombo(gs, io, roomId, c.seatX, c.seatY, tip);
+        // Şans müşterisi jackpot efekti
+        if (c.personality === 'lucky') {
+          io.to(roomId).emit('jackpot', { x: c.seatX, y: c.seatY, amount: tip });
+        }
         // Hedef takibi
         gs.dailyObjectives?.forEach(obj => {
           if (obj.completed || obj.failed) return;
