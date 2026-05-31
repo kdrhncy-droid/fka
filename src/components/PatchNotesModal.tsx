@@ -21,7 +21,7 @@ export const PatchNotesModal: React.FC<Props> = ({ onClose }) => {
             <div className="flex items-center justify-between px-5 py-3 border-b border-stone-700/50 flex-shrink-0">
                 <div className="flex items-center gap-3">
                     <span className="text-amber-400 font-black text-base">📜 Oyun Rehberi</span>
-                    <span className="bg-amber-400/10 text-amber-400 text-[10px] font-black px-2 py-0.5 rounded-full border border-amber-400/20">v2.5.0</span>
+                    <span className="bg-amber-400/10 text-amber-400 text-[10px] font-black px-2 py-0.5 rounded-full border border-amber-400/20">v2.6.0</span>
                 </div>
                 <button onClick={onClose}
                     className="w-9 h-9 bg-stone-800 hover:bg-stone-700 text-stone-400 hover:text-white rounded-xl flex items-center justify-center text-lg transition-all active:scale-90 border border-stone-700">
@@ -56,7 +56,9 @@ export const PatchNotesModal: React.FC<Props> = ({ onClose }) => {
                         {[
                             { title: '🔧 Hazırlık Fazı', text: 'Gün başlamadan önce mutfağı hazırla. İstasyonları taşı (E tuşu), fırınları konumlandır. Hazır olunca "Dükkanı Aç" butonuna bas.' },
                             { title: '☀️ Servis Fazı', text: 'Müşteriler gelir, koltuklara oturur ve sipariş verir. Malzemeyi al → fırına koy → pişince tabağa al → müşteriye servis et. Kirli masaları temizle, kirli tabakları lavaboda yıka.' },
+                            { title: '🪟 Servis Penceresi', text: 'Hazırladığın yemeği servis penceresine bırakabilirsin. Pencerede bekleyen yemek yakındaki müşteriye otomatik servis edilir. Yoğun anlarda hız kazandırır.' },
                             { title: '🌙 Gece Fazı', text: 'Tüm müşteriler gidince gece başlar. Kazandığın parayla upgrade satın al, yeni yemek kilidi aç, fırın ekle veya can al.' },
+                            { title: '🎯 Günlük Hedefler', text: 'Her gün 3 farklı hedef verilir (8+ servis, combo ulaş, can kaybetme, VIP servis et vb.). Tamamlayınca bonus coin kazanırsın. Hedefler üst bardaki ikonlardan takip edilebilir.' },
                         ].map(s => (
                             <div key={s.title} className="bg-stone-800/40 border border-stone-700/50 p-3 rounded-xl">
                                 <div className="text-xs font-black text-amber-300 uppercase tracking-widest mb-1">{s.title}</div>
@@ -68,13 +70,14 @@ export const PatchNotesModal: React.FC<Props> = ({ onClose }) => {
                             <div className="text-xs font-black text-amber-300 uppercase tracking-widest mb-2">🎭 Müşteri Tipleri</div>
                             <div className="space-y-1">
                                 {[
-                                    { icon: '😊', name: 'Kibar', desc: 'Sabırlı. Dövülürse puan kaybı.' },
-                                    { icon: '😤', name: 'Kaba', desc: 'Agresif. Dövülebilir, intikam alabilir.' },
-                                    { icon: '🤪', name: 'Recep', desc: 'Dramatik. %60 intikam şansı.' },
-                                    { icon: '💀', name: 'Thug', desc: 'İntikam grubu olarak gelir.' },
-                                    { icon: '👑', name: 'VIP', desc: 'Sabırsız ama yüksek bahşiş.' },
-                                    { icon: '🍺', name: 'Sarhoş', desc: 'Tutarsız, yanlış yemek kabul eder.' },
-                                    { icon: '🔍', name: 'Müfettiş', desc: 'Sert değerlendirme, düşük bahşiş.' },
+                                    { icon: '😊', name: 'Kibar',     desc: 'Sabırlı. Dövülürse puan kaybı.' },
+                                    { icon: '😤', name: 'Kaba',      desc: 'Agresif. Dövülebilir, intikam alabilir.' },
+                                    { icon: '🤪', name: 'Recep',     desc: 'Dramatik. %60 intikam şansı.' },
+                                    { icon: '💀', name: 'Thug',      desc: 'İntikam grubu olarak gelir.' },
+                                    { icon: '👑', name: 'VIP',       desc: 'Sabırsız ama yüksek bahşiş.' },
+                                    { icon: '🍺', name: 'Sarhoş',    desc: 'Tutarsız, yanlış yemek kabul eder.' },
+                                    { icon: '🔍', name: 'Müfettiş',  desc: 'Sert değerlendirme, düşük bahşiş.' },
+                                    { icon: '🍀', name: 'Şans',      desc: '2. günden itibaren %5 ihtimalle gelir. Altın parıltılı, 2x bahşiş bırakır.' },
                                 ].map(t => (
                                     <div key={t.name} className="flex items-center gap-2 text-xs">
                                         <span className="text-sm w-5 text-center">{t.icon}</span>
@@ -110,16 +113,16 @@ export const PatchNotesModal: React.FC<Props> = ({ onClose }) => {
                     {/* ── YEMEKLER ── */}
                     {tab === 'yemek' && <>
                         {[
-                            { emoji: '🥗', name: 'Salata', ing: '🥬 Sebze → doğra → fırın', time: '0.5 sn', note: 'Başlangıçta açık' },
-                            { emoji: '🍔', name: 'Burger', ing: '🥩 Et → doğra → fırın', time: '1.2 sn', note: 'Başlangıçta açık' },
-                            { emoji: '🍕', name: 'Pizza', ing: '🍞 Hamur → fırın', time: '3 sn', note: 'Gece kilit açılır' },
-                            { emoji: '🌯', name: 'Dürüm', ing: '🍢 Kebap → doğra → fırın', time: '2 sn', note: 'Gece kilit açılır' },
-                            { emoji: '🍜', name: 'Çorba', ing: '🥘 Çorba Malz. → fırın', time: '4 sn', note: 'Gece kilit açılır' },
-                            { emoji: '🍟', name: 'Patates', ing: '🥔 Patates → fritöz', time: '1 sn', note: 'Gece kilit açılır' },
-                            { emoji: '🍰', name: 'Pasta', ing: '🧁 Hamur Tatlı → pasta fırını', time: '4 sn', note: 'Gece kilit açılır' },
-                            { emoji: '☕', name: 'Kahve', ing: 'Kahve makinesi satın al', time: 'Anında', note: 'Makineden direkt' },
-                            { emoji: '🥤', name: 'İçecek', ing: 'Buzdolabı (hazır)', time: 'Anında', note: 'Sürekli yenilenir' },
-                            { emoji: '🌶️', name: 'Acı Sos', ing: 'Pişmiş yemek → Baharat Rafı', time: 'Anında', note: '3. günden sonra' },
+                            { emoji: '🥗', name: 'Salata',  ing: '🥬 Sebze → doğra → fırın',          time: '0.5 sn', note: 'Başlangıçta açık' },
+                            { emoji: '🍔', name: 'Burger',  ing: '🥩 Et → doğra → fırın',             time: '1.2 sn', note: 'Başlangıçta açık' },
+                            { emoji: '🍕', name: 'Pizza',   ing: '🍞 Hamur → fırın',                  time: '3 sn',   note: 'Gece kilit açılır' },
+                            { emoji: '🌯', name: 'Dürüm',   ing: '🍢 Kebap → doğra → fırın',          time: '2 sn',   note: 'Gece kilit açılır' },
+                            { emoji: '🍜', name: 'Çorba',   ing: '🥘 Çorba Malz. → fırın',            time: '4 sn',   note: 'Gece kilit açılır' },
+                            { emoji: '🍟', name: 'Patates', ing: '🥔 Patates → fritöz',               time: '1 sn',   note: 'Gece kilit açılır' },
+                            { emoji: '🍰', name: 'Pasta',   ing: '🧁 Hamur Tatlı → pasta fırını',     time: '4 sn',   note: 'Gece kilit açılır' },
+                            { emoji: '☕', name: 'Kahve',   ing: 'Kahve makinesi satın al',            time: 'Anında', note: 'Makineden direkt' },
+                            { emoji: '🥤', name: 'İçecek',  ing: 'Buzdolabı (hazır)',                 time: 'Anında', note: 'Sürekli yenilenir' },
+                            { emoji: '🌶️', name: 'Acı Sos', ing: 'Pişmiş yemek → Baharat Rafı',      time: 'Anında', note: '3. günden sonra' },
                         ].map(d => (
                             <div key={d.emoji} className="flex items-center gap-2 bg-stone-800/30 border border-stone-700/40 px-3 py-2 rounded-xl">
                                 <span className="text-xl w-7 text-center flex-shrink-0">{d.emoji}</span>
@@ -139,15 +142,17 @@ export const PatchNotesModal: React.FC<Props> = ({ onClose }) => {
                     {/* ── UPGRADELER ── */}
                     {tab === 'upgrade' && <>
                         {[
-                            { icon: '🔥', name: 'Ek Fırın', desc: 'Başlangıçta 1, toplamda 4\'e kadar. Her fırın farklı yemek pişirebilir.' },
-                            { icon: '🛡️', name: 'Güvenli Fırın', desc: 'Lv1: yanma 2x yavaş. Lv2: hiç yanmaz.' },
-                            { icon: '⏳', name: 'Müşteri Sabrı', desc: 'Bekleme süresi uzar. 3 seviye.' },
-                            { icon: '💰', name: 'Servis Kazancı', desc: 'Her servisten +5 ekstra puan. 2 seviye.' },
-                            { icon: '🍽️', name: 'Tabak Yığını', desc: 'Başlangıç tabak kapasitesi artar. 3 seviye.' },
-                            { icon: '❤️', name: 'Ekstra Can', desc: 'Max 3 can. Her can $75.' },
-                            { icon: '⚡', name: 'Fritöz Hızı', desc: 'Patates daha hızlı kızarır. 2 seviye.' },
-                            { icon: '🍰', name: 'Pasta Fırını', desc: 'Pasta için özel makine.' },
-                            { icon: '☕', name: 'Kahve Makinesi', desc: 'Menüye kahve ekler.' },
+                            { icon: '🔥', name: 'Ek Fırın',            desc: 'Başlangıçta 1, toplamda 4\'e kadar. Her fırın farklı yemek pişirebilir.' },
+                            { icon: '🛡️', name: 'Güvenli Fırın',        desc: 'Lv1: yanma 2x yavaş. Lv2: hiç yanmaz.' },
+                            { icon: '⏳', name: 'Müşteri Sabrı',        desc: 'Bekleme süresi uzar. 3 seviye.' },
+                            { icon: '💰', name: 'Servis Kazancı',        desc: 'Her servisten +5 ekstra puan. 2 seviye.' },
+                            { icon: '🍽️', name: 'Tabak Yığını',          desc: 'Başlangıç tabak kapasitesi artar. 3 seviye.' },
+                            { icon: '❤️', name: 'Ekstra Can',            desc: 'Max 3 can. Her can $75.' },
+                            { icon: '⚡', name: 'Fritöz Hızı',           desc: 'Patates daha hızlı kızarır. 2 seviye.' },
+                            { icon: '🍰', name: 'Pasta Fırını',          desc: 'Pasta için özel makine.' },
+                            { icon: '☕', name: 'Kahve Makinesi',        desc: 'Menüye kahve ekler.' },
+                            { icon: '🚿', name: 'Ekstra Lavabo',         desc: 'Yeni lavabo ekler. Max 3 adet.' },
+                            { icon: '🔪', name: 'Ekstra Kesme Tahtası', desc: 'Yeni kesme tahtası ekler. Max 3 adet.' },
                         ].map(u => (
                             <div key={u.name} className="flex items-start gap-2 bg-stone-800/30 border border-stone-700/40 px-3 py-2.5 rounded-xl">
                                 <span className="text-lg mt-0.5 flex-shrink-0">{u.icon}</span>
@@ -165,15 +170,14 @@ export const PatchNotesModal: React.FC<Props> = ({ onClose }) => {
 
                     {/* ── GÜNCELLEMELER ── */}
                     {tab === 'guncelleme' && <>
+
+                        {/* v2.6.0 */}
                         <div className="bg-emerald-500/5 border border-emerald-500/20 p-4 rounded-2xl space-y-3">
-                            <div className="text-xs font-black text-emerald-400 uppercase tracking-widest">v2.5.0 — Şu An</div>
+                            <div className="text-xs font-black text-emerald-400 uppercase tracking-widest">v2.6.0 — Şu An</div>
                             {[
-                                { icon: '✂️', title: 'Saç Stilleri', desc: '8 farklı saç stili: kısa, uzun, dalgalı, afro, topuz, dikenli, at kuyruğu, mohawk. Market\'ten satın al.' },
-                                { icon: '👔', title: 'Kıyafet Stilleri', desc: '6 kıyafet: casual, aşçı önlüğü, garson, kapüşonlu, takım elbise, mutfak önlüğü.' },
-                                { icon: '💥', title: 'Servis Efektleri', desc: 'Müşteriye yemek verince partikül patlaması: yıldız, kalp, ateş, para, gökkuşağı.' },
-                                { icon: '🛒', title: 'Market Önizleme', desc: 'Sol panelde anlık karakter önizlemesi. Her değişiklik anında yansıyor.' },
-                                { icon: '🔒', title: 'Profil Readonly', desc: 'Renk değişiklikleri artık sadece market üzerinden. Profil sadece görüntüleme.' },
-                                { icon: '🐛', title: 'Bug Düzeltmeleri', desc: 'DayEndModal onClose fix, interval leak fix, activeCards karşılaştırma fix.' },
+                                { icon: '🗣️', title: 'Dialog & Sabır Barı Düzeltmesi', desc: 'Aynı masadaki müşterilerin konuşma balonları artık üst üste binmiyor — yakın müşterilerde otomatik yukarı kayıyor. Hangi barın kime ait olduğu artık net.' },
+                                { icon: '📱', title: 'Mobil Yatay Ekran İyileştirmeleri', desc: 'Dokunma koordinatı kayması düzeltildi (CSS scale kaldırıldı). iOS\'ta input kutucuklarında sayfa zoom yapma sorunu giderildi. Kart seçim ve upgrade ekranları yatay telefona göre optimize edildi.' },
+                                { icon: '🗺️', title: 'PWA Yön Kilidi', desc: 'Manifest\'e landscape orientation eklendi — oyun ana ekrana eklenince telefon otomatik yatay kilitleme bilgisi alır.' },
                             ].map(f => (
                                 <div key={f.title} className="flex items-start gap-2">
                                     <span className="text-emerald-400 text-sm flex-shrink-0">{f.icon}</span>
@@ -184,6 +188,33 @@ export const PatchNotesModal: React.FC<Props> = ({ onClose }) => {
                                 </div>
                             ))}
                         </div>
+
+                        {/* v2.5.0 */}
+                        <div className="bg-stone-800/30 border border-stone-700/30 p-4 rounded-2xl space-y-3">
+                            <div className="text-xs font-black text-stone-400 uppercase tracking-widest">v2.5.0</div>
+                            {[
+                                { icon: '🍀', title: 'Şans Müşterisi', desc: '2. günden itibaren %5 ihtimalle gelir. Altın parıltı halkasıyla tanınır, 2x bahşiş bırakır.' },
+                                { icon: '🎯', title: 'Günlük Hedef Sistemi', desc: 'Her gün 3 farklı hedef (servis sayısı, combo, can kaybetmeme, VIP). Tamamlayınca bonus coin. Üst bardaki ikonlardan anlık takip.' },
+                                { icon: '🏆', title: 'Başarım Sistemi', desc: '17 başarım: servis sayısı, gün sayısı, mükemmel günler, combo rekorları. Her başarım coin ödüllü. Profil ekranından görüntüle.' },
+                                { icon: '✂️', title: 'Saç Stilleri', desc: '8 farklı saç stili: kısa, uzun, dalgalı, afro, topuz, dikenli, at kuyruğu, mohawk. Market\'ten satın al.' },
+                                { icon: '👔', title: 'Kıyafet Stilleri', desc: '6 kıyafet: casual, aşçı önlüğü, garson, kapüşonlu, takım elbise, mutfak önlüğü.' },
+                                { icon: '💥', title: 'Servis Efektleri', desc: 'Müşteriye yemek verince partikül patlaması: yıldız, kalp, ateş, para, gökkuşağı.' },
+                                { icon: '🛒', title: 'Market Önizleme', desc: 'Sol panelde anlık karakter önizlemesi. Her değişiklik anında yansıyor.' },
+                                { icon: '❤️', title: 'Can Kaybı Flash', desc: 'Can kaybedince tüm ekran kırmızıya çakar.' },
+                                { icon: '🔥', title: 'Combo Kenar Efekti', desc: 'x5+ combo yapınca ekran kenarlarında renk dalgası belirir.' },
+                                { icon: '🐛', title: 'Bug Düzeltmeleri', desc: 'DayEndModal onClose fix, interval leak fix, activeCards karşılaştırma fix.' },
+                            ].map(f => (
+                                <div key={f.title} className="flex items-start gap-2">
+                                    <span className="text-sm flex-shrink-0">{f.icon}</span>
+                                    <div>
+                                        <span className="text-stone-200 font-bold text-xs">{f.title}: </span>
+                                        <span className="text-stone-400 text-xs">{f.desc}</span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* v2.4.0 */}
                         <div className="bg-stone-800/30 border border-stone-700/30 p-4 rounded-2xl space-y-3">
                             <div className="text-xs font-black text-stone-400 uppercase tracking-widest">v2.4.0</div>
                             {[
@@ -202,6 +233,8 @@ export const PatchNotesModal: React.FC<Props> = ({ onClose }) => {
                                 </div>
                             ))}
                         </div>
+
+                        {/* v2.3.0 */}
                         <div className="bg-stone-800/30 border border-stone-700/30 p-4 rounded-2xl space-y-2">
                             <div className="text-xs font-black text-stone-400 uppercase tracking-widest">v2.3.0</div>
                             {[
@@ -215,6 +248,8 @@ export const PatchNotesModal: React.FC<Props> = ({ onClose }) => {
                                 </div>
                             ))}
                         </div>
+
+                        {/* v2.2.0 */}
                         <div className="bg-stone-800/30 border border-stone-700/30 p-4 rounded-2xl space-y-2">
                             <div className="text-xs font-black text-stone-400 uppercase tracking-widest">v2.2.0</div>
                             {[
@@ -229,6 +264,8 @@ export const PatchNotesModal: React.FC<Props> = ({ onClose }) => {
                                 </div>
                             ))}
                         </div>
+
+                        {/* v2.1.0 */}
                         <div className="bg-amber-500/5 border border-amber-500/20 p-4 rounded-2xl space-y-2">
                             <div className="text-xs font-black text-amber-400 uppercase tracking-widest">v2.1.0</div>
                             {[
@@ -243,14 +280,16 @@ export const PatchNotesModal: React.FC<Props> = ({ onClose }) => {
                                 </div>
                             ))}
                         </div>
+
+                        {/* Yakında */}
                         <div className="bg-purple-500/5 border border-purple-500/20 p-4 rounded-2xl">
                             <div className="text-xs font-black text-purple-400 uppercase tracking-widest mb-2">🔮 Yakında</div>
                             <ul className="space-y-1.5 text-xs text-purple-200/60">
-                                <li>✦ Can kaybı ekran flash efekti</li>
                                 <li>✦ Müşteri kaçınca 💔 animasyonu</li>
-                                <li>✦ Combo x5+ ekran kenarı efekti</li>
-                                <li>✦ Başarım sistemi (milestone'lar)</li>
-                                <li>✦ Sunucu taraflı hesap</li>
+                                <li>✦ Mahalle itibarı sistemi (1–5 yıldız)</li>
+                                <li>✦ Çok aşamalı yemek yapımı (combining)</li>
+                                <li>✦ Emote wheel (hızlı chat)</li>
+                                <li>✦ Sunucu taraflı hesap & skor tablosu</li>
                             </ul>
                         </div>
                     </>}
