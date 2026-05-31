@@ -73,7 +73,7 @@ export const GameScreen: React.FC<Props> = ({
     const [comboEdge, setComboEdge] = useState<{ color: string; key: number } | null>(null);
     const [perfectBanner, setPerfectBanner] = useState<{ visible: boolean; leaving: boolean } | null>(null);
 
-    const { score, dayPhase, dayTimer, upgrades, day, ovenCount, tableCount, queueLen, lives, isGameOver, menuChoices, unlockedDishes, pendingCardChoices, activeCards, comboCount } = useGameState(gameStateRef);
+    const { score, dayPhase, dayTimer, upgrades, day, ovenCount, tableCount, queueLen, lives, isGameOver, menuChoices, unlockedDishes, pendingCardChoices, activeCards, comboCount, dailyObjectives } = useGameState(gameStateRef);
 
     const { editorState, editorStateRef, handleInteract, handleCancel, handleCycleSeats, updatePreview } = useLayoutEditor({
         socket, gameStateRef, localPlayerRef, dayPhase,
@@ -252,6 +252,7 @@ export const GameScreen: React.FC<Props> = ({
                 isEditing={editorState.isMoving || editorState.isMovingTable}
                 voiceActive={voiceActive} isMuted={isMuted}
                 dayEndSummary={dayEndSummary} onClearDayEnd={onClearDayEnd}
+                dailyObjectives={dailyObjectives}
                 onOpenShop={() => emit('openShop')}
                 onOpenVoice={() => setShowVoiceSettings(true)}
                 onOpenCosmetics={() => setShowCosmetics(true)}
