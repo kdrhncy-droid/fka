@@ -4,7 +4,7 @@ export function generateMenuChoices(gs: GameState): void {
   const locked = [...DISH_UNLOCK_POOL].filter((d: string) => !gs.unlockedDishes.includes(d));
   if (locked.length === 0) { gs.menuChoices = null; return; }
   const shuffled = locked.sort(() => Math.random() - 0.5);
-  gs.menuChoices = shuffled.slice(0, 2);
+  gs.menuChoices = shuffled.slice(0, 3); // Seçenek sayısı 2'den 3'e çıkarıldı
 }
 
 export function generateCardChoices(gs: GameState): void {
@@ -16,15 +16,15 @@ export function generateCardChoices(gs: GameState): void {
   );
   if (pool.length === 0) { gs.pendingCardChoices = null; return; }
   const shuffled = [...pool].sort(() => Math.random() - 0.5);
-  gs.pendingCardChoices = shuffled.slice(0, 2);
+  gs.pendingCardChoices = shuffled.slice(0, 3); // Seçenek sayısı 2'den 3'e çıkarıldı
 }
 
 export function getCardMultipliers(gs: GameState) {
   const has = (id: string) => gs.activeCards.some(c => c.id === id);
   return {
-    patienceMult:    has('impatient_crowd') ? 0.80 : has('low_season') ? 1.50 : has('blind_patience') ? 1.15 : 1.0,
-    spawnMult:       has('busy_day') ? 1.30 : has('low_season') ? 0.80 : has('rainy_day') ? 1.10 : 1.0,
-    burnMult:        has('hot_oven') ? 0.70 : 1.0,
+    patienceMult:    has('impatient_crowd') ? 0.90 : has('low_season') ? 1.75 : has('blind_patience') ? 1.25 : 1.0, // Kartların negatif etkileri azaltıldı, pozitifleri artırıldı
+    spawnMult:       has('busy_day') ? 1.20 : has('low_season') ? 0.70 : has('rainy_day') ? 1.10 : 1.0,
+    burnMult:        has('hot_oven') ? 0.85 : 1.0, // Yemek yanma cezası hafifletildi
     cookMult:        has('hot_oven') ? 0.70 : has('turbo_day') ? 0.80 : has('chop_pressure') ? 1.0 : 1.0,
     chopMult:        has('chop_pressure') ? 1.25 : 1.0,
     choppedCookMult: has('chop_pressure') ? 0.60 : 1.0,

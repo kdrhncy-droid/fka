@@ -84,7 +84,7 @@ export function customerTick(gs: GameState, io: Server, rid: string) {
       if (gs.dayPhase === 'day') {
         const playerCount = Object.keys(gs.players).length || 1;
         const cm = getCardMultipliers(gs);
-        let patienceDrain = 1 + (playerCount - 1) * 0.1;
+        let patienceDrain = playerCount === 1 ? 0.75 : (playerCount <= 2 ? 0.85 : 1.0); // Sabır azalma hızı solo ve küçük gruplar için düşürüldü
         if (gs.dayTimer <= DAY_TICKS * 0.25) patienceDrain *= 1.2;
         patienceDrain = patienceDrain / cm.patienceMult;
         const baseDrain = Math.floor(patienceDrain);

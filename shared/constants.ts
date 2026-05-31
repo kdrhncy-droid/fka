@@ -5,7 +5,7 @@ export const CHOP_PREFIX = 'CHOPPED_';
 export const CHOP_TICKS = 60; // ~2 saniye (33ms * 60)
 
 export const CAKE_TICKS = 180; // ~6 saniye (uzun ama yüksek bahşiş)
-export const CAKE_BURN_TICKS = 300;
+export const CAKE_BURN_TICKS = 450; // Pasta yanma süresi artırıldı
 
 export const COFFEE_ITEM = '☕';
 export const COFFEE_BASE_CAPACITY = 4;
@@ -38,7 +38,7 @@ export const GRID_ROWS = Math.floor(GAME_HEIGHT / GRID_CELL_SIZE);  // 18
 export const DAY_TICKS = 2700;
 export const NIGHT_TICKS = 900;
 export const CLOSING_THRESHOLD = 600; // Son 10 saniye (600 tick) yeni müşteri gelmez
-export const BURN_TICKS = 300;
+export const BURN_TICKS = 450; // Yemeklerin yanma süresi 10sn -> 15sn yapıldı (Daha rahat oyun)
 export const EAT_TICKS = 240;
 export const BURNED_FOOD = '⬛';
 
