@@ -9,6 +9,7 @@ export interface DayEndSummary {
     day: number;
     score: number;
     lives: number;
+    dailyObjectives?: import('../../shared/types').DailyObjective[];
 }
 
 interface UseSocketReturn {
