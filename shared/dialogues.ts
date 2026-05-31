@@ -1,4 +1,4 @@
-export type Personality = 'polite' | 'rude' | 'recep' | 'thug' | 'vip' | 'drunk' | 'inspector';
+export type Personality = 'polite' | 'rude' | 'recep' | 'thug' | 'vip' | 'drunk' | 'inspector' | 'lucky';
 export type DialogTrigger = 'entry' | 'waiting' | 'eating' | 'leaving_happy' | 'leaving_angry' | 'revenge';
 
 export const DIALOGUES: Record<Personality, Record<DialogTrigger, string[]>> = {
@@ -240,6 +240,25 @@ export const DIALOGUES: Record<Personality, Record<DialogTrigger, string[]>> = {
             "Neden bu kadar beklettiniz... üzüldüm.", "Gidiyorum... nereye gidiyorum?",
             "Açım hâlâ... bu doğru mu?", "Tamam tamam gidiyorum...",
             "Üzgünüm... siz de üzgün müsünüz?", "Elveda güzel mekan...",
+        ],
+        revenge: [],
+    },
+    lucky: {
+        entry: [
+            "Bugün şanslı hissediyorum! 🍀", "Şansım varmış, tam zamanında geldim!",
+            "🎰 Jackpot günü bu!", "🍀 Dört yapraklı yonca buldum!",
+        ],
+        waiting: [
+            "🍀 Şansım devam ediyor...", "Merakla bekliyorum!", "Bu servis de şanslı olacak!",
+        ],
+        eating: [
+            "🎰 Mükemmel! Tam isabetli.", "🍀 Harika bir seçimmiş!", "Bugün her şey yolunda!",
+        ],
+        leaving_happy: [
+            "🍀 Şansınız bol olsun!", "🎰 Muhteşemdi, tekrar gelirim!", "Bugün herkes kazandı!",
+        ],
+        leaving_angry: [
+            "Şansım tükendi...", "🍀 Bugün olmadı.", "Bir dahaki sefere...",
         ],
         revenge: [],
     },
