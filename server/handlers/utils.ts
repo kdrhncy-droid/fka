@@ -45,4 +45,12 @@ export function applyCombo(gs: GameState, io: Server, roomId: string, x: number,
     gs.score += bonus;
     io.to(roomId).emit('comboServe', { x, y, count: gs.comboCount, bonus, label });
   }
+
+  // reach_combo hedeflerini kontrol et
+  gs.dailyObjectives?.forEach(obj => {
+    if (obj.type === 'reach_combo' && !obj.completed && !obj.failed && gs.comboCount >= obj.target) {
+      obj.completed = true;
+      obj.progress = obj.target;
+    }
+  });
 }
