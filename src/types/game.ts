@@ -83,6 +83,7 @@ export {
   getTableDims,
   mkGameState,
   type MapId,
+  type DailyObjective,
   PLATE_STACK_BASE,
   PLATE_STACK_PER_UPGRADE,
   DISH_UNLOCK_POOL,
