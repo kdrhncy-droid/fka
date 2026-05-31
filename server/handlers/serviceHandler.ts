@@ -8,6 +8,7 @@ import { SERVE_R } from '../../shared/constants.js';
 
 function loseLife(gs: GameState, io: Server, roomId: string, amount = 1, x?: number, y?: number): boolean {
   gs.lives = Math.max(0, gs.lives - amount);
+  gs.dailyObjectives?.forEach(obj => { if (obj.type === 'no_life_loss') obj.failed = true; });
   if (x !== undefined && y !== undefined) io.to(roomId).emit('loseHeart', { x, y, amount });
   if (gs.lives <= 0) {
     gs.isGameOver = true;
@@ -109,6 +110,11 @@ export const handleCustomers: InteractionHandler = ({ gs, p, px, py, snd, io, ro
         startEating(c, p, tip);
         if (p.serviceEffect) io.to(roomId).emit('serviceEffect', { x: c.seatX, y: c.seatY, effect: p.serviceEffect });
         applyCombo(gs, io, roomId, c.seatX, c.seatY, tip);
+        gs.dailyObjectives?.forEach(obj => {
+          if (obj.completed || obj.failed) return;
+          if (obj.type === 'serve_n') { obj.progress++; if (obj.progress >= obj.target) obj.completed = true; }
+          if (obj.type === 'serve_vip' && c.personality === 'vip') { obj.progress++; if (obj.progress >= obj.target) obj.completed = true; }
+        });
         snd("success");
         return true;
       }
@@ -126,6 +132,12 @@ export const handleCustomers: InteractionHandler = ({ gs, p, px, py, snd, io, ro
         startEating(c, p, tip, null);
         if (p.serviceEffect) io.to(roomId).emit('serviceEffect', { x: c.seatX, y: c.seatY, effect: p.serviceEffect });
         applyCombo(gs, io, roomId, c.seatX, c.seatY, tip);
+        // Hedef takibi
+        gs.dailyObjectives?.forEach(obj => {
+          if (obj.completed || obj.failed) return;
+          if (obj.type === 'serve_n') { obj.progress++; if (obj.progress >= obj.target) obj.completed = true; }
+          if (obj.type === 'serve_vip' && c.personality === 'vip') { obj.progress++; if (obj.progress >= obj.target) obj.completed = true; }
+        });
         snd("success");
         return true;
       } else {
