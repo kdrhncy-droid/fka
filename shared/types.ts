@@ -177,6 +177,18 @@ export interface DirtyTable {
     tip: number;
 }
 
+export interface DailyObjective {
+  id: string;
+  type: 'serve_n' | 'reach_combo' | 'no_life_loss' | 'serve_vip';
+  label: string;
+  icon: string;
+  target: number;
+  progress: number;
+  completed: boolean;
+  failed: boolean;
+  bonusCoins: number;
+}
+
 export interface GameState {
     players: Record<string, Player>;
     customers: Customer[];
@@ -216,6 +228,7 @@ export interface GameState {
     coffeeMachines: CoffeeMachine[];
     serviceWindow: ServiceWindowSlot[];
 
+    dailyObjectives?: DailyObjective[];
     _stateTick?: number;
     _seatCooldown?: number;
     _kaosTimer?: number;
