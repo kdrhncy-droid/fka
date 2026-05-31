@@ -168,6 +168,42 @@ export function setupGameEffects(socket: Socket | null) {
     });
   };
 
+  // 🎰 Şans müşterisi jackpot!
+  const handleJackpot = (data: { x: number; y: number; amount: number }) => {
+    // Altın mega ekran flash
+    screenFlash.push({ life: 28, maxLife: 28, color: '#fbbf24' });
+    // Ana JACKPOT yazısı
+    floatingTexts.push({
+      x: data.x,
+      y: data.y - 25,
+      text: '🎰 JACKPOT!',
+      life: 150,
+      color: '#fbbf24',
+      size: 30,
+    });
+    // Puan miktarı
+    floatingTexts.push({
+      x: data.x,
+      y: data.y - 60,
+      text: `+${data.amount} 🪙`,
+      life: 120,
+      color: '#22c55e',
+      size: 20,
+    });
+    // Para yağmuru
+    for (let i = 0; i < 14; i++) {
+      sparkleParticles.push({
+        x: data.x + (Math.random() - 0.5) * 70,
+        y: data.y - 20,
+        vx: (Math.random() - 0.5) * 4.5,
+        vy: -3.5 - Math.random() * 3,
+        life: 65, maxLife: 65,
+        emoji: ['🪙', '💰', '✨', '🍀'][Math.floor(Math.random() * 4)],
+      });
+    }
+    playSound(null, 'combo8');
+  };
+
   if (socket) {
     socket.on("tipCollected", handleTip);
     socket.on("punchEffect", handlePunch);
@@ -177,6 +213,7 @@ export function setupGameEffects(socket: Socket | null) {
     socket.on("serviceEffect", handleServiceEffect);
     socket.on("loseHeart", handleLoseHeart);
     socket.on("urgentCustomer", handleUrgentCustomer);
+    socket.on("jackpot", handleJackpot);
   }
 
   const cleanup = () => {
@@ -189,6 +226,7 @@ export function setupGameEffects(socket: Socket | null) {
       socket.off("serviceEffect", handleServiceEffect);
       socket.off("loseHeart", handleLoseHeart);
       socket.off("urgentCustomer", handleUrgentCustomer);
+      socket.off("jackpot", handleJackpot);
     }
   };
 
