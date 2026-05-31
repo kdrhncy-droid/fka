@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { DAY_TICKS, NIGHT_TICKS } from '../types/game';
 import { DayEndModal } from './DayEndModal';
 import { MARKET_NAME } from '../constants';
 import { ALL_CARDS } from '../../shared/types';
 import type { DayEndSummary } from '../hooks/useSocket';
-import type { ActiveCard, DailyObjective } from '../../shared/types';
+import type { ActiveCard, DailyObjective, GameCard } from '../../shared/types';
 
 interface Props {
     marketName: string;
@@ -36,6 +36,24 @@ export const GameTopBar: React.FC<Props> = ({
     dayEndSummary, onClearDayEnd, dailyObjectives = [],
     onOpenShop, onOpenVoice, onOpenCosmetics, onOpenSettings, onDevTap,
 }) => {
+    const [activePopup, setActivePopup] = useState<GameCard | null>(null);
+    const popupRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!activePopup) return;
+        const handler = (e: MouseEvent | TouchEvent) => {
+            if (popupRef.current && !popupRef.current.contains(e.target as Node)) {
+                setActivePopup(null);
+            }
+        };
+        document.addEventListener('mousedown', handler);
+        document.addEventListener('touchstart', handler);
+        return () => {
+            document.removeEventListener('mousedown', handler);
+            document.removeEventListener('touchstart', handler);
+        };
+    }, [activePopup]);
+
     const total = dayPhase === 'day' ? DAY_TICKS : NIGHT_TICKS;
     const progress = dayPhase === 'prep' ? 0 : 1 - dayTimer / total;
     const barColor = dayPhase === 'day'
@@ -109,15 +127,36 @@ export const GameTopBar: React.FC<Props> = ({
                     </div>
                 )}
                 {activeCards.length > 0 && (
-                    <div className="flex items-center gap-0.5">
+                    <div className="relative flex items-center gap-0.5" ref={popupRef}>
                         {activeCards.map(ac => {
                             const def = ALL_CARDS.find(c => c.id === ac.id);
+                            const isOpen = activePopup?.id === ac.id;
                             return (
-                                <span key={ac.id} className="text-base" title={def?.name ?? ac.id}>
+                                <button
+                                    key={ac.id}
+                                    onClick={() => setActivePopup(isOpen ? null : (def ?? null))}
+                                    className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm transition-colors border ${isOpen ? 'bg-indigo-700 border-indigo-500' : 'bg-stone-800 border-stone-700 hover:bg-stone-700'}`}
+                                >
                                     {def?.icon ?? '⚡'}
-                                </span>
+                                </button>
                             );
                         })}
+                        {activePopup && (
+                            <div className="absolute right-0 top-10 z-50 w-56 bg-stone-900 border border-stone-700 rounded-2xl shadow-2xl p-3 flex flex-col gap-2">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-2xl">{activePopup.icon}</span>
+                                    <span className="text-white font-black text-sm">{activePopup.name}</span>
+                                </div>
+                                <div className="flex items-start gap-2 bg-red-950/50 border border-red-500/30 rounded-xl px-2.5 py-1.5">
+                                    <span className="text-red-400 text-xs font-bold flex-shrink-0 mt-0.5">✗</span>
+                                    <span className="text-red-300 text-xs leading-relaxed">{activePopup.penalty}</span>
+                                </div>
+                                <div className="flex items-start gap-2 bg-emerald-950/50 border border-emerald-500/30 rounded-xl px-2.5 py-1.5">
+                                    <span className="text-emerald-400 text-xs font-bold flex-shrink-0 mt-0.5">✓</span>
+                                    <span className="text-emerald-300 text-xs leading-relaxed">{activePopup.reward}</span>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 )}
                 {/* Günlük Hedef mini göstergesi */}
