@@ -6,4 +6,5 @@ export const PERS_COLORS: Record<string, { body: string; skin: string; hair: str
     vip:      { body: '#b8860b', skin: '#F5DEB3', hair: '#5c3317' },
     drunk:    { body: '#6b3a1f', skin: '#FFB6C1', hair: '#8b4513' },
     inspector:{ body: '#e8e8e8', skin: '#F5F5DC', hair: '#555555' },
+    lucky:    { body: '#16a34a', skin: '#fde68a', hair: '#854d0e' },
 };
