@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { GameState, DAY_TICKS, Upgrades } from '../types/game';
+import { GameState, DAY_TICKS, Upgrades, DailyObjective } from '../types/game';
 import React from 'react';
 
 interface GameUIState {
@@ -18,6 +18,7 @@ interface GameUIState {
     pendingCardChoices: import('../../shared/types').GameCard[] | null;
     activeCards: import('../../shared/types').ActiveCard[];
     comboCount: number;
+    dailyObjectives: DailyObjective[];
 }
 
 const DEFAULT_UI: GameUIState = {
@@ -27,6 +28,7 @@ const DEFAULT_UI: GameUIState = {
     day: 1, ovenCount: 1, tableCount: 3, queueLen: 0, lives: 3,
     isGameOver: false, menuChoices: null, unlockedDishes: [],
     pendingCardChoices: null, activeCards: [], comboCount: 0,
+    dailyObjectives: [],
 };
 
 function upgradesEqual(a: Upgrades, b: Upgrades): boolean {
@@ -69,8 +71,14 @@ export function useGameState(gameStateRef: React.MutableRefObject<GameState>) {
                 pendingCardChoices: s.pendingCardChoices ?? null,
                 activeCards: s.activeCards ?? [],
                 comboCount: s.comboCount ?? 0,
+                dailyObjectives: s.dailyObjectives ?? [],
             };
             // Shallow compare — değişmediyse setState çağırma
+            const objChanged = next.dailyObjectives.length !== prev.dailyObjectives.length ||
+                next.dailyObjectives.some((o, i) => {
+                    const p = prev.dailyObjectives[i];
+                    return !p || o.progress !== p.progress || o.completed !== p.completed || o.failed !== p.failed;
+                });
             if (
                 next.score !== prev.score || next.dayPhase !== prev.dayPhase ||
                 next.dayTimer !== prev.dayTimer || next.day !== prev.day ||
@@ -82,7 +90,8 @@ export function useGameState(gameStateRef: React.MutableRefObject<GameState>) {
                 next.pendingCardChoices !== prev.pendingCardChoices ||
                 next.activeCards.length !== prev.activeCards.length ||
                 next.activeCards.some((c, i) => c.id !== prev.activeCards[i]?.id) ||
-                next.comboCount !== prev.comboCount
+                next.comboCount !== prev.comboCount ||
+                objChanged
             ) {
                 prevRef.current = next;
                 setUI(next);
