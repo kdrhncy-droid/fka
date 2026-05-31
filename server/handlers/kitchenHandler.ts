@@ -108,14 +108,14 @@ export const handleCoffeeMachines: InteractionHandler = ({ gs, p, px, py, snd })
   for (const cm of gs.coffeeMachines) {
     const { x: dynX, y: dynY } = getStationPos(gs, cm);
     if (Math.hypot(px - dynX, py - dynY) < INTERACT_R) {
-      if (!p.holding && cm.cups > 0) {
-        p.holding = COFFEE_ITEM; cm.cups--; snd('pickup');
-      } else if (isTray(p.holding) && cm.cups > 0) {
+      if (!p.holding) {
+        p.holding = COFFEE_ITEM; snd('pickup');
+      } else if (isTray(p.holding)) {
         const items = getTrayItems(p.holding);
         if (items.length < MAX_TRAY_CAPACITY) {
           items.push(COFFEE_ITEM); p.holding = createTray(items);
-          cm.cups--; snd('pickup');
-        }
+          snd('pickup');
+        } else { snd('fail'); }
       } else { snd('fail'); }
       return true;
     }

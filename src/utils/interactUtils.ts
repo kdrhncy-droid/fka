@@ -131,7 +131,7 @@ export function getNearestInteractable(px: number, py: number, gs: GameState, la
   // ═══ PROFESYONELLİK SEÇİM ALGORİTMASI ═══
 
   if (candidates.length === 0) return null;
-  if (candidates.length === 1) return { x: candidates[0].x, y: candidates[0].y };
+  if (candidates.length === 1) return { x: candidates[0].x, y: candidates[0].y, type: candidates[0].type };
 
   // En yakın mesafeyi bul
   const minDistance = Math.min(...candidates.map(c => c.distance));
@@ -139,7 +139,7 @@ export function getNearestInteractable(px: number, py: number, gs: GameState, la
   // Tolerans dahilindeki yakın objeleri filtrele
   const closeOnes = candidates.filter(c => c.distance <= minDistance + DISTANCE_TOLERANCE);
 
-  if (closeOnes.length === 1) return { x: closeOnes[0].x, y: closeOnes[0].y };
+  if (closeOnes.length === 1) return { x: closeOnes[0].x, y: closeOnes[0].y, type: closeOnes[0].type };
 
   // Birden fazla yakın obje varsa hareket yönüne göre seç
   if (Math.abs(lastMoveX) > 0.1 || Math.abs(lastMoveY) > 0.1) {
@@ -165,10 +165,10 @@ export function getNearestInteractable(px: number, py: number, gs: GameState, la
 
     // En yüksek skoru seç
     const best = scored.reduce((a, b) => a.score > b.score ? a : b);
-    return { x: best.x, y: best.y };
+    return { x: best.x, y: best.y, type: best.type };
   }
 
   // Hareket yoksa en yakını seç
   const nearest = candidates.reduce((a, b) => a.distance < b.distance ? a : b);
-  return { x: nearest.x, y: nearest.y };
+  return { x: nearest.x, y: nearest.y, type: nearest.type };
 }

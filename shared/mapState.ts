@@ -33,6 +33,7 @@ function mkClassicMapState(): GameState {
     activeCards: [],
     pendingCardChoices: null,
     hidePatience: false,
+    hidePersonality: false,
     comboCount: 0,
     comboTimer: 0,
     stationLayout: {

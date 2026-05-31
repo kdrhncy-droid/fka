@@ -32,21 +32,36 @@ function startEating(c: Customer, p: Player, tip: number, holdingOverride?: stri
 
 export const handleServiceWindow: InteractionHandler = ({ gs, p, px, py, snd }) => {
   if (!gs.serviceWindow?.length) return false;
+
+  // Menzildeki tüm slotları topla, en yakınını seç
+  let bestSlot: (typeof gs.serviceWindow)[0] | null = null;
+  let bestDef: typeof SERVICE_WINDOW_SLOTS[number] | null = null;
+  let bestDist = Infinity;
+
   for (const slot of gs.serviceWindow) {
     const def = SERVICE_WINDOW_SLOTS.find(s => s.id === slot.id);
     if (!def) continue;
-    if (Math.hypot(px - def.x, py - def.y) < SERVICE_WINDOW_R) {
-      if (!p.holding && slot.item) {
-        p.holding = slot.item; slot.item = null;
-        snd('pickup');
-      } else if (p.holding && !slot.item) {
-        slot.item = p.holding; p.holding = null;
-        snd('success');
-      }
-      return true;
+    const dist = Math.hypot(px - def.x, py - def.y);
+    if (dist < SERVICE_WINDOW_R && dist < bestDist) {
+      bestDist = dist;
+      bestSlot = slot;
+      bestDef = def;
     }
   }
-  return false;
+
+  if (!bestSlot || !bestDef) return false;
+
+  if (!p.holding && bestSlot.item) {
+    p.holding = bestSlot.item; bestSlot.item = null;
+    snd('pickup');
+  } else if (p.holding && !bestSlot.item) {
+    bestSlot.item = p.holding; p.holding = null;
+    snd('success');
+  } else {
+    // El dolu + slot dolu, ya da el boş + slot boş → sessiz fail yerine sesli
+    snd('fail');
+  }
+  return true;
 };
 
 export const handleDirtyTables: InteractionHandler = ({ gs, p, px, py, snd, emitTip }) => {
