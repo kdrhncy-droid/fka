@@ -8,6 +8,9 @@ import { DIALOGUES } from "../shared/dialogues.js";
 import { getCardMultipliers } from "./cardLogic.js";
 import { DOOR_X } from "../shared/constants.js";
 
+// Müşteriler arası minimum mesafe (piksel)
+const SEPARATION_DIST = 34;
+
 export function customerTick(gs: GameState, io: Server, rid: string) {
   for (let i = gs.customers.length - 1; i >= 0; i--) {
     const c = gs.customers[i];
@@ -34,6 +37,12 @@ export function customerTick(gs: GameState, io: Server, rid: string) {
     }
 
     if (c.phase === 'entering') {
+      // Sadece bu müşteriden daha yukarıda (daha az y) başka bir "entering" müşteri varsa bekle
+      const blockedByAhead = gs.customers.some(
+        other => other.id !== c.id && other.phase === 'entering' && other.y < c.y - 10
+      );
+      if (blockedByAhead) continue; // kapı trafiğini sıraya sok
+
       if (c.y > (EXTERIOR_Y - 10)) {
         c.y = Math.max(EXTERIOR_Y - 10, c.y - 3);
       } else {
@@ -118,6 +127,29 @@ export function customerTick(gs: GameState, io: Server, rid: string) {
             gs._needsQueueSeat = true;
           }
         }
+      }
+    }
+  }
+
+  // ── Separation force — hareket eden müşterilerin üst üste binmesini engelle ──
+  // Sadece seating fazındaki (yürüyen ama oturmamış) müşterilere uygula
+  const moving = gs.customers.filter(c => !c.isSeated && !c.isLeaving && c.phase === 'seating');
+  for (let i = 0; i < moving.length; i++) {
+    for (let j = i + 1; j < moving.length; j++) {
+      const a = moving[i];
+      const b = moving[j];
+      const dx = b.x - a.x;
+      const dy = b.y - a.y;
+      const distSq = dx * dx + dy * dy;
+      if (distSq < SEPARATION_DIST * SEPARATION_DIST && distSq > 0.01) {
+        const dist = Math.sqrt(distSq);
+        const push = (SEPARATION_DIST - dist) * 0.45;
+        const nx = dx / dist;
+        const ny = dy / dist;
+        a.x -= nx * push;
+        a.y -= ny * push;
+        b.x += nx * push;
+        b.y += ny * push;
       }
     }
   }
