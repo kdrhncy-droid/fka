@@ -48,12 +48,12 @@ export const GameTopBar: React.FC<Props> = ({
         <div className="flex-none h-11 px-3 flex items-center justify-between gap-2 bg-stone-950/95 border-b border-stone-800">
             {/* Sol */}
             <div className="flex items-center gap-2 flex-shrink-0">
-                <h1 className="text-sm font-black text-white leading-none select-none truncate max-w-[120px]">
+                <h1 className="text-sm font-black text-white leading-none select-none truncate max-w-[70px] sm:max-w-[110px]">
                     {marketName || MARKET_NAME}
                 </h1>
                 <button
                     onClick={onDevTap}
-                    className="bg-stone-800 hover:bg-stone-700 active:bg-emerald-800 text-stone-400 font-mono text-[10px] px-2 py-0.5 rounded-md transition-colors border border-stone-700"
+                    className="hidden sm:block bg-stone-800 hover:bg-stone-700 active:bg-emerald-800 text-stone-400 font-mono text-[10px] px-2 py-0.5 rounded-md transition-colors border border-stone-700"
                     title="Oda kodunu kopyala"
                 >
                     #{roomId}

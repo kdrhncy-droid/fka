@@ -10,26 +10,26 @@ interface Props {
 
 export const CardSelectModal: React.FC<Props> = ({ cards, activeCards, day, onSelect }) => {
     return (
-        <div className="absolute inset-0 z-40 bg-indigo-950/90 backdrop-blur-sm p-4 overflow-y-auto overflow-x-hidden flex flex-col items-center justify-start sm:justify-center py-8">
+        <div className="absolute inset-0 z-40 bg-indigo-950/90 backdrop-blur-sm p-3 overflow-y-auto overflow-x-hidden flex flex-col items-center justify-start sm:justify-center py-3 sm:py-8">
             {/* Başlık */}
-            <div className="text-center mb-6 flex-shrink-0 mt-4 sm:mt-0">
-                <div className="text-4xl mb-2">⚡</div>
-                <h2 className="text-white font-black text-2xl tracking-wide">Günlük Kart Seç</h2>
+            <div className="text-center mb-3 sm:mb-6 flex-shrink-0 mt-2 sm:mt-0">
+                <div className="text-3xl sm:text-4xl mb-1 sm:mb-2">⚡</div>
+                <h2 className="text-white font-black text-xl sm:text-2xl tracking-wide">Günlük Kart Seç</h2>
                 <p className="text-indigo-300 text-sm mt-1">
                     Bu etki <span className="text-white font-bold">tüm run boyunca</span> aktif kalır
                 </p>
             </div>
 
             {/* Kart seçenekleri */}
-            <div className="flex flex-col sm:flex-row gap-4 w-full max-w-xl flex-shrink-0">
+            <div className="flex flex-col sm:flex-row gap-3 w-full max-w-2xl flex-shrink-0">
                 {cards.map(card => (
                     <button
                         key={card.id}
                         onClick={() => onSelect(card.id)}
-                        className="flex-1 bg-stone-900/90 hover:bg-stone-800/90 active:scale-95 border-2 border-indigo-500/40 hover:border-indigo-400/70 rounded-2xl p-5 flex flex-col items-center gap-3 transition-all shadow-xl"
+                        className="flex-1 bg-stone-900/90 hover:bg-stone-800/90 active:scale-95 border-2 border-indigo-500/40 hover:border-indigo-400/70 rounded-2xl p-3 sm:p-5 flex flex-col items-center gap-2 sm:gap-3 transition-all shadow-xl"
                     >
-                        <span className="text-5xl">{card.icon}</span>
-                        <span className="text-white font-black text-lg">{card.name}</span>
+                        <span className="text-4xl sm:text-5xl">{card.icon}</span>
+                        <span className="text-white font-black text-base sm:text-lg">{card.name}</span>
                         <div className="w-full space-y-2">
                             <div className="flex items-start gap-2 bg-red-950/50 border border-red-500/30 rounded-xl px-3 py-2">
                                 <span className="text-red-400 text-sm font-bold flex-shrink-0">✗</span>

@@ -86,26 +86,8 @@ canvas {
   image-rendering: pixelated;
 }
 
-/* Mobilde canvas'ın daha yakın görünmesi için ölçeklendirme */
-@media (max-width: 1024px) {
-  .canvas-container canvas {
-    /* Mobilde ekranı daha iyi doldurması için hafifçe büyütüyoruz */
-    transform: scale(1.05);
-    transform-origin: center center;
-  }
-}
-
-@media (max-width: 768px) {
-  .canvas-container canvas {
-    transform: scale(1.15);
-  }
-}
-
-@media (max-width: 480px) {
-  .canvas-container canvas {
-    transform: scale(1.25);
-  }
-}
+/* Canvas scale transform KALDIRILDI — CSS scale dokunma koordinatlarını kaydırır.
+   Canvas zaten aspect-ratio container içinde %100 genişlikte fitlenir. */
 
 /* ── Chat Toast Animasyonu ─────────────────────────────────────────────────── */
 @keyframes fadeInUp {

@@ -50,7 +50,7 @@ export const UpgradeShop: React.FC<Props> = ({
     const totalCoins = loadProfile().coins;
 
     return (
-        <div className="absolute inset-0 z-30 flex flex-col items-center justify-start sm:justify-center gap-5 bg-black/65 backdrop-blur-sm p-4 overflow-y-auto py-10">
+        <div className="absolute inset-0 z-30 flex flex-col items-center justify-start sm:justify-center gap-3 bg-black/65 backdrop-blur-sm p-3 overflow-y-auto py-4">
 
             {/* Başlık */}
             <div className="text-center">
@@ -83,7 +83,7 @@ export const UpgradeShop: React.FC<Props> = ({
             </div>
 
             {/* Upgrade kartları */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 w-full max-w-4xl">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 w-full max-w-4xl">
                 {/* Fırın */}
                 <div className="bg-stone-800/90 rounded-xl p-3 border border-stone-600 flex flex-col gap-2">
                     <div className="flex items-start gap-2">

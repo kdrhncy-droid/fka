@@ -332,7 +332,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
               onChange={e => setJoinCode(e.target.value.toUpperCase())}
               placeholder="Oda Kodu (örn: AB12)"
               maxLength={8} autoFocus
-              className="w-full rounded-2xl border border-white/20 bg-black/30 backdrop-blur px-4 py-3 text-sm font-bold uppercase text-white outline-none placeholder:text-white/40 focus:border-amber-400"
+              className="w-full rounded-2xl border border-white/20 bg-black/30 backdrop-blur px-4 py-3 text-base font-bold uppercase text-white outline-none placeholder:text-white/40 focus:border-amber-400"
             />
             <button
               onClick={() => joinCode.trim() && goPlay(joinCode.trim())}
@@ -356,7 +356,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
               onChange={e => setPlayerName(e.target.value)}
               placeholder="Adın"
               maxLength={12} autoFocus
-              className="w-full rounded-2xl border border-white/20 bg-black/30 backdrop-blur px-4 py-3 text-sm font-bold text-white outline-none placeholder:text-white/40 focus:border-amber-400"
+              className="w-full rounded-2xl border border-white/20 bg-black/30 backdrop-blur px-4 py-3 text-base font-bold text-white outline-none placeholder:text-white/40 focus:border-amber-400"
             />
             <button
               onClick={() => {
