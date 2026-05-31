@@ -4,7 +4,7 @@ import { DayEndModal } from './DayEndModal';
 import { MARKET_NAME } from '../constants';
 import { ALL_CARDS } from '../../shared/types';
 import type { DayEndSummary } from '../hooks/useSocket';
-import type { ActiveCard } from '../../shared/types';
+import type { ActiveCard, DailyObjective } from '../../shared/types';
 
 interface Props {
     marketName: string;
@@ -22,6 +22,7 @@ interface Props {
     isMuted: boolean;
     dayEndSummary: DayEndSummary | null;
     onClearDayEnd: () => void;
+    dailyObjectives?: DailyObjective[];
     onOpenShop: () => void;
     onOpenVoice: () => void;
     onOpenCosmetics: () => void;
@@ -32,7 +33,8 @@ interface Props {
 export const GameTopBar: React.FC<Props> = ({
     marketName, roomId, dayPhase, day, dayTimer, score, lives, queueLen,
     comboCount, activeCards, isEditing, voiceActive, isMuted,
-    dayEndSummary, onClearDayEnd, onOpenShop, onOpenVoice, onOpenCosmetics, onOpenSettings, onDevTap,
+    dayEndSummary, onClearDayEnd, dailyObjectives = [],
+    onOpenShop, onOpenVoice, onOpenCosmetics, onOpenSettings, onDevTap,
 }) => {
     const total = dayPhase === 'day' ? DAY_TICKS : NIGHT_TICKS;
     const progress = dayPhase === 'prep' ? 0 : 1 - dayTimer / total;
@@ -116,6 +118,25 @@ export const GameTopBar: React.FC<Props> = ({
                                 </span>
                             );
                         })}
+                    </div>
+                )}
+                {/* Günlük Hedef mini göstergesi */}
+                {dayPhase === 'day' && dailyObjectives.length > 0 && (
+                    <div className="flex items-center gap-0.5 ml-1">
+                        {dailyObjectives.map(obj => (
+                            <div
+                                key={obj.id}
+                                title={`${obj.label} (${obj.progress}/${obj.target})`}
+                                className="w-5 h-5 rounded flex items-center justify-center text-[10px] leading-none transition-all"
+                                style={{
+                                    background: obj.completed ? 'rgba(34,197,94,0.25)' : obj.failed ? 'rgba(239,68,68,0.15)' : 'rgba(255,255,255,0.1)',
+                                    border: `1px solid ${obj.completed ? '#22c55e' : obj.failed ? '#ef4444' : 'rgba(255,255,255,0.2)'}`,
+                                    opacity: obj.failed ? 0.5 : 1,
+                                }}
+                            >
+                                {obj.completed ? '✓' : obj.failed ? '✗' : obj.icon}
+                            </div>
+                        ))}
                     </div>
                 )}
                 <button onClick={onOpenVoice}
