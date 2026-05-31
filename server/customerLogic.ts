@@ -100,6 +100,7 @@ export function customerTick(gs: GameState, io: Server, rid: string) {
           if (c.patience <= 0) {
             gs.score = Math.max(0, gs.score - 10);
             gs.lives = Math.max(0, gs.lives - 1);
+            gs.dailyObjectives?.forEach(obj => { if (obj.type === 'no_life_loss') obj.failed = true; });
             io.to(rid).emit("sound", "fail");
             io.to(rid).emit("loseHeart", { x: c.seatX, y: c.seatY, amount: 1 });
             if (gs.lives <= 0) {
