@@ -77,7 +77,7 @@ export const PatchNotesModal: React.FC<Props> = ({ onClose }) => {
                                     { icon: '👑', name: 'VIP',       desc: 'Sabırsız ama yüksek bahşiş.' },
                                     { icon: '🍺', name: 'Sarhoş',    desc: 'Tutarsız, yanlış yemek kabul eder.' },
                                     { icon: '🔍', name: 'Müfettiş',  desc: 'Sert değerlendirme, düşük bahşiş.' },
-                                    { icon: '🍀', name: 'Şans',      desc: '2. günden itibaren %5 ihtimalle gelir. Altın parıltılı, 2x bahşiş bırakır.' },
+                                    { icon: '🍀', name: 'Şans',      desc: '2. günden itibaren %5 ihtimalle gelir. Altın parıltılı, 4x bahşiş bırakır.' },
                                 ].map(t => (
                                     <div key={t.name} className="flex items-center gap-2 text-xs">
                                         <span className="text-sm w-5 text-center">{t.icon}</span>
@@ -193,7 +193,7 @@ export const PatchNotesModal: React.FC<Props> = ({ onClose }) => {
                         <div className="bg-stone-800/30 border border-stone-700/30 p-4 rounded-2xl space-y-3">
                             <div className="text-xs font-black text-stone-400 uppercase tracking-widest">v2.5.0</div>
                             {[
-                                { icon: '🍀', title: 'Şans Müşterisi', desc: '2. günden itibaren %5 ihtimalle gelir. Altın parıltı halkasıyla tanınır, 2x bahşiş bırakır.' },
+                                { icon: '🍀', title: 'Şans Müşterisi', desc: '2. günden itibaren %5 ihtimalle gelir. Altın parıltı halkasıyla tanınır, 4x bahşiş bırakır.' },
                                 { icon: '🎯', title: 'Günlük Hedef Sistemi', desc: 'Her gün 3 farklı hedef (servis sayısı, combo, can kaybetmeme, VIP). Tamamlayınca bonus coin. Üst bardaki ikonlardan anlık takip.' },
                                 { icon: '🏆', title: 'Başarım Sistemi', desc: '17 başarım: servis sayısı, gün sayısı, mükemmel günler, combo rekorları. Her başarım coin ödüllü. Profil ekranından görüntüle.' },
                                 { icon: '✂️', title: 'Saç Stilleri', desc: '8 farklı saç stili: kısa, uzun, dalgalı, afro, topuz, dikenli, at kuyruğu, mohawk. Market\'ten satın al.' },

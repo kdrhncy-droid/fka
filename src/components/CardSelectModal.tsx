@@ -1,5 +1,5 @@
 import React from 'react';
-import { GameCard, ActiveCard } from '../../shared/types';
+import { GameCard, ActiveCard, ALL_CARDS } from '../../shared/types';
 
 interface Props {
     cards: GameCard[];
@@ -52,7 +52,7 @@ export const CardSelectModal: React.FC<Props> = ({ cards, activeCards, day, onSe
                 <div className="flex items-center gap-2 flex-wrap justify-center">
                     <span className="text-indigo-400 text-xs font-bold uppercase tracking-widest">Aktif:</span>
                     {activeCards.map(ac => {
-                        const def = cards.find(c => c.id === ac.id);
+                        const def = ALL_CARDS.find(c => c.id === ac.id);
                         return (
                             <span key={ac.id} className="text-lg" title={def?.name ?? ac.id}>
                                 {def?.icon ?? '⚡'}

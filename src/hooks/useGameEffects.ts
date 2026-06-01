@@ -140,6 +140,28 @@ export function setupGameEffects(socket: Socket | null) {
     }
   };
 
+  // 💔 Müşteri sabırsızlıktan kaçınca
+  const handleSadLeave = (data: { x: number; y: number }) => {
+    floatingTexts.push({
+      x: data.x,
+      y: data.y - 20,
+      text: '💔',
+      life: 80,
+      color: '#ef4444',
+      size: 26,
+    });
+    for (let i = 0; i < 5; i++) {
+      sparkleParticles.push({
+        x: data.x + (Math.random() - 0.5) * 24,
+        y: data.y - 10,
+        vx: (Math.random() - 0.5) * 2.5,
+        vy: -2.5 - Math.random() * 2,
+        life: 55, maxLife: 55,
+        emoji: '💔',
+      });
+    }
+  };
+
   // 💔 Can kaybı animasyonu
   const handleLoseHeart = (data: { x: number; y: number; amount: number }) => {
     const text = data.amount >= 2 ? `💔💔 -${data.amount}` : '💔 -1';
@@ -210,6 +232,7 @@ export function setupGameEffects(socket: Socket | null) {
     socket.on("comboServe", handleCombo);
     socket.on("cookDone", handleCookDone);
     socket.on("happyLeave", handleHappyLeave);
+    socket.on("sadLeave", handleSadLeave);
     socket.on("serviceEffect", handleServiceEffect);
     socket.on("loseHeart", handleLoseHeart);
     socket.on("urgentCustomer", handleUrgentCustomer);
@@ -223,6 +246,7 @@ export function setupGameEffects(socket: Socket | null) {
       socket.off("comboServe", handleCombo);
       socket.off("cookDone", handleCookDone);
       socket.off("happyLeave", handleHappyLeave);
+      socket.off("sadLeave", handleSadLeave);
       socket.off("serviceEffect", handleServiceEffect);
       socket.off("loseHeart", handleLoseHeart);
       socket.off("urgentCustomer", handleUrgentCustomer);

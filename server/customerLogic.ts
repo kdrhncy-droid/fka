@@ -112,6 +112,7 @@ export function customerTick(gs: GameState, io: Server, rid: string) {
             gs.dailyObjectives?.forEach(obj => { if (obj.type === 'no_life_loss') obj.failed = true; });
             io.to(rid).emit("sound", "fail");
             io.to(rid).emit("loseHeart", { x: c.seatX, y: c.seatY, amount: 1 });
+            io.to(rid).emit("sadLeave", { x: c.seatX, y: c.seatY });
             if (gs.lives <= 0) {
               gs.isGameOver = true;
               gs.dayPhase = 'night';

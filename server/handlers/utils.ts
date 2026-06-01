@@ -20,6 +20,7 @@ export type InteractionHandler = (ctx: InteractContext) => boolean;
 
 export function earn(lv: number, maxPatience: number, currentPatience: number) {
   const base = 10 + 5 * lv;
+  if (!maxPatience || maxPatience <= 0) return Math.floor(base * 0.5); // NaN koruması
   const ratio = Math.max(0, currentPatience / maxPatience);
   let mult = 0.5;
   if (ratio > 0.8) mult = 2.0;

@@ -73,10 +73,21 @@ export function registerSocketHandlers(socket: Socket, io: Server) {
 
     const gs = RoomManager.getRoomState(roomId)!;
     gs.players[socket.id] = {
-      id: socket.id, name, color, hat, charType,
-      hairColor, hairStyle, outfitStyle, clothingColor, faceShape,
-      nameLabelColor, title, labelEffect, serviceEffect,
-      x: 640, y: 350, holding: null
+      id: socket.id,
+      name:          name          ?? 'Oyuncu',
+      color:         color         ?? '#8B4513',
+      hat:           hat           ?? '',
+      charType:      charType      ?? 0,
+      hairColor:     hairColor     ?? '#4a2c1a',
+      hairStyle:     hairStyle     ?? 'default',
+      outfitStyle:   outfitStyle   ?? 'default',
+      clothingColor: clothingColor ?? '#4a7c59',
+      faceShape:     faceShape     ?? 'round',
+      nameLabelColor:nameLabelColor?? '#ffffff',
+      title:         title         ?? '',
+      labelEffect:   labelEffect   ?? '',
+      serviceEffect: serviceEffect ?? '',
+      x: 640, y: 350, holding: null,
     };
     socket.emit("init", { id: socket.id, state: gs });
     io.to(roomId).emit("state", gs);
@@ -153,7 +164,7 @@ export function registerSocketHandlers(socket: Socket, io: Server) {
     const maxOvens = INITIAL_OVEN_POSITIONS.length + ADDITIONAL_OVEN_POSITIONS.length;
     if (currentOvens >= maxOvens) { socket.emit("sound", "fail"); return; }
     const ovenIdx = currentOvens - INITIAL_OVEN_POSITIONS.length;
-    if (ovenIdx < 0 || ovenIdx >= OVEN_UPGRADE_COSTS.length) { socket.emit("sound", "fail"); return; }
+    if (ovenIdx < 0 || ovenIdx >= OVEN_UPGRADE_COSTS.length || ovenIdx >= ADDITIONAL_OVEN_POSITIONS.length) { socket.emit("sound", "fail"); return; }
     const cost = OVEN_UPGRADE_COSTS[ovenIdx];
     if (gs.score >= cost) {
       gs.score -= cost;
