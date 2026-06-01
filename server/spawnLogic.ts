@@ -9,11 +9,13 @@ import { getCardMultipliers } from "./cardLogic.js";
 import { DOOR_X, DOOR_ENTRY_Y } from "../shared/constants.js";
 
 function patLimit(lv: number, day: number, playerCount: number) {
-  // Sabır limitleri solo ve grup için %25-30 artırıldı
   const basePatience = playerCount === 1 ? 2000 : (playerCount <= 2 ? 1800 : 1600);
   const perLv = playerCount === 1 ? 400 : 300;
-  const perDay = playerCount === 1 ? 10 : 15;
-  return Math.max(800, basePatience + perLv * lv - perDay * day);
+  // İlk 4 gün yavaş, sonra giderek sertleşiyor
+  const dayPenalty = day <= 4
+    ? day * 18
+    : 72 + (day - 4) * 40;
+  return Math.max(550, basePatience + perLv * lv - dayPenalty);
 }
 
 export function tryQueueSeat(gs: GameState, io: Server, rid: string) {
@@ -94,11 +96,11 @@ export function spawnTick(gs: GameState, io: Server, rid: string) {
   const playerCount = Object.keys(gs.players).length || 1;
   const isSolo = playerCount === 1;
 
-  const baseRate = 0.0015 + Math.min(gs.day * 0.0003, 0.0060);
+  const baseRate = 0.0015 + Math.min(gs.day * 0.0006, 0.012); // Gün başına artış 2x, tavan 2x yüksek
   const dayProgress = 1 - gs.dayTimer / DAY_TICKS;
   const revengeBonus = gs.revengeQueue.length > 0 ? 1.2 : 1.0;
-  const spawnMultiplier = (1 + (playerCount - 1) * 0.2) * cm.spawnMult * revengeBonus; // Oyuncu sayısı arttıkça gelen müşteri artışı %30'dan %20'ye düşürüldü
-  const queueLimit = Math.min(14, (4 + Math.floor(gs.day / 3)) * Math.ceil(spawnMultiplier));
+  const spawnMultiplier = (1 + (playerCount - 1) * 0.2) * cm.spawnMult * revengeBonus;
+  const queueLimit = Math.min(18, (4 + Math.floor(gs.day / 2)) * Math.ceil(spawnMultiplier)); // Kuyruk daha hızlı büyüyor, tavan 14→18
   const currentRate = (baseRate + dayProgress * 0.0008) * spawnMultiplier;
 
   if (Math.random() < currentRate && gs.customers.length + gs.waitList.length < queueLimit) {
