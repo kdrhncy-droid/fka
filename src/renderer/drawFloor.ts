@@ -361,6 +361,10 @@ function drawExterior(ctx: CanvasRenderingContext2D) {
   ctx.beginPath(); ctx.moveTo(0, SIDEWALK_END + 3); ctx.lineTo(W, SIDEWALK_END + 3); ctx.stroke();
   ctx.beginPath(); ctx.moveTo(0, ROAD_END - 3); ctx.lineTo(W, ROAD_END - 3); ctx.stroke();
 
+  // ── Komşu binalar (kaldırım + ön duvar üstüne) ────────────────────────────
+  drawNeighborLeft(ctx);
+  drawNeighborRight(ctx);
+
   // ── Ağaçlar ───────────────────────────────────────────────────────────────
   const treeY = WALL_BOT + (SIDEWALK_END - WALL_BOT) / 2 + 4;
   [90, 210, 370, 910, 1070, 1185].forEach(tx2 => {
@@ -679,4 +683,268 @@ function drawStreetLamp(ctx: CanvasRenderingContext2D, cx: number, cy: number) {
   ctx.strokeStyle = '#a09040'; ctx.lineWidth = 1.5; ctx.stroke();
   ctx.fillStyle = 'rgba(255,240,100,0.12)';
   ctx.beginPath(); ctx.arc(cx + 10, cy, 16, 0, Math.PI * 2); ctx.fill();
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// KOMŞU BİNALAR
+// ════════════════════════════════════════════════════════════════════════════
+
+/** Sol komşu: 💈 Berber & Kuaför (x: 0 → 488) */
+function drawNeighborLeft(ctx: CanvasRenderingContext2D) {
+  const END_X = 488;
+  const WALL_TOP = EXTERIOR_Y;
+  const WALL_BOT = EXTERIOR_Y + 32;
+
+  // Duvar gövdesi — pastel mavi
+  const wg = ctx.createLinearGradient(0, WALL_TOP, 0, WALL_BOT);
+  wg.addColorStop(0, '#c2d4e8');
+  wg.addColorStop(1, '#9ab8d0');
+  ctx.fillStyle = wg;
+  ctx.fillRect(0, WALL_TOP, END_X, WALL_BOT - WALL_TOP);
+  // Sıva doku çizgileri
+  ctx.strokeStyle = 'rgba(255,255,255,0.12)'; ctx.lineWidth = 1;
+  for (let lx = 20; lx < END_X; lx += 60) {
+    ctx.beginPath(); ctx.moveTo(lx, WALL_TOP); ctx.lineTo(lx, WALL_BOT); ctx.stroke();
+  }
+  ctx.fillStyle = 'rgba(255,255,255,0.07)';
+  ctx.fillRect(0, WALL_TOP, END_X, 4);
+
+  // Sağ bölücü kolon
+  const cg = ctx.createLinearGradient(END_X - 6, 0, END_X + 2, 0);
+  cg.addColorStop(0, '#3a2816');
+  cg.addColorStop(1, '#6a5438');
+  ctx.fillStyle = cg;
+  ctx.fillRect(END_X - 6, WALL_TOP - 10, 8, WALL_BOT - WALL_TOP + 18);
+  ctx.fillStyle = 'rgba(255,255,255,0.10)';
+  ctx.fillRect(END_X - 6, WALL_TOP - 10, 2, WALL_BOT - WALL_TOP + 18);
+
+  // Tente — lacivert + beyaz çizgili
+  const awY = WALL_TOP;
+  for (let ax = 0; ax < END_X - 6; ax += 18) {
+    ctx.fillStyle = ax % 36 === 0 ? '#1a3a6a' : '#dce8f8';
+    ctx.fillRect(ax, awY, Math.min(18, END_X - 6 - ax), 13);
+  }
+  const awSh = ctx.createLinearGradient(0, awY + 13, 0, awY + 20);
+  awSh.addColorStop(0, 'rgba(0,0,0,0.30)');
+  awSh.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = awSh;
+  ctx.fillRect(0, awY + 13, END_X - 6, 8);
+  // Saçaklar
+  for (let fx = 2; fx < END_X - 10; fx += 14) {
+    ctx.fillStyle = '#c8daf4';
+    ctx.beginPath();
+    ctx.moveTo(fx, awY + 13);
+    ctx.lineTo(fx + 7, awY + 22);
+    ctx.lineTo(fx + 14, awY + 13);
+    ctx.closePath(); ctx.fill();
+  }
+
+  // Tabela
+  const signCX = END_X * 0.5;
+  const sw = 150, sh = 20, sy = WALL_TOP - 34;
+  ctx.fillStyle = 'rgba(0,0,0,0.35)';
+  ctx.beginPath(); ctx.roundRect(signCX - sw/2 + 3, sy + 3, sw, sh, 5); ctx.fill();
+  const sg = ctx.createLinearGradient(signCX - sw/2, sy, signCX + sw/2, sy + sh);
+  sg.addColorStop(0, '#0c2044'); sg.addColorStop(1, '#102858');
+  ctx.fillStyle = sg;
+  ctx.beginPath(); ctx.roundRect(signCX - sw/2, sy, sw, sh, 5); ctx.fill();
+  ctx.strokeStyle = '#5090e0'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.roundRect(signCX - sw/2, sy, sw, sh, 5); ctx.stroke();
+  ctx.fillStyle = '#a0d4ff'; ctx.font = 'bold 11px Arial';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText('💈  Berber & Kuaför', signCX, sy + sh / 2);
+  ctx.strokeStyle = '#6688aa'; ctx.lineWidth = 1.2;
+  ctx.beginPath(); ctx.moveTo(signCX - sw/2 + 18, sy); ctx.lineTo(signCX - sw/2 + 18, WALL_TOP); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(signCX + sw/2 - 18, sy); ctx.lineTo(signCX + sw/2 - 18, WALL_TOP); ctx.stroke();
+
+  // Pencere
+  const wX = 165, wY = WALL_TOP + 7, wW = 80, wH = 17;
+  ctx.fillStyle = 'rgba(180,218,255,0.72)';
+  ctx.beginPath(); ctx.roundRect(wX - wW/2, wY, wW, wH, 3); ctx.fill();
+  ctx.strokeStyle = '#4a7aaa'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.roundRect(wX - wW/2, wY, wW, wH, 3); ctx.stroke();
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(wX, wY); ctx.lineTo(wX, wY + wH); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(wX - wW/2, wY + wH/2); ctx.lineTo(wX + wW/2, wY + wH/2); ctx.stroke();
+  ctx.fillStyle = 'rgba(255,255,255,0.28)';
+  ctx.fillRect(wX - wW/2 + 3, wY + 2, wW/2 - 5, wH/2 - 3);
+  // Müşteri siluetleri
+  ctx.fillStyle = 'rgba(70,100,140,0.55)';
+  ctx.beginPath(); ctx.ellipse(wX - 14, wY + 7, 5, 6, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(wX + 14, wY + 8, 4, 5, 0, 0, Math.PI * 2); ctx.fill();
+
+  // Berber direği
+  drawBarberPole(ctx, 80, WALL_BOT + 6);
+
+  // Dış bekleme sandalyeleri
+  drawOutdoorChair(ctx, 200, WALL_BOT + 16, '#1e3a6e', '#2a5aaa');
+  drawOutdoorChair(ctx, 248, WALL_BOT + 16, '#1e3a6e', '#2a5aaa');
+}
+
+/** Sağ komşu: 🥬 Taze Manav (x: 792 → GAME_WIDTH) */
+function drawNeighborRight(ctx: CanvasRenderingContext2D) {
+  const W = GAME_WIDTH;
+  const START_X = 792;
+  const WALL_TOP = EXTERIOR_Y;
+  const WALL_BOT = EXTERIOR_Y + 32;
+  const NWIDTH = W - START_X;
+
+  // Sol bölücü kolon
+  const cg = ctx.createLinearGradient(START_X - 2, 0, START_X + 6, 0);
+  cg.addColorStop(0, '#6a5438');
+  cg.addColorStop(1, '#3a2816');
+  ctx.fillStyle = cg;
+  ctx.fillRect(START_X - 2, WALL_TOP - 10, 8, WALL_BOT - WALL_TOP + 18);
+  ctx.fillStyle = 'rgba(255,255,255,0.10)';
+  ctx.fillRect(START_X + 4, WALL_TOP - 10, 2, WALL_BOT - WALL_TOP + 18);
+
+  // Duvar gövdesi — sıcak krem/terracotta
+  const wg = ctx.createLinearGradient(0, WALL_TOP, 0, WALL_BOT);
+  wg.addColorStop(0, '#d4b080');
+  wg.addColorStop(1, '#b09060');
+  ctx.fillStyle = wg;
+  ctx.fillRect(START_X, WALL_TOP, NWIDTH, WALL_BOT - WALL_TOP);
+  ctx.strokeStyle = 'rgba(0,0,0,0.07)'; ctx.lineWidth = 0.8;
+  for (let lx = START_X + 30; lx < W; lx += 55) {
+    ctx.beginPath(); ctx.moveTo(lx, WALL_TOP); ctx.lineTo(lx, WALL_BOT); ctx.stroke();
+  }
+  ctx.fillStyle = 'rgba(255,255,255,0.07)';
+  ctx.fillRect(START_X, WALL_TOP, NWIDTH, 3);
+
+  // Tente — yeşil çizgili
+  const awY = WALL_TOP;
+  for (let ax = START_X; ax < W; ax += 18) {
+    ctx.fillStyle = (ax - START_X) % 36 === 0 ? '#1a5a22' : '#e8f8d8';
+    ctx.fillRect(ax, awY, Math.min(18, W - ax), 13);
+  }
+  const awSh = ctx.createLinearGradient(0, awY + 13, 0, awY + 20);
+  awSh.addColorStop(0, 'rgba(0,0,0,0.28)');
+  awSh.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = awSh;
+  ctx.fillRect(START_X, awY + 13, NWIDTH, 8);
+  for (let fx = START_X + 2; fx < W - 10; fx += 14) {
+    ctx.fillStyle = '#c8e8b0';
+    ctx.beginPath();
+    ctx.moveTo(fx, awY + 13);
+    ctx.lineTo(fx + 7, awY + 22);
+    ctx.lineTo(fx + 14, awY + 13);
+    ctx.closePath(); ctx.fill();
+  }
+
+  // Tabela
+  const signCX = START_X + NWIDTH * 0.5;
+  const sw = 145, sh = 20, sy = WALL_TOP - 34;
+  ctx.fillStyle = 'rgba(0,0,0,0.35)';
+  ctx.beginPath(); ctx.roundRect(signCX - sw/2 + 3, sy + 3, sw, sh, 5); ctx.fill();
+  const sg = ctx.createLinearGradient(signCX - sw/2, sy, signCX + sw/2, sy + sh);
+  sg.addColorStop(0, '#102808'); sg.addColorStop(1, '#183a10');
+  ctx.fillStyle = sg;
+  ctx.beginPath(); ctx.roundRect(signCX - sw/2, sy, sw, sh, 5); ctx.fill();
+  ctx.strokeStyle = '#50b038'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.roundRect(signCX - sw/2, sy, sw, sh, 5); ctx.stroke();
+  ctx.fillStyle = '#a8ee78'; ctx.font = 'bold 11px Arial';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText('🥬  Taze Manav', signCX, sy + sh / 2);
+  ctx.strokeStyle = '#6a9850'; ctx.lineWidth = 1.2;
+  ctx.beginPath(); ctx.moveTo(signCX - sw/2 + 18, sy); ctx.lineTo(signCX - sw/2 + 18, WALL_TOP); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(signCX + sw/2 - 18, sy); ctx.lineTo(signCX + sw/2 - 18, WALL_TOP); ctx.stroke();
+
+  // Vitrin penceresi
+  const wX = START_X + NWIDTH * 0.38;
+  const wY = WALL_TOP + 6, wW = 100, wH = 17;
+  ctx.fillStyle = 'rgba(255,245,200,0.70)';
+  ctx.beginPath(); ctx.roundRect(wX - wW/2, wY, wW, wH, 3); ctx.fill();
+  ctx.strokeStyle = '#8a6a30'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.roundRect(wX - wW/2, wY, wW, wH, 3); ctx.stroke();
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(wX, wY); ctx.lineTo(wX, wY + wH); ctx.stroke();
+  ctx.fillStyle = 'rgba(255,255,255,0.25)';
+  ctx.fillRect(wX - wW/2 + 3, wY + 2, wW/2 - 5, wH/2 - 3);
+  // Vitrin emojileri
+  ctx.font = '9px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ['🍅', '🍊', '🥦', '🍇', '🍋'].forEach((em, i) => {
+    ctx.fillText(em, wX - wW/2 + 10 + i * 20, wY + wH / 2);
+  });
+
+  // Kaldırımda sebze kasaları
+  drawVegCrate(ctx, START_X + 50, WALL_BOT + 14, '🍅', '🍊');
+  drawVegCrate(ctx, START_X + 120, WALL_BOT + 14, '🥦', '🥕');
+  drawVegCrate(ctx, START_X + 190, WALL_BOT + 14, '🍇', '🍋');
+
+  // Kaldırımda A-çerçeve tabela
+  drawScaleSign(ctx, START_X + 300, WALL_BOT + 12);
+}
+
+/** Berber direği (kırmızı-beyaz-mavi çizgili) */
+function drawBarberPole(ctx: CanvasRenderingContext2D, cx: number, cy: number) {
+  const poleH = 44, poleW = 9;
+  ctx.fillStyle = 'rgba(0,0,0,0.20)';
+  ctx.beginPath(); ctx.ellipse(cx + 2, cy + poleH + 3, 5, 3, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#d8d8d8';
+  ctx.beginPath(); ctx.roundRect(cx - poleW/2, cy, poleW, poleH, [3, 3, 2, 2]); ctx.fill();
+  ctx.strokeStyle = '#b0b0b0'; ctx.lineWidth = 1; ctx.stroke();
+  ctx.save();
+  ctx.beginPath(); ctx.roundRect(cx - poleW/2 + 1, cy + 1, poleW - 2, poleH - 2, 2); ctx.clip();
+  const colors = ['#e03030', '#ffffff', '#3040d0', '#e03030', '#ffffff', '#3040d0'];
+  const sh = poleH / colors.length;
+  colors.forEach((col, i) => {
+    ctx.fillStyle = col;
+    ctx.fillRect(cx - poleW/2 + 1, cy + i * sh, poleW - 2, sh);
+  });
+  ctx.restore();
+  ctx.fillStyle = '#c8d0e8';
+  ctx.beginPath(); ctx.arc(cx, cy + 1, 6, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = '#8898b8'; ctx.lineWidth = 1; ctx.stroke();
+  ctx.fillStyle = 'rgba(255,255,255,0.40)';
+  ctx.beginPath(); ctx.arc(cx - 2, cy - 1, 2.5, 0, Math.PI * 2); ctx.fill();
+}
+
+/** Dış mekan sandalyesi */
+function drawOutdoorChair(ctx: CanvasRenderingContext2D, cx: number, cy: number, backColor: string, seatColor: string) {
+  ctx.fillStyle = 'rgba(0,0,0,0.18)';
+  ctx.beginPath(); ctx.ellipse(cx, cy + 22, 14, 4, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = backColor;
+  ctx.beginPath(); ctx.roundRect(cx - 11, cy, 22, 12, [3, 3, 0, 0]); ctx.fill();
+  ctx.strokeStyle = 'rgba(255,255,255,0.15)'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.roundRect(cx - 11, cy, 22, 12, [3, 3, 0, 0]); ctx.stroke();
+  ctx.fillStyle = seatColor;
+  ctx.beginPath(); ctx.roundRect(cx - 13, cy + 10, 26, 8, 2); ctx.fill();
+  ctx.fillStyle = '#707888';
+  ctx.fillRect(cx - 10, cy + 18, 4, 6);
+  ctx.fillRect(cx + 6, cy + 18, 4, 6);
+}
+
+/** Sebze/meyve kasası */
+function drawVegCrate(ctx: CanvasRenderingContext2D, cx: number, cy: number, e1: string, e2: string) {
+  ctx.fillStyle = '#8B6914';
+  ctx.beginPath(); ctx.roundRect(cx - 22, cy, 44, 22, 2); ctx.fill();
+  ctx.strokeStyle = '#5a4508'; ctx.lineWidth = 1;
+  ctx.strokeRect(cx - 22, cy, 44, 22);
+  ctx.strokeStyle = 'rgba(0,0,0,0.15)'; ctx.lineWidth = 0.7;
+  for (let i = 1; i < 3; i++) {
+    ctx.beginPath(); ctx.moveTo(cx - 22, cy + i * 7); ctx.lineTo(cx + 22, cy + i * 7); ctx.stroke();
+  }
+  ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx, cy + 22); ctx.stroke();
+  ctx.font = '10px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(e1, cx - 10, cy + 11);
+  ctx.fillText(e2, cx + 10, cy + 11);
+  ctx.fillStyle = 'rgba(255,255,255,0.07)';
+  ctx.fillRect(cx - 20, cy + 1, 40, 5);
+}
+
+/** Manav A-çerçeve sokak tabelası */
+function drawScaleSign(ctx: CanvasRenderingContext2D, cx: number, cy: number) {
+  ctx.fillStyle = '#c8a858';
+  ctx.beginPath();
+  ctx.moveTo(cx - 18, cy + 24);
+  ctx.lineTo(cx, cy);
+  ctx.lineTo(cx + 18, cy + 24);
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = '#8a7030'; ctx.lineWidth = 1.2; ctx.stroke();
+  ctx.fillStyle = '#fff9e8';
+  ctx.beginPath(); ctx.roundRect(cx - 14, cy + 4, 28, 15, 2); ctx.fill();
+  ctx.strokeStyle = '#8a7030'; ctx.lineWidth = 0.8; ctx.stroke();
+  ctx.fillStyle = '#3a2a10'; ctx.font = '6px Arial';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText('⚖️ TAZE', cx, cy + 11);
 }
