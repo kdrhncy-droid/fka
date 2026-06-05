@@ -352,7 +352,9 @@ export function setupGameEffects(socket: Socket | null) {
 export function renderFloatingTexts(ctx: CanvasRenderingContext2D, texts: FloatingText[]) {
   for (let i = texts.length - 1; i >= 0; i--) {
     const ft = texts[i];
-    const ml = ft.maxLife ?? 60;
+    // maxLife ilk render'da otomatik set edilir — eski pushlar için güvenli fallback
+    if (ft.maxLife === undefined) ft.maxLife = ft.life;
+    const ml = ft.maxLife;
     const t = ft.life / ml; // 1 (yeni) → 0 (ölü)
 
     // Alpha: ilk %5'te fade-in, son %30'da fade-out
