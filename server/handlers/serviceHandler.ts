@@ -128,7 +128,7 @@ export const handleCustomers: InteractionHandler = ({ gs, p, px, py, snd, io, ro
         let tip = earn(gs.upgrades.earnings, c.maxPatience, c.patience);
         if (c.personality === 'lucky') tip = Math.round(tip * 4);
         if (c.personality === 'vip') tip = Math.round(tip * 3);
-        if (isDrunk) tip = Math.round(tip * Math.random() * 3);
+        if (isDrunk) tip = Math.max(1, Math.round(tip * (0.5 + Math.random() * 2.5)));
         if (c.personality === 'inspector') { gs.score += 50; io.to(roomId).emit('inspectorBonus', { x: c.seatX, y: c.seatY }); }
         startEating(c, p, tip, null);
         if (p.serviceEffect) io.to(roomId).emit('serviceEffect', { x: c.seatX, y: c.seatY, effect: p.serviceEffect });

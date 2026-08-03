@@ -129,9 +129,9 @@ export function spawnTick(gs: GameState, io: Server, rid: string) {
       const roll = Math.random();
       const luckyRoll = Math.random();
       if (gs.day >= 2 && luckyRoll < 0.05) pers = 'lucky';
+      else if (gs.day >= 7 && roll < 0.08) pers = 'inspector';
       else if (gs.day >= 5 && roll < 0.10) pers = 'vip';
       else if (gs.day >= 3 && roll < 0.25) pers = 'drunk';
-      else if (gs.day >= 7 && roll < 0.08) pers = 'inspector';
 
       let dialog: string | undefined;
       let timer: number | undefined;

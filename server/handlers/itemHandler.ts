@@ -3,6 +3,7 @@ import {
   CLEAN_PLATE, DIRTY_PLATE, isTray, getTrayItems, createTray,
   TRASH_STATION, TRAY_STATION, MAX_TRAY_CAPACITY, PLATE_STACK_POS,
 } from "../../shared/types.js";
+import { DIRTY_TRAY_POS } from "../../shared/gameData.js";
 import { getStationPos } from './utils.js';
 
 const INTERACT_R = 110;
@@ -42,7 +43,7 @@ export const handleTrayStation: InteractionHandler = ({ gs, p, px, py, snd }) =>
 };
 
 export const handleDirtyTrayBasket: InteractionHandler = ({ gs, p, px, py, snd }) => {
-  const dirtyTrayPos = gs.stationLayout['dirty_tray'] ?? { x: 1050, y: 90 };
+  const dirtyTrayPos = gs.stationLayout['dirty_tray'] ?? DIRTY_TRAY_POS;
   if (Math.hypot(px - dirtyTrayPos.x, py - dirtyTrayPos.y) < INTERACT_R) {
     if (p.holding === DIRTY_PLATE) {
       gs.dirtyTrayCount = (gs.dirtyTrayCount || 0) + 1;

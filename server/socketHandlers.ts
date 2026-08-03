@@ -7,7 +7,7 @@ import {
   EXTRA_SINK_POSITIONS, EXTRA_CHOP_POSITIONS,
   mkGameState, mkCook, MapId
 } from "../shared/types.js";
-import { TABLE_COSTS, MAX_TABLES } from "../shared/constants.js";
+import { TABLE_COSTS, MAX_TABLES, GAME_WIDTH } from "../shared/constants.js";
 import { TABLE_POSITIONS } from "../shared/gameData.js";
 import { gameTick, tryQueueSeat, transitionToNextDay, startDay, resetGameState } from "./gameLoop.js";
 import { registerInteractHandler } from "./interactHandler.js";
@@ -109,7 +109,7 @@ export function registerSocketHandlers(socket: Socket, io: Server) {
     if (typeof data.hairStyle === 'string') p.hairStyle = data.hairStyle.slice(0, 20);
     if (typeof data.outfitStyle === 'string') p.outfitStyle = data.outfitStyle.slice(0, 20);
     if (typeof data.clothingColor === 'string') p.clothingColor = data.clothingColor.slice(0, 20);
-    if (typeof data.faceShape === 'number') p.faceShape = Math.floor(data.faceShape) % 3;
+    if (typeof data.faceShape === 'number' && !isNaN(data.faceShape)) p.faceShape = Math.floor(data.faceShape) % 3;
     if (typeof data.color === 'string') p.color = data.color.slice(0, 20);
     if (typeof data.hat === 'string') p.hat = data.hat.slice(0, 10);
     if (typeof data.nameLabelColor === 'string') p.nameLabelColor = data.nameLabelColor.slice(0, 20);
@@ -120,8 +120,13 @@ export function registerSocketHandlers(socket: Socket, io: Server) {
   // ── Hareket ───────────────────────────────────────────────────────────────
   socket.on("move", (pos) => {
     if (!roomId || !RoomManager.getRoomState(roomId)) return;
+    if (!pos || typeof pos.x !== 'number' || typeof pos.y !== 'number') return;
+    if (isNaN(pos.x) || isNaN(pos.y)) return;
     const gs = RoomManager.getRoomState(roomId)!;
-    if (gs.players[socket.id]) { gs.players[socket.id].x = pos.x; gs.players[socket.id].y = pos.y; }
+    if (gs.players[socket.id]) {
+      gs.players[socket.id].x = Math.max(-100, Math.min(GAME_WIDTH + 100, pos.x));
+      gs.players[socket.id].y = Math.max(-100, Math.min(GAME_HEIGHT + 100, pos.y));
+    }
   });
 
   // ── Etkileşim + Layout ────────────────────────────────────────────────────
@@ -180,7 +185,7 @@ export function registerSocketHandlers(socket: Socket, io: Server) {
     const gs = RoomManager.getRoomState(roomId)!;
     if (gs.dayPhase !== 'night') return;
     const currentCount = Object.keys(gs.tableLayout).length;
-    if (currentCount >= MAX_TABLES) { socket.emit("sound", "fail"); return; }
+    if (currentCount >= MAX_TABLES || currentCount >= TABLE_POSITIONS.length) { socket.emit("sound", "fail"); return; }
     const cost = TABLE_COSTS[Math.min(currentCount - 6, TABLE_COSTS.length - 1)];
     if (gs.score < cost) { socket.emit("sound", "fail"); return; }
     gs.score -= cost;

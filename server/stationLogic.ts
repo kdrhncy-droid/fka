@@ -14,7 +14,8 @@ export function updateCookStations(gs: GameState, io: Server, rid: string) {
   const cm = getCardMultipliers(gs);
   gs.cookStations.forEach(s => {
     if (s.input && s.timer > 0) {
-      s.timer -= cm.cookMult <= 1 ? Math.ceil(1 / cm.cookMult) : 1;
+      const mult = (typeof s.input === 'string' && s.input.startsWith(CHOP_PREFIX)) ? cm.choppedCookMult : cm.cookMult;
+      s.timer -= mult <= 1 ? Math.ceil(1 / mult) : 1;
       if (s.timer <= 0) {
         const recipe = RECIPE_DEFS[s.input as keyof typeof RECIPE_DEFS];
         s.output = recipe ? recipe.output : s.input;
@@ -84,7 +85,7 @@ export function updateSinks(gs: GameState, io: Server, rid: string) {
   });
 }
 
-export function updateFryers(gs: GameState) {
+export function updateFryers(gs: GameState, io: Server, rid: string) {
   if (!gs.fryers) return;
   const speedBonus = gs.upgrades.fryerSpeed ?? 0;
   gs.fryers.forEach(f => {
@@ -94,6 +95,7 @@ export function updateFryers(gs: GameState) {
         f.output = '🍟';
         f.input = null;
         f.burnTimer = FRYER_BURN_TICKS;
+        io.to(rid).emit('cookDone', { x: f.x, y: f.y });
       }
     } else if (f.output && f.burnTimer !== undefined && f.burnTimer > 0) {
       f.burnTimer--;
@@ -102,12 +104,12 @@ export function updateFryers(gs: GameState) {
   });
 }
 
-export function updateCakeBakers(gs: GameState) {
+export function updateCakeBakers(gs: GameState, io: Server, rid: string) {
   if (!gs.cakeBakers) return;
   gs.cakeBakers.forEach(c => {
     if (c.input && c.timer > 0) {
       c.timer--;
-      if (c.timer <= 0) { c.output = '🍰'; c.input = null; c.burnTimer = CAKE_BURN_TICKS; }
+      if (c.timer <= 0) { c.output = '🍰'; c.input = null; c.burnTimer = CAKE_BURN_TICKS; io.to(rid).emit('cookDone', { x: c.x, y: c.y }); }
     } else if (c.output && c.burnTimer !== undefined && c.burnTimer > 0) {
       c.burnTimer--;
       if (c.burnTimer <= 0) { c.isBurned = true; c.output = '⬛'; }

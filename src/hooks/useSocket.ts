@@ -8,6 +8,7 @@ import { playSound } from '../utils/audio';
 export interface DayEndSummary {
     day: number;
     score: number;
+    dailyEarnings?: number;
     lives: number;
     dailyObjectives?: import('../../shared/types').DailyObjective[];
 }

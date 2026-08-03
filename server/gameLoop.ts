@@ -38,6 +38,7 @@ export function startDay(gs: GameState): boolean {
   if (gs.dayPhase !== 'prep') return false;
   gs.dayPhase = 'day';
   gs.dayTimer = DAY_TICKS;
+  gs._scoreAtDayStart = gs.score;
   gs.dailyObjectives = pickDailyObjectives(gs.day);
   return true;
 }
@@ -81,8 +82,8 @@ export function gameTick(gs: GameState, io: Server, rid: string) {
   updateCookStations(gs, io, rid);
   updateChoppingBoards(gs);
   updateSinks(gs, io, rid);
-  updateFryers(gs);
-  updateCakeBakers(gs);
+  updateFryers(gs, io, rid);
+  updateCakeBakers(gs, io, rid);
 
   // Gündüz timer
   if (gs.dayPhase === 'day') {
@@ -116,11 +117,14 @@ export function gameTick(gs: GameState, io: Server, rid: string) {
           if (objectiveBonus > 0) gs.score += objectiveBonus;
         }
 
+        if (cm.endDayBonus > 0) gs.score += cm.endDayBonus;
+
+        const dailyEarnings = gs.score - (gs._scoreAtDayStart ?? 0);
         if (gs.pendingRevengeScene) {
           gs.pendingRevengeScene = false;
-          io.to(rid).emit("revengeScene", { day: gs.day, score: gs.score, lives: gs.lives, dailyObjectives: gs.dailyObjectives ?? [] });
+          io.to(rid).emit("revengeScene", { day: gs.day, score: gs.score, dailyEarnings, lives: gs.lives, dailyObjectives: gs.dailyObjectives ?? [] });
         } else {
-          io.to(rid).emit("dayEnd", { day: gs.day, score: gs.score, lives: gs.lives, dailyObjectives: gs.dailyObjectives ?? [] });
+          io.to(rid).emit("dayEnd", { day: gs.day, score: gs.score, dailyEarnings, lives: gs.lives, dailyObjectives: gs.dailyObjectives ?? [] });
         }
 
         if (MENU_UNLOCK_DAYS.includes(gs.day + 1)) {
@@ -136,7 +140,6 @@ export function gameTick(gs: GameState, io: Server, rid: string) {
         }
       }
 
-      if (cm.endDayBonus > 0) gs.score += cm.endDayBonus;
     }
   }
 

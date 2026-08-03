@@ -145,7 +145,7 @@ export const DayEndModal: React.FC<Props> = ({ summary, onClose }) => {
                             <div className="w-full space-y-2 min-w-[240px]">
                                 <div className="flex items-center justify-between bg-stone-800 rounded-xl px-4 py-3">
                                     <span className="text-sm text-stone-400 font-bold">💰 Günlük Ciro</span>
-                                    <span className="text-xl font-black text-amber-400">${summary.score}</span>
+                                    <span className="text-xl font-black text-amber-400">${summary.dailyEarnings ?? summary.score}</span>
                                 </div>
                                 <div className="flex items-center justify-between bg-stone-800 rounded-xl px-4 py-3">
                                     <span className="text-sm text-stone-400 font-bold">🏆 En Yüksek</span>

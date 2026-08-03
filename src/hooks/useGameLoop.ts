@@ -233,5 +233,5 @@ export function useGameLoop({
 
     frameId = requestAnimationFrame(render);
     return () => { cancelAnimationFrame(frameId); cleanupEffects(); };
-  }, [isJoined, myId, socket, showPerfStats]);
+  }, [isJoined, myId, socket, showPerfStats, globalVolume]);
 }
