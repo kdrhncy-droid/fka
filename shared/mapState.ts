@@ -1,6 +1,6 @@
 import type { GameState, CookStation, MapId } from './types';
 import { INITIAL_OVEN_POSITIONS, CHOPPING_BOARD_POS, SINK_STATION, SERVICE_WINDOW_SLOTS } from './gameData';
-import { FRIDGE_BASE_CAPACITY, COFFEE_BASE_CAPACITY, DAY_TICKS, PLATE_STACK_BASE } from './constants';
+import { DAY_TICKS, PLATE_STACK_BASE } from './constants';
 
 export function mkCook(id: string, x: number, y: number): CookStation {
   return { input: null, timer: 0, output: null, id, x, y };
@@ -21,7 +21,7 @@ function mkClassicMapState(): GameState {
     dirtyTables: [],
     score: 0,
     marketName: "TerraMarket", dayPhase: 'prep', dayTimer: DAY_TICKS,
-    upgrades: { patience: 0, earnings: 0, plateStackMax: 0, safeOven: 0, fryerSpeed: 0, cakeBaker: 0, coffeeMachine: 0, extraSink: 0, extraChopBoard: 0 }, day: 1, hasOrderedTonight: false,
+    upgrades: { patience: 0, earnings: 0, plateStackMax: 0, safeOven: 0, fryerSpeed: 0, cakeBaker: 0, extraSink: 0, extraChopBoard: 0 }, day: 1, hasOrderedTonight: false,
     cookStations: initialOvens,
     dirtyTrayCount: 0,
     plateStack: { count: PLATE_STACK_BASE, maxCount: PLATE_STACK_BASE },
@@ -52,9 +52,7 @@ function mkClassicMapState(): GameState {
       'plate_stack':   { id: 'plate_stack',   x: 650, y: 65 },
       'chop1':         { id: 'chop1',         x: 760, y: 170 },
       'fryer1':        { id: 'fryer1',        x: 300, y: 170 },
-      'fridge1':       { id: 'fridge1',       x: 200, y: 285 },
       'cakebaker1':    { id: 'cakebaker1',    x: 500, y: 170 },
-      'coffee1':       { id: 'coffee1',       x: 100, y: 285 },
 
     },
     lockedStations: {},
@@ -76,14 +74,8 @@ function mkClassicMapState(): GameState {
     fryers: [
       { id: 'fryer1', x: 300, y: 170, input: null, timer: 0, output: null },
     ],
-    fridges: [
-      { id: 'fridge1', x: 200, y: 285, drinks: FRIDGE_BASE_CAPACITY, maxDrinks: FRIDGE_BASE_CAPACITY },
-    ],
     cakeBakers: [
       { id: 'cakebaker1', x: 500, y: 170, input: null, timer: 0, output: null },
-    ],
-    coffeeMachines: [
-      { id: 'coffee1', x: 100, y: 285, cups: COFFEE_BASE_CAPACITY, maxCups: COFFEE_BASE_CAPACITY },
     ],
     serviceWindow: SERVICE_WINDOW_SLOTS.map(s => ({ id: s.id, item: null })),
     dailyObjectives: [],

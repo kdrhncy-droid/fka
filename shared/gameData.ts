@@ -21,7 +21,6 @@ export const ALL_CARDS: GameCard[] = [
     { id: 'hot_oven',         icon: '🔥', name: 'Sıcak Fırın',        penalty: 'Yemekler %30 daha hızlı yanar', reward: 'Yemekler %30 daha hızlı pişer' },
     { id: 'few_plates',       icon: '🍽️', name: 'Az Tabak',           penalty: 'Başlangıç tabak sayısı -2',    reward: 'Her temizlenen tabak +2 puan' },
     { id: 'chop_pressure',    icon: '⏱️', name: 'Doğrama Baskısı',    penalty: 'Kesme tahtası %25 daha yavaş', reward: 'Doğranmış malzeme fırında %40 daha hızlı pişer' },
-    { id: 'cold_chain',       icon: '🧊', name: 'Soğuk Zincir',       penalty: 'İçecek servisi -2 puan',       reward: 'İçecek servisi +12 ekstra puan' },
     { id: 'expensive_day',    icon: '💸', name: 'Pahalı Gün',         penalty: 'Upgrade fiyatları +%25',       reward: 'Gün sonu +$50 bonus' },
     { id: 'lucky_day',        icon: '🎰', name: 'Şans Günü',          penalty: 'Spawn tamamen rastgele',        reward: 'Her müşteri 2x bahşiş bırakır' },
     { id: 'low_season',       icon: '📉', name: 'Düşük Sezon',        penalty: 'Müşteri sayısı -%20',          reward: 'Her müşteri %50 daha sabırlı' },
@@ -62,7 +61,7 @@ export const RECIPE_DEFS = {
     '🧁':          { output: '🍰', time: 180, label: '🍰 Pasta' },
 } as const;
 
-export const DISH_UNLOCK_POOL = ['🍕', '🍜', '🌯', '🍟', '🥤', '🍰', '☕'] as const;
+export const DISH_UNLOCK_POOL = ['🍕', '🍜', '🌯', '🍟', '🍰'] as const;
 
 export const INITIAL_OVEN_POSITIONS = [
     { x: 400, y: 90 },
@@ -94,7 +93,7 @@ export const EXTRA_CHOP_POSITIONS = [
 
 
 
-export const DISH_ITEMS = ['🍕', '🍔', '🥗', '🍜', '🌯', '🍟', '🥤', '🍰', '☕'] as const;
+export const DISH_ITEMS = ['🍕', '🍔', '🥗', '🍜', '🌯', '🍟', '🍰'] as const;
 
 
 
@@ -107,7 +106,6 @@ export const UPGRADE_DEFS: Record<UpgradeKey, { costs: number[]; max: number }> 
     safeOven:      { costs: [500],                 max: 1 },
     fryerSpeed:    { costs: [300, 600],             max: 2 },
     cakeBaker:     { costs: [400],                  max: 1 },
-    coffeeMachine: { costs: [350],                  max: 1 },
     extraSink:     { costs: [300, 600],             max: 2 },
     extraChopBoard:{ costs: [250, 500],             max: 2 },
 };

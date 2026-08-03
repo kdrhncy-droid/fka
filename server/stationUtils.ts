@@ -1,6 +1,6 @@
 import {
   GameState,
-  CookStation, ChoppingBoard, Fryer, Fridge, CakeBaker, CoffeeMachine, WashingSink,
+  CookStation, ChoppingBoard, Fryer, CakeBaker, WashingSink,
 } from "../shared/types.js";
 
 // Tüm istasyon tipleri için ortak arayüz
@@ -15,9 +15,7 @@ export function getStationById(gs: GameState, id: string): AnyStation | null {
     gs.cookStations.find(s => s.id === id) ??
     gs.choppingBoards?.find(b => b.id === id) ??
     gs.fryers?.find(f => f.id === id) ??
-    gs.fridges?.find(f => f.id === id) ??
     gs.cakeBakers?.find(c => c.id === id) ??
-    gs.coffeeMachines?.find(c => c.id === id) ??
     gs.sinks?.find(s => s.id === id) ??
     null
   );
@@ -52,9 +50,7 @@ export function getAllStations(gs: GameState): AnyStation[] {
     ...gs.cookStations,
     ...(gs.choppingBoards ?? []),
     ...(gs.fryers ?? []),
-    ...(gs.fridges ?? []),
     ...(gs.cakeBakers ?? []),
-    ...(gs.coffeeMachines ?? []),
     ...(gs.sinks ?? []),
   ];
 }

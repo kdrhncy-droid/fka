@@ -70,10 +70,6 @@ export {
   type Fryer,
   FRYER_TICKS,
   FRYER_BURN_TICKS,
-  // Buzdolabı
-  type Fridge,
-  DRINK_ITEM,
-  FRIDGE_BASE_CAPACITY,
   // Servis Penceresi
   type ServiceWindowSlot,
   SERVICE_WINDOW_SLOTS,

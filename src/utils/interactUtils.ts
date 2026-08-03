@@ -78,30 +78,12 @@ export function getNearestInteractable(px: number, py: number, gs: GameState, la
     });
   }
 
-  // Buzdolapları
-  if (isStationUnlocked('fridge1', gs.unlockedDishes ?? [])) {
-    gs.fridges?.forEach(f => {
-      const x = gs.stationLayout?.[f.id]?.x ?? f.x;
-      const y = gs.stationLayout?.[f.id]?.y ?? f.y;
-      addCandidate(x, y, INTERACT_R, 'fridge', f.id);
-    });
-  }
-
   // Pasta fırınları
   if (isStationUnlocked('cakebaker1', gs.unlockedDishes ?? [])) {
     gs.cakeBakers?.forEach(c => {
       const x = gs.stationLayout?.[c.id]?.x ?? c.x;
       const y = gs.stationLayout?.[c.id]?.y ?? c.y;
       addCandidate(x, y, INTERACT_R, 'cakeBaker', c.id);
-    });
-  }
-
-  // Kahve makineleri
-  if (isStationUnlocked('coffee1', gs.unlockedDishes ?? [])) {
-    gs.coffeeMachines?.forEach(c => {
-      const x = gs.stationLayout?.[c.id]?.x ?? c.x;
-      const y = gs.stationLayout?.[c.id]?.y ?? c.y;
-      addCandidate(x, y, INTERACT_R, 'coffeeMachine', c.id);
     });
   }
 

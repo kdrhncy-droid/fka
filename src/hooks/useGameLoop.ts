@@ -29,9 +29,7 @@ import { drawPlateStack } from '../renderer/drawPlateStack';
 import { drawSinks } from '../renderer/drawSinks';
 import { drawPerfStats } from '../renderer/drawPerfStats';
 import { drawFryer } from '../renderer/drawFryer';
-import { drawFridge } from '../renderer/drawFridge';
 import { drawCakeBaker } from '../renderer/drawCakeBaker';
-import { drawCoffeeMachine } from '../renderer/drawCoffeeMachine';
 import { isStationUnlocked } from '../../shared/stationRegistry';
 
 interface UseGameLoopProps {
@@ -152,30 +150,12 @@ export function useGameLoop({
         }
       }
 
-      // Buzdolabı — sadece 🥤 unlock edilmişse göster
-      if (state.fridges && isStationUnlocked('fridge1', state.unlockedDishes)) {
-        for (const fridge of state.fridges) {
-          if (movingId === fridge.id) continue;
-          const pos = getDynPos(fridge.id, fridge, state.stationLayout);
-          drawFridge(ctx, { ...fridge, ...pos });
-        }
-      }
-
       // Pasta fırını — sadece 🍰 unlock edilmişse göster
       if (state.cakeBakers && isStationUnlocked('cakebaker1', state.unlockedDishes)) {
         for (const baker of state.cakeBakers) {
           if (movingId === baker.id) continue;
           const pos = getDynPos(baker.id, baker, state.stationLayout);
           drawCakeBaker(ctx, { ...baker, ...pos }, time);
-        }
-      }
-
-      // Kahve makinesi — sadece ☕ unlock edilmişse göster
-      if (state.coffeeMachines && isStationUnlocked('coffee1', state.unlockedDishes)) {
-        for (const cm of state.coffeeMachines) {
-          if (movingId === cm.id) continue;
-          const pos = getDynPos(cm.id, cm, state.stationLayout);
-          drawCoffeeMachine(ctx, { ...cm, ...pos });
         }
       }
 

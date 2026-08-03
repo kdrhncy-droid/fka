@@ -5,7 +5,7 @@ import {
   CHOP_TICKS, CHOP_PREFIX,
   WASH_TICKS, DIRTY_PLATE, CLEAN_PLATE,
   FRYER_BURN_TICKS,
-  CAKE_BURN_TICKS, COFFEE_BASE_CAPACITY,
+  CAKE_BURN_TICKS,
 } from "../shared/types.js";
 import { getCardMultipliers } from "./cardLogic.js";
 import { getStationPos } from "./stationUtils.js";
@@ -115,17 +115,3 @@ export function updateCakeBakers(gs: GameState) {
   });
 }
 
-export function updateCoffeeMachinesAndFridges(gs: GameState) {
-  if (gs.dayPhase !== 'night' || gs.hasOrderedTonight) return;
-  if (gs.coffeeMachines) {
-    gs.coffeeMachines.forEach(cm => {
-      cm.maxCups = COFFEE_BASE_CAPACITY + (gs.upgrades.coffeeMachine ?? 0) * 2;
-      cm.cups = cm.maxCups;
-    });
-  }
-  if (gs.fridges) {
-    gs.fridges.forEach(fridge => {
-      fridge.drinks = fridge.maxDrinks;
-    });
-  }
-}

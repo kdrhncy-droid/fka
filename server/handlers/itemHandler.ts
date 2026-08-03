@@ -2,10 +2,8 @@ import { InteractionHandler, isDish } from './utils.js';
 import { 
   CLEAN_PLATE, DIRTY_PLATE, isTray, getTrayItems, createTray,
   TRASH_STATION, TRAY_STATION, MAX_TRAY_CAPACITY, PLATE_STACK_POS,
-  DRINK_ITEM
 } from "../../shared/types.js";
 import { getStationPos } from './utils.js';
-import { isStationUnlocked } from '../../shared/stationRegistry.js';
 
 const INTERACT_R = 110;
 
@@ -100,22 +98,3 @@ export const handlePlateStack: InteractionHandler = ({ gs, p, px, py, snd }) => 
 };
 
 
-export const handleFridges: InteractionHandler = ({ gs, p, px, py, snd }) => {
-  if (!gs.fridges || !isStationUnlocked('fridge1', gs.unlockedDishes)) return false;
-  for (const fridge of gs.fridges) {
-    const { x: dynX, y: dynY } = getStationPos(gs, fridge);
-    if (Math.hypot(px - dynX, py - dynY) < INTERACT_R) {
-      if (!p.holding) {
-        p.holding = DRINK_ITEM; snd('pickup');
-      } else if (isTray(p.holding)) {
-        const items = getTrayItems(p.holding);
-        if (items.length < MAX_TRAY_CAPACITY) {
-          items.push(DRINK_ITEM); p.holding = createTray(items);
-          snd('pickup');
-        }
-      } else { snd('fail'); }
-      return true;
-    }
-  }
-  return false;
-};

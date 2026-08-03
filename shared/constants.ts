@@ -7,14 +7,8 @@ export const CHOP_TICKS = 60; // ~2 saniye (33ms * 60)
 export const CAKE_TICKS = 180; // ~6 saniye (uzun ama yüksek bahşiş)
 export const CAKE_BURN_TICKS = 450; // Pasta yanma süresi artırıldı
 
-export const COFFEE_ITEM = '☕';
-export const COFFEE_BASE_CAPACITY = 4;
-
 export const FRYER_TICKS = 30; // ~1 saniye (hızlı)
 export const FRYER_BURN_TICKS = 180;
-
-export const DRINK_ITEM = '🥤';
-export const FRIDGE_BASE_CAPACITY = 999; // Sınırsız içecek
 
 export const WASH_TICKS = 60; // ~2 saniye
 

@@ -4,9 +4,9 @@ import { DIRTY_TRAY_POS } from "../shared/gameData.js";
 import { InteractContext, InteractionHandler } from "./handlers/utils.js";
 
 // Tüm handler dosyalarını içe aktar
-import { handleCookStations, handleFryers, handleCakeBakers, handleCoffeeMachines, handleIngredients } from "./handlers/kitchenHandler.js";
+import { handleCookStations, handleFryers, handleCakeBakers, handleIngredients } from "./handlers/kitchenHandler.js";
 import { handleServiceWindow, handleDirtyTables, handleCustomers } from "./handlers/serviceHandler.js";
-import { handleTrash, handleTrayStation, handleDirtyTrayBasket, handlePlateStack, handleFridges } from "./handlers/itemHandler.js";
+import { handleTrash, handleTrayStation, handleDirtyTrayBasket, handlePlateStack } from "./handlers/itemHandler.js";
 import { handleSinks, handleChoppingBoards } from "./handlers/sinkHandler.js";
 import { INTERACT_R, COOK_R, SERVE_R } from "../shared/constants.js";
 
@@ -76,25 +76,11 @@ function buildSortedHandlers(px: number, py: number, gs: GameState): Interaction
     track(handleFryers, x, y, INTERACT_R);
   });
 
-  // Buzdolapları
-  gs.fridges?.forEach(f => {
-    const x = gs.stationLayout?.[f.id]?.x ?? f.x;
-    const y = gs.stationLayout?.[f.id]?.y ?? f.y;
-    track(handleFridges, x, y, INTERACT_R);
-  });
-
   // Pasta fırınları
   gs.cakeBakers?.forEach(c => {
     const x = gs.stationLayout?.[c.id]?.x ?? c.x;
     const y = gs.stationLayout?.[c.id]?.y ?? c.y;
     track(handleCakeBakers, x, y, INTERACT_R);
-  });
-
-  // Kahve makineleri
-  gs.coffeeMachines?.forEach(c => {
-    const x = gs.stationLayout?.[c.id]?.x ?? c.x;
-    const y = gs.stationLayout?.[c.id]?.y ?? c.y;
-    track(handleCoffeeMachines, x, y, INTERACT_R);
   });
 
   // Fırınlar (COOK_R — daha büyük yarıçap)

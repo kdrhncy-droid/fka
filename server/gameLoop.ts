@@ -16,7 +16,6 @@ import {
   updateSinks,
   updateFryers,
   updateCakeBakers,
-  updateCoffeeMachinesAndFridges,
 } from "./stationLogic.js";
 import { moveStation } from "./stationUtils.js";
 
@@ -69,8 +68,6 @@ export function resetGameState(gs: GameState): void {
   gs.cookStations.forEach(s => { s.input = null; s.output = null; s.isBurned = false; s.burnTimer = 0; });
   gs.fryers?.forEach(f => { f.input = null; f.output = null; f.isBurned = false; f.burnTimer = 0; f.timer = 0; });
   gs.cakeBakers?.forEach(c => { c.input = null; c.output = null; c.isBurned = false; c.burnTimer = 0; c.timer = 0; });
-  gs.fridges?.forEach(f => { f.drinks = f.maxDrinks; });
-  gs.coffeeMachines?.forEach(cm => { cm.cups = cm.maxCups; });
   gs.choppingBoards?.forEach(b => { b.input = null; b.progress = 0; b.isChopping = false; b.choppingPlayerId = null; });
   Object.values(gs.players).forEach(p => { p.holding = null; });
 }
@@ -86,7 +83,6 @@ export function gameTick(gs: GameState, io: Server, rid: string) {
   updateSinks(gs, io, rid);
   updateFryers(gs);
   updateCakeBakers(gs);
-  updateCoffeeMachinesAndFridges(gs);
 
   // Gündüz timer
   if (gs.dayPhase === 'day') {

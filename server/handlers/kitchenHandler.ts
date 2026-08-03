@@ -1,6 +1,6 @@
 import { InteractionHandler, isDish } from './utils.js';
 import { 
-  FRYER_TICKS, CAKE_TICKS, COFFEE_ITEM, CLEAN_PLATE, BURNED_FOOD, 
+  FRYER_TICKS, CAKE_TICKS, CLEAN_PLATE, BURNED_FOOD, 
   CHOPPABLE, CHOP_PREFIX, isTray, getTrayItems, createTray, INGREDIENTS, RECIPE_DEFS, MAX_TRAY_CAPACITY
 } from "../../shared/types.js";
 import { getStationPos } from './utils.js';
@@ -103,25 +103,6 @@ export const handleCakeBakers: InteractionHandler = ({ gs, p, px, py, snd }) => 
   return false;
 };
 
-export const handleCoffeeMachines: InteractionHandler = ({ gs, p, px, py, snd }) => {
-  if (!gs.coffeeMachines || !isStationUnlocked('coffee1', gs.unlockedDishes)) return false;
-  for (const cm of gs.coffeeMachines) {
-    const { x: dynX, y: dynY } = getStationPos(gs, cm);
-    if (Math.hypot(px - dynX, py - dynY) < INTERACT_R) {
-      if (!p.holding) {
-        p.holding = COFFEE_ITEM; snd('pickup');
-      } else if (isTray(p.holding)) {
-        const items = getTrayItems(p.holding);
-        if (items.length < MAX_TRAY_CAPACITY) {
-          items.push(COFFEE_ITEM); p.holding = createTray(items);
-          snd('pickup');
-        } else { snd('fail'); }
-      } else { snd('fail'); }
-      return true;
-    }
-  }
-  return false;
-};
 
 export const handleIngredients: InteractionHandler = ({ gs, p, px, py, snd }) => {
   for (const s of INGREDIENTS) {

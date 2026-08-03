@@ -15,7 +15,7 @@ export type { Personality };
 
 export type Item = string | null;
 export type StockKey = '🍞' | '🥩' | '🥬' | '🥘' | '🍢' | '🥔' | '🧁';
-export type UpgradeKey = 'patience' | 'earnings' | 'plateStackMax' | 'safeOven' | 'fryerSpeed' | 'cakeBaker' | 'coffeeMachine' | 'extraSink' | 'extraChopBoard';
+export type UpgradeKey = 'patience' | 'earnings' | 'plateStackMax' | 'safeOven' | 'fryerSpeed' | 'cakeBaker' | 'extraSink' | 'extraChopBoard';
 
 export interface Player {
     id: string; x: number; y: number;
@@ -73,7 +73,7 @@ export interface WaitingGuest {
 export interface Upgrades {
     patience: number; earnings: number; plateStackMax: number; safeOven: number;
     fryerSpeed: number;
-    cakeBaker: number; coffeeMachine: number;
+    cakeBaker: number;
     extraSink: number; extraChopBoard: number;
 }
 
@@ -134,14 +134,6 @@ export interface CakeBaker {
   burnTimer?: number;
 }
 
-export interface CoffeeMachine {
-  id: string;
-  x: number;
-  y: number;
-  cups: number;
-  maxCups: number;
-}
-
 export interface Fryer {
   id: string;
   x: number;
@@ -151,14 +143,6 @@ export interface Fryer {
   output: string | null;
   isBurned?: boolean;
   burnTimer?: number;
-}
-
-export interface Fridge {
-  id: string;
-  x: number;
-  y: number;
-  drinks: number;
-  maxDrinks: number;
 }
 
 export interface WashingSink {
@@ -223,9 +207,7 @@ export interface GameState {
     choppingBoards: ChoppingBoard[];
     sinks: WashingSink[];
     fryers: Fryer[];
-    fridges: Fridge[];
     cakeBakers: CakeBaker[];
-    coffeeMachines: CoffeeMachine[];
     serviceWindow: ServiceWindowSlot[];
 
     dailyObjectives?: DailyObjective[];
